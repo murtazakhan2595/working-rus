@@ -1034,7 +1034,7 @@ export const getUserBiometricLogsList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/user-record-list//?${ordering ? `ordering=${ordering}&` : ""}${
+  let URL = `/user-record-list/?${ordering ? `ordering=${ordering}&` : ""}${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)

@@ -21,17 +21,8 @@ import {
 } from "lucide-react";
 
 // Import API services
-import {
-  getDownloadTemplate,
-  uploadEmployeesData,
-  getUserRoles,
-  getDepartmentNames,
-  getDesignations,
-  getManagerList,
-  getShifts,
-} from "app/hooks/employee";
+import { getDownloadTemplate, uploadEmployeesData } from "app/hooks/employee";
 
-import {getBranchList} from "app/hooks/general"
 import { HasAccess } from "utils/PermissionUtils";
 
 const ImportEmployeesButton = () => {
@@ -44,20 +35,7 @@ const ImportEmployeesButton = () => {
   const fileInputRef = useRef(null);
 
   // Reference data state
-  const [userRoles, setUserRoles] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [designations, setDesignations] = useState([]);
-  const [managers, setManagers] = useState([]);
-  const [shifts, setShifts] = useState([]);
-  const [branches, setBranches] = useState([]);
-  const [isLoadingReferenceData, setIsLoadingReferenceData] = useState(false);
   const importEmployeesPermitted = HasAccess("IMPORT_EMPLOYEES");
-  // Fetch reference data when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      fetchReferenceData();
-    }
-  }, [isOpen]);
 
   // Process and format error messages for better readability
   const formatErrorMessages = (errors) => {
@@ -176,54 +154,6 @@ const ImportEmployeesButton = () => {
     });
 
     return formattedErrors;
-  };
-
-  // Function to fetch all reference data
-  const fetchReferenceData = async () => {
-    setIsLoadingReferenceData(true);
-    try {
-      // Fetch user roles
-      const rolesResponse = await getUserRoles();
-      if (rolesResponse && rolesResponse.results) {
-        setUserRoles(rolesResponse.results);
-      }
-
-      // Fetch departments
-      const departmentsResponse = await getDepartmentNames();
-      if (departmentsResponse && departmentsResponse.results) {
-        setDepartments(departmentsResponse.results);
-      }
-
-      // Fetch designations
-      const designationsResponse = await getDesignations();
-      if (designationsResponse && designationsResponse.results) {
-        setDesignations(designationsResponse.results);
-      }
-
-      // Fetch managers
-      const managersResponse = await getManagerList();
-      if (managersResponse && managersResponse) {
-        setManagers(managersResponse);
-      }
-
-      // Fetch shifts
-      const shiftsResponse = await getShifts();
-      if (shiftsResponse && shiftsResponse.results) {
-        setShifts(shiftsResponse.results);
-      }
-
-      const branchesResponse = await getBranchList();
-      if (branchesResponse && branchesResponse.results) {
-        setBranches(branchesResponse.results);
-      }
-    } catch (error) {
-      console.error("Error fetching reference data:", error);
-      toast.error("Failed to load reference data", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } finally {
-      setIsLoadingReferenceData(false);
-    }
   };
 
   // Function to reset the file input and state
@@ -371,14 +301,16 @@ const ImportEmployeesButton = () => {
 
   return (
     <>
-      {importEmployeesPermitted && <Button
-        onClick={() => setIsOpen(true)}
-        className="bg-primary hover:bg-primary-dark"
-        type="button"
-      >
-        <Upload className="w-4 h-4 mr-2" />
-        Import Employees
-      </Button>}
+      {importEmployeesPermitted && (
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="bg-primary hover:bg-primary-dark"
+          type="button"
+        >
+          <Upload className="w-4 h-4 mr-2" />
+          Import Employees
+        </Button>
+      )}
 
       <Dialog
         open={isOpen}
@@ -439,151 +371,82 @@ const ImportEmployeesButton = () => {
                 {showFieldInfo && (
                   <div className="mt-2">
                     <p className="text-xs text-blue-700 mb-2">
-                      For a successful import, the following fields require{" "}
-                      <strong>specific IDs or values</strong>:
+                      For a successful import, the following fields are
+                      required:
                     </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="space-y-2">
+                        <div>
+                          <p className="text-xs font-medium text-blue-700">
+                            User Role:
+                          </p>
+                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
+                            <ul className="list-disc pl-3 text-xs text-blue-700">
+                              <li>
+                                Multiple user role will be comma(,) seperated.
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-blue-700">
+                            Department:
+                          </p>
+                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
+                            <ul className="list-disc pl-3 text-xs text-blue-700">
+                              <li>
+                                The "Department" field should be a string input
+                                representing the department name within the
+                                organization.
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-blue-700">
+                            End Date:
+                          </p>
+                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
+                            <ul className="list-disc pl-3 text-xs text-blue-700">
+                              <li>Date format required is 'YYYY-MM-DD'.</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-blue-700">
+                            Country:
+                          </p>
+                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
+                            <ul className="list-disc pl-3 text-xs text-blue-700">
+                              <li>
+                                Multiple countries will be comma(,) seperated.
+                              </li>
+                              <li>
+                                For all the countries keep the field empty.
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-medium text-blue-800 mt-3">
+                            Accepted Date Format:
+                          </h4>
+                          <p className="text-xs text-blue-700 pl-2">
+                            All date fields must use:{" "}
+                            <strong>YYYY-MM-DD</strong> format
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
                       <div>
                         <h4 className="text-xs font-medium text-blue-800 mb-1">
                           Foreign Key Fields (Use IDs):
                         </h4>
-
-                        {isLoadingReferenceData ? (
-                          <p className="text-xs text-blue-700 italic">
-                            Loading reference data...
-                          </p>
-                        ) : (
-                          <div className="space-y-2">
-                            <div>
-                              <p className="text-xs font-medium text-blue-700">
-                                user_role:
-                              </p>
-                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                                {userRoles.length > 0 ? (
-                                  <ul className="list-disc pl-3 text-xs text-blue-700">
-                                    {userRoles.map((role) => (
-                                      <li key={role.id}>
-                                        "{role.name}" for {role.name}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-xs text-blue-700 italic">
-                                    No role data available
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div>
-                              <p className="text-xs font-medium text-blue-700">
-                                department_name:
-                              </p>
-                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                                {departments.length > 0 ? (
-                                  <ul className="list-disc pl-3 text-xs text-blue-700">
-                                    {departments.map((dept) => (
-                                      <li key={dept.id}>
-                                        "{dept.name}" for {dept.name}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-xs text-blue-700 italic">
-                                    No department data available
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div>
-                              <p className="text-xs font-medium text-blue-700">
-                                department_position:
-                              </p>
-                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                                {designations.length > 0 ? (
-                                  <ul className="list-disc pl-3 text-xs text-blue-700">
-                                    {designations.map((des) => (
-                                      <li key={des.id}>
-                                        "{des.name}" for {des.name}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-xs text-blue-700 italic">
-                                    No designation data available
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div>
-                              <p className="text-xs font-medium text-blue-700">
-                                direct_report:
-                              </p>
-                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                                {managers.length > 0 ? (
-                                  <ul className="list-disc pl-3 text-xs text-blue-700">
-                                    {managers.map((mgr) => (
-                                      <li key={mgr.id}>
-                                        "{mgr.username}" for{" "}
-                                        {mgr.first_name + " " + mgr.last_name}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-xs text-blue-700 italic">
-                                    No manager data available
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div>
-                              <p className="text-xs font-medium text-blue-700">
-                                shift_assignment:
-                              </p>
-                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                                {shifts.length > 0 ? (
-                                  <ul className="list-disc pl-3 text-xs text-blue-700">
-                                    {shifts.map((shift) => (
-                                      <li key={shift.id}>
-                                        "{shift.name}" for {shift.name}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-xs text-blue-700 italic">
-                                    No shift data available
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-xs font-medium text-blue-700">
-                                branch_name:
-                              </p>
-                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                                {console.log(branches)}
-                                {branches.length > 0 ? (
-                                  <ul className="list-disc pl-3 text-xs text-blue-700">
-                                    {branches.map((branch) => (
-                                      <li key={branch.id}>
-                                        "{branch.branch_name}" for{" "}
-                                        {branch.branch_name}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-xs text-blue-700 italic">
-                                    No Branch data available
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        )}
                       </div>
 
                       <div>
