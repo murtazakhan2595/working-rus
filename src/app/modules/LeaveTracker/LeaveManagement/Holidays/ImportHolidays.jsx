@@ -353,7 +353,7 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
                 {showFieldInfo && (
                   <div className="mt-2">
                     <p className="text-xs text-blue-700 mb-2">
-                      For a successful import, the following fields require:
+                      For a successful import, the following fields are required:
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
