@@ -43,13 +43,13 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
-    // date_range: `${moment().format("YYYY-MM-DD")},${moment().format(
-    //   "YYYY-MM-DD"
-    // )}`,
+    range_date: `${moment().format("YYYY-MM-DD")},${moment().format(
+      "YYYY-MM-DD"
+    )}`,
   });
   const [ordering, setOrdering] = useState("-timestamp");
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [List, setList] = useState({ page: 1, sizePerPage: 10 });
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 25 });
+  const [List, setList] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -100,31 +100,32 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     };
   }, [filterData, ordering, options]);
 
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   const saveRecords = async (isMounted) => {
-  //     try {
-  //       const attendanceData = await getUserBiometricLogsList({
-  //         filterData: {
-  //           date_range: `${moment().format("YYYY-MM-DD")},${moment().format(
-  //             "YYYY-MM-DD"
-  //           )}`,
-  //         },
-  //       });
-  //       if (isMounted) {
-  //         if (attendanceData) {
-  //           UpdateMissingAttanceRecords(attendanceData.results);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   saveRecords(isMounted);
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
+  useEffect(() => {
+    let isMounted = true;
+    const saveRecords = async (isMounted) => {
+      try {
+        const attendanceData = await getUserBiometricLogsList({
+          filterData: {
+            range_date: `${moment().format("YYYY-MM-DD")},${moment().format(
+              "YYYY-MM-DD"
+            )}`,
+          },
+          ordering: "id",
+        });
+        if (isMounted) {
+          if (attendanceData) {
+            UpdateMissingAttanceRecords(attendanceData.results);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    saveRecords(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -144,7 +145,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
               {
                 type: "date-range",
                 placeholder: "Date",
-                name: "date_range",
+                name: "range_date",
               },
             ]}
             onChange={handleFilterChange}

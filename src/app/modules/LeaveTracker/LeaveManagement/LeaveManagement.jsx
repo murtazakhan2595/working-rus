@@ -17,6 +17,7 @@ import {
   LeaveTypes,
   AddUpdateLeaveType,
   OffsetLeaves,
+  OpeningLeaveBalance,
 } from "app/modules/LeaveTracker";
 import { getLeaveDurations } from "app/hooks/leaveTracker";
 import { getLeaveTypes } from "app/hooks/leaveTracker";
@@ -128,6 +129,15 @@ export default function LeaveManagement() {
       label: "Offset Leave Settings",
       component: (
         <OffsetLeaves
+          reload={reloadHolidays}
+        />
+      ),
+    },
+    {
+      value: "opening_leave_balance",
+      label: "Opening Leave Balance",
+      component: (
+        <OpeningLeaveBalance
           reload={reloadHolidays}
         />
       ),
