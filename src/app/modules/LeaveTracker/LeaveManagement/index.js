@@ -26,6 +26,8 @@ import {
   OffsetLeaveSettingAction,
 } from "./OffsetLeaveSettings";
 
+import { OpeningLeaveBalance } from "./OpeningLeaveBalance";
+
 export {
   LeaveManagement,
   AddUpdateLeaveDuration,
@@ -45,4 +47,5 @@ export {
   ImportHolidays,
   ViewOffsetLeaveSetting,
   OffsetLeaveSettingAction,
+  OpeningLeaveBalance,
 };
