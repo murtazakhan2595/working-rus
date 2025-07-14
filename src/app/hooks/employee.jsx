@@ -1044,6 +1044,27 @@ const uploadEmployeesData = async (formData) => {
     return error?.response?.data;
   }
 };
+const updateUploadEmployeesData = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/people/employee-update-upload-file/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
+  }
+};
 
 const getUserRoles = async () => {
   try {
@@ -1220,4 +1241,5 @@ export {
   getShifts,
   getEmployeeDocsChecklist,
   saveEmpoyeeDocBulk,
+  updateUploadEmployeesData,
 };

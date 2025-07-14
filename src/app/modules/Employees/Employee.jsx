@@ -49,7 +49,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
       setOrdering(sortName);
     },
   };
-
+console.log("employeeData", employeeData);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
@@ -59,6 +59,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
         ordering,
       });
       if (isMounted) {
+        setEmployeeData(data || { results: [], count: 0 });
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);

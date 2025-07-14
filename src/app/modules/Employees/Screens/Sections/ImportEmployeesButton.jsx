@@ -26,6 +26,7 @@ import { HasAccess } from "utils/PermissionUtils";
 
 // Import the SwitchInput component
 import { SwitchInput } from "components/FormControl";
+import { updateUploadEmployeesData } from "app/hooks/employee";
 
 const ImportEmployeesButton = ({reload}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -231,7 +232,13 @@ const ImportEmployeesButton = ({reload}) => {
       formData.append("isEditMode", isEditMode); // Include edit mode flag
 
       // Call the API to upload employees data
-      const response = await uploadEmployeesData(formData);
+
+      let response = {}
+      if (isEditMode) {
+        response = await updateUploadEmployeesData(formData);
+      } else{
+        response = await uploadEmployeesData(formData);
+      }
 
       // Handle successful response
       if (response && (response.status === 200 || response.status === 201)) {
@@ -241,12 +248,16 @@ const ImportEmployeesButton = ({reload}) => {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        if(reload && typeof reload === 'function') {
-          console.log("Reloading employee data...");
-          reload();
-        }
         setIsOpen(false);
         resetFileInput();
+        if(reload && typeof reload === 'function') {
+          console.log("Reloading employee data...");
+          //  add one sec delay to ensure the UI updates
+          setTimeout(() => {
+            reload(true);
+          }
+          , 1000);
+        }
       }
       // Handle error responses with validation errors
       else if (response && response.errors) {
