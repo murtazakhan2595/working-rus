@@ -1008,9 +1008,12 @@ const getDocumentChecklist = async (employeeid) => {
 
 const getDownloadTemplate = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/people/download-template/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/people/employee-download-template/`,
+      {
+        headers: headers(),
+      }
+    );
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1023,7 +1026,7 @@ const getDownloadTemplate = async () => {
 const uploadEmployeesData = async (formData) => {
   try {
     const response = await axios.post(
-      `${baseUrl}/people/upload-file/`,
+      `${baseUrl}/people/employee-upload-file/`,
       formData,
       {
         headers: {

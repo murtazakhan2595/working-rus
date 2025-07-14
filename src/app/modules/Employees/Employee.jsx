@@ -140,7 +140,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
               Here you can manage, add, edit and view employee profile and data.
             </CardDescription>
           </div>
-          <ImportEmployeesButton />
+          <ImportEmployeesButton reload={fetchData}/>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row mb-4">
