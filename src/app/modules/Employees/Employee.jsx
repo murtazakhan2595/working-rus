@@ -49,7 +49,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
       setOrdering(sortName);
     },
   };
-
+console.log("employeeData", employeeData);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
@@ -59,6 +59,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
         ordering,
       });
       if (isMounted) {
+        setEmployeeData(data || { results: [], count: 0 });
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
@@ -140,7 +141,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
               Here you can manage, add, edit and view employee profile and data.
             </CardDescription>
           </div>
-          <ImportEmployeesButton />
+          <ImportEmployeesButton reload={fetchData}/>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row mb-4">
