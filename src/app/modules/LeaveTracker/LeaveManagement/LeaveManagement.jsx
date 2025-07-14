@@ -21,6 +21,7 @@ import {
 } from "app/modules/LeaveTracker";
 import { getLeaveDurations } from "app/hooks/leaveTracker";
 import { getLeaveTypes } from "app/hooks/leaveTracker";
+import AddUpdateLeaveBalance from "./OpeningLeaveBalance/AddUpdateLeaveBalance";
 
 export default function LeaveManagement() {
   const [activeTab, setActiveTab] = useState("leave-duration");
@@ -34,6 +35,7 @@ export default function LeaveManagement() {
   const [addLeaveType, setAddLeaveType] = useState(false);
   const [addLeaveOffet, setAddLeaveOffet] = useState(false);
   const [reloadHolidays, setReloadHolidays] = useState(false);
+  const [openingBalance, setOpeningBalance] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -184,6 +186,15 @@ export default function LeaveManagement() {
                 Add Leave Offset
               </Button>
             )}
+            {activeTab === "opening_leave_balance" && (
+              <Button
+                onClick={() => {
+                  setOpeningBalance((prev) => !prev);
+                }}
+              >
+                Add Leave Opening Balance
+              </Button>
+            )}
           </>
         }
       />
@@ -207,11 +218,11 @@ export default function LeaveManagement() {
         </div>
 
         <Card>
-            {tabsData.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value}>
-                {tab.component}
-              </TabsContent>
-            ))}
+          {tabsData.map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.component}
+            </TabsContent>
+          ))}
         </Card>
       </Tabs>
       {addDuration && (
@@ -245,6 +256,15 @@ export default function LeaveManagement() {
           setIsOpen={setAddLeaveType}
           reload={fetchData}
           isLeaveType={true}
+        />
+      )}
+      {openingBalance && (
+        <AddUpdateLeaveBalance
+          isOpen={openingBalance}
+          setIsOpen={setOpeningBalance}
+          reloadData={() => {
+            // setReloadHolidays(!reloadHolidays);
+          }}
         />
       )}
     </div>

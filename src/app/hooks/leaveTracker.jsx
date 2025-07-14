@@ -673,3 +673,50 @@ export const getLeaveOffsetSettingData = async (id) => {
     return {};
   }
 };
+
+export const saveLeaveOpeningBalance = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/leave-openingbalance/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving leave opening balance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getLeaveOpeningBalance = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-openingbalance?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching leave opening balance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
