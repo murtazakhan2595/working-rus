@@ -41,24 +41,28 @@ export const BranchColumn = (reload) => [
   },
 ];
 //
-export const WorkingHoursColumn = (reload, originalData = []) => [
+export const WorkingHoursColumn = (reload) => [
   {
     dataField: "name",
     text: "Shift Name",
+    dataSort: true,
   },
   {
     dataField: "type",
     text: "Shift Type",
+    dataSort: true,
   },
   {
     dataField: "starttime",
     text: "Start Time",
+    dataSort: true,
     formatter: (cell) => renderDate(cell, "--", "time"),
   },
   {
     dataField: "endtime",
     text: "End Time",
     formatter: (cell) => renderDate(cell, "--", "time"),
+    dataSort: true,
   },
   {
     text: "Action",
@@ -131,6 +135,7 @@ export const OnboardingChecklistColumn = (reload, originalData = []) => [
   {
     dataField: "name",
     text: "Document Name",
+    dataSort: true,
   },
   {
     text: "Action",

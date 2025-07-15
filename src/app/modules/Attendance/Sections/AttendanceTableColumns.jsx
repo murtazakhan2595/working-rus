@@ -43,10 +43,7 @@ const getCheckoutTime = (checkIn) => {
   return "Working";
 };
 
-export const EmployeesAttendanceColumns = (
-  TotalDays = 5,
-  reload = () => {}
-) => [
+export const EmployeesAttendanceColumns = (TotalDays = 5) => [
   {
     dataField: "emp_name",
     text: "Employees",
@@ -70,7 +67,7 @@ export const EmployeesAttendanceColumns = (
     dataField: "attendance_stats",
     text: "Absent Days",
     formatter: (cell) => (
-      <span>{parseInt(TotalDays) - parseInt(cell?.Present)}</span>
+      <span>{Math.max(0, parseInt(TotalDays) - parseInt(cell?.Present))}</span>
     ),
   },
   {
@@ -429,6 +426,96 @@ export const AttendanceAdjustmentLogsColumns = [
     ),
   },
 ];
+
+const LocationList = [
+  { code: 10001, location: "Head Office" },
+  { code: 10002, location: "Century Mall" },
+  {
+    code: 10003,
+    location: "Data Center",
+  },
+  {
+    code: 10004,
+    location: "Ajman coc",
+  },
+  {
+    code: 10005,
+    location: "Bur Dubai",
+  },
+  {
+    code: 10006,
+    location: "Naif Branch",
+  },
+  {
+    code: 10007,
+    location: "Muteena Branch",
+  },
+  {
+    code: 10008,
+
+    location: "Mamzar",
+  },
+
+  {
+    code: 10009,
+
+    location: "Karama Branch",
+  },
+
+  {
+    code: 10010,
+
+    location: "Burjuman Branch",
+  },
+
+  {
+    code: 10011,
+
+    location: "DIP Branch",
+  },
+
+  {
+    code: 10012,
+
+    location: "Satwa Branch",
+  },
+
+  {
+    code: 10013,
+
+    location: "Al Qouz Branch",
+  },
+
+  {
+    code: 10014,
+
+    location: "MOE",
+  },
+
+  {
+    code: 10015,
+
+    location: "SHJ Ind Area 6",
+  },
+
+  {
+    code: 10016,
+
+    location: "ShJ Industrial 10",
+  },
+
+  {
+    code: 10017,
+
+    location: "Ajman Ind Area",
+  },
+
+  {
+    code: 10018,
+
+    location: "Mirdiff Branch",
+  },
+];
 export const UserBiometricLogsColumns = [
   {
     text: "Employee",
@@ -447,10 +534,15 @@ export const UserBiometricLogsColumns = [
     dataField: "user_no",
   },
   {
+    text: "Location",
+    dataField: "devSerial",
+  },
+  {
     text: "Date",
     dataField: "timestamp",
     formatter: (cell) => renderDate(cell, "--"),
   },
+
   {
     text: "Logtime",
     dataField: "timestamp",

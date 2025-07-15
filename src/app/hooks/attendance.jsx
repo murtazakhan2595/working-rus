@@ -502,7 +502,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
   recentActivities.push({
     time: moment(attendance.checkin).format("hh:mm A"),
     activity: "Check in",
-    description: "Checked In",
+    description: attendance.additional_info || "Checked In",
     timestamp: moment(attendance.checkin),
   });
 
@@ -519,7 +519,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
       recentActivities.push({
         time: moment(breakItem.starttime).format("hh:mm A"),
         activity: `Break Start`,
-        description: `Away`,
+        description: `${breakItem.break_type} break - Away`,
         timestamp: moment(breakItem.starttime),
       });
 
@@ -528,7 +528,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
         recentActivities.push({
           time: moment(breakItem.endtime).format("hh:mm A"),
           activity: `Break End`,
-          description: `Back`,
+          description: `${breakItem.break_type} break - Back`,
           timestamp: moment(breakItem.endtime),
         });
       }
@@ -584,10 +584,13 @@ export const getTimeAdjustmentData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = await mapTimeAdjustmentData(response.data);
-      const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request
-      );
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapTimeAdjustmentData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -782,10 +785,15 @@ export const getAttendanceAdjustmentData = async (id) => {
       }
     );
     if (response.status === 200) {
-      const ResponseData = await mapAttendanceAdjustmentData(response.data);
+      const Response = response.data;
       const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request_id
+        Response.request_id
       );
+      const ResponseData = await mapAttendanceAdjustmentData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -937,15 +945,15 @@ export const saveUserBiometricAttendanceLog = async (
     const active_Shift = await getActiveShiftData(employee_id, date);
     const attendanceData = await getAttendancebyEmployee(employee_id, date);
     if (userBiometricList.status === "check-in") {
-      const attendancePaylaod = mapAttendanceCheckInPayload(
+      const attendancePayload = mapAttendanceCheckInPayload(
         userBiometricList.timestamp,
         attendanceData,
         active_Shift.is_split_shift,
         employee_id
       );
-      if (attendancePaylaod) {
+      if (attendancePayload) {
         const response = await saveAttendance(
-          attendancePaylaod,
+          { ...attendancePayload, additional_info: "Biometric Check-In" },
           active_Shift,
           attendanceData.id
         );
@@ -953,7 +961,6 @@ export const saveUserBiometricAttendanceLog = async (
       }
     }
     if (userBiometricList.status === "check-out") {
-      debugger;
       const attendancePayload = mapAttendanceCheckOutPayload(
         userBiometricList.timestamp,
         attendanceData,
@@ -961,7 +968,7 @@ export const saveUserBiometricAttendanceLog = async (
       );
       if (attendancePayload) {
         const response = await saveAttendance(
-          attendancePayload,
+          { ...attendancePayload, additional_info: "Biometric Check-Out" },
           active_Shift,
           attendanceData.id
         );
@@ -969,7 +976,6 @@ export const saveUserBiometricAttendanceLog = async (
       }
     }
     if (userBiometricList.status === "check-out") {
-      debugger;
       if (attendanceData) return Boolean(attendanceData);
       const response = await saveAttendance({
         employee_id: employee_id,
@@ -1026,7 +1032,7 @@ export const getUserBiometricLogsList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/user-record-list//?${ordering ? `ordering=${ordering}&` : ""}${
+  let URL = `/user-record-list/?${ordering ? `ordering=${ordering}&` : ""}${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)

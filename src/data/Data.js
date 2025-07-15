@@ -32,7 +32,7 @@ export const countriesCallingCodes = countries.all
       country.countryCallingCodes && country.countryCallingCodes.length > 0
   )
   .map((country) => ({
-    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+    value: parseInt(country.countryCallingCodes[0].replace("+", "")), // Remove any existing plus signs
     label: `${country.name} (+${country.countryCallingCodes[0].replace(
       "+",
       ""
@@ -650,7 +650,6 @@ export const ResignationStatusOptions = [
   { label: "Clearance initiated", value: "initiated clearance" },
   { label: "Exit Interview", value: "exit interview" },
 ];
-
 
 export const ReasonForLeaving = [
   { value: "voluntary", label: "Voluntary" },

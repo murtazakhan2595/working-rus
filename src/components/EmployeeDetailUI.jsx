@@ -17,12 +17,11 @@ const EmployeeDetailUI = React.memo(
     className = "",
     variant = "ViewMode", // othere options are [ViewMode,FormView]
     InformationKeys = [],
-    ViewVariant = "horizontal",
+    ViewVariant = "horizontal", // othere options are [horizontal,veritical,simple-text]
   }) => {
     const Departments = useSelector((state) => state.common.departments);
     const Designations = useSelector((state) => state.common.designations);
     const Branches = useSelector((state) => state.common.branches);
-    const Employees = useSelector((state) => state.emp.employess);
     const Managers = useSelector((state) => state.emp.reportingManagers);
     const userProfile = id ? GetUser(id) : {};
     if (!userProfile) return null;
@@ -140,9 +139,12 @@ const EmployeeDetailUI = React.memo(
           ]
         : []),
     ].filter(Boolean);
+    if (variant === "ViewMode" && ViewVariant === "simple-text") {
+      const values = employeeDataList && employeeDataList.map((data) => data.value);
+      return <span className={className}> {values.join(" - ")}</span>;
+    }
     return (
       <div className={className}>
-        {" "}
         {variant === "ViewMode"
           ? employeeDataList &&
             employeeDataList.map((data) => {

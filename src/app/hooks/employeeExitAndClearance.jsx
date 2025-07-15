@@ -3,7 +3,7 @@ import { getFormattedDropdownItems } from "utils/Lists";
 import {
   mapEmployeeExitData,
   mapEmployeeExitPayloadData,
-  mapExitStatsData
+  mapExitStatsData,
 } from "app/utils/MappingObjects/mapEmployeeExitData";
 import {
   HandleLogout,
@@ -56,7 +56,6 @@ const getEmployeesResignations = async (payload) => {
 };
 
 export const getEmployeeExitStats = async (payload) => {
-
   try {
     // Making the GET request to the constructed URL
     const response = await getEmployeesResignations(payload);
@@ -91,10 +90,13 @@ export const getEmployeeExitData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = await mapEmployeeExitData(response.data);
-      const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request
-      );
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapEmployeeExitData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {

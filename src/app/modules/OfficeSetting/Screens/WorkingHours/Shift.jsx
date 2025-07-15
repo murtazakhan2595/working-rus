@@ -1,9 +1,9 @@
-import SheetComponent from 'components/ui/SheetComponent';
-import React, { useState } from 'react'
-import AddShiftForm from './AddShiftForm';
+import React, { useState } from "react";
+import AddShiftForm from "./AddShiftForm";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { Button } from "components/ui/button";
 
-const Shift = ({ reload, dataShift }) => {
+const Shift = ({ reloadData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const permissions = useOfficeSettingPermissions();
 
@@ -11,28 +11,24 @@ const Shift = ({ reload, dataShift }) => {
     return null;
   }
 
-  const formSheetData = {
-    triggerText: "Add New Shift",
-    title: "Add New Shift",
-    description: null,
-    footer: null,
+  const handleClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsOpen(true);
   };
 
   return (
-    <SheetComponent
-      {...formSheetData}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      width="568px"
-    >
-      <AddShiftForm
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        reload={reload}
-        existingShifts={dataShift || []}
-      />
-    </SheetComponent>
+    <>
+      <Button onClick={handleClick}>Add New Shift</Button>
+      {isOpen && (
+        <AddShiftForm
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          reloadData={reloadData}
+        />
+      )}
+    </>
   );
 };
 
-export default Shift
+export default Shift;

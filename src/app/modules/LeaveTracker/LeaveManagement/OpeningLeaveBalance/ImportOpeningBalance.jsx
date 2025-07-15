@@ -21,12 +21,13 @@ import {
 } from "lucide-react";
 
 // Import API services
-import { uploadHolidaysData } from "app/hooks/leaveTracker";
-import { exportRecordToExcel } from "utils/downloadUtils";
-import { getBranchList } from "app/hooks/general";
+import {
+  getLeaveOpeningBalanceTemplate,
+  uploadLeaveOpeningBalance,
+} from "app/hooks/leaveTracker";
 import { HasAccess } from "utils/PermissionUtils";
 
-const ImportEmployeesButton = ({ reloadData = () => {} }) => {
+const ImportOpeningBalance = ({ reloadData = () => {} }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -176,25 +177,34 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const dataToExport = [
-        {
-          "Holiday Name": "Labor Day",
-          "Start Date": "2025-05-01",
-          "End Date": "",
-          Branches: "New York",
-          Country: "United States",
-          Religion: "Islam",
-        },
-        {
-          "Holiday Name": "Chritmas Eve",
-          "Start Date": "2025-12-25",
-          "End Date": "2026-01-03",
-          Branches: "",
-          Country: "United States,Canada",
-          Religion: "Islam",
-        },
-      ];
-      exportRecordToExcel(dataToExport, "Holiday", `Holiday-Import-Template`);
+      const response = await getLeaveOpeningBalanceTemplate();
+
+      // Check if we got a valid blob response
+      if (response && response instanceof Blob) {
+        const url = window.URL.createObjectURL(response);
+        const link = document.createElement("a");
+        link.href = url;
+
+        // Set the correct filename and extension based on the blob type
+        const filename = response.type.includes("spreadsheet")
+          ? "leave_allocation_template.xlsx"
+          : "leave_allocation_template.csv";
+
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        toast.success("Template downloaded successfully", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        console.error("Invalid response format:", response);
+        toast.error("Invalid template format received", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
     } catch (error) {
       console.error("Error downloading template:", error);
       toast.error("Failed to download template", {
@@ -220,64 +230,164 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
       setIsUploading(true);
       setValidationErrors([]); // Clear previous errors
       setValidationMessage(null);
+
       // Create form data for file upload
       const formData = new FormData();
       formData.append("file", file);
-      // Call the API to upload employees data
-      const response = await uploadHolidaysData(formData);
-      // Handle successful response
 
-      const { errors, message } = response;
+      // Call the API to upload leave opening balance data
+      const response = await uploadLeaveOpeningBalance(formData);
+
+      // Check if response has status property (from axios response)
+      const responseStatus = response?.status || response?.response?.status;
+      const responseData = response?.data || response;
+
+      // Handle 207 Multi-Status response (partial success/failure)
+      if (responseStatus === 207) {
+        const { errors, message } = responseData;
+
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+          // Format validation errors for display
+          const formattedErrors = formatErrorMessages(errors);
+          setValidationErrors(formattedErrors);
+          setValidationMessage(message);
+
+          // Reset file input when errors occur
+          resetFileInput();
+
+          // Show a toast notification
+          toast.error(
+            "Import completed with errors. Please check the validation errors.",
+            {
+              position: toast.POSITION.TOP_RIGHT,
+            }
+          );
+        } else {
+          // 207 but no errors - partial success
+          toast.success("Leave allocations imported successfully", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          handleClose();
+        }
+        return;
+      }
+
+      // Handle regular successful response (200/201)
+      const { errors, message } = responseData;
       if (errors && Array.isArray(errors) && errors.length > 0) {
         // Format validation errors for display
-        // const formattedErrors = formatErrorMessages(errors);
-        setValidationErrors(errors);
+        const formattedErrors = formatErrorMessages(errors);
+        setValidationErrors(formattedErrors);
         setValidationMessage(message);
 
         // Reset file input when errors occur
-        // Also show a toast notification
-        // toast.error(
-        //   "Failed to import holidays. Please check the validation errors.",
-        //   {
-        //     position: toast.POSITION.TOP_RIGHT,
-        //   }
-        // );
+        resetFileInput();
+
+        // Show a toast notification
+        toast.error(
+          "Failed to import leave allocations. Please check the validation errors.",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
       } else {
-        toast.success("Holidays imported successfully", {
+        toast.success("Leave allocations imported successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        handleClose(false);
+        handleClose();
       }
     } catch (error) {
-      console.error("Error uploading holidays:", error);
+      console.error("Error uploading leave allocations:", error);
 
       // Handle different types of error responses
-      if (error?.response?.data?.errors) {
+      if (error?.response?.status === 207) {
+        // Handle 207 Multi-Status response (partial success/failure)
+        const responseData = error.response.data;
+
+        if (
+          responseData?.errors &&
+          Array.isArray(responseData.errors) &&
+          responseData.errors.length > 0
+        ) {
+          const formattedErrors = formatErrorMessages(responseData.errors);
+          setValidationErrors(formattedErrors);
+          setValidationMessage(responseData.message);
+
+          // Reset file input when errors occur
+          resetFileInput();
+
+          toast.error(
+            "Import completed with errors. Please check the validation errors.",
+            {
+              position: toast.POSITION.TOP_RIGHT,
+            }
+          );
+        } else {
+          // 207 but no errors - this shouldn't happen but handle it
+          toast.success("Leave allocations imported successfully", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          handleClose();
+        }
+      } else if (error?.response?.data?.errors) {
         // Backend returned specific validation errors
         const errors = error.response.data.errors;
         const formattedErrors = formatErrorMessages(
           Array.isArray(errors) ? errors : [errors]
         );
         setValidationErrors(formattedErrors);
+        setValidationMessage(error.response.data.message);
+
+        // Reset file input when errors occur
+        resetFileInput();
+
+        toast.error("Import failed", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       } else if (error?.response?.data?.message) {
         // Backend returned a single error message
         setValidationErrors([error.response.data.message]);
+
+        // Reset file input when errors occur
+        resetFileInput();
+
+        toast.error("Import failed", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       } else {
         // Generic error fallback
         setValidationErrors([
           "An unexpected error occurred. Please try again or contact support.",
         ]);
+
+        // Reset file input when errors occur
+        resetFileInput();
+
+        toast.error("Import failed", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
-      toast.error("Import failed", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setValidationMessage(null);
     } finally {
-      // Reset file input
-      resetFileInput();
       setIsUploading(false);
     }
   };
+
+  // Required fields for leave opening balance
+  const requiredFields = [
+    { name: "emp", description: "Employee ID (must match existing employee)" },
+    {
+      name: "leave_type",
+      description: "Type of leave (Annual Leave, Sick Leave, etc.)",
+    },
+    {
+      name: "total_allotted",
+      description: "Total leave days allocated for this type",
+    },
+  ];
+
+  const optionalFields = [
+    { name: "remarks", description: "Additional notes or comments" },
+  ];
 
   return (
     <>
@@ -288,7 +398,7 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
           type="button"
         >
           <Upload className="w-4 h-4 mr-2" />
-          Import Holidays
+          Import Leave Allocations
         </Button>
       )}
 
@@ -307,10 +417,13 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
         {/* Modified DialogContent with maxHeight and overflow settings for scrollability */}
         <DialogContent className="sm:max-w-6xl overflow-hidden">
           <DialogHeader>
-            <DialogTitle className="text-primary">Import Holidays</DialogTitle>
+            <DialogTitle className="text-primary">
+              Import Leave Allocations
+            </DialogTitle>
             <DialogDescription className="text-sm text-gray-900">
-              Upload a file to bulk import holiday data. Make sure your data
-              follows the required format.
+              Upload a file to bulk import employee leave allocations. The
+              template contains fields for employee ID, leave type, total
+              allotted days, and remarks.
             </DialogDescription>
           </DialogHeader>
 
@@ -353,97 +466,92 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
                 {showFieldInfo && (
                   <div className="mt-2">
                     <p className="text-xs text-blue-700 mb-2">
-                      For a successful import, the following fields are required:
+                      For a successful import, the following fields are
+                      required:
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                      {/* Required Fields */}
                       <div className="space-y-2">
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Holiday Name:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>Name must be unique and non-existing.</li>
-                            </ul>
-                          </div>
+                        <h4 className="text-xs font-medium text-blue-800 mb-1">
+                          Required Fields:
+                        </h4>
+                        <div className="space-y-1">
+                          {requiredFields.map((field, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-start"
+                            >
+                              <span className="text-xs font-medium text-blue-700 min-w-0 flex-shrink-0">
+                                {field.name}:
+                              </span>
+                              <span className="text-xs text-blue-700 ml-2 text-right">
+                                {field.description}
+                              </span>
+                            </div>
+                          ))}
                         </div>
+                      </div>
 
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Start Date:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>Date format required is 'YYYY-MM-DD'.</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            End Date:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>Date format required is 'YYYY-MM-DD'.</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Branches:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>
-                                Multiple branches will be comma(,) seperated.
-                              </li>
-                              <li>
-                                For all the branches keep the field empty.
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Country:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>
-                                Multiple countries will be comma(,) seperated.
-                              </li>
-                              <li>
-                                For all the countries keep the field empty.
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-medium text-blue-800 mt-3">
-                            Accepted Date Format:
-                          </h4>
-                          <p className="text-xs text-blue-700 pl-2">
-                            All date fields must use:{" "}
-                            <strong>YYYY-MM-DD</strong> format
-                          </p>
+                      {/* Optional Fields */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-medium text-blue-800 mb-1">
+                          Optional Fields:
+                        </h4>
+                        <div className="space-y-1">
+                          {optionalFields.map((field, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-start"
+                            >
+                              <span className="text-xs font-medium text-blue-700 min-w-0 flex-shrink-0">
+                                {field.name}:
+                              </span>
+                              <span className="text-xs text-blue-700 ml-2 text-right">
+                                {field.description}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
 
-                    <p className="text-xs text-blue-700 mt-2 italic">
-                      Using incorrect IDs or values will result in validation
-                      errors.
-                    </p>
+                    {/* Important Notes */}
+                    <div className="mt-3">
+                      <h4 className="text-xs font-medium text-blue-800 mb-2">
+                        Important Notes:
+                      </h4>
+                      <ul className="text-xs text-blue-700 space-y-1">
+                        <li>
+                          • <strong>emp:</strong> Must match existing employee
+                          ID in the system
+                        </li>
+                        <li>
+                          • <strong>leave_type:</strong> Must match configured
+                          leave types (e.g., Annual Leave, Sick Leave)
+                        </li>
+                        <li>
+                          • <strong>total_allotted:</strong> Must be a positive
+                          number representing days
+                        </li>
+                        <li>
+                          • <strong>File Format:</strong> Accepts .csv, .xlsx,
+                          and .xls files
+                        </li>
+                        <li>
+                          • <strong>Data Validation:</strong> Ensure employee
+                          IDs exist before import
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="file-upload">Upload Employee Data</Label>
+                <Label htmlFor="file-upload">
+                  Upload Leave Allocation Data
+                </Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="file-upload"
@@ -502,7 +610,7 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
             <Button
               variant="outline"
               onClick={() => {
-                handleClose(false);
+                handleClose();
                 resetFileInput();
                 setValidationErrors([]);
                 setValidationMessage(null);
@@ -525,4 +633,4 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
   );
 };
 
-export default ImportEmployeesButton;
+export default ImportOpeningBalance;

@@ -235,8 +235,59 @@ export const validatePublicHolidayFormSchema = (values) => {
   }
   return errors;
 };
+
+
+const validateLeaveBalanceFormSchema = (values) => {
+  const errors = {};
+
+  // Employee validation
+  if (!values.employee && !values.employee_display) {
+    errors.employee = "Employee selection is required";
+  }
+
+  // Leave Type validation
+  if (!values.leave_type) {
+    errors.leave_type = "Leave type is required";
+  }
+
+  // Total Allotted validation (should be auto-filled, but validate just in case)
+  if (!values.total_alloted) {
+    errors.total_alloted = "Total allotted is required";
+  } else if (isNaN(values.total_alloted)) {
+    errors.total_alloted = "Total allotted must be a number";
+  } else if (Number(values.total_alloted) <= 0) {
+    errors.total_alloted = "Total allotted must be greater than 0";
+  }
+
+  // Leaves Consumed validation
+  if (values.leaves_consumed === undefined || values.leaves_consumed === "") {
+    errors.leaves_consumed = "Leaves consumed is required";
+  } else if (isNaN(values.leaves_consumed)) {
+    errors.leaves_consumed = "Leaves consumed must be a number";
+  } else {
+    const consumed = Number(values.leaves_consumed);
+    const totalAllotted = Number(values.total_alloted) || 0;
+
+    if (consumed < 0) {
+      errors.leaves_consumed = "Leaves consumed cannot be negative";
+    } else if (consumed > totalAllotted) {
+      errors.leaves_consumed = `Leaves consumed (${consumed}) cannot exceed total allotted (${totalAllotted})`;
+    }
+  }
+
+  // Remaining Leaves validation (auto-calculated, but ensure it's not negative)
+  if (
+    values.remaining_leaves !== undefined &&
+    Number(values.remaining_leaves) < 0
+  ) {
+    errors.remaining_leaves = "Remaining leaves cannot be negative";
+  }
+
+  return errors;
+};
 export {
   validateLeaveRequestFormSchema,
   validateLeaveDurationFormSchema,
   validateLeaveTypeFormSchema,
+  validateLeaveBalanceFormSchema,
 };
