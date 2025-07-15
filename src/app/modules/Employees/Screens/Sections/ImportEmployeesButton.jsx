@@ -52,177 +52,143 @@ const ImportEmployeesButton = ({ reload }) => {
   // Reference data state
   const importEmployeesPermitted = HasAccess("IMPORT_EMPLOYEES");
 
-  // Process and format error messages for better readability
+  // Updated formatErrorMessages function to handle structured API response
   const formatErrorMessages = (errors) => {
     const formattedErrors = [];
 
     if (!errors || errors.length === 0) return formattedErrors;
 
     errors.forEach((error) => {
-      // Check if error is a string with JSON-like content
-      if (
-        typeof error === "string" &&
-        (error.includes("{") || error.includes("["))
-      ) {
-        try {
-          // Try to extract row information
-          const rowMatch = error.match(/Row (\d+):/);
-          const rowNum = rowMatch ? rowMatch[1] : "";
+      // Handle structured error objects (new format)
+      if (typeof error === "object" && error.row && error.errors) {
+        const rowNum = error.row;
 
-          // Check for date format errors which have a specific pattern
-          if (error.includes("Date has wrong format")) {
-            const dateFieldPattern =
-              /'([^']+)': \[ErrorDetail\(string='Date has wrong format/g;
-            let dateMatch;
-            let dateFields = [];
+        error.errors.forEach((fieldError) => {
+          const formattedField = fieldError.field || "Unknown Field";
+          const message = fieldError.message || "Unknown error";
+          const value = fieldError.value ? ` (Value: ${fieldError.value})` : "";
 
-            while ((dateMatch = dateFieldPattern.exec(error)) !== null) {
-              const fieldName = dateMatch[1];
-              dateFields.push(
-                fieldName
-                  .replace(/_/g, " ")
-                  .replace(/\b\w/g, (l) => l.toUpperCase())
-              );
-            }
+          formattedErrors.push(
+            `Row ${rowNum}: ${formattedField} - ${message}${value}`
+          );
+        });
+      }
+      // Handle string-based errors (legacy format)
+      else if (typeof error === "string") {
+        // Check if error is a string with JSON-like content
+        if (error.includes("{") || error.includes("[")) {
+          try {
+            // Try to extract row information
+            const rowMatch = error.match(/Row (\d+):/);
+            const rowNum = rowMatch ? rowMatch[1] : "";
 
-            if (dateFields.length > 0) {
-              formattedErrors.push(
-                `${
-                  rowNum ? `Row ${rowNum}: ` : ""
-                }Date fields must use YYYY-MM-DD format: ${dateFields.join(
-                  ", "
-                )}`
-              );
-              return; // Skip further processing for this error
-            }
-          }
+            // Check for date format errors which have a specific pattern
+            if (error.includes("Date has wrong format")) {
+              const dateFieldPattern =
+                /'([^']+)': \[ErrorDetail\(string='Date has wrong format/g;
+              let dateMatch;
+              let dateFields = [];
 
-          // Try to parse any JSON-like structure
-          let errorObj = {};
-          const jsonStart = error.indexOf("{");
-          if (jsonStart !== -1) {
-            try {
-              // Extract the JSON part and parse it
-              const jsonPart = error.substring(jsonStart);
-              errorObj = JSON.parse(jsonPart.replace(/'/g, '"'));
-            } catch {
-              // If parsing fails, use regex to extract field names and error messages
-              const fieldErrorPattern =
-                /'([^']+)': \[ErrorDetail\(string='([^']+)/g;
-              let match;
-              while ((match = fieldErrorPattern.exec(error)) !== null) {
-                errorObj[match[1]] = [{ message: match[2] }];
+              while ((dateMatch = dateFieldPattern.exec(error)) !== null) {
+                const fieldName = dateMatch[1];
+                dateFields.push(
+                  fieldName
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase())
+                );
               }
-            }
-          }
 
-          // Process each field error
-          if (Object.keys(errorObj).length > 0) {
-            Object.entries(errorObj).forEach(([field, fieldErrors]) => {
-              // Handle case where fieldErrors is an array of ErrorDetail objects
-              if (Array.isArray(fieldErrors)) {
-                fieldErrors.forEach((fieldError) => {
-                  let errorMessage = "";
-                  if (typeof fieldError === "object" && fieldError.message) {
-                    errorMessage = fieldError.message;
-                  } else if (typeof fieldError === "string") {
-                    errorMessage = fieldError;
-                  } else if (fieldError && fieldError.string) {
-                    errorMessage = fieldError.string;
-                  }
-
-                  if (errorMessage) {
-                    const formattedField = field
-                      .replace(/_/g, " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase());
-                    formattedErrors.push(
-                      `${
-                        rowNum ? `Row ${rowNum}: ` : ""
-                      }${formattedField}: ${errorMessage}`
-                    );
-                  }
-                });
-              } else {
-                // Handle case where fieldErrors is not an array
-                const formattedField = field
-                  .replace(/_/g, " ")
-                  .replace(/\b\w/g, (l) => l.toUpperCase());
+              if (dateFields.length > 0) {
                 formattedErrors.push(
                   `${
                     rowNum ? `Row ${rowNum}: ` : ""
-                  }${formattedField}: ${fieldErrors}`
+                  }Date fields must use YYYY-MM-DD format: ${dateFields.join(
+                    ", "
+                  )}`
                 );
+                return; // Skip further processing for this error
               }
-            });
-          } else {
-            // If we couldn't parse the JSON, just add the original error
+            }
+
+            // Try to parse any JSON-like structure
+            let errorObj = {};
+            const jsonStart = error.indexOf("{");
+            if (jsonStart !== -1) {
+              try {
+                // Extract the JSON part and parse it
+                const jsonPart = error.substring(jsonStart);
+                errorObj = JSON.parse(jsonPart.replace(/'/g, '"'));
+              } catch {
+                // If parsing fails, use regex to extract field names and error messages
+                const fieldErrorPattern =
+                  /'([^']+)': \[ErrorDetail\(string='([^']+)/g;
+                let match;
+                while ((match = fieldErrorPattern.exec(error)) !== null) {
+                  errorObj[match[1]] = [{ message: match[2] }];
+                }
+              }
+            }
+
+            // Process each field error
+            if (Object.keys(errorObj).length > 0) {
+              Object.entries(errorObj).forEach(([field, fieldErrors]) => {
+                // Handle case where fieldErrors is an array of ErrorDetail objects
+                if (Array.isArray(fieldErrors)) {
+                  fieldErrors.forEach((fieldError) => {
+                    let errorMessage = "";
+                    if (typeof fieldError === "object" && fieldError.message) {
+                      errorMessage = fieldError.message;
+                    } else if (typeof fieldError === "string") {
+                      errorMessage = fieldError;
+                    } else if (fieldError && fieldError.string) {
+                      errorMessage = fieldError.string;
+                    }
+
+                    if (errorMessage) {
+                      const formattedField = field
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase());
+                      formattedErrors.push(
+                        `${
+                          rowNum ? `Row ${rowNum}: ` : ""
+                        }${formattedField}: ${errorMessage}`
+                      );
+                    }
+                  });
+                } else {
+                  // Handle case where fieldErrors is not an array
+                  const formattedField = field
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase());
+                  formattedErrors.push(
+                    `${
+                      rowNum ? `Row ${rowNum}: ` : ""
+                    }${formattedField}: ${fieldErrors}`
+                  );
+                }
+              });
+            } else {
+              // If we couldn't parse the JSON, just add the original error
+              formattedErrors.push(error);
+            }
+          } catch (e) {
+            // If any parsing fails, just add the original error
             formattedErrors.push(error);
           }
-        } catch (e) {
-          // If any parsing fails, just add the original error
+        } else {
+          // For simple string errors, just add them directly
           formattedErrors.push(error);
         }
       } else {
-        // For simple string errors, just add them directly
-        formattedErrors.push(error);
+        // For any other format, convert to string
+        formattedErrors.push(String(error));
       }
     });
 
     return formattedErrors;
   };
 
-  // Function to reset the file input and state
-  const resetFileInput = () => {
-    setFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      // Clear previous validation errors when a new file is selected
-      setValidationErrors([]);
-      setValidationMessage(null);
-    }
-  };
-
-  const handleDownloadTemplate = async () => {
-    try {
-      const response = await getDownloadTemplate();
-
-      // If the response is already a CSV string
-      if (typeof response === "string" || typeof response.data === "string") {
-        const csvData = typeof response === "string" ? response : response.data;
-        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "employee_import_template.csv");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
-      } else {
-        console.error("Unexpected response format:", response);
-        toast.error("Invalid template format received", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-
-      toast.success("Template downloaded successfully", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      console.error("Error downloading template:", error);
-      toast.error("Failed to download template", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  };
-
+  // Updated error handling in the handleUpload function
   const handleUpload = async () => {
     if (!file) {
       toast.error("Please select a file to upload", {
@@ -275,12 +241,16 @@ const ImportEmployeesButton = ({ reload }) => {
         }
       }
       // Handle error responses with validation errors
-      else if (response && response.errors) {
-        // Format validation errors for display
-        const errors = Array.isArray(response.errors)
-          ? response.errors
-          : [response.errors];
-        const formattedErrors = formatErrorMessages(errors);
+      else if (response && (response.errors || response.detailed_errors)) {
+        // Prioritize errors first, then fall back to detailed_errors
+        const errors = response.errors || response.detailed_errors;
+        const errorArray = Array.isArray(errors) ? errors : [errors];
+
+        console.log("Raw errors from API:", errorArray); // Debug log
+        console.log("Using errors field:", !!response.errors); // Debug log
+        console.log("Using detailed_errors field:", !!response.detailed_errors); // Debug log
+
+        const formattedErrors = formatErrorMessages(errorArray);
         setValidationErrors(formattedErrors);
 
         // Reset file input when errors occur
@@ -314,8 +284,21 @@ const ImportEmployeesButton = ({ reload }) => {
 
       // Handle different types of error responses
       if (error?.response?.data?.errors) {
-        // Backend returned specific validation errors
+        // Prioritize errors field first
         const errors = error.response.data.errors;
+        console.log("Errors from catch block:", errors); // Debug log
+        console.log("Using errors field from catch"); // Debug log
+
+        const formattedErrors = formatErrorMessages(
+          Array.isArray(errors) ? errors : [errors]
+        );
+        setValidationErrors(formattedErrors);
+      } else if (error?.response?.data?.detailed_errors) {
+        // Fall back to detailed_errors if errors is not available
+        const errors = error.response.data.detailed_errors;
+        console.log("Detailed errors from catch block:", errors); // Debug log
+        console.log("Using detailed_errors field from catch"); // Debug log
+
         const formattedErrors = formatErrorMessages(
           Array.isArray(errors) ? errors : [errors]
         );
@@ -338,6 +321,59 @@ const ImportEmployeesButton = ({ reload }) => {
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+
+  // Function to reset the file input and state
+  const resetFileInput = () => {
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      // Clear previous validation errors when a new file is selected
+      setValidationErrors([]);
+      setValidationMessage(null);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await getDownloadTemplate();
+
+      // If the response is already a CSV string
+      if (typeof response === "string" || typeof response.data === "string") {
+        const csvData = typeof response === "string" ? response : response.data;
+        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "employee_import_template.csv");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Unexpected response format:", response);
+        toast.error("Invalid template format received", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+
+      toast.success("Template downloaded successfully", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      console.error("Error downloading template:", error);
+      toast.error("Failed to download template", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
   };
 
