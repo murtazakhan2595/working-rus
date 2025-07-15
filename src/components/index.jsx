@@ -31,6 +31,7 @@ import DetailContent from "./DetailContent";
 import UnauthorizedAccess from "./UnauthorizedAccess";
 // import { FilterInput } from "components/FormControl";
 import CircularActionButtons from "components/CircularActionButtons";
+import ImportRecords from "./ImportRecords";
 
 export {
   Header,
@@ -54,6 +55,7 @@ export {
   SheetUI,
   ViewSignature,
   EmployeeDetailUI,
+  ImportRecords,
   ViewTreeUI,
   DropdownActionMenu,
   SplitViewDetail,

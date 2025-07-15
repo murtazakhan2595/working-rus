@@ -54,20 +54,19 @@ const Attendance = () => {
     }
   };
 
-  const fetchBreakStatusData = async (isMounted, attendance) => {
-    if (attendance && attendance?.id && isMounted) {
-      const breakStatus = await getBreakStatus({
-        filterData: {
-          employee_id: userProfile.id,
-          attendance: attendance?.id,
-        },
-      });
-      setOnBreak(breakStatus);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
+    const fetchBreakStatusData = async (isMounted, attendance) => {
+      if (attendance && attendance?.id && isMounted) {
+        const breakStatus = await getBreakStatus({
+          filterData: {
+            employee_id: userProfile.id,
+            attendance: attendance?.id,
+          },
+        });
+        setOnBreak(breakStatus);
+      }
+    };
     fetchBreakStatusData(isMounted, attendance);
     return () => {
       isMounted = false;

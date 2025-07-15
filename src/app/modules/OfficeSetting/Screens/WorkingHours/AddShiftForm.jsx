@@ -1,7 +1,7 @@
 import { saveShift } from "app/hooks/shiftManagement";
 import { ShiftInformation } from "app/utils/Types/ShiftManagement";
 import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftManagementFormSchema";
-import { getShiftById } from "app/hooks/general";
+import { getShiftById, getWorkingHours } from "app/hooks/general";
 import { TextInput, TimePicker } from "components/FormControl";
 import { SelectInputComponent } from "components/FormControl";
 import { shiftType } from "data/Data";
@@ -15,10 +15,10 @@ const AddShiftForm = ({
   reloadData = () => {},
   isOpen = false,
   setIsOpen = () => {},
-  existingShifts = [], // NEW: Add existing shifts prop
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState(ShiftInformation);
+  const [Shifts, setShifts] = useState([]);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const isEditMode = Boolean(id);
 
@@ -29,25 +29,52 @@ const AddShiftForm = ({
     footer: null,
   };
 
-  // Fetch shift data when editing
-  useEffect(() => {
-    const fetchShiftData = async () => {
-      if (id) {
-        setIsLoading(true);
-        try {
-          const data = await getShiftById(id);
-          if (data) {
-            setFormData(data);
-          }
-        } catch (error) {
-          console.error("Error fetching shift data:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
+  const fetchShiftsData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      // Add organizationId to filter if available
 
-    fetchShiftData();
+      const response = await getWorkingHours();
+      if (isMounted) {
+        setShifts(response.results || []);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchShiftsData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Fetch shift data when editing
+
+  const fetchData = async (isMounted, id) => {
+    try {
+      setIsLoading(true);
+      const response = await getShiftById(id);
+      if (isMounted) {
+        setFormData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (id) fetchData(isMounted, id);
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const handleClose = () => {
@@ -72,8 +99,6 @@ const AddShiftForm = ({
         endtime: endTimeUTC,
       };
 
-      console.log(updatedValues, "UPDATE VALUES");
-
       const response = await saveShift(updatedValues);
       if (response) {
         toast.success(
@@ -93,7 +118,7 @@ const AddShiftForm = ({
 
   // Create validation function that includes existing shifts
   const validateWithDuplicateCheck = (values) => {
-    return validateShiftFormSchema(values, existingShifts, id);
+    return validateShiftFormSchema(values, Shifts, id);
   };
 
   return (

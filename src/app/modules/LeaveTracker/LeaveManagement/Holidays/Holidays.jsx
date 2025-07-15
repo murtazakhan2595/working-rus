@@ -8,7 +8,6 @@ import {
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
 import { ImportHolidays } from "app/modules/LeaveTracker";
-import { LeaveTrackerOptions } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { PublicHolidaydsColumn } from "app/modules/LeaveTracker/Sections";

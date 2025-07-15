@@ -38,10 +38,14 @@ export default function AppliedLeaves({ reload, isDashboard = false }) {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
   };
 
   const fetchData = async (isMounted) => {
     try {
+      setIsLoading(true);
       const response = await getLeaveListData({
         filterData,
         ordering,
@@ -52,6 +56,8 @@ export default function AppliedLeaves({ reload, isDashboard = false }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

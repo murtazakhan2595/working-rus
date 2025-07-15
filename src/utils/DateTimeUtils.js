@@ -26,3 +26,47 @@ export function renderTime(time, date = moment()) {
     .toISOString();
   return responseTime;
 }
+
+/**
+ * Calculates and formats the duration between two dates into a readable string.
+ * @param {moment.Moment | string | Date} startDate - The start date.
+ * @param {moment.Moment | string | Date} endDate - The end date.
+ * @returns {string} A human-readable duration string (e.g., "1 Year and 2 Months").
+ */
+export function formatDaysDuration(startDate, endDate) {
+  // Convert inputs to moment objects if they aren't already
+  const start = moment(startDate);
+  const end = moment(endDate);
+
+  // Validate dates
+  if (!start.isValid() || !end.isValid()) {
+    return "Invalid date(s)";
+  }
+
+  // Ensure start date is not after end date
+  if (start.isAfter(end)) {
+    return "Start date cannot be after end date";
+  }
+
+  const duration = moment.duration(end.diff(start));
+  const years = duration.years();
+  const months = duration.months();
+  const days = duration.days();
+
+  // Construct the readable string
+  const parts = [];
+
+  if (years > 0) {
+    parts.push(`${years} ${years === 1 ? "Year" : "Years"}`);
+  }
+
+  if (months > 0) {
+    parts.push(`${months} ${months === 1 ? "Month" : "Months"}`);
+  }
+
+  if (days > 0) {
+    parts.push(`${days} ${days === 1 ? "Day" : "Days"}`);
+  }
+
+  return parts.length > 0 ? parts.join(" and ") : "Same day (0 days)";
+}

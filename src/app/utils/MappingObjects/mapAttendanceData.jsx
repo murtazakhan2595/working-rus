@@ -13,6 +13,7 @@ import {
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
 import { calculateTotalCount } from "utils/renderValues";
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
@@ -30,6 +31,51 @@ export function mapShiftData(data) {
   }, {});
   return shiftDetails;
 }
+
+export function mapAttendanceCheckInPayload(
+  time,
+  attendance,
+  isSplitShift,
+  employee_id
+) {
+  if (attendance && attendance?.checkout && !isSplitShift) {
+    return null;
+  }
+  if (attendance && attendance?.second_checkout && isSplitShift) {
+    return null;
+  }
+  const checkInTime = moment(time).utc().toISOString();
+  // Compare time only
+  const payload = {
+    employee_id: employee_id,
+    date: moment(time).format("YYYY-MM-DD"),
+  };
+  if (isSplitShift && attendance?.checkin && !attendance?.second_checkin)
+    payload.second_checkin = checkInTime;
+  else if (!attendance?.checkin) payload.checkin = checkInTime;
+  return payload;
+}
+export function mapAttendanceCheckOutPayload(time, attendance, isSplitShift) {
+  if (!attendance) return null;
+  const checkout = moment(time).utc().toISOString();
+  const payload = {
+    break_duration: attendance?.break_duration,
+    checkin: attendance?.checkin,
+    second_checkin: attendance?.second_checkin,
+    id: attendance?.id,
+    payable_hours: attendance?.payable_hours,
+    date: attendance.date,
+  };
+  if (
+    isSplitShift &&
+    attendance?.second_checkin &&
+    !attendance?.second_checkout
+  )
+    payload.second_checkout = checkout;
+  else if (!attendance?.checkout) payload.checkout = checkout;
+  return payload;
+}
+
 export function mapAttendanceData(data, shiftDetails) {
   const [firstShift, secondShift] = shiftDetails?.shifts || [];
   const Hours = shiftDetails?.total_hours ?? data.total_hours ?? 0;
@@ -49,22 +95,27 @@ export function mapAttendanceData(data, shiftDetails) {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
         payload["total_hours"] = Hours;
-        const shiftStartTime = renderTime(
-          firstShift.start_time,
-          attendanceDate
-        );
+
         payload[key] = renderTime(data[key], attendanceDate);
         const checkInTime = moment(payload.checkin);
         if (shiftDetails) {
           payload.is_absent = false;
         }
         // payload.is_weekend = [0, 6].includes(moment(checkInTime).day());
-
-        // Now check if check-in is after the shift start
-        const isLate = checkInTime.isAfter(shiftStartTime);
-        payload["status"] = isLate ? "Late" : "Present";
-        payload["is_late"] = isLate;
-        payload["is_absent"] = false;
+        if (firstShift?.start_time) {
+          // Now check if check-in is after the shift start
+          const shiftStartTime = renderTime(
+            firstShift?.start_time,
+            attendanceDate
+          );
+          const isLate = checkInTime.isAfter(shiftStartTime);
+          payload["status"] = isLate ? "Late" : "Present";
+          payload["is_late"] = isLate;
+          payload["is_absent"] = false;
+        } else {
+          payload["status"] = "Present";
+          payload["is_absent"] = false;
+        }
       } else if (key === "second_checkin") {
         const shiftStartTime = renderTime(
           secondShift.start_time,
@@ -239,36 +290,14 @@ export function mapEmployeeAttendanceDetail(data) {
   return emp_attendance_data;
 }
 
-export async function mapAttendanceAdjustmentData(data) {
+export async function mapAttendanceAdjustmentData(
+  data,
+  fetchApprovalDetails = true
+) {
   const attendanceAdjustmentData = {};
   for (const key of Object.keys(AttendanceAdjustment)) {
-    if (key === "approval_details") {
-      const approver_logs = data["approval_logs"] || [];
-      const approval_levels = data["approval_levels"] || [];
-      const level_list = approval_levels
-        .map((level) => {
-          const level_number = parseInt(level.level_number);
-          const logs = approver_logs.find(
-            (log) => parseInt(log.level_number) === level_number
-          );
-          const level_detail = {
-            status: "PENDING",
-            designation: level.designation,
-            level_number: level_number,
-            time: null,
-          };
-          if (level_number === parseInt(data.current_level)) {
-            level_detail.approver = data.current_approver;
-          } else if (logs) {
-            level_detail.status = logs.action_type;
-            level_detail.approver = logs.changed_by;
-            level_detail.time = logs.timestamp;
-          }
-          return level_detail;
-        })
-        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
-
-      attendanceAdjustmentData[key] = level_list;
+    if (key === "approval_details" && fetchApprovalDetails) {
+      attendanceAdjustmentData[key] = await mapApproverDetails(data);
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key))
         attendanceAdjustmentData[key] = data[key];
@@ -282,7 +311,9 @@ export async function mapAttendanceAdjustmentListData(data) {
   if (!Array.isArray(data) || data.length === 0) return [];
 
   const ResponseList = await Promise.all(
-    data.map((item) => mapAttendanceAdjustmentData(item))
+    data.map(async (item) => {
+      return await mapAttendanceAdjustmentData(item);
+    })
   );
 
   return ResponseList;
@@ -329,39 +360,12 @@ export function mapAttendanceAdjustmentPayloadData(data, id) {
   return payload;
 }
 
-export async function mapTimeAdjustmentData(data) {
+export async function mapTimeAdjustmentData(data, fetchApprovalDetails = true) {
   const timeAdjustmentDetails = {};
 
   for (const key of Object.keys(TimeAdjustment)) {
-    if (key === "approval_details") {
-      const approver_logs = data["approval_logs"] || [];
-      const approval_levels = data["approval_levels"] || [];
-      const level_list = approval_levels
-        .map((level) => {
-          const level_number = parseInt(level.level_number);
-          const logs = approver_logs.find(
-            (log) =>
-              parseInt(log.level_number) === level_number &&
-              log.action_type !== "CREATED"
-          );
-          const level_detail = {
-            status: "PENDING",
-            designation: level.designation,
-            level_number: level_number,
-            time: null,
-          };
-          if (level_number === parseInt(data.current_level)) {
-            level_detail.approver = data.current_approver;
-          } else if (logs) {
-            level_detail.status = logs.action_type;
-            level_detail.approver = logs.changed_by;
-            level_detail.time = logs.timestamp;
-          }
-          return level_detail;
-        })
-        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
-
-      timeAdjustmentDetails[key] = level_list;
+    if (key === "approval_details" && fetchApprovalDetails) {
+      timeAdjustmentDetails[key] = await mapApproverDetails(data);
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key))
         timeAdjustmentDetails[key] = data[key];
@@ -465,4 +469,56 @@ export function mapEmpAttendanceOverview({
   );
 
   return attendanceOverview;
+}
+
+/**
+ * Maps and validates biometric break payload based on time and existing records.
+ *
+ * @param {Object} data - The break data containing `time` and other optional fields.
+ * @param {Array} existingData - Array of existing break records to check for duplicates.
+ * @returns {Object|null|boolean} - Returns payload object, `null` if duplicate found, or `true` if break cannot be created.
+ */
+export function mapBreakPayloadData(data, existingData = []) {
+  // Return empty object if data is missing or time is not provided
+  if (!data || !data.time) return {};
+
+  const formattedTime = moment(data.time).utc().toISOString();
+
+  // Validate existing data presence and structure
+  if (Array.isArray(existingData) && existingData.length > 0) {
+    const isDuplicate = existingData.some((entry) => {
+      if (!entry || (!entry.starttime && !entry.endtime)) return false;
+
+      const startTime = entry.starttime
+        ? moment(entry.starttime).utc().toISOString()
+        : null;
+      const endTime = entry.endtime
+        ? moment(entry.endtime).utc().toISOString()
+        : null;
+
+      return formattedTime === startTime || formattedTime === endTime;
+    });
+
+    if (isDuplicate) {
+      // Skip adding break if time matches any existing break
+      return null;
+    }
+
+    // If no valid endtime in the most recent break, prevent new break
+    const lastBreakEndTime = existingData[0]?.endtime;
+    if (!lastBreakEndTime) {
+      return {
+        endtime: formattedTime,
+        id: existingData[0]?.id,
+      };
+    }
+  }
+
+  // Build and return the break payload
+  return {
+    reason: "Biometric break",
+    break_type: "Other",
+    starttime: formattedTime,
+    ...data,
+  };
 }

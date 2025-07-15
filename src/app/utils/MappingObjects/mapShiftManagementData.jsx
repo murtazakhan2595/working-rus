@@ -3,6 +3,8 @@ import { renderTime } from "utils/DateTimeUtils";
 import { CalculateTotalWorkingHours } from "utils/renderValues";
 import { ActiveShift } from "app/utils/Types/ShiftManagement";
 import { eachDayOfInterval } from "date-fns";
+import { ShiftSchedule } from "../Types/ShiftManagement";
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapCustomShiftData(data, date) {
   const {
@@ -92,7 +94,7 @@ export function mapDefaultShiftData(data) {
         endTime: endTime,
       },
     ];
-    active_shift.total_hours = CalculateTotalWorkingHours(startTime, endtime);
+    active_shift.total_hours = CalculateTotalWorkingHours(startTime, endTime);
   }
   return active_shift;
 }
@@ -213,4 +215,23 @@ export async function mapCustomShiftListData(data, start_date, end_date) {
     })
   );
   return ResponseObject;
+}
+
+export async function mapShiftScheduleData(data) {
+  const shiftScheduleDetails = { ...data };
+
+  // Only transform approval_details if it exists
+  if (
+    data.hasOwnProperty("approval_logs") ||
+    data.hasOwnProperty("approval_levels")
+  ) {
+    shiftScheduleDetails.approval_details = await mapApproverDetails(data);
+  }
+
+  // Normalize the request field name for consistency
+  if (data.hierarchy_request) {
+    shiftScheduleDetails.request = data.hierarchy_request;
+  }
+
+  return shiftScheduleDetails;
 }

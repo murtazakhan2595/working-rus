@@ -109,10 +109,10 @@ export const EmployeeColumns = (reload) => [
     formatter: (cell) => {
       return (
         <span
-          className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-            cell === "Approved"
+          className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize ${
+            cell?.toLowerCase() === "approved"
               ? "bg-emerald-50 text-teal-700"
-              : cell === "Rejected"
+              : cell === "rejected"
               ? "bg-red-50 text-red-700"
               : "bg-[#f0f0f3] text-[#7f838d]"
           }`}

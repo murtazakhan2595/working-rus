@@ -22,7 +22,6 @@ const AddDesignationForm = ({
   setIsOpen = () => {},
   edit,
   reloadData = () => {},
-  userOrganization,
   onUpdateSuccess = null,
 }) => {
   const [isLoading, setIsLoading] = useState(false);

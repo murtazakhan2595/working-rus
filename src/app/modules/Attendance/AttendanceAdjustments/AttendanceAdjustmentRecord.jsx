@@ -8,8 +8,6 @@ import { PageLoader, TableCustom } from "components";
 import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const innerTabClassName =
-  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 const AttendanceAdjustmentRecord = ({
   isTeamView = false,
   isDepartmentView = false,
@@ -116,7 +114,7 @@ const AttendanceAdjustmentRecord = ({
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
         <TabsList className="flex items-center justify-center mb-4">
           {["Requests", "Records"].map((tab) => (
-            <TabsTrigger key={tab} value={tab} variant='inner-tab'>
+            <TabsTrigger key={tab} value={tab} variant="inner-tab">
               {tab}
             </TabsTrigger>
           ))}
@@ -134,11 +132,10 @@ const AttendanceAdjustmentRecord = ({
           <FilterInput
             filters={[
               {
-                type: "select-one",
+                type: "select",
                 placeholder: "Employee",
                 name: "employee",
-                option: Employees,
-                values: selectedEmployee,
+                options: Employees,
               },
               ...(adminView || isBranchView
                 ? [

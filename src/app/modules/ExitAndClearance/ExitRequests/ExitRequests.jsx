@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { FilterInput } from "components/FormControl";
 import {
   Resignations,
   Terminations,
 } from "app/modules/ExitAndClearance/ExitRequests";
+import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
 import {
   Tabs,
   TabsList,
@@ -17,13 +18,78 @@ import {
   CardTitle,
   CardDescription,
 } from "components/ui/card";
+import { TableCustom, PageLoader } from "components";
+import { HasAccess } from "utils/PermissionUtils";
+import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
-const ExitRequests = ({ reload }) => {
+const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Terminations");
+  const [ExitRequestList, setExitRequestList] = useState(null);
   const [filterData, setFilterData] = useState({
     request_status: "PENDING",
     exit_category: "TERMINATION",
   });
+
+  const [ordering, setOrdering] = useState("-exit_date");
+
+  const [options, setOptions] = useState({
+    page: 1,
+    sizePerPage: 10,
+  });
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
+    }
+  };
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const filter = { ...filterData };
+      if (isTeamView) {
+        filter.reporting_employees = permittedViewFilterData?.reporting_employees || [];
+      }
+      const response = await getEmployeesResignations({
+        filterData: filter,
+        options,
+        ordering,
+      });
+      setExitRequestList(response);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (permittedViewFilterData) fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData, options, ordering, permittedViewFilterData]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted) {
+      onPageChange("page", 1);
+      setOrdering("-id");
+      setFilterData({});
+      fetchData(true);
+    }
+  }, [reload]);
 
   const handleTabChange = (tab) => {
     setFilterData((prevFilters) => {
@@ -40,6 +106,7 @@ const ExitRequests = ({ reload }) => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -87,12 +154,17 @@ const ExitRequests = ({ reload }) => {
           onChange={handleFilterChange}
           className="justify-end mb-4"
         />
-        <TabsContent value="Resignations">
-          <Resignations filterData={filterData} reload={reload} />
-        </TabsContent>
-        <TabsContent value="Terminations">
-          <Terminations filterData={filterData} reload={reload} />
-        </TabsContent>
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            data={ExitRequestList?.results || []}
+            columns={ExitRequestColumns(fetchData)}
+            pagination={true}
+            dataTotalSize={ExitRequestList?.count || 0}
+            tableOptions={tableOptions}
+          />
+        )}
       </CardContent>
     </Tabs>
   );

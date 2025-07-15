@@ -5,6 +5,7 @@ import {
   LeaveDurationAction,
   LeaveTypeAction,
   HolidayActions,
+  OpeningBalanceAction,
   MyLeavesAction,
   LeaveCountAction,
   OffsetLeaveSettingAction,
@@ -70,6 +71,7 @@ export const LeaveAplicationColumns = (
         showId={true}
       />
     ),
+    dataSort: true,
   },
   {
     dataField: "leave_type_name",
@@ -87,6 +89,7 @@ export const LeaveAplicationColumns = (
       </div>
     ),
     minWidth: "120px",
+    dataSort: true,
   },
   {
     dataField: "total_days",
@@ -131,7 +134,7 @@ export const LeaveAplicationDashboardColumns = [
       />
     ),
   },
- 
+
   {
     dataField: "start_date",
     text: "Leave Period",
@@ -145,6 +148,7 @@ export const LeaveAplicationDashboardColumns = [
       </div>
     ),
     minWidth: "120px",
+    dataSort: true,
   },
   {
     dataField: "status",
@@ -155,11 +159,12 @@ export const LeaveAplicationDashboardColumns = [
     },
   },
 ];
-export const MyLeaveApplicationDashboard = [ 
- {
+export const MyLeaveApplicationDashboard = [
+  {
     dataField: "leave_type_name",
     text: "Leave Type",
-  }, {
+  },
+  {
     dataField: "start_date",
     text: "Leave Period",
     formatter: (cell, row) => (
@@ -197,6 +202,7 @@ export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
         {/* <span>{row?.total_days} Days</span> */}
       </div>
     ),
+    dataSort: true,
   },
   {
     dataField: "total_days",
@@ -242,43 +248,43 @@ export const LeaveDurationColumn = (reload, data) => [
   {
     dataField: "nationalities",
     text: "Nationalities",
-    formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
-      return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((nationality) => (
-            <span
-              key={nationality}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {nationality}
-            </span>
-          ))}
-        </div>
-      );
-    },
+    formatter: (cell) => (
+      <MultiStatusLabel
+        statusList={cell}
+        variant="info"
+        fallBackText="All Nationalities"
+      />
+    ),
     dataSort: true,
   },
   {
     dataField: "branches",
     text: "Branches",
+    // formatter: (cell) => {
+    //   if (!cell || cell.length === 0) {
+    //     return <span className="">All</span>;
+    //   }
+    //   return (
+    //     <div className="flex flex-wrap gap-1">
+    //       {cell.map((branch) => (
+    //         <span
+    //           key={branch.id}
+    //           className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+    //         >
+    //           {branch.branch_name}
+    //         </span>
+    //       ))}
+    //     </div>
+    //   );
+    // },
     formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
+      const branches = cell.map((branch) => branch.branch_name);
       return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((branch) => (
-            <span
-              key={branch.id}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {branch.branch_name}
-            </span>
-          ))}
-        </div>
+        <MultiStatusLabel
+          statusList={branches}
+          variant="info"
+          fallBackText="All Branches"
+        />
       );
     },
     dataSort: true,
@@ -286,21 +292,31 @@ export const LeaveDurationColumn = (reload, data) => [
   {
     dataField: "departments",
     text: "Departments",
+    // formatter: (cell) => {
+    //   if (!cell || cell.length === 0) {
+    //     return <span className="">All</span>;
+    //   }
+    //   return (
+    //     <div className="flex flex-wrap gap-1">
+    //       {cell.map((dep) => (
+    //         <span
+    //           key={dep.id}
+    //           className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+    //         >
+    //           {dep.name}
+    //         </span>
+    //       ))}
+    //     </div>
+    //   );
+    // },
     formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
+      const departments = cell.map((dpt) => dpt.name);
       return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((dep) => (
-            <span
-              key={dep.id}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {dep.name}
-            </span>
-          ))}
-        </div>
+        <MultiStatusLabel
+          statusList={departments}
+          variant="info"
+          fallBackText="All Departments"
+        />
       );
     },
   },
@@ -371,6 +387,45 @@ export const PublicHolidaydsColumn = (reload, data) => [
     isDummyField: true,
     formatter: (_, row, dataList) => (
       <HolidayActions data={row} reloadData={reload} DataList={dataList} />
+    ),
+    headerStyle: { width: "8%" },
+    style: { textAlign: "center" },
+  },
+];
+export const OpeningLeaveBalanceColumn = (reload, data) => [
+  {
+    dataField: "employee",
+    text: "Employee ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showDepartment={true}
+        showBranchName={true}
+        showPosition={true}
+        showEmail={true}
+      />
+    ),
+  },
+
+  {
+    dataField: "remarks",
+    text: "Remarks",
+    formatter: (cell, row) => <div className="">{cell || "N/A"}</div>,
+    minWidth: "120px",
+    dataSort: true,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    isDummyField: true,
+    formatter: (_, row, dataList) => (
+      <OpeningBalanceAction data={row} reloadData={reload} DataList={dataList} />
     ),
     headerStyle: { width: "8%" },
     style: { textAlign: "center" },

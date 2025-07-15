@@ -1,18 +1,16 @@
-import dayjs from "dayjs";
 import BranchAction from "../Screens/Branches/BranchAction";
 import GraceTimeAction from "../Screens/GraceTime/GraceTimeAction";
-import ShiftActions from "./Shift/ShiftActions";
+import { ShiftActions } from "app/modules/OfficeSetting";
 import DepartmentAction from "../Screens/Departments/DepartmentAction";
-import { getDepartmentNames } from "app/hooks/employee";
 import DesignationAction from "../Screens/Designations/DesignationAction";
-import { getDesignations } from "app/hooks/employee";
 import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions";
 import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
+import { renderDate } from "utils/renderValues";
 
 //
-export const BranchColumn = (reload, originalData = []) => [
+export const BranchColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
@@ -36,51 +34,45 @@ export const BranchColumn = (reload, originalData = []) => [
 
   {
     text: "Action",
-    formatter: (cell, row, rowIndex, data_list) => (
-      <BranchAction
-        reload={reload}
-        data={row}
-        BranchList={originalData.length > 0 ? originalData : data_list}
-      />
+    formatter: (_, row, data_list) => (
+      <BranchAction reloadData={reload} data={row} BranchList={data_list} />
     ),
     width: "200px",
   },
 ];
 //
-export const WorkingHoursColumn = (reload, originalData = []) => [
+export const WorkingHoursColumn = (reload) => [
   {
     dataField: "name",
     text: "Shift Name",
+    dataSort: true,
   },
   {
     dataField: "type",
     text: "Shift Type",
+    dataSort: true,
   },
   {
     dataField: "starttime",
     text: "Start Time",
-    formatter: (cell) =>
-      dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--",
+    dataSort: true,
+    formatter: (cell) => renderDate(cell, "--", "time"),
   },
   {
     dataField: "endtime",
     text: "End Time",
-    formatter: (cell) =>
-      dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--",
+    formatter: (cell) => renderDate(cell, "--", "time"),
+    dataSort: true,
   },
   {
     text: "Action",
-    formatter: (cell, row, rowIndex, data_list) => (
-      <ShiftActions
-        data={row}
-        reload={reload}
-        ShiftList={originalData.length > 0 ? originalData : data_list}
-      />
+    formatter: (_, row, data_list) => (
+      <ShiftActions data={row} reloadData={reload} ShiftList={data_list} />
     ),
   },
 ];
 // Department Column
-export const DepartmentColumn = (reload, originalData = []) => [
+export const DepartmentColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
@@ -97,27 +89,20 @@ export const DepartmentColumn = (reload, originalData = []) => [
     text: "Description",
     dataSort: true,
   },
-  // {
-  //   dataField: "Parent Department",
-  //   text: "Parent Department",
-  //   dataSort: true,
-  // },
 
   {
     text: "Action",
-    formatter: (cell, row, rowIndex, data_list) => (
+    formatter: (_, row, data_list) => (
       <DepartmentAction
-        // setEdit={setEdit}
-        // setEditData={setEditData}
-        reload={reload}
+        reloadData={reload}
         data={row}
-        DepartmentList={originalData.length > 0 ? originalData : data_list}
+        DepartmentList={data_list}
       />
     ),
   },
 ];
 // Designation Column
-export const DesignationColumn = (reload, originalData = []) => [
+export const DesignationColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
@@ -134,18 +119,13 @@ export const DesignationColumn = (reload, originalData = []) => [
     text: "Description",
     dataSort: true,
   },
-  // {
-  //   dataField: "organization",
-  //   text: "Organization",
-  //   dataSort: true,
-  // },
   {
     text: "Action",
-    formatter: (cell, row, rowIndex, data_list) => (
+    formatter: (_, row, data_list) => (
       <DesignationAction
-        reload={reload}
+        reloadData={reload}
         data={row}
-        DesignationList={originalData.length > 0 ? originalData : data_list}
+        DesignationList={data_list}
       />
     ),
   },
@@ -155,6 +135,7 @@ export const OnboardingChecklistColumn = (reload, originalData = []) => [
   {
     dataField: "name",
     text: "Document Name",
+    dataSort: true,
   },
   {
     text: "Action",

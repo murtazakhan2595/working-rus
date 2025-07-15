@@ -1,5 +1,4 @@
 import {
-  getApprovalHierarchyList,
   saveUpdateApprovalHierarchy,
   getApprovalHierarchyData,
 } from "app/hooks/approvalHierarchy";
@@ -10,26 +9,17 @@ import {
 import { TextInput, SelectInputComponent } from "components/FormControl";
 import { validateAddHierarchyLevelsForm } from "app/utils/FormSchema/ApprovalHierarchyFormSchema";
 import { deleteRecord } from "app/hooks/general";
-import { AddUpdateDelegateLevels } from "app/modules/ApprovalHierarchy";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Header, SheetUI, TableCustom } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
+import { SheetUI } from "components";
 import { useSelector } from "react-redux";
 import _ from "lodash";
 import { Button } from "components/ui/button";
 import { NumberInput } from "components/FormControl";
-import { DetailBox } from "components/SheetCardExtension";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { SwitchInput } from "components/FormControl";
-import { CardTitle } from "reactstrap";
-import { CardDescription } from "components/ui/card";
 import { CheckBoxInput } from "components/FormControl";
 import { SelectMultiInputComponent } from "components/FormControl";
 import { errorClassName } from "components/FormControl";
-import isEqual from "lodash/isEqual";
 import { CircleX } from "lucide-react";
 
 const AddEditApprovalHierarchyLevels = ({
@@ -38,17 +28,10 @@ const AddEditApprovalHierarchyLevels = ({
   id = null,
   level_group, // if edit, contains level group to edit
 }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { GOTO_URLS } = location.state || {};
   const [HierarchyData, setHierarchyData] = useState({});
   const [formValues, setFormValues] = useState(ApprovalHierarchy);
   const [FormData, setFormData] = useState(ApprovalHierarchy);
-  const [UserRoles, setUserRoles] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [HierarchyNameExist, setHierarchyNameExist] = useState(false);
-  const [HierarchyRequestTypeExist, setHierarchyRequestTypeExist] =
-    useState(false);
   const isEditMode = Boolean(level_group);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const Designations = useSelector((state) => state.common.designations);
@@ -58,85 +41,87 @@ const AddEditApprovalHierarchyLevels = ({
     description: null,
     footer: null,
   };
-  // Initialize form data with role values if in edit mode
-
-  const fetchData = async (isMounted, id) => {
-    try {
-      setIsLoading(true);
-      const response = await getApprovalHierarchyData(id);
-      // Handles mounting and form population in edit mode
-      if (isMounted) {
-        if (isEditMode) {
-          const hierarchy = response;
-          const levelGroupToEdit = level_group || "";
-
-          // Filter levels matching the current request initiator
-          const levelsToEdit =
-            hierarchy.levels?.filter(
-              (level) => level.group_name === levelGroupToEdit
-            ) || [];
-
-          const requestInitiatorToEdit =
-            levelsToEdit.length > 0
-              ? levelsToEdit[0].initiative_designation
-              : null;
-          // Set form data with filtered levels and request initiator
-          const updatedForm = {
-            ...ApprovalHierarchy,
-            request_initiative: requestInitiatorToEdit,
-            levels: levelsToEdit,
-            level_groups: levelGroupToEdit,
-          };
-
-          setFormData(updatedForm);
-          setFormValues(updatedForm);
-          // Identify initiators that are not editable (not in current edit context)
-          const requestInitiatorsNonEditable = (
-            response.request_initiative || []
-          ).filter((initiator) => !requestInitiatorToEdit.includes(initiator));
-
-          // Identify levels not included in edit set
-          const levelsToEditIds = new Set(
-            levelsToEdit.map((level) => level.id)
-          );
-          const levelsNonEdit = (hierarchy.levels || []).filter(
-            (level) => !levelsToEditIds.has(level.id)
-          );
-          const levelGroupNonEdit = hierarchy.level_groups.filter(
-            (group_name) => group_name !== levelGroupToEdit
-          );
-
-          // Set hierarchy data (if needed elsewhere)
-          setHierarchyData({
-            ...hierarchy,
-            request_initiative: requestInitiatorsNonEditable,
-            levels: levelsNonEdit,
-            level_groups: levelGroupNonEdit,
-          });
-        } else {
-          setHierarchyData(response);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     let isMounted = true;
+    // Initialize form data with role values if in edit mode
+
+    const fetchData = async (isMounted, id) => {
+      try {
+        setIsLoading(true);
+        const response = await getApprovalHierarchyData(id);
+        // Handles mounting and form population in edit mode
+        if (isMounted) {
+          if (isEditMode) {
+            const hierarchy = response;
+            const levelGroupToEdit = level_group || "";
+
+            // Filter levels matching the current request initiator
+            const levelsToEdit =
+              hierarchy.levels?.filter(
+                (level) => level.group_name === levelGroupToEdit
+              ) || [];
+
+            const requestInitiatorToEdit =
+              levelsToEdit.length > 0
+                ? levelsToEdit[0].initiative_designation
+                : null;
+            // Set form data with filtered levels and request initiator
+            const updatedForm = {
+              ...ApprovalHierarchy,
+              request_initiative: requestInitiatorToEdit,
+              levels: levelsToEdit,
+              level_groups: levelGroupToEdit,
+            };
+
+            setFormData(updatedForm);
+            setFormValues(updatedForm);
+            // Identify initiators that are not editable (not in current edit context)
+            const requestInitiatorsNonEditable = (
+              response.request_initiative || []
+            ).filter(
+              (initiator) => !requestInitiatorToEdit.includes(initiator)
+            );
+
+            // Identify levels not included in edit set
+            const levelsToEditIds = new Set(
+              levelsToEdit.map((level) => level.id)
+            );
+            const levelsNonEdit = (hierarchy.levels || []).filter(
+              (level) => !levelsToEditIds.has(level.id)
+            );
+            const levelGroupNonEdit = hierarchy.level_groups.filter(
+              (group_name) => group_name !== levelGroupToEdit
+            );
+
+            // Set hierarchy data (if needed elsewhere)
+            setHierarchyData({
+              ...hierarchy,
+              request_initiative: requestInitiatorsNonEditable,
+              levels: levelsNonEdit,
+              level_groups: levelGroupNonEdit,
+            });
+          } else {
+            setHierarchyData(response);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     if (id) fetchData(isMounted, id);
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, isEditMode, level_group]);
 
   const handleClose = () => {
     setReloadData();
   };
 
-  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+  const handleSubmit = async (values) => {
     try {
       const payload = HierarchyData;
       const level_group_name = values.level_groups.trim();
@@ -145,13 +130,13 @@ const AddEditApprovalHierarchyLevels = ({
         initiative_designation: values.request_initiative,
         group_name: level_group_name,
       }));
-      payload.levels = [...HierarchyData.levels, ...newLevels];
+      payload.levels = [...(HierarchyData.levels || []), ...newLevels];
       payload.level_groups = _.uniq([
-        ...HierarchyData.level_groups,
+        ...(HierarchyData.level_groups || []),
         level_group_name,
       ]);
       payload.request_initiative = [
-        ...HierarchyData.request_initiative,
+        ...(HierarchyData.request_initiative || []),
         ...values.request_initiative,
       ];
       const response = await saveUpdateApprovalHierarchy(payload, id);
@@ -195,7 +180,7 @@ const AddEditApprovalHierarchyLevels = ({
         validateFormSchema: (values) => {
           const errors = validateAddHierarchyLevelsForm(values, {
             request_initiative: HierarchyData.request_initiative,
-            level_groups: HierarchyData.level_groups,
+            level_groups: HierarchyData.level_groups || [],
           });
           return errors;
         },
@@ -236,10 +221,16 @@ const AddEditApprovalHierarchyLevels = ({
                 InputFields: [
                   {
                     InputField: SelectInputComponent,
-                    name: `levels[${index}].designation`,
-                    label: "Designation",
-                    options: Designations,
-                    required: true,
+                    name: `levels[${index}].assignment_type`,
+                    label: "Approver Type",
+                    options: [
+                      { value: "DESIGNATION", label: "Designation" },
+                      { value: "DIRECT_REPORTING", label: "Direct Reporting" },
+                      {
+                        value: "INDIRECT_REPORTING",
+                        label: "Indirect Reporting",
+                      },
+                    ],
                   },
                   {
                     InputField: RemoveHierarchyLevels,
@@ -247,9 +238,19 @@ const AddEditApprovalHierarchyLevels = ({
                     level: level,
                   },
                   {
+                    InputField: SelectInputComponent,
+                    name: `levels[${index}].designation`,
+                    label: "Designation",
+                    options: Designations,
+                    required: true,
+                    renderCondition: level.assignment_type === "DESIGNATION",
+                  },
+
+                  {
                     InputField: CheckBoxInput,
                     name: `levels[${index}].auto_forward_enabled`,
                     label: "Auto Forward",
+                    colsSpan:2
                   },
                   ...(level.auto_forward_enabled
                     ? [

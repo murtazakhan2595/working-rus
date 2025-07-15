@@ -1,40 +1,13 @@
-import { getManagersList } from "app/hooks/general";
-import { getManagerSelected } from "data/Data";
 import {
   LeaveType,
   PublicHoliday,
   Leave,
   LeaveOffsetSetting,
 } from "app/utils/Types/LeaveManagment";
-import moment from "moment";
 import { calculateTotalCount } from "utils/renderValues";
 import { calculateTotal } from "utils/renderValues";
 import { renderDate } from "utils/renderValues";
-
-async function getLavefromEmployeeInfo(data) {
-  const Managers = await getManagersList();
-  const indirect_report_to = getManagerSelected(data.indirect_report, Managers);
-  const leaveInfo = {
-    employee_id: data?.id ?? "",
-    name: `${data?.first_name} ${data.last_name}`,
-    date: moment(new Date()).format("YYYY-MM-DD"),
-    position: data?.department_position
-      ? parseInt(data?.department_position)
-      : "",
-    department: data?.department_name ?? "",
-    joining_date: data?.joining_date ?? "",
-    nationality: data?.nationality ?? "",
-    report_to: data?.direct_report ?? "",
-    indirect_report_to: data?.indirect_report ? indirect_report_to : [],
-    address_during_leave: data?.residential_address ?? "",
-    contact_no: data?.mobile_no ?? "",
-    country_code: data?.country_code ?? "",
-    status_indirect_manager: data.indirect_report
-      ? `${data.indirect_report}, Pending`
-      : "Pending",
-  };
-  return leaveInfo;
-}
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapLeaveTypeData(data) {
   const responseDataData = Object.keys(LeaveType).reduce((acc, key) => {
@@ -44,7 +17,7 @@ export function mapLeaveTypeData(data) {
         acc["branch_names"] = branches.map(({ branch_name }) => {
           return branch_name;
         });
-        acc["branches"] = branches.map(({ id }) => {
+        acc["branches_ids"] = branches.map(({ id }) => {
           return id;
         });
       } else if (key === "departments") {
@@ -52,7 +25,7 @@ export function mapLeaveTypeData(data) {
         acc["department_names"] = departments.map(({ name }) => {
           return name;
         });
-        acc["departments"] = departments.map(({ id }) => {
+        acc["departments_ids"] = departments.map(({ id }) => {
           return id;
         });
       } else if (key === "grades") {
@@ -143,39 +116,15 @@ export async function mapPublicHolidayListData(data) {
   return ResponseList;
 }
 
-export function mapLeaveData(data) {
+export async function mapLeaveData(data, fetchApprovalDetails = true) {
   const LeaveDetails = {};
 
   for (const key of Object.keys(Leave)) {
-    if (key === "approval_details") {
-      const approver_logs = data["approval_logs"] || [];
-      const approval_levels = data["approval_levels"] || [];
-      const level_list = approval_levels
-        .map((level) => {
-          const level_number = parseInt(level.level_number);
-          const logs = approver_logs.find(
-            (log) =>
-              parseInt(log.level_number) === level_number &&
-              log.action_type !== "CREATED"
-          );
-          const level_detail = {
-            status: "PENDING",
-            designation: level.designation,
-            level_number: level_number,
-            time: null,
-          };
-          if (level_number === parseInt(data.current_level)) {
-            level_detail.approver = data.current_approver;
-          } else if (logs) {
-            level_detail.status = logs.action_type;
-            level_detail.approver = logs.changed_by;
-            level_detail.time = logs.timestamp;
-          }
-          return level_detail;
-        })
-        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
-
-      LeaveDetails[key] = level_list;
+    if (key === "approval_details" && fetchApprovalDetails) {
+      LeaveDetails[key] = await mapApproverDetails({
+        ...data,
+        approval_logs: data.approver_logs,
+      });
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         if (key === "status") {
@@ -205,12 +154,19 @@ export async function mapLeaveStatsData(data) {
 }
 
 export async function mapLeaveListData(data) {
-  if (!data || data.length === 0) return [];
-  const ResponseList = await data?.map((dataObj) => {
-    const formattedData = mapLeaveData(dataObj);
-    return formattedData;
-  });
-  return ResponseList;
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  try {
+    const responseList = await Promise.all(
+      data.map(async (dataObj) => {
+        return await mapLeaveData(dataObj, false);
+      })
+    );
+    return responseList;
+  } catch (error) {
+    console.error("Error in mapLeaveListData:", error);
+    return [];
+  }
 }
 
 export function mapLeavePayloadData(data) {
@@ -314,5 +270,3 @@ export async function mapOffsetLeavesData(data) {
 
   return offsetLeaveData;
 }
-
-export { getLavefromEmployeeInfo };

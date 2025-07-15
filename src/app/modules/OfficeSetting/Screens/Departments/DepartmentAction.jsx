@@ -8,7 +8,7 @@ import { ViewDetailSheetCardExtension } from "components";
 import useUserOrganization from "app/hooks/useUserOrganization";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
+const DepartmentAction = ({ data, reloadData=()=>{}, DepartmentList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -42,10 +42,9 @@ const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
         `/department/${deleteDept?.data?.id}`,
         deleteDept?.data?.name
       );
-      
       // Ensure table is reloaded by calling reload function
-      if (typeof reload === 'function') {
-        reload();
+      if (typeof reloadData === 'function') {
+        reloadData(true);
       }
     } catch (error) {
       console.log("ERROR", error);
@@ -84,7 +83,7 @@ const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
           isOpen={edit.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
           edit={edit}
-          reloadData={reload}
+          reloadData={reloadData}
           userOrganization={userOrganization}
         />
       )}
@@ -96,7 +95,7 @@ const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
-          reload={reload}
+          reload={reloadData}
           DepartmentList={DepartmentList}
         />
       )}

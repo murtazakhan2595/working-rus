@@ -47,10 +47,18 @@ const AddOrganizationForm = ({
   const [selectedState, setSelectedState] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
 
+  // Loading states
+  const [countriesLoading, setCountriesLoading] = useState(false);
+  const [statesLoading, setStatesLoading] = useState(false);
+  const [citiesLoading, setCitiesLoading] = useState(false);
+
   const fetchData = async () => {
     try {
       const TimeZoneData = await getTimeZoneList();
       setTimeZone(TimeZoneData);
+
+      // Set loading state for countries
+      setCountriesLoading(true);
       const countriesResponse = await getOrganizationCountryList();
 
       if (countriesResponse) {
@@ -62,7 +70,7 @@ const AddOrganizationForm = ({
 
         // If editing, try to find the country by its ID
         if (edit && formData.country) {
-          const matchingCountry = await getCountryById(formData.country)
+          const matchingCountry = await getCountryById(formData.country);
           console.log("Matching Country:", matchingCountry);
           console.log("Form Data Country:", formData.country);
           console.log("Countries List:", countryList);
@@ -80,6 +88,8 @@ const AddOrganizationForm = ({
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setCountriesLoading(false);
     }
   };
 
@@ -97,45 +107,61 @@ const AddOrganizationForm = ({
 
   const getStateList = async (country) => {
     console.log("Fetching states for country:", country);
-    let statesResponse = await getRegionsList({
-      filterData: { country: country },
-    });
-    if (statesResponse) {
-      const stateList = statesResponse.results.map((state) => ({
-        value: `${state.id}`,
-        label: state.name,
-      }));
-      setStates(stateList);
+    setStatesLoading(true);
+    try {
+      let statesResponse = await getRegionsList({
+        filterData: { country: country },
+      });
+      if (statesResponse) {
+        const stateList = statesResponse.results.map((state) => ({
+          value: `${state.id}`,
+          label: state.name,
+        }));
+        setStates(stateList);
 
-      // If editing, try to find the state by its ID
-      if (edit && formData.state) {
-        const matchingState = stateList.find((s) => s.value === formData.state);
-        if (matchingState) {
-          setSelectedState(matchingState);
-          setState(formData.state);
+        // If editing, try to find the state by its ID
+        if (edit && formData.state) {
+          const matchingState = stateList.find(
+            (s) => s.value === formData.state
+          );
+          if (matchingState) {
+            setSelectedState(matchingState);
+            setState(formData.state);
+          }
         }
       }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setStatesLoading(false);
     }
   };
 
   const getCityList = async (state, country) => {
-    let citiesResponse = await getCitiesList({
-      filterData: { country: country, state: state },
-    });
-    if (citiesResponse) {
-      const cityList = citiesResponse.results.map((city) => ({
-        value: `${city.id}`,
-        label: city.name,
-      }));
-      setCities(cityList);
+    setCitiesLoading(true);
+    try {
+      let citiesResponse = await getCitiesList({
+        filterData: { country: country, state: state },
+      });
+      if (citiesResponse) {
+        const cityList = citiesResponse.results.map((city) => ({
+          value: `${city.id}`,
+          label: city.name,
+        }));
+        setCities(cityList);
 
-      // If editing, try to find the city by its ID
-      if (edit && formData.city) {
-        const matchingCity = cityList.find((c) => c.value === formData.city);
-        if (matchingCity) {
-          setSelectedCity(matchingCity);
+        // If editing, try to find the city by its ID
+        if (edit && formData.city) {
+          const matchingCity = cityList.find((c) => c.value === formData.city);
+          if (matchingCity) {
+            setSelectedCity(matchingCity);
+          }
         }
       }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setCitiesLoading(false);
     }
   };
 
@@ -156,6 +182,7 @@ const AddOrganizationForm = ({
           handleSubmit(values, resetForm);
         }}
         validate={validateOrganizationSchema}
+        enableReinitialize={true}
       >
         {(props) => (
           <form onSubmit={props.handleSubmit}>
@@ -177,6 +204,7 @@ const AddOrganizationForm = ({
                     acceptedFileTypes={["image/jpeg", "image/png"]} // Allowed file types
                   />
                 </div>
+                {console.log("Formik props:", props)}
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                   <TextInput
                     name="name"
@@ -312,29 +340,25 @@ const AddOrganizationForm = ({
                     value={props.values.country}
                     error={props.errors.country}
                     touch={props.touched.country}
+                    disabled={countriesLoading}
                     placeholder={
-                      selectedCountry?.label ||
-                      editData?.country_name ||
-                      "Select country"
+                      countriesLoading ? "Loading countries..." : null
                     }
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                      setCountry(value);
-                      setState(null); // Reset state when country changes
-                      setSelectedState(null);
-                      setSelectedCity(null);
-
-                      // Find the selected country object
-                      const selectedCountryObj = countries.find(
-                        (c) => c.value === value
-                      );
-                      if (selectedCountryObj) {
-                        setSelectedCountry(selectedCountryObj);
-                        props.setFieldValue(
-                          "country_name",
-                          selectedCountryObj.label
-                        );
-                      }
+                      props.setFieldValue(field, value);
+                      // Handle dependencies with a small delay to allow form validation to complete
+                      setTimeout(() => {
+                        setCountry(value);
+                        setState(null);
+                        setSelectedState(null);
+                        setSelectedCity(null);
+                        setStates([]);
+                        setCities([]);
+                        props.setFieldValue("state", "");
+                        props.setFieldValue("city", "");
+                        props.setFieldValue("state_name", "");
+                        props.setFieldValue("city_name", "");
+                      }, 0);
                     }}
                   />
 
@@ -346,31 +370,33 @@ const AddOrganizationForm = ({
                     value={props.values.state}
                     error={props.errors.state}
                     touch={props.touched.state}
-                    placeholder={
-                      selectedState?.label ||
-                      editData?.state_name ||
-                      "Select state"
-                    }
+                    disabled={statesLoading || !country}
+                    placeholder={statesLoading ? "Loading states..." : null}
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                      setState(value);
-                      setSelectedCity(null); // Reset city when state changes
-
-                      // Find the selected state object
-                      const selectedStateObj = states.find(
-                        (s) => s.value === value
-                      );
-                      if (selectedStateObj) {
-                        setSelectedState(selectedStateObj);
-                        props.setFieldValue(
-                          "state_name",
-                          selectedStateObj.label
+                      props.setFieldValue(field, value);
+                      // Handle dependencies with a small delay to allow form validation to complete
+                      setTimeout(() => {
+                        setState(value);
+                        setSelectedCity(null);
+                        setCities([]);
+                        props.setFieldValue("city", "");
+                        props.setFieldValue("city_name", "");
+                        
+                        // Find the selected state object and set state_name
+                        const selectedStateObj = states.find(
+                          (s) => s.value === value
                         );
-                      }
+                        if (selectedStateObj) {
+                          setSelectedState(selectedStateObj);
+                          props.setFieldValue("state_name", selectedStateObj.label);
+                        }
+                      }, 0);
                     }}
                   />
                 </div>
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+                  {console.log("citiesLoading:", citiesLoading)}
+                  {console.log("state:", props.values.state)}
                   <SelectInputComponent
                     name="city"
                     label="City"
@@ -379,22 +405,21 @@ const AddOrganizationForm = ({
                     value={props.values.city}
                     error={props.errors.city}
                     touch={props.touched.city}
-                    placeholder={
-                      selectedCity?.label ||
-                      editData?.city_name ||
-                      "Select city"
-                    }
+                    disabled={citiesLoading || !props.values.state}
+                    placeholder={citiesLoading ? "Loading cities..." : null}
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
-
-                      // Find the selected city object
-                      const selectedCityObj = cities.find(
-                        (c) => c.value === value
-                      );
-                      if (selectedCityObj) {
-                        setSelectedCity(selectedCityObj);
-                        props.setFieldValue("city_name", selectedCityObj.label);
-                      }
+                      props.setFieldValue(field, value);
+                      // Handle dependencies with a small delay to allow form validation to complete
+                      setTimeout(() => {
+                        // Find the selected city object and set city_name
+                        const selectedCityObj = cities.find(
+                          (c) => c.value === value
+                        );
+                        if (selectedCityObj) {
+                          setSelectedCity(selectedCityObj);
+                          props.setFieldValue("city_name", selectedCityObj.label);
+                        }
+                      }, 0);
                     }}
                   />
                   <TextInput
