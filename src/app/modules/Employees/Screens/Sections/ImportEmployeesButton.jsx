@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux"; // Add this import
 import { Button } from "../../../../../components/ui/button";
 import {
   Dialog,
@@ -28,14 +29,22 @@ import { HasAccess } from "utils/PermissionUtils";
 import { SwitchInput } from "components/FormControl";
 import { updateUploadEmployeesData } from "app/hooks/employee";
 
-const ImportEmployeesButton = ({reload}) => {
+// Add these imports for the dispatch actions
+import {
+  fetchEmployees,
+  fetchReportingManagers,
+  fetchEmployeesDetail,
+} from "state/slices/EmpSlice";
+
+const ImportEmployeesButton = ({ reload }) => {
+  const dispatch = useDispatch(); // Add this line
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
   const [validationMessage, setValidationMessage] = useState(null);
   const [showFieldInfo, setShowFieldInfo] = useState(true);
-  const [isEditMode, setIsEditMode] = useState(false); // New state for edit/new toggle
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // Create a ref for the file input element
   const fileInputRef = useRef(null);
@@ -232,11 +241,10 @@ const ImportEmployeesButton = ({reload}) => {
       formData.append("isEditMode", isEditMode); // Include edit mode flag
 
       // Call the API to upload employees data
-
-      let response = {}
+      let response = {};
       if (isEditMode) {
         response = await updateUploadEmployeesData(formData);
-      } else{
+      } else {
         response = await uploadEmployeesData(formData);
       }
 
@@ -248,15 +256,22 @@ const ImportEmployeesButton = ({reload}) => {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
+
+        // Dispatch the same actions as in EmployeeForm
+        dispatch(fetchEmployees());
+        dispatch(fetchReportingManagers());
+        dispatch(fetchEmployeesDetail());
+
+        // Close dialog and reset
         setIsOpen(false);
         resetFileInput();
-        if(reload && typeof reload === 'function') {
-          console.log("Reloading employee data...");
-          //  add one sec delay to ensure the UI updates
+
+        // Still call reload if it exists (for backward compatibility)
+        if (reload && typeof reload === "function") {
+          console.log("Calling additional reload function...");
           setTimeout(() => {
             reload(true);
-          }
-          , 1000);
+          }, 1000);
         }
       }
       // Handle error responses with validation errors
@@ -373,8 +388,14 @@ const ImportEmployeesButton = ({reload}) => {
     { name: "Residential Address", description: "Current residential address" },
     { name: "Current Address", description: "Current address" },
     { name: "Nationality", description: "Employee nationality" },
-    { name: "Direct Report", description: "Direct reporting manager (username)" },
-    { name: "Indirect Report", description: "Indirect reporting manager (username)" },
+    {
+      name: "Direct Report",
+      description: "Direct reporting manager (username)",
+    },
+    {
+      name: "Indirect Report",
+      description: "Indirect reporting manager (username)",
+    },
   ];
 
   return (
