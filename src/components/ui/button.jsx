@@ -14,12 +14,13 @@ const buttonVariants = cva(
           "bg-neutral-1200 text-white hover:bg-black hover:text-white hover:shadow-custom  dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90",
         destructive:
           "bg-red-300 text-white hover:bg-red-500/90 dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/90",
-        success:
-          "bg-emerald-600 text-white hover:bg-emerald-600/90",
+        success: "bg-emerald-600 text-white hover:bg-emerald-600/90",
         continue:
           "border text-neutral-1200 border-slate-700 bg-white hover:shadow-custom dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         outline:
           "border border-primary bg-white hover:bg-primary text-primary hover:shadow-custom hover:text-white dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+        primary:
+          "border border-primary bg-primary hover:bg-primary-dark text-white hover:shadow-custom hover:text-white",
         secondary:
           "bg-gray-1200 text-slate-100 hover:bg-gray-1100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
         ghost:
@@ -27,7 +28,8 @@ const buttonVariants = cva(
         link: "text-neutral-1000 underline-offset-4 hover:underline dark:text-slate-50",
         destructiveOutline:
           "hover:bg-red-50 text-red-700 border border-red-700",
-        successOutline: "border border-emerald-600 text-emerald-600 hover:bg-emerald-100",
+        successOutline:
+          "border border-emerald-600 text-emerald-600 hover:bg-emerald-100",
       },
       size: {
         default: "h-10 px-4 py-2",

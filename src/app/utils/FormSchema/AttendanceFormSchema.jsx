@@ -51,15 +51,32 @@ export const validateTimeAdjustmentFormSchema = (values) => {
 
 export const validateAttendanceAdjustmentFormSchema = (values) => {
   const errors = {};
-  if (values.date && moment(values.date).isBefore(moment())) {
+  if (
+    values.attendance_date &&
+    moment(values.attendance_date).isBefore(moment())
+  ) {
     if (!values.requested_checkout)
-      errors.checkout = "New check-out time is required";
+      errors.requested_checkout = "New check-out time is required";
   }
   if (!values.requested_checkin)
     errors.requested_checkin = "New check-in time is required";
+  if (
+    values.requested_checkin &&
+    values.requested_checkout &&
+    values.attendance_date
+  ) {
+    const ischeckoutBefore = validateStartAndEndTimeField(
+      values.requested_checkin,
+      values.requested_checkout,
+      values.attendance_date,
+      "Check-out"
+    );
+    if (ischeckoutBefore)
+      errors.requested_checkout = "Check-out must be after check-in";
+  }
   if (!values.employee) errors.employee_id = "Employee is required";
   if (!values.reason) errors.reason = "Reason is required";
   else if (!values.reason.trim()) errors.reason = "Reason is required";
-  if (!values.date) errors.date = "Date is required";
+  if (!values.attendance_date) errors.attendance_date = "Date is required";
   return errors;
 };

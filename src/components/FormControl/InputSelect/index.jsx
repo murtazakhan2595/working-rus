@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "src/@/lib/utils.js";
 import { Check, X, ChevronsUpDown } from "lucide-react";
 import { SelectMultiInputComponent } from "./SelectMultiInputComponent";
@@ -61,7 +61,7 @@ const SelectedOptionsList = ({
 
 /**
  * Component to Render Selectable Options in the Dropdown.
- * Allows selection/deselection of items.
+ * Allows selection/deselection of items and optional features like adding new options or always-visible options.
  */
 const SelectableOptionsList = ({
   options = [],
@@ -69,43 +69,55 @@ const SelectableOptionsList = ({
   handleSelectionToggle = () => {},
   showOptionsActions = false,
   optionsActions = [],
-  allowNewOption = false, // Whether users can add new options
-  newOptionConfig = {}, // Configuration for new options
+  allowNewOption = false,
+  newOptionConfig = {},
+  showAllOption = false,
 }) => {
-  const OptionSelect = (value, selectedValues) => {
-    if (selectedValues.length === 0 && value === null) return true;
-    else if (selectedValues.includes(value)) return true;
-    else return false;
-  };
+  const [inputSearchValue, setInputSearchValue] = useState("");
 
+  const OptionSelect = (value) =>
+    selectedValues.length === 0 && value === null
+      ? true
+      : selectedValues.includes(value);
+
+  // const AllOption = showAllOption && options.find((obj) => obj.label === "All");
   return (
     <div className="w-[300px] p-0">
-      <Command>
+      <Command
+        filter={(value, search) => {
+          // Always match the "All" option
+          if (value === "all-values-in-search-options") return 1;
+          return value.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+        }}
+      >
         <CommandInput
           placeholder="Search options..."
           className="text-sm font-normal text-neutral-900"
+          onValueChange={(value) => setInputSearchValue(value)}
         />
+
         <CommandList>
           <CommandEmpty>No options found.</CommandEmpty>
+
+          {/* Main Options List */}
           <CommandGroup>
             {options.map(({ value, label }) => (
               <CommandItem
                 key={value}
-                onSelect={() => handleSelectionToggle(value)}
+                value={value}
+                onSelect={() => handleSelectionToggle(value, inputSearchValue)}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
                     <Check
                       className={`mr-2 h-4 w-4 min-w-4 ${
-                        OptionSelect(value, selectedValues)
-                          ? "opacity-100"
-                          : "opacity-0"
+                        OptionSelect(value) ? "opacity-100" : "opacity-0"
                       }`}
                     />
                     {label}
                   </div>
 
-                  {/* Additional Actions for Each Option */}
+                  {/* Per-option action buttons */}
                   {showOptionsActions && (
                     <div className="flex">
                       {optionsActions.map(({ content, onClick }, index) => (
@@ -113,7 +125,7 @@ const SelectableOptionsList = ({
                           key={index}
                           variant="ghost"
                           size="sm"
-                          className={`w-10 h-4`}
+                          className="w-10 h-4"
                           onClick={(e) => {
                             e.stopPropagation();
                             onClick?.(value);
@@ -130,11 +142,11 @@ const SelectableOptionsList = ({
           </CommandGroup>
         </CommandList>
       </Command>
-      {/* Add New Option Button */}
+
+      {/* Add New Option */}
       {allowNewOption && (
         <div className="my-3 px-8">
           <Button
-            key="add-new-option"
             onClick={(e) => {
               e.preventDefault();
               newOptionConfig.onClick();

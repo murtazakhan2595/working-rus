@@ -10,14 +10,20 @@ import {
   mapAttendanceAdjustmentListData,
   mapTimeAdjustmentData,
   mapAttendanceAdjustmentData,
+  mapAttendanceBreakDurationData,
+  mapEmpAttendanceOverview,
+  mapAttendanceCheckInPayload,
+  mapAttendanceCheckOutPayload,
+  mapBreakPayloadData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
-import {
-  getMontlyShiftData,
-  getThisWeekShiftData,
-} from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+import { getEmployeeInfoData } from "app/hooks/use-store";
 
+import {
+  getActiveShiftList,
+  getActiveShiftData,
+} from "app/hooks/shiftManagement";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -133,9 +139,12 @@ const getAttendance = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/attendance?ordering=-date&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const ordering = payload?.ordering ?? "-date";
+  let URL = `/attendance?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -190,7 +199,10 @@ const getAttendanceSummary = async (payload) => {
 export const saveAttendance = async (payload, shift_details, id) => {
   const attendanceId = id || payload?.id;
   try {
-    const finalPayload = mapAttendanceData(payload, shift_details);
+    const active_shift =
+      shift_details ??
+      (await getActiveShiftData(payload.employee_id, payload.date));
+    const finalPayload = mapAttendanceData(payload, active_shift);
     const url = attendanceId
       ? `${baseUrl}/attendance/${attendanceId}/` // Use id if updating
       : `${baseUrl}/attendance/`; // No id means create new
@@ -238,34 +250,50 @@ export const getAttendanceData = async (id) => {
     return false;
   }
 };
-const saveBreak = async (payload) => {
+export const getAttendancebyEmployee = async (employee_id, date) => {
   try {
-    if (payload?.id) {
-      const response = await axios.patch(
-        `${baseUrl}/breaks/${payload.id}/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200 || response.status === 201) {
-        return response.data;
-      }
-    } else {
-      const response = await axios.post(`${baseUrl}/breaks/`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201 || response.status === 200) {
-        return response.data;
-      }
+    if (!employee_id) return null;
+    const formattedDate = moment(date);
+    const filterData = {
+      employee_id: employee_id,
+      ...(date && formattedDate && formattedDate.isValid()
+        ? { date: formattedDate.format("YYYY-MM-DD") }
+        : {}),
+    };
+
+    const response = await getAttendance({ filterData, ordering: "-id" });
+    if (response.results && response.results.length > 0) {
+      const attendanceRecord = response.results[0];
+      return attendanceRecord;
+    } else return null;
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+const saveBreak = async (payload, id) => {
+  try {
+    const ID = payload?.id || id;
+    const isUpdate = Boolean(ID);
+    const url = isUpdate ? `${baseUrl}/breaks/${ID}/` : `${baseUrl}/breaks/`;
+    const method = isUpdate ? axios.patch : axios.post;
+    const response = await method(url, payload, { headers: headers() });
+
+    if ([200, 201].includes(response.status)) {
+      return response.data;
     }
   } catch (error) {
     console.error("Error saving break:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
   }
+
+  return false;
 };
 
 const getBreak = async (payload) => {
@@ -293,20 +321,9 @@ const getBreak = async (payload) => {
 
 const calculateBreak = async (payload) => {
   const breaks = await getBreak(payload);
-  let breakDuration = 0; // total duration in minutes
-  if (breaks && breaks.results) {
-    breaks.results.forEach((element) => {
-      const start = moment(element.starttime).utc(); // parse start time as UTC
-      const end = element.endtime
-        ? moment(element.endtime).local() // parse and convert end time to local time
-        : moment().local(); // if no endtime, use the current time in local time
-
-      if (start.isValid() && end.isValid()) {
-        breakDuration += parseFloat(end.diff(start, "hours", true)); // calculate difference in hours
-      }
-    });
-  }
-  return parseFloat(breakDuration).toFixed(2); // return the break duration as a fixed decimal value
+  const breaksResults = breaks.results;
+  const breakDuration = mapAttendanceBreakDurationData(breaksResults);
+  return breakDuration;
 };
 
 const getBreakStatus = async (payload) => {
@@ -401,7 +418,7 @@ const employeeData = async (id) => {
   return employeeData;
 };
 
-const getShiftById = async (id) => {
+export const getShiftById = async (id) => {
   if (id) {
     try {
       const shiftResponse = await axios.get(`${baseUrl}/shift/${id}`, {
@@ -485,7 +502,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
   recentActivities.push({
     time: moment(attendance.checkin).format("hh:mm A"),
     activity: "Check in",
-    description: "Checked In",
+    description: attendance.additional_info || "Checked In",
     timestamp: moment(attendance.checkin),
   });
 
@@ -502,7 +519,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
       recentActivities.push({
         time: moment(breakItem.starttime).format("hh:mm A"),
         activity: `Break Start`,
-        description: `Away`,
+        description: `${breakItem.break_type} break - Away`,
         timestamp: moment(breakItem.starttime),
       });
 
@@ -511,7 +528,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
         recentActivities.push({
           time: moment(breakItem.endtime).format("hh:mm A"),
           activity: `Break End`,
-          description: `Back`,
+          description: `${breakItem.break_type} break - Back`,
           timestamp: moment(breakItem.endtime),
         });
       }
@@ -567,10 +584,13 @@ export const getTimeAdjustmentData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = await mapTimeAdjustmentData(response.data);
-      const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request
-      );
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapTimeAdjustmentData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -621,15 +641,28 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
           headers: headers(),
         }
       );
-      const ResponseData = response.data;
-      const MonthlytShiftData = await getMontlyShiftData(
-        employee_id,
-        ResponseData.default_shift
-      );
-      const WeeklyShiftData = await getThisWeekShiftData(MonthlytShiftData);
+
       if (response) {
+        const ResponseData = response.data;
+        const default_shift = await getEmployeeInfoData(
+          employee_id,
+          "default_shift"
+        );
+        const MonthlytShiftData = await getActiveShiftList(
+          employee_id,
+          moment().startOf("month"),
+          moment().endOf("month"),
+          default_shift
+        );
+        const WeeklyShiftData = await getActiveShiftList(
+          employee_id,
+          moment().startOf("week"),
+          moment().endOf("week"),
+          default_shift
+        );
         const emp_attendance_data = await mapEmployeeAttendanceDetail({
           ...ResponseData,
+          default_shift: default_shift,
           monthly_shifts: MonthlytShiftData,
           weekly_shifts: WeeklyShiftData,
         });
@@ -643,6 +676,44 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
       return {};
     }
   } else return {};
+};
+
+export const getEmpAttendanceOverview = async (
+  employee_id,
+  start_date = new Date(),
+  end_date = new Date()
+) => {
+  if (!employee_id || !start_date || !end_date) return null;
+  try {
+    const attendanceResponse = await getAttendance({
+      filterData: {
+        date_range: `${moment()
+          .startOf("month")
+          .format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`,
+        employee_id: employee_id,
+      },
+    });
+    const shiftResponse = await getActiveShiftList(
+      employee_id,
+      start_date,
+      end_date
+    );
+
+    if (attendanceResponse || shiftResponse) {
+      const ResponseData = await mapEmpAttendanceOverview({
+        attendanceDetails: attendanceResponse.results || [],
+        shiftResponse: shiftResponse || [],
+      });
+
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error fetching by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
 };
 
 export const saveUpdateAttendanceAdjustment = async (payload, id) => {
@@ -714,10 +785,15 @@ export const getAttendanceAdjustmentData = async (id) => {
       }
     );
     if (response.status === 200) {
-      const ResponseData = await mapAttendanceAdjustmentData(response.data);
+      const Response = response.data;
       const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request_id
+        Response.request_id
       );
+      const ResponseData = await mapAttendanceAdjustmentData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -781,6 +857,202 @@ export const getAttendanceAdjustmentLogsList = async (payload) => {
   }
 };
 
+export const getBiometricUserAttendanceData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/user-records/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUserBiometricAttendance = async (biometric_id) => {
+  try {
+    const responseList = await getBiometricUserAttendanceData(biometric_id);
+    if (responseList) {
+      if (Array.isArray(responseList) && responseList.length > 0) {
+        for (const data of responseList) {
+          const date = moment(data.timestamp).format("YYYY-MM-DD");
+          if (data.emp_id) {
+            try {
+              const response = await saveUserBiometricAttendanceLog(
+                data.emp_id,
+                data,
+                date
+              );
+              console.log(response, data, "biometric");
+            } catch (error) {
+              console.error("Error saving attendance for:", data, error);
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveBiometricBreak = async (payload) => {
+  try {
+    const existingData = await getBreak({
+      filterData: {
+        employee_id: payload.employee_id,
+        attendance: payload.attendance,
+      },
+    });
+    const finalPayload = mapBreakPayloadData(payload, existingData.results);
+    const ID = finalPayload?.id;
+    if (finalPayload) {
+      debugger;
+      const response = await saveBreak(finalPayload, ID);
+      if (response) {
+        return response;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving break:", error);
+
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+  }
+
+  return false;
+};
+
+export const saveUserBiometricAttendanceLog = async (
+  employee_id,
+  userBiometricList,
+  date
+) => {
+  try {
+    const active_Shift = await getActiveShiftData(employee_id, date);
+    const attendanceData = await getAttendancebyEmployee(employee_id, date);
+    if (userBiometricList.status === "check-in") {
+      const attendancePayload = mapAttendanceCheckInPayload(
+        userBiometricList.timestamp,
+        attendanceData,
+        active_Shift.is_split_shift,
+        employee_id
+      );
+      if (attendancePayload) {
+        const response = await saveAttendance(
+          { ...attendancePayload, additional_info: "Biometric Check-In" },
+          active_Shift,
+          attendanceData.id
+        );
+        return Boolean(response);
+      }
+    }
+    if (userBiometricList.status === "check-out") {
+      const attendancePayload = mapAttendanceCheckOutPayload(
+        userBiometricList.timestamp,
+        attendanceData,
+        active_Shift.is_split_shift
+      );
+      if (attendancePayload) {
+        const response = await saveAttendance(
+          { ...attendancePayload, additional_info: "Biometric Check-Out" },
+          active_Shift,
+          attendanceData.id
+        );
+        return Boolean(response);
+      }
+    }
+    if (userBiometricList.status === "check-out") {
+      if (attendanceData) return Boolean(attendanceData);
+      const response = await saveAttendance({
+        employee_id: employee_id,
+        date: date,
+        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
+      });
+      return Boolean(response);
+    }
+    const attendance =
+      attendanceData ??
+      (await saveAttendance({
+        employee_id: employee_id,
+        date: date,
+        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
+      }));
+    if (userBiometricList) {
+      if (userBiometricList.status === "break") {
+        const breakSaveResponse = await saveBiometricBreak({
+          employee_id: employee_id,
+          attendance: attendance.id,
+          time: userBiometricList.timestamp,
+        });
+        if (breakSaveResponse) {
+          debugger;
+          const breakDuration = await calculateBreak({
+            filterData: {
+              employee_id: employee_id,
+              attendance: attendance.id,
+            },
+          });
+          const attendanceResponse = await saveAttendance({
+            id: attendance?.id,
+            break_duration: breakDuration,
+          });
+          if (attendanceResponse) {
+            return true;
+          }
+        }
+      } else {
+      }
+    }
+    return false;
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getUserBiometricLogsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/user-record-list/?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      return { results: ResponseData.results, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
 export {
   getAttendanceStats,
   saveShiftAssignment,
@@ -797,7 +1069,6 @@ export {
   convertUTCToLocal,
   getStats,
   employeeData,
-  getShiftById,
   getAttendanceSummary,
   getDepartmentPercentage,
   getWeeklySummary,

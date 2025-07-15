@@ -24,7 +24,6 @@ import {
   // CardFooter,
 } from "components/ui/card.jsx";
 import Header from "components/Header.jsx";
-
 import { HasAccess } from "utils/PermissionUtils";
 
 const CreateUpdateEmployee = () => {
@@ -52,7 +51,7 @@ const CreateUpdateEmployee = () => {
   return (
     <>
       <div
-        className={`max-w-[840px] mx-auto ${window.location.pathname.substring(
+        className={`max-w-[1040px] mx-auto ${window.location.pathname.substring(
           1
         )}`}
       >

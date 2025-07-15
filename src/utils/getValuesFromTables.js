@@ -151,12 +151,12 @@ function ProjectName({ value }) {
   const project = projects.find((option) => option.value === parseInt(value));
   return project ? project.label : "N/A";
 }
-function DesignationName({ value }) {
+function DesignationName({ value, fallBackText }) {
   const designations = useSelector((state) => state.common.designations);
   const designation = designations.find(
     (option) => option.value === parseInt(value)
   );
-  return designation ? designation.label : "N/A";
+  return designation ? designation.label : fallBackText ?? "N/A";
 }
 
 function EmployeeName({ value, length }) {

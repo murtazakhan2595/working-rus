@@ -2,11 +2,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Progress } from "src/@/components/ui/progress";
 import { useSelector } from "react-redux";
 import { formatDuration } from "utils/renderValues";
+import { getEmployeeAttendanceDetails } from "app/hooks/attendance";
 
-const HourlyStatistics = ({ userId }) => {
-  const emp_attendance_detail = useSelector(
-    (state) => state.attendance.attendance_details
-  );
+const HourlyStatistics = ({ employee_id, reload }) => {
   const [workStatistics, setWorkStatistics] = useState([]);
   const [weeklyAdjHours, setWeeklyAdjHours] = useState(0);
   const [monthlyAdjHours, setMonthlyAdjHours] = useState(0);
@@ -55,15 +53,30 @@ const HourlyStatistics = ({ userId }) => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   useEffect(() => {
     let isMounted = true;
-    loadUserData(isMounted, emp_attendance_detail);
+
+    const fetchData = async (employee_id) => {
+      try {
+        const response = await getEmployeeAttendanceDetails(employee_id);
+        if (isMounted && response) {
+          loadUserData(isMounted, response);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (employee_id) {
+      fetchData(employee_id);
+    }
+
     return () => {
       isMounted = false;
     };
-  }, [emp_attendance_detail]);
+  }, [employee_id, reload]);
 
   return (
     <div className="space-y-4">

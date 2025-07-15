@@ -1,6 +1,27 @@
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
-import {EMAIL_REGEX} from 'app/utils/Types/ValidationPattern';
+import { EMAIL_REGEX } from "app/utils/Types/ValidationPattern";
+
+export const validateRequiredFields = (Fields = [], values) => {
+  const errors = {};
+
+  // Check if Fields is a valid array
+  if (!Array.isArray(Fields) || Fields.length === 0) return errors;
+
+  for (const Field of Fields) {
+    if (!Field || typeof Field !== "object") continue;
+
+    const { name, required, label, renderCondition, value } = Field;
+    if (renderCondition === false) continue;
+    // Ensure name exists and is a string
+    if (required && typeof name === "string" && typeof label === "string") {
+      if (!values[name] && !value) errors[name] = `${label} is required`;
+    }
+  }
+
+  return errors;
+};
+
 export const validateChangePasswordForm = (values) => {
   const errors = {};
   if (!values?.confirm_password)
@@ -62,8 +83,8 @@ export const validateStartAndEndDateField = (start_date, end_date) => {
   if (!start_date) errors.start_date = true;
   if (!end_date) errors.end_date = true;
   if (start_date && end_date) {
-    const startDate = moment(start_date).endOf("day");
-    const endDate = moment(end_date).endOf("day");
+    const startDate = moment(start_date).startOf("day");
+    const endDate = moment(end_date).startOf("day");
     if (startDate.isAfter(endDate)) {
       errors.end_date_before = true;
     }

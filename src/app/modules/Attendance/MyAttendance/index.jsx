@@ -31,7 +31,6 @@ const Attendance = () => {
   const canMarkBreak = HasAccess("MARK_BREAK");
   const canViewAttendance = HasAccess("VIEW_ATTENDANCE");
   const canUpdateAttendance = HasAccess("UPDATE_ATTENDANCE_REQUEST");
-  const canDownloadReport = HasAccess("VIEW_ATTENDANCE"); // Using same permission for download
   const [attendance, setAttendance] = useState(null);
   const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
@@ -55,20 +54,19 @@ const Attendance = () => {
     }
   };
 
-  const fetchBreakStatusData = async (isMounted, attendance) => {
-    if (attendance && attendance?.id && isMounted) {
-      const breakStatus = await getBreakStatus({
-        filterData: {
-          employee_id: userProfile.id,
-          attendance: attendance?.id,
-        },
-      });
-      setOnBreak(breakStatus);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
+    const fetchBreakStatusData = async (isMounted, attendance) => {
+      if (attendance && attendance?.id && isMounted) {
+        const breakStatus = await getBreakStatus({
+          filterData: {
+            employee_id: userProfile.id,
+            attendance: attendance?.id,
+          },
+        });
+        setOnBreak(breakStatus);
+      }
+    };
     fetchBreakStatusData(isMounted, attendance);
     return () => {
       isMounted = false;
@@ -124,8 +122,10 @@ const Attendance = () => {
     }
   };
 
-  const downloadAttendance = () => {
-    navigate(`/attendance-reports/${userProfile?.id}`);
+  const downloadAttendance = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigate(`/my-attendance-report/${userProfile?.id}`);
   };
 
   // If user has no attendance permissions at all
@@ -179,7 +179,7 @@ const Attendance = () => {
                   <CardTitle className="text-plum-900">Statistics</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <HourlyStatistics userId={userProfile?.id} />
+                  <HourlyStatistics employee_id={userProfile?.id} />
                 </CardContent>
               </Card>
             ) : (
@@ -244,7 +244,7 @@ const Attendance = () => {
               />
             )}
             {canUpdateAttendance && <AttendanceUpdateRequest />}
-            {canDownloadReport && canViewAttendance && (
+            {canViewAttendance && (
               <Button variant="outline" onClick={downloadAttendance}>
                 Monthly Report
               </Button>

@@ -1,264 +1,237 @@
-export async function mapCustomShiftPayload (values ,overlappingSchedules ) {
-    try {
-      const [requestedStartDate, requestedEndDate] =
-        values.dateRange.split(",");
-      
+import moment from "moment";
+import { renderTime } from "utils/DateTimeUtils";
+import { CalculateTotalWorkingHours } from "utils/renderValues";
+import { ActiveShift } from "app/utils/Types/ShiftManagement";
+import { eachDayOfInterval } from "date-fns";
+import { ShiftSchedule } from "../Types/ShiftManagement";
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
-      // Step 2: Determine the actual date range to include
-      let actualStartDate = moment(requestedStartDate);
-      let actualEndDate = moment(requestedEndDate);
+export function mapCustomShiftData(data, date) {
+  const {
+    is_off,
+    is_split,
+    end_time,
+    start_time,
+    start_time_1,
+    end_time_1,
+    start_time_2,
+    end_time_2,
+  } = data;
+  const formattedDate = date ? moment(date).format("YYYY-MM-DD") : null;
+  const active_shift = {
+    is_split_shift: Boolean(is_split),
+    total_hours: 0,
+    shifts: [],
+    is_weekly_off: is_off,
+    name: "Custom Shift",
+    is_custom_shift: true,
+  };
+  if (is_split) {
+    if (start_time_1 && end_time_1 && start_time_2 && end_time_2) {
+      const first_start_time = renderTime(start_time_1, formattedDate);
+      const first_end_time = renderTime(end_time_1, formattedDate);
+      const second_start_time = renderTime(start_time_2, formattedDate);
+      const second_end_time = renderTime(end_time_2, formattedDate);
+      active_shift.shifts = [
+        {
+          start_time: moment(first_start_time).format("hh:mm A"),
+          startTime: first_start_time,
+          endTime: first_end_time,
+          end_time: moment(first_end_time).format("hh:mm A"),
+        },
+        {
+          start_time: moment(second_start_time).format("hh:mm A"),
+          end_time: moment(second_end_time).format("hh:mm A"),
+          startTime: second_start_time,
+          endTime: second_start_time,
+        },
+      ];
+      active_shift.total_hours =
+        CalculateTotalWorkingHours(first_start_time, first_end_time) +
+        CalculateTotalWorkingHours(second_start_time, second_end_time);
+    }
+    return active_shift;
+  }
 
-      // Expand date range to include all days from overlapping schedules
-      if (
-        overlappingSchedules?.results &&
-        overlappingSchedules.results.length > 0
-      ) {
-        overlappingSchedules.results.forEach((schedule) => {
-          const scheduleStart = moment(schedule.start_date);
-          const scheduleEnd = moment(schedule.end_date);
+  if (start_time && end_time) {
+    const startTime = renderTime(start_time, formattedDate);
+    const endTime = renderTime(end_time, formattedDate);
+    active_shift.shifts = [
+      {
+        start_time: moment(startTime).format("hh:mm A"),
+        end_time: moment(endTime).format("hh:mm A"),
+        startTime: startTime,
+        endTime: endTime,
+      },
+    ];
+    active_shift.total_hours = CalculateTotalWorkingHours(start_time, end_time);
+  }
+  return active_shift;
+}
 
-          // Expand to include the full range of any overlapping schedule
-          if (scheduleStart.isBefore(actualStartDate)) {
-            actualStartDate = scheduleStart.clone();
-          }
-          if (scheduleEnd.isAfter(actualEndDate)) {
-            actualEndDate = scheduleEnd.clone();
-          }
-        });
+export function mapDefaultShiftData(data) {
+  const { type, starttime, endtime, name, id } = data;
+  const formattedDate = moment().format("YYYY-MM-DD");
+  const active_shift = {
+    is_split_shift: false,
+    total_hours: 0,
+    shifts: [],
+    is_weekly_off: false,
+    name: name,
+    id: id,
+    type: type,
+    is_custom_shift: false,
+  };
+
+  if (starttime && endtime) {
+    const startTime = renderTime(starttime, formattedDate);
+    const endTime = renderTime(endtime, formattedDate);
+    active_shift.shifts = [
+      {
+        start_time: moment(startTime).format("hh:mm A"),
+        end_time: moment(endTime).format("hh:mm A"),
+        startTime: startTime,
+        endTime: endTime,
+      },
+    ];
+    active_shift.total_hours = CalculateTotalWorkingHours(startTime, endTime);
+  }
+  return active_shift;
+}
+
+export function mapActiveShiftData(
+  date,
+  default_shift,
+  custom_shift,
+  leave_details,
+  holiday_details
+) {
+  try {
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+    const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
+    const isDefaultShiftValid =
+      default_shift && typeof default_shift === "object";
+    const isCustomShiftValid = custom_shift && typeof custom_shift === "object";
+
+    const active_shift = { ...ActiveShift, date: formattedDate };
+
+    if (isCustomShiftValid) {
+      if (custom_shift.is_weekly_off)
+        return { ...active_shift, isOffToday: true, OffLabel: "Weekly Off" };
+      return { ...active_shift, ...custom_shift };
+    }
+
+    // 2. Fallback to default shift
+    if (isDefaultShiftValid) {
+      const weekend_shift = default_shift?.type === "Weekend";
+      if ((weekend_shift && isWeekend) || (!weekend_shift && !isWeekend)) {
+        return { ...active_shift, ...default_shift };
+      } else {
+        active_shift.isOffToday = true;
+        active_shift.OffLabel = "Weekly Off";
+        active_shift.is_weekly_off = true;
+        return active_shift;
       }
+    }
+    return {
+      ...active_shift,
+      OffLabel: "No Shift Assigned",
+      shift_assigned: false,
+    };
+  } catch (error) {
+    console.error("Error in getEmployeeActiveShift:", error);
+    return null;
+  }
+}
+export async function mapActiveShiftListData(
+  start_date,
+  end_date,
+  default_shift,
+  custom_shift_list = {},
+  leave_details,
+  holiday_details
+) {
+  const StartDate = moment(start_date);
+  const EndDate = moment(end_date);
+  if (!StartDate.isValid() || !EndDate.isValid()) return [];
+  const IntervalList = eachDayOfInterval({
+    start: new Date(StartDate),
+    end: new Date(EndDate),
+  });
+  const ResponseList = await Promise.all(
+    IntervalList.map((date) => {
+      const dateKey = moment(date).format("YYYY-MM-DD");
+      const custom_shift = custom_shift_list[dateKey];
+      const shift = mapActiveShiftData(dateKey, default_shift, custom_shift);
+      return shift;
+    })
+  );
 
-      // Step 3: Generate complete daily schedule for the expanded range
-      const completeDailySchedule = await generateDailyScheduleWithShifts(
-        `${actualStartDate.format("YYYY-MM-DD")},${actualEndDate.format(
-          "YYYY-MM-DD"
-        )}`,
-        employee.id
-      );
+  return ResponseList;
+}
 
-      // Step 4: Build custom_schedule object including ALL days
-      const customSchedule = {};
-      let hasChanges = false;
-      const changedDays = [];
+export async function mapCustomShiftListData(data, start_date, end_date) {
+  if (!Array.isArray(data) || data.length === 0) return [];
+  const formattedStartDate = moment(start_date).format("YYYY-MM-DD");
+  const formattedEndDate = moment(end_date).format("YYYY-MM-DD");
+  const dateRange = eachDayOfInterval({
+    start: new Date(formattedStartDate),
+    end: new Date(formattedEndDate),
+  });
+  const customSchedules =
+    data?.filter(
+      (schedule) =>
+        schedule.custom_schedule &&
+        Object.keys(schedule.custom_schedule).length > 0
+    ) || [];
 
-      completeDailySchedule.forEach((day) => {
-        // Find if this day was in the original request
-        const requestedDay = values.dailySchedule.find(
-          (d) => d.date === day.date
-        );
+  const ResponseObject = {};
+  await Promise.all(
+    dateRange.map((date) => {
+      const dateKey = moment(date).format("YYYY-MM-DD");
+      // Find the latest custom schedule for this date (due to ordering by -created_at)
+      let customShiftForDate = null;
+      for (const schedule of customSchedules) {
+        // Check if this date falls within the schedule's date range
+        const scheduleStart = moment(schedule.start_date);
+        const scheduleEnd = moment(schedule.end_date);
 
-        if (requestedDay) {
-          // This day was in the requested range - use requested values
-          const requestedStartTime = requestedDay.requestedStartTime
-            ? moment(requestedDay.requestedStartTime).format("HH:mm")
-            : null;
-          const requestedEndTime = requestedDay.requestedEndTime
-            ? moment(requestedDay.requestedEndTime).format("HH:mm")
-            : null;
-          const requestedSplitStart1 = requestedDay.requestedSplitStart1
-            ? moment(requestedDay.requestedSplitStart1).format("HH:mm")
-            : null;
-          const requestedSplitEnd1 = requestedDay.requestedSplitEnd1
-            ? moment(requestedDay.requestedSplitEnd1).format("HH:mm")
-            : null;
-          const requestedSplitStart2 = requestedDay.requestedSplitStart2
-            ? moment(requestedDay.requestedSplitStart2).format("HH:mm")
-            : null;
-          const requestedSplitEnd2 = requestedDay.requestedSplitEnd2
-            ? moment(requestedDay.requestedSplitEnd2).format("HH:mm")
-            : null;
-
-          // Check if there are changes
-          const hasChange =
-            requestedDay.requestedIsOff !== day.assignedIsOff ||
-            requestedDay.requestedIsSplit !== day.assignedIsSplit ||
-            requestedStartTime !== day.assignedStartTime ||
-            requestedEndTime !== day.assignedEndTime ||
-            requestedSplitStart1 !== day.assignedSplitStart1 ||
-            requestedSplitEnd1 !== day.assignedSplitEnd1 ||
-            requestedSplitStart2 !== day.assignedSplitStart2 ||
-            requestedSplitEnd2 !== day.assignedSplitEnd2;
-
-          if (hasChange) {
-            hasChanges = true;
-            changedDays.push(day.date);
-          }
-
-          // Add to custom schedule
-          if (requestedDay.requestedIsOff) {
-            customSchedule[day.date] = {
-              is_off: true,
-            };
-          } else if (requestedDay.requestedIsSplit) {
-            customSchedule[day.date] = {
-              is_off: false,
-              is_split: true,
-              start_time_1: requestedSplitStart1,
-              end_time_1: requestedSplitEnd1,
-              start_time_2: requestedSplitStart2,
-              end_time_2: requestedSplitEnd2,
-            };
-          } else {
-            customSchedule[day.date] = {
-              is_off: false,
-              is_split: false,
-              start_time: requestedStartTime || day.assignedStartTime,
-              end_time: requestedEndTime || day.assignedEndTime,
-            };
-          }
-        } else {
-          // This day was not in requested range - keep original values
-          if (day.assignedIsOff) {
-            customSchedule[day.date] = {
-              is_off: true,
-            };
-          } else if (day.assignedIsSplit) {
-            customSchedule[day.date] = {
-              is_off: false,
-              is_split: true,
-              start_time_1: day.assignedSplitStart1,
-              end_time_1: day.assignedSplitEnd1,
-              start_time_2: day.assignedSplitStart2,
-              end_time_2: day.assignedSplitEnd2,
-            };
-          } else if (day.assignedStartTime && day.assignedEndTime) {
-            customSchedule[day.date] = {
-              is_off: false,
-              is_split: false,
-              start_time: day.assignedStartTime,
-              end_time: day.assignedEndTime,
-            };
-          } else {
-            // No shift assigned for this day
-            customSchedule[day.date] = {
-              is_off: true,
-            };
+        if (moment(date).isBetween(scheduleStart, scheduleEnd, "day", "[]")) {
+          // Check if this specific date has a custom schedule entry
+          if (schedule.custom_schedule[dateKey]) {
+            customShiftForDate = schedule.custom_schedule[dateKey];
+            break; // Take the first one (latest due to ordering)
           }
         }
-      });
-
-      if (!hasChanges) {
-        toast.warning("No changes were made to the shift schedule");
-        setLoading(false);
-        return;
       }
-
-      // Calculate total weekly hours for the complete schedule
-      const calculateTotalWeeklyHours = () => {
-        let totalHours = 0;
-
-        Object.entries(customSchedule).forEach(([date, daySchedule]) => {
-          if (!daySchedule.is_off) {
-            if (daySchedule.is_split) {
-              // Calculate split shift hours
-              if (daySchedule.start_time_1 && daySchedule.end_time_1) {
-                const start1 = moment(
-                  `${date} ${daySchedule.start_time_1}`,
-                  "YYYY-MM-DD HH:mm"
-                );
-                const end1 = moment(
-                  `${date} ${daySchedule.end_time_1}`,
-                  "YYYY-MM-DD HH:mm"
-                );
-                if (end1.isBefore(start1)) {
-                  end1.add(1, "day");
-                }
-                const hours1 = end1.diff(start1, "hours", true);
-                totalHours += hours1;
-              }
-
-              if (daySchedule.start_time_2 && daySchedule.end_time_2) {
-                const start2 = moment(
-                  `${date} ${daySchedule.start_time_2}`,
-                  "YYYY-MM-DD HH:mm"
-                );
-                const end2 = moment(
-                  `${date} ${daySchedule.end_time_2}`,
-                  "YYYY-MM-DD HH:mm"
-                );
-                if (end2.isBefore(start2)) {
-                  end2.add(1, "day");
-                }
-                const hours2 = end2.diff(start2, "hours", true);
-                totalHours += hours2;
-              }
-            } else {
-              // Calculate regular shift hours
-              if (daySchedule.start_time && daySchedule.end_time) {
-                const start = moment(
-                  `${date} ${daySchedule.start_time}`,
-                  "YYYY-MM-DD HH:mm"
-                );
-                const end = moment(
-                  `${date} ${daySchedule.end_time}`,
-                  "YYYY-MM-DD HH:mm"
-                );
-                if (end.isBefore(start)) {
-                  end.add(1, "day");
-                }
-                const hours = end.diff(start, "hours", true);
-                totalHours += hours;
-              }
-            }
-          }
-        });
-
-        return totalHours.toFixed(1);
-      };
-
-      // Create shift change request payload
-      const payload = {
-        employee: employee.id,
-        shift: null, // Always null for change requests
-        schedule_name: `Shift Change Request - ${actualStartDate.format(
-          "MMM DD"
-        )}-${actualEndDate.format("DD, YYYY")}`,
-        start_date: actualStartDate.format("YYYY-MM-DD"),
-        end_date: actualEndDate.format("YYYY-MM-DD"),
-        is_org_based: false,
-        custom_schedule: customSchedule, // Now includes ALL days from original schedules
-        total_weekly_hours: calculateTotalWeeklyHours(),
-        assigned_by: userProfile?.id,
-        status: isEditEmployeeShiftPermitted ? "Approved" : "Pending",
-        approved_by: isEditEmployeeShiftPermitted ? userProfile?.id : null,
-        is_off_day: Object.values(customSchedule).some((day) => day.is_off),
-        // Additional fields to identify this as a change request
-        is_change_request: "true",
-        shift_requested: shift_requested,
-        // Metadata about the request
-        changed_days: changedDays,
-        requested_date_range: `${requestedStartDate},${requestedEndDate}`,
-
-      };
-
-      console.log("Shift Change Request Payload:", payload);
-      if (isEditEmployeeShiftPermitted) {
-        await generateShiftScheduleLog({
-          scheduleData: payload,
-          logType: "Manual Assignment",
-          userProfile: userProfile,
-          status: "Approved",
-        });
+      // Add to result - null if no custom shift found
+      if (customShiftForDate) {
+        const ResponseData = mapCustomShiftData(customShiftForDate, dateKey);
+        ResponseObject[dateKey] = ResponseData;
+        return ResponseData;
       }
+      ResponseObject[dateKey] = customShiftForDate;
+      return customShiftForDate;
+    })
+  );
+  return ResponseObject;
+}
 
-      const response = await saveShiftSchedule(payload);
+export async function mapShiftScheduleData(data) {
+  const shiftScheduleDetails = { ...data };
 
-      if (response) {
-        toast.success("Shift change request submitted successfully!");
-        reload();
-        setIsOpen(false);
-        setCloseSheet(false);
-        // Reset form data
-        setFormData({
-          dateRange: "",
-          dailySchedule: [],
-        });
-      } else {
-        toast.error("Failed to submit shift change request");
-      }
-    } catch (error) {
-      console.error("Error submitting shift change request:", error);
-      toast.error("An error occurred while submitting the request");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Only transform approval_details if it exists
+  if (
+    data.hasOwnProperty("approval_logs") ||
+    data.hasOwnProperty("approval_levels")
+  ) {
+    shiftScheduleDetails.approval_details = await mapApproverDetails(data);
+  }
+
+  // Normalize the request field name for consistency
+  if (data.hierarchy_request) {
+    shiftScheduleDetails.request = data.hierarchy_request;
+  }
+
+  return shiftScheduleDetails;
+}

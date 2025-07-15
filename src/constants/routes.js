@@ -51,6 +51,7 @@ import {
   PayRun,
   CreatePayRun,
   PayRunDetails,
+  EmployeeSalaryDetails,
   PayrollPayrunDetail,
 } from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
@@ -67,7 +68,7 @@ import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
-import {OrganizationalTree} from "app/modules/OrganizationalChart";
+import { OrganizationalTree } from "app/modules/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
@@ -103,6 +104,11 @@ export const SidebarRoutes = [
           path: "/my-attendance",
           component: <MyAttendance />,
           name: "MY_ATTENDANCE",
+        },
+        Config.MY_ATTENDANCE && {
+          path: "/my-attendance-report/:id",
+          component: <EmployeeAttendanceReport />,
+          name: "VIEW_ATTENDANCE",
         },
         Config.DAILY_TASK_REPORT && {
           path: "/my-dtr",
@@ -155,7 +161,7 @@ export const SidebarRoutes = [
     ? [
         Config.TEAM_PROFILE && {
           path: "/team-profile-management",
-          component: <TeamProfileMangement />,
+          component: <Employee isTeamView={true} />,
           name: "TEAM_PROFILE",
         },
         Config.TEAM_LEAVE_REQUEST && {
@@ -167,6 +173,11 @@ export const SidebarRoutes = [
           path: "/team-exit-clearance",
           component: <ExitAndClearance isTeamView={true} />,
           name: "TEAM_EXIT_CLEARANCE",
+        },
+        Config.TEAM_ATTENDANCE && {
+          path: "/team-attendance",
+          component: <Attendance isTeamView={true} />,
+          name: "TEAM_ATTENDANCE",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
@@ -355,7 +366,7 @@ export const SidebarRoutes = [
           name: "SHIFT_CALENDAR",
         },
         Config.EMPLOYEES_ATTENDANCE && {
-          path: "attendance-reports/:id",
+          path: "/attendance-reports/:id",
           component: <EmployeeAttendanceReport />,
           name: "VIEW_EMPLOYEE_ATTENDANCE",
         },
@@ -377,6 +388,11 @@ export const SidebarRoutes = [
           path: "/payroll",
           component: <EmployeesPayroll />,
           name: "EMPLOYEES_PAYROLL",
+        },
+        Config.EMPLOYEES_PAYROLL && {
+          path: "/payroll/:id",
+          component: <EmployeeSalaryDetails />,
+          name: "Payroll Details",
         },
         Config.SALARY_SETUP && {
           path: "/payroll/salary-setup",
@@ -492,12 +508,6 @@ export const SidebarRoutes = [
 ];
 
 const RemainingSidebarRoutes = [
-  // Config.PAYROLL && {
-  //   path: "/payroll/:id",
-  //   component: <EmployeeSalaryDetails />,
-  //   name: "Payroll Details",
-  // },
-
   Config.PAYROLL && {
     path: "/payslip-eos/:id",
     component: <Payslip />,

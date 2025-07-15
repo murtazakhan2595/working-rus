@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+  CardHeader,
+} from "components/ui/card";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
-import Header from "../../../components/Header";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
 import { employeeStatus } from "data/Data";
 import { getEmployeeCustomList } from "app/hooks/general";
-import { PageLoader } from "components";
-import Stats from "../../../components/ui/Stats";
-import TableCustom from "components/CustomTable";
+import { PageLoader, Header, TableCustom } from "components";
+import Stats from "components/ui/Stats";
 import { useSelector } from "react-redux";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
+import ImportEmployeesButton from "./Screens/Sections/ImportEmployeesButton"; // Adjust the path as needed
 
-export default function EmployeeManagement() {
+export default function EmployeeManagement({ isTeamView = false }) {
   const navigate = useNavigate();
   const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +49,7 @@ export default function EmployeeManagement() {
       setOrdering(sortName);
     },
   };
-
+console.log("employeeData", employeeData);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
@@ -54,6 +59,7 @@ export default function EmployeeManagement() {
         ordering,
       });
       if (isMounted) {
+        setEmployeeData(data || { results: [], count: 0 });
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
@@ -127,58 +133,67 @@ export default function EmployeeManagement() {
         }
       />
       <Stats stats={statsData} />
-      <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row">
-        <div className="flex">
-          <SelectInputComponent
-            name="Employee Status"
-            value={selectedStatus}
-            placeholder="Employee Status"
-            options={employeeStatus}
-            onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
-            classes="flex-row"
-          />
-        </div>
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID and Name",
-              name: "emp_search",
-            },
-            {
-              type: "select",
-              options: Departments,
-              name: "department_name",
-              placeholder: "Department",
-            },
-            {
-              type: "select",
-              options: Designations,
-              name: "department_position",
-              placeholder: "Designation",
-            },
-            {
-              type: "select",
-              options: Branches,
-              name: "branch_id",
-              placeholder: "Branch",
-            },
-            {
-              type: "select",
-              options: UserRoles,
-              name: "user_role",
-              placeholder: "Role",
-            },
-          ]}
-          onChange={handleFilterChange}
-          className='justify-end'
-        />
-      </div>
-      {isLoading ? (
-        <PageLoader />
-      ) : (
-        <Card>
-          <CardContent>
+      <Card>
+        <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
+          <div>
+            <CardTitle>Employees</CardTitle>
+            <CardDescription>
+              Here you can manage, add, edit and view employee profile and data.
+            </CardDescription>
+          </div>
+          <ImportEmployeesButton reload={fetchData}/>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row mb-4">
+            <div className="flex">
+              <SelectInputComponent
+                name="Employee Status"
+                value={selectedStatus}
+                placeholder="Employee Status"
+                options={employeeStatus}
+                onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
+                classes="flex-row"
+              />
+            </div>
+            <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search by ID and Name",
+                  name: "emp_search",
+                },
+                {
+                  type: "select",
+                  options: Departments,
+                  name: "department_name",
+                  placeholder: "Department",
+                },
+                {
+                  type: "select",
+                  options: Designations,
+                  name: "department_position",
+                  placeholder: "Designation",
+                },
+                {
+                  type: "select",
+                  options: Branches,
+                  name: "branch_id",
+                  placeholder: "Branch",
+                },
+                {
+                  type: "select",
+                  options: UserRoles,
+                  name: "user_role",
+                  placeholder: "Role",
+                },
+              ]}
+              onChange={handleFilterChange}
+              className="justify-end"
+            />
+          </div>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
             <TableCustom
               data={employeeData.results}
               columns={EmployeeColumns}
@@ -186,9 +201,9 @@ export default function EmployeeManagement() {
               dataTotalSize={employeeData.count || 0}
               tableOptions={tableOptions}
             />
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

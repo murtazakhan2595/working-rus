@@ -237,44 +237,45 @@ const AddUpdateAssetCategory = ({
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                 <SheetCardExtension title="Category Details">
-                  <TextInput
-                    name="name"
-                    error={props.errors?.name}
-                    touch={props.touched?.name}
-                    value={props.values?.name}
-                    label="Category Name"
-                    required={true}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                    placeholder="Enter category name"
-                  />
+                  <div className="space-y-4">
+                    <TextInput
+                      name="name"
+                      error={props.errors?.name}
+                      touch={props.touched?.name}
+                      value={props.values?.name}
+                      label="Category Name"
+                      required={true}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                      placeholder="Enter category name"
+                    />
 
-                  <TextAreaInput
-                    name="description"
-                    error={props.errors?.description}
-                    touch={props.touched?.description}
-                    value={props.values?.description}
-                    label="Description"
-                    required={false}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                    maxRows={3}
-                    placeholder="Enter category description (optional)"
-                  />
+                    <TextAreaInput
+                      name="description"
+                      error={props.errors?.description}
+                      touch={props.touched?.description}
+                      value={props.values?.description}
+                      label="Description"
+                      required={false}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                      maxRows={3}
+                      placeholder="Enter category description (optional)"
+                    />
 
-                  <CheckBoxInput
-                    name="is_active"
-                    error={props.errors?.is_active}
-                    touch={props.touched?.is_active}
-                    value={props.values?.is_active}
-                    label="Active"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    className="mt-4"
-                  />
+                    <CheckBoxInput
+                      name="is_active"
+                      error={props.errors?.is_active}
+                      touch={props.touched?.is_active}
+                      value={props.values?.is_active}
+                      label="Active"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  </div>
                 </SheetCardExtension>
 
                 <SheetCardExtension title="Dynamic Fields">

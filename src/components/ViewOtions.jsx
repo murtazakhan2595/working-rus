@@ -37,10 +37,9 @@ const ViewOptions = React.memo(
             isActive && "bg-fuchsia-50 text-plum-1100"
           )}
         >
-          <TooltipText
-            tooltipTriggerText={<Icon className="h-4 w-4" aria-hidden="true" />}
-            content={tooltipText}
-          />
+          <TooltipText content={tooltipText}>
+            <Icon className="h-4 w-4" aria-hidden="true" />
+          </TooltipText>
         </Button>
       );
     };

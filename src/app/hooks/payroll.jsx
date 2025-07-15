@@ -7,9 +7,10 @@ import {
   mapEmployeePayRollData,
   mapPayrunPayloadData,
   mapEmployeeSalaryPayloadData,
+  mapFinalSettlementPayloadData,
 } from "app/utils/MappingObjects/mapPayrollData";
 import { toast } from "react-toastify";
-import {renderErrorMessages} from 'utils/renderErrors';
+import { renderErrorMessages } from "utils/renderErrors";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -401,7 +402,6 @@ const saveEmployeePayroll = async (payload, id) => {
       }
     }
   } catch (error) {
-    
     console.error("Error in saveEmployeePayroll:", error);
     if (error?.response) {
       console.error(
@@ -414,13 +414,12 @@ const saveEmployeePayroll = async (payload, id) => {
       HandleLogout();
       return false;
     }
-    renderErrorMessages(error?.response?.data)
+    renderErrorMessages(error?.response?.data);
     // toast.error(`Unexpected response status: ${error?.response.status}`);
 
     return false;
   }
 };
-
 
 const saveEmployeeEarnDeduction = async (payload) => {
   try {
@@ -658,89 +657,122 @@ const getPayslipByID = async (id) => {
   }
 };
 
-const saveFinalSettlement = async (payload) => {
+export const saveFinalSettlement = async (payload, id) => {
+  const finalId = payload.id || id;
   try {
-    console.log(
-      "Starting final settlement save operation with payload:",
-      payload
-    );
+    const finalPayload = mapFinalSettlementPayloadData(payload);
 
-    if (!payload) {
-      console.error("Final settlement payload is missing");
-      return false;
-    }
+    const url = finalId
+      ? `${baseUrl}/payroll/finalsettlement/${finalId}` // Use id if updating
+      : `${baseUrl}/payroll/finalsettlement/`; // No id means create new
 
-    if (!payload.employee_payroll) {
-      console.error(
-        "Employee payroll ID is missing in final settlement payload"
-      );
-      return false;
-    }
+    const method = finalId ? "PATCH" : "POST"; // Determine method based on existence of id
 
-    // Convert numeric input values to numbers if they're strings
-    if (payload.remaining_salary) {
-      payload.remaining_salary = Number(payload.remaining_salary);
-    }
-    if (payload.earned_leave_encashment) {
-      payload.earned_leave_encashment = Number(payload.earned_leave_encashment);
-    }
-    if (payload.total_deductions) {
-      payload.total_deductions = Number(payload.total_deductions);
-    }
-    if (payload.gratuity_amount) {
-      payload.gratuity_amount = Number(payload.gratuity_amount);
-    }
-    if (payload.final_amount) {
-      payload.final_amount = Number(payload.final_amount);
-    }
-
-    if (payload?.id) {
-      console.log(`Updating existing final settlement with ID: ${payload.id}`);
-      const response = await axios.patch(
-        `${baseUrl}/payroll/finalsettlement/${payload.id}`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      console.log("Final settlement update response:", response);
-      if (response.status === 201 || response.status === 200) {
-        console.log("Final settlement updated successfully");
-        return true;
-      } else {
-        console.error("Unexpected response status:", response.status);
-        return false;
-      }
-    } else {
-      console.log("Creating new final settlement");
-      const response = await axios.post(
-        `${baseUrl}/payroll/finalsettlement/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      console.log("Final settlement creation response:", response);
-      if (response.status === 201 || response.status === 200) {
-        console.log("Final settlement created successfully");
-        return true;
-      } else {
-        console.error("Unexpected response status:", response.status);
-        return false;
-      }
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
     }
   } catch (error) {
-    console.error("Error saving final settlement data:", error);
-    console.error("Request payload was:", payload);
-    if (error?.response?.data) {
-      console.error("API error details:", error.response.data);
-    }
+    console.error("Error saving attendance:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data);
     return false;
   }
 };
+
+
+// export const saveFinalSettlement = async (payload) => {
+//   try {
+//     console.log(
+//       "Starting final settlement save operation with payload:",
+//       payload
+//     );
+
+//     if (!payload) {
+//       console.error("Final settlement payload is missing");
+//       return false;
+//     }
+
+//     if (!payload.employee_payroll) {
+//       console.error(
+//         "Employee payroll ID is missing in final settlement payload"
+//       );
+//       return false;
+//     }
+
+//     // Convert numeric input values to numbers if they're strings
+//     if (payload.remaining_salary) {
+//       payload.remaining_salary = Number(payload.remaining_salary);
+//     }
+//     if (payload.earned_leave_encashment) {
+//       payload.earned_leave_encashment = Number(payload.earned_leave_encashment);
+//     }
+//     if (payload.total_deductions) {
+//       payload.total_deductions = Number(payload.total_deductions);
+//     }
+//     if (payload.gratuity_amount) {
+//       payload.gratuity_amount = Number(payload.gratuity_amount);
+//     }
+//     if (payload.final_amount) {
+//       payload.final_amount = Number(payload.final_amount);
+//     }
+
+//     if (payload?.id) {
+//       console.log(`Updating existing final settlement with ID: ${payload.id}`);
+//       const response = await axios.patch(
+//         `${baseUrl}/payroll/finalsettlement/${payload.id}`,
+//         payload,
+//         {
+//           headers: headers(),
+//         }
+//       );
+//       console.log("Final settlement update response:", response);
+//       if (response.status === 201 || response.status === 200) {
+//         console.log("Final settlement updated successfully");
+//         return true;
+//       } else {
+//         console.error("Unexpected response status:", response.status);
+//         return false;
+//       }
+//     } else {
+//       console.log("Creating new final settlement");
+//       const response = await axios.post(
+//         `${baseUrl}/payroll/finalsettlement/`,
+//         payload,
+//         {
+//           headers: headers(),
+//         }
+//       );
+//       console.log("Final settlement creation response:", response);
+//       if (response.status === 201 || response.status === 200) {
+//         console.log("Final settlement created successfully");
+//         return true;
+//       } else {
+//         console.error("Unexpected response status:", response.status);
+//         return false;
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error saving final settlement data:", error);
+//     console.error("Request payload was:", payload);
+//     if (error?.response?.data) {
+//       console.error("API error details:", error.response.data);
+//     }
+//     if (error?.response?.status === 401) {
+//       HandleLogout();
+//     }
+//     return false;
+//   }
+// };
+
+
 const getEmpPayrolDetails = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -788,6 +820,23 @@ const getFinalSettlement = async (payload) => {
       HandleLogout();
     }
     return [];
+  }
+};
+
+export const getFinalSettlementByEmpPayrollId = async (payroll_id) => {
+  const filterData = { employee_payroll: payroll_id };
+  try {
+    const response = await getFinalSettlement({ filterData });
+    if (response.results && response.results.length > 0) {
+      const Record = response.results[0];
+      return Record;
+    } else return null;
+  } catch (error) {
+    console.error("Error fetching final settlement data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
   }
 };
 
@@ -909,7 +958,6 @@ export {
   getPayun,
   getPayslipByID,
   getPayRunById,
-  saveFinalSettlement,
   getEmpPayrolDetails,
   getFinalSettlement,
   getPayrollAdjustmentTemplate,

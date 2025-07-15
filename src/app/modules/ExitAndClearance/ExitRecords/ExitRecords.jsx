@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Resigned, Terminated } from "app/modules/ExitAndClearance/ExitRecords";
 import {
   Tabs,
@@ -9,13 +9,28 @@ import {
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
-const ExitRecords = ({
-  filterData = {},
-  handleTabChange = () => {},
-  activeTab,
-  setActiveTab = () => {},
-}) => {
-
+const ExitRecords = ({ isTeamView, permittedViewFilterData }) => {
+  const [activeTab, setActiveTab] = useState("Terminated");
+  const [filterData, setFilterData] = useState({
+    request_status: "REJECTED,APPROVED",
+    exit_category: "TERMINATION",
+    reporting_employees: isTeamView
+      ? permittedViewFilterData?.reporting_employees
+      : [],
+  });
+  const handleTabChange = (tab) => {
+    setFilterData((prevFilters) => {
+      return {
+        ...prevFilters,
+        exit_category:
+          tab === "Resigned"
+            ? "RESIGNATION"
+            : tab === "Terminated"
+            ? "TERMINATION"
+            : null,
+      };
+    });
+  };
   return (
     <Tabs
       className="w-full"
@@ -26,9 +41,9 @@ const ExitRecords = ({
       value={activeTab}
     >
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-        <TabsList className="flex items-center justify-center mb-4">
+        <TabsList className="flex items-center justify-center">
           {["Resigned", "Terminated"].map((tab) => (
-            <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+            <TabsTrigger key={tab} value={tab} variant={"inner-tab"}>
               {tab}
             </TabsTrigger>
           ))}

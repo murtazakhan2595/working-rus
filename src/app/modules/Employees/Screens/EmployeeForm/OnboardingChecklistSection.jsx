@@ -1,39 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Switch } from "src/@/components/ui/switch";
 import { DateInput } from "components/FormControl";
 import { Label } from "src/@/components/ui/label";
-// import { getOnboardingDocumentList } from "app/hooks/onboardingHooks";
 import { Card, CardContent } from "components/ui/card";
 import { Attachments } from "app/modules/TaskManagment/Sections";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
-import { getEmployeeDocsChecklist } from "app/hooks/employee";
 
-const OnboardingChecklistSection = ({ formikProps }) => {
-  console.log("formikProps", formikProps);
-  const [documentTemplates, setDocumentTemplates] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Document template structure in employee form
-  // {
-  //   templateId: 1,
-  //   name: "Employee ID Proof",
-  //   isActive: true,
-  //   hasExpiryDate: true,
-  //   expiryDate: "2025-05-15",
-  //   attachment: []
-  // }
+const OnboardingChecklistSection = ({
+  name,
+  onChange = () => {},
+  error,
+  touch,
+  value = [],
+}) => {
+  const [isLoading, setIsLoading] = useState(false); // Start with false since parent handles it
 
   useEffect(() => {
-    const fetchDocumentTemplates = async () => {
+    const initializeDocuments = async (isMounted) => {
       try {
         setIsLoading(true);
         const response = await getOnboardingDocument();
-        if (response?.results) {
-          // Initialize the onboarding documents in formik if not already present
-          if (
-            !formikProps.values.onboardingDocuments ||
-            formikProps.values.onboardingDocuments?.length === 0
-          ) {
+        if (response?.results && isMounted) {
+          // Check if documents are already initialized by parent
+          const currentDocs = value;
+
+          const hasExistingDocs = currentDocs && currentDocs.length > 0;
+
+          if (!hasExistingDocs) {
+            // Initialize new documents only if parent didn't
             const initialDocuments = response.results.map((template) => ({
               templateId: template.id,
               name: template.name,
@@ -43,124 +37,125 @@ const OnboardingChecklistSection = ({ formikProps }) => {
               attachment: [],
             }));
 
-            formikProps.setFieldValue("onboardingDocuments", initialDocuments);
-          }
-          else{
-            // const employeeDocsChecklist =await  getEmployeeDocsChecklist({filterData:{employee_id:formikProps.values.employee_id}})
-            console.log(
-              "confirmining its in else block",
-              formikProps.values.onboardingDocuments
-            );
-            const initialDocuments = formikProps.values.onboardingDocuments.map(
-              (doc) => ({
-                id: doc.id,
-                templateId: doc.checklist_id,
-                name: response.results.find(
-                  (template) => template.id === doc.checklist_id,
-                ).name,
+            onChange(name, initialDocuments);
+          } else {
+            // Check if existing docs need template name mapping
+            const needsMapping = currentDocs.some((doc) => doc.checklist_id);
 
-                isActive: doc.is_Active,
-                hasExpiryDate: doc.has_expiry_date,
-                expiryDate: doc.expiry_date,
-                attachment: doc.attachment,
-              })
-            );
-            formikProps.setFieldValue("onboardingDocuments", initialDocuments);
+            if (needsMapping) {
+              const mappedDocuments = currentDocs.map((doc) => {
+                const template = response.results.find(
+                  (t) => t.id === doc.checklist_id
+                );
+                return {
+                  id: doc.id,
+                  templateId: doc.checklist_id,
+                  name: template?.name || doc.name,
+                  isActive: doc.is_Active,
+                  hasExpiryDate: doc.has_expiry_date,
+                  expiryDate: doc.expiry_date,
+                  attachment: doc.attachment,
+                };
+              });
+
+              onChange(name, mappedDocuments);
+            } else {
+            }
           }
-          setDocumentTemplates(response.results);
+        } else {
+          console.error("❌ Child: No results in API response");
         }
       } catch (error) {
-        console.error("Error fetching onboarding document templates:", error);
+        console.error("❌ Child: Error in initializeDocuments:", error);
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchDocumentTemplates();
+    // Only initialize if we haven't done so already
+    let isMounted = true;
+    initializeDocuments(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleActiveToggle = (index, checked) => {
-    const updatedDocs = [...formikProps.values.onboardingDocuments];
+    const updatedDocs = [...value];
     updatedDocs[index].isActive = checked;
 
-    // If inactive, clear expiry date
     if (!checked) {
       updatedDocs[index].hasExpiryDate = false;
       updatedDocs[index].expiryDate = null;
     }
 
-    formikProps.setFieldValue("onboardingDocuments", updatedDocs);
+    onChange(name, updatedDocs);
   };
 
   const handleExpiryToggle = (index, checked) => {
-    const updatedDocs = [...formikProps.values.onboardingDocuments];
+    const updatedDocs = [...value];
     updatedDocs[index].hasExpiryDate = checked;
 
-    // If expiry is turned off, clear the date
     if (!checked) {
       updatedDocs[index].expiryDate = null;
     }
 
-    formikProps.setFieldValue("onboardingDocuments", updatedDocs);
+    onChange(name, updatedDocs);
   };
 
   const handleExpiryDateChange = (index, date) => {
-    const updatedDocs = [...formikProps.values.onboardingDocuments];
+    const updatedDocs = [...value];
     updatedDocs[index].expiryDate = date;
-    formikProps.setFieldValue("onboardingDocuments", updatedDocs);
+    onChange(name, updatedDocs);
   };
 
   const handleAttachmentChange = (index, attachment) => {
-    const updatedDocs = [...formikProps.values.onboardingDocuments];
+    const updatedDocs = [...value];
     updatedDocs[index].attachment = attachment;
-    formikProps.setFieldValue("onboardingDocuments", updatedDocs);
+    onChange(name, updatedDocs);
   };
 
   const getDocumentError = (index, field) => {
-    const errors = formikProps.errors?.onboardingDocuments;
+    const errors = error;
     if (errors && errors[index] && errors[index][field]) {
       return errors[index][field];
     }
     return null;
   };
 
-  // Get touched status for a specific document
   const getDocumentTouched = (index, field) => {
-    const touched = formikProps.touched?.onboardingDocuments;
+    const touched = touch;
     if (touched && touched[index] && touched[index][field]) {
       return touched[index][field];
     }
     return false;
   };
 
+  // Show loading state only if we're actively loading
   if (isLoading) {
     return <div>Loading document templates...</div>;
   }
 
-  if (
-    !formikProps.values.onboardingDocuments ||
-    formikProps.values.onboardingDocuments?.length === 0
-  ) {
+  if (isLoading) return <div>Initializing documents...</div>;
+  // If no documents exist at all, show no documents message
+  if (!value || value.length === 0) {
+    // Only show loading message if we're still trying to initialize
     return <div>No onboarding documents found.</div>;
   }
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Onboarding Checklist</h3>
-      {formikProps.values.onboardingDocuments.map((doc, index) => (
-        <Card key={index} className="pt-4">
+      {value.map((doc, index) => (
+        <Card key={doc.templateId || index} className="pt-4">
           <CardContent className="">
             <div className=" flex justify-between items-center">
-              <p className="">
-                {doc.name}
-              </p>
+              <p className="">{doc.name}</p>
               <div className="flex items-center space-x-2">
                 <Label htmlFor={`active-${index}`} className="text-sm">
                   {doc.isActive ? "Active" : "Inactive"}
                 </Label>
                 <Switch
                   id={`active-${index}`}
-                  checked={doc.isActive }
+                  checked={doc.isActive}
                   onCheckedChange={(checked) =>
                     handleActiveToggle(index, checked)
                   }
@@ -168,7 +163,7 @@ const OnboardingChecklistSection = ({ formikProps }) => {
               </div>
             </div>
 
-            {(doc.isActive)  && (
+            {doc.isActive && (
               <>
                 <div className="my-4">
                   <Attachments

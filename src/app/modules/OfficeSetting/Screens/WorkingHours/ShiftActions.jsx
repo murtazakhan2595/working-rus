@@ -6,7 +6,7 @@ import AddShiftForm from "./AddShiftForm";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const ShiftActions = ({ data, reload, ShiftList = [] }) => {
+const ShiftActions = ({ data, reloadData=()=>{}, ShiftList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -43,7 +43,7 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
         deleteShift?.data?.name
       );
       if (response) {
-        reload();
+        reloadData(true);
       }
     } catch (error) {
       console.log("ERROR", error);
@@ -61,7 +61,7 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
         deleteText="Delete Shift"
         menuTooltip="Shift Actions"
       />
-      
+
       {deleteShift?.open && (
         <AlertDialogue
           title="Confirm Delete?"
@@ -80,11 +80,11 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
       {edit?.open && (
         <AddShiftForm
           isOpen={edit.open}
-          setIsOpen={() => {
-            reload(true);
+          id={data.id}
+          reloadData={() => {
+            reloadData(true);
             setEdit(null);
           }}
-          id={data.id}
         />
       )}
 
@@ -95,7 +95,7 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           currentId={view?.data?.id}
-          reloadData={reload}
+          reloadData={reloadData}
           DataList={ShiftList}
         />
       )}

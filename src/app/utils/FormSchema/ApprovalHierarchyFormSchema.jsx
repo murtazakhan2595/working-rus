@@ -18,9 +18,27 @@ export const validateHierarchyLevelFormSchema = (values) => {
 
 export const validateAddHierarchyLevelsForm = (
   values,
-  existingRequestInitiator
+  {
+    request_initiative: existingRequestInitiator,
+    level_groups: existingLevelGroups,
+  }
 ) => {
   const errors = {};
+
+  if (!values.level_groups) errors.level_groups = "Name is required";
+  else if (typeof values.level_groups !== "string")
+    errors.level_groups = "Name is required";
+  else if (!values.level_groups.trim())
+    errors.level_groups = "Name is required";
+  else {
+    const level_groups = values.level_groups.trim();
+    const is_group_name_exist = existingLevelGroups.find(
+      (name) => name === level_groups
+    );
+    if (is_group_name_exist)
+      errors.level_groups =
+        "Levels with this name already exist. Please choose a different name.";
+  }
 
   // Validate request_initiative
   if (!values.request_initiative) {
@@ -43,21 +61,46 @@ export const validateAddHierarchyLevelsForm = (
     }
   }
   // Validate levels
-  if (!values.levels || !Array.isArray(values.levels) || values.levels.length===0) {
+  if (
+    !values.levels ||
+    !Array.isArray(values.levels) ||
+    values.levels.length === 0
+  ) {
     errors.levels = "At least one level is required";
   } else {
     const seenDesignations = new Set();
+    let seenDirectApprover = false;
+    let seenIndirectApprover = false;
     let finalApprovalCount = 0;
 
     values.levels.forEach((level, index) => {
       const levelErrors = {};
-
-      if (!level.designation) {
-        levelErrors.designation = "Designation is required";
-      } else if (seenDesignations.has(level.designation)) {
-        levelErrors.designation = "Designation must be unique";
+      if (!level.assignment_type) {
+        levelErrors.assignment_type = "Approver type is required.";
       } else {
-        seenDesignations.add(level.designation);
+        if (level.assignment_type === "DESIGNATION") {
+          if (!level.designation) {
+            levelErrors.designation = "Designation is required";
+          } else if (seenDesignations.has(level.designation)) {
+            levelErrors.designation = "Designation must be unique";
+          } else {
+            seenDesignations.add(level.designation);
+          }
+        } else if (level.assignment_type === "DIRECT_REPORTING") {
+          if (seenDirectApprover) {
+            levelErrors.assignment_type =
+              "Direct reporting can only be assigned as an approver for one level.";
+          } else {
+            seenDirectApprover = true;
+          }
+        } else if (level.assignment_type === "INDIRECT_REPORTING") {
+          if (seenIndirectApprover) {
+            levelErrors.assignment_type =
+              "Indirect reporting can only be assigned as an approver for one level.";
+          } else {
+            seenIndirectApprover = true;
+          }
+        }
       }
 
       if (level.auto_forward_enabled)

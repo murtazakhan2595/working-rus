@@ -4,7 +4,6 @@ import { OFFICE_SETTING_PERMISSIONS } from '../permissions/constants';
 export const useOfficeSettingPermissions = () => {
   // Try different possible paths for permissions in Redux state
   const permissionsFromState = useSelector(state => {
-    console.log('Full roles_permissions state:', state.roles_permissions);
     return state.roles_permissions?.my_permissions || [];
   });
 
@@ -16,17 +15,6 @@ export const useOfficeSettingPermissions = () => {
     return permissions.includes(permissionCode);
   };
 
-  // Debug: Log available permissions (uncomment for debugging)
-  console.log('OfficeSetting - Raw permissions from state:', permissionsFromState);
-  console.log('OfficeSetting - Processed permissions:', permissions);
-  console.log('OfficeSetting - Available permission codes:', permissions);
-  console.log('OfficeSetting - Checking permissions for:', {
-    'ADD_DEPARTMENTS': hasPermission('ADD_DEPARTMENTS'),
-    'ADD_DESIGNATIONS': hasPermission('ADD_DESIGNATIONS'),
-    'ADD_BRANCHES': hasPermission('ADD_BRANCHES'),
-    'ADD_SHIFTS': hasPermission('ADD_SHIFTS'),
-    'ADD_ONBOARDING_CHECKLIST': hasPermission('ADD_ONBOARDING_CHECKLIST')
-  });
 
   return {
     // Organization Permissions

@@ -4,7 +4,6 @@ import {
   fetchDepartments,
   fetchDesignations,
   fetchProjects,
-  fetchOrganizations,
   fetchBranches,
   fetchCalendarHoliday,
 } from "state/slices/CommonSlice";
@@ -15,7 +14,6 @@ import {
   fetchMyPermissions,
   fetchUserPermittedModules,
 } from "state/slices/RolePermissionSlice";
-import { fetchTerminationReasons } from "state/slices/ExitEmployeeSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import {
   fetchEmployees,
@@ -24,10 +22,7 @@ import {
   fetchUser,
 } from "state/slices/EmpSlice";
 import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
-import {
-  fetchShiftById,
-  fetchUserAttendanceDetails,
-} from "state/slices/AttendanceSlice";
+import { fetchUserAttendanceDetails } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
@@ -37,7 +32,7 @@ export const countriesCallingCodes = countries.all
       country.countryCallingCodes && country.countryCallingCodes.length > 0
   )
   .map((country) => ({
-    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+    value: parseInt(country.countryCallingCodes[0].replace("+", "")), // Remove any existing plus signs
     label: `${country.name} (+${country.countryCallingCodes[0].replace(
       "+",
       ""
@@ -80,6 +75,12 @@ export const ApprovalHierarchyRequestType = [
     : []),
   ...(Config.MY_ATTENDANCE
     ? [{ label: "Attendance Adjustments", value: "ATTENDANCE_UPDATION" }]
+    : []),
+  ...(Config.MY_SHIFT_CALENDAR
+    ? [{ label: "Employee Shift Schedule", value: "SHIFT_SCHEDULE_EMPLOYEE" }]
+    : []),
+  ...(Config.SHIFT_CALENDAR
+    ? [{ label: "Manager Shift Schedule", value: "SHIFT_SCHEDULE_MANAGER" }]
     : []),
 ];
 
@@ -650,15 +651,6 @@ export const ResignationStatusOptions = [
   { label: "Exit Interview", value: "exit interview" },
 ];
 
-export const ResignationReasons = [
-  // { value: "career-advance", label: "Career growth" },
-  //{ value: "better-opportunity", label: "Better opportunity" },
-  { value: "family-reasons", label: "Personal Reasons" },
-  { value: "Relocation", label: "Relocation" },
-  { value: "health-reasons", label: "Health reasons" },
-  // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
-  { value: "Others", label: "Others" },
-];
 export const ReasonForLeaving = [
   { value: "voluntary", label: "Voluntary" },
   { value: "involuntary", label: "Involuntary" },
@@ -686,25 +678,6 @@ export const ReasonForLeaving = [
   {
     value: "others",
     label: "Other",
-  },
-];
-
-export const terminationReasonsOptions = [
-  {
-    value: 1,
-    label: "Poor Performance",
-  },
-  { value: 2, label: "Involuntary" },
-  {
-    value: 7,
-    label: "End of Contract",
-  },
-  { value: 3, label: "Retirement" },
-  { value: 4, label: "Layoff" },
-  { value: 5, label: "Dismissal" },
-  {
-    value: 6,
-    label: "Mutual Agreement",
   },
 ];
 
@@ -782,52 +755,6 @@ export const payoutPeriodOptions = [
   { value: "per_hour", label: "Per Hour" },
 ];
 
-export const LeaveTrackerOptions = [
-  { value: "Pending", label: "Pending" },
-  { value: "Approved", label: "Approved" },
-  { value: "Declined", label: "Declined" },
-];
-
-// Dummy data
-export const employeeData = {
-  id: "TXB-0056",
-  name: "Dennis Callis",
-  role: "UI/UX Designer / Mid-Level Designer",
-  avatar: "/placeholder.svg?height=80&width=80",
-  costToCompany: "3,870.34",
-  costToCompanyWords: "Three Thousand Eight Hundred And Seventy AED",
-  incrementsCount: 3,
-  lastIncrementDate: "5 months ago",
-};
-
-export const salaryBreakup = [
-  { component: "Basic Pay", amount: "300.00" },
-  { component: "Fixed Allowance", amount: "300.00" },
-  { component: "Home Allowance", amount: "50.00" },
-  { component: "Phone Allowance", amount: "50.00" },
-  { component: "Travel Allowance", amount: "100.00" },
-  { component: "Food Allowance", amount: "100.00" },
-];
-
-export const salarySummary = {
-  "Joining Date": "Jul 31, 2022",
-  "Last Revised Date": "Aug 2, 2024",
-  Experience: "2 years, 5 Months",
-  "Previous CTC": "AED 7,901.51",
-  "Salary Type": "Monthly",
-  "Current CTC": "AED 7,901.51",
-  "Salary Package": "Mid-level",
-};
-
-export const Locations = [
-  { label: "Headquarters", value: "Headquarters" },
-  { label: "Branch Office - North", value: "Branch Office - North" },
-  { label: "Branch Office - South", value: "Branch Office - South" },
-  { label: "Branch Office - East", value: "Branch Office - East" },
-  { label: "Branch Office - West", value: "Branch Office - West" },
-  { label: "Remote", value: "Remote" },
-];
-
 export const AssetCondition = [
   { label: "New", value: "New" },
   { label: "Used", value: "Used" },
@@ -845,6 +772,30 @@ export const AssetCategories = [
   { label: "Other", value: "Other" },
 ];
 
+export const ReligionList = [
+  { label: "Christianity", value: "Christianity" },
+  { label: "Islam", value: "Islam" },
+  { label: "Hinduism", value: "Hinduism" },
+  { label: "Buddhism", value: "Buddhism" },
+  { label: "Judaism", value: "Judaism" },
+  { label: "Sikhism", value: "Sikhism" },
+  { label: "Jainism", value: "Jainism" },
+  { label: "Shinto", value: "Shinto" },
+  { label: "Taoism", value: "Taoism" },
+  { label: "Confucianism", value: "Confucianism" },
+  { label: "Bahá'í Faith", value: "Bahá'í Faith" },
+  { label: "Zoroastrianism", value: "Zoroastrianism" },
+  {
+    label: "Traditional African Religions",
+    value: "Traditional African Religions",
+  },
+  { label: "Indigenous Religions", value: "Indigenous Religions" },
+  { label: "Atheism", value: "Atheism" },
+  { label: "Agnosticism", value: "Agnosticism" },
+  { label: "Non-religious/Secular", value: "Non-religious/Secular" },
+  { label: "Other", value: "Other" },
+];
+
 export const handleUpdateProfile = async (dispatch, data) => {
   const userprofile = {
     id: data.id,
@@ -856,7 +807,7 @@ export const handleUpdateProfile = async (dispatch, data) => {
   await dispatch(setUserProfile(userprofile));
   const ModuleList = await dispatch(fetchModules());
   const MyPermissions = await dispatch(fetchMyPermissions());
-  const employee_details = await dispatch(fetchUser(userprofile.id));
+  await dispatch(fetchUser(userprofile.id));
   await dispatch(
     fetchUserPermittedModules({
       modules: ModuleList.payload,
@@ -870,12 +821,9 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchDesignations());
   await dispatch(fetchCalendarHoliday(userprofile.id));
   await dispatch(fetchDocumentCategory());
-  dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
   await dispatch(fetchUserRoles());
-  dispatch(fetchTerminationReasons());
   dispatch(fetchReportingManagers());
   await dispatch(fetchUserAttendanceDetails(userprofile.id));
   await dispatch(fetchProjects(userprofile));
-  dispatch(fetchShiftById(employee_details?.payload?.shift_assignment));
 };

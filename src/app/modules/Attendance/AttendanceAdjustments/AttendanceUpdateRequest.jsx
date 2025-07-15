@@ -1,26 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Attendance, AttendanceAdjustment } from "app/utils/Types/Attendance";
+import React, { useEffect, useState, useCallback } from "react";
+import { AttendanceAdjustment } from "app/utils/Types/Attendance";
 import { mapAdjustmentFromAttendnaceData } from "app/utils/MappingObjects/mapAttendanceData";
 import { validateAttendanceAdjustmentFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI, EmployeeDetailUI } from "components";
 import {
-  getShiftById,
   getAttendanceData,
   getAttendance,
   saveUpdateAttendanceAdjustment,
   getAttendanceAdjustmentListData,
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
-import {
-  RadioGroupInput,
-  SelectInputComponent,
-  TimePicker,
-  DateInput,
-} from "components/FormControl";
-import { HasAccess } from "utils/PermissionUtils";
+import { RadioGroupInput, TimePicker, DateInput } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
-import { GetEmployeeFilteredList } from "utils/Lists";
-import { GetEmployeeActiveShift } from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
 
@@ -43,7 +35,6 @@ const AttendanceUpdateRequest = ({ id }) => {
   const [formValues, setFormValues] = useState(AttendanceAdjustment);
   const [selectedEmployee, setSelectedEmployee] = useState({});
   const [ActiveShift, setActiveShift] = useState(false);
-  const [DefaultShift, setDefaultShift] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchAttendanceAdjustmentData = async (isMounted, attendanceId) => {
@@ -63,7 +54,7 @@ const AttendanceUpdateRequest = ({ id }) => {
     }
   };
 
-  const fetchData = async (isMounted) => {
+  const fetchData = useCallback(async (isMounted, id) => {
     try {
       const response = await getAttendanceData(id);
       if (isMounted && response) {
@@ -73,7 +64,7 @@ const AttendanceUpdateRequest = ({ id }) => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, []);
 
   const fetchAttendanceData = async (isMounted, date) => {
     if (date && selectedEmployee.id) {
@@ -84,10 +75,10 @@ const AttendanceUpdateRequest = ({ id }) => {
           filterData: { date: date, employee_id: selectedEmployee.id },
         });
 
-        const active_shift = await GetEmployeeActiveShift(
+        const active_shift = await getActiveShiftData(
           selectedEmployee.id,
-          default_shift,
-          date
+          date,
+          default_shift
         );
         setActiveShift(active_shift);
         if (isMounted && response) {
@@ -110,12 +101,12 @@ const AttendanceUpdateRequest = ({ id }) => {
   useEffect(() => {
     let isMounted = true;
     if (id) {
-      fetchData(isMounted);
+      fetchData(isMounted, id);
     }
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, fetchData]);
 
   const getDefaultShift = async (isMounted, UserDetails) => {
     if (isMounted && UserDetails?.id) {
@@ -245,7 +236,6 @@ const AttendanceUpdateRequest = ({ id }) => {
                     InputField: RadioGroupInput,
                     name: "status",
                     required: true,
-                    disabled: false,
                     label: "Status",
                     options: [
                       { value: "Present", label: "Present" },

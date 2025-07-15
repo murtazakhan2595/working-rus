@@ -12,19 +12,27 @@ import {
 import { GenderOptions, countriesList, maritalStatus } from "data/Data";
 import { useSelector } from "react-redux";
 import { validateLeaveTypeFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
-import { saveLeaveType, getLeaveTypeById } from "app/hooks/leaveTracker";
+import {
+  saveLeaveType,
+  getLeaveTypeData,
+  getLeaveTypes,
+} from "app/hooks/leaveTracker";
 import { toast } from "react-toastify";
+import { ReligionList } from "data/Data";
+import { LeaveType } from "app/utils/Types/LeaveManagment";
 
 export default function AddUpdateLeaveType({
   isOpen = true,
   setIsOpen,
   reload,
   data = null,
+  id = null,
 }) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(LeaveType);
   const [isLoading, setIsLoading] = useState(false);
+  const [DataList, setDataList] = useState(false);
 
-  const isEditMode = Boolean(data);
+  const isEditMode = Boolean(id);
 
   const Branches = useSelector((state) => state.common.branches);
   const Departments = useSelector((state) => state.common.departments);
@@ -38,62 +46,54 @@ export default function AddUpdateLeaveType({
     width: "900px",
   };
 
-  // Set form data from passed data or initialize empty
-  useEffect(() => {
-    if (data) {
-      // Pre-populate form with existing data
-      setFormData({
-        name: data.name || "",
-        short_code: data.short_code || "",
-        leave_count: data.leave_count || "",
-        is_carry_forward_allowed: data.is_carry_forward_allowed || false,
-        max_carry_forward_limit: data.max_carry_forward_limit || 0,
-        is_encashable: data.is_encashable || false,
-        requires_attachment: data.requires_attachment || false,
-        min_days_notice: data.min_days_notice || "",
-        nationalities: data.nationalities || [],
-        branches_ids: data.branches?.map((b) => b.id) || [],
-        departments_ids: data.departments?.map((d) => d.id) || [],
-        genders: data.genders || [],
-        marital_statuses: data.marital_statuses || [],
-        grades: data.grades || [],
-        probation_restriction: data.probation_restriction || false,
-        day_count_type: data.day_count_type || "work_days",
-        max_consecutive_days: data.max_consecutive_days || "",
-        is_all_paid: data.is_all_paid !== undefined ? data.is_all_paid : true,
-        full_paid_days: data.full_paid_days || 0,
-        half_paid_days: data.half_paid_days || 0,
-        tooltip_info: data.tooltip_info || "",
-        status: data.status || true,
-      });
-    } else {
-      // Initialize empty form for new record
-      setFormData({
-        name: "",
-        short_code: "",
-        leave_count: "",
-        is_carry_forward_allowed: false,
-        max_carry_forward_limit: 0,
-        is_encashable: false,
-        requires_attachment: false,
-        min_days_notice: "",
-        nationalities: [],
-        branches_ids: [],
-        departments_ids: [],
-        genders: [],
-        marital_statuses: [],
-        grades: [],
-        probation_restriction: false,
-        day_count_type: "work_days",
-        max_consecutive_days: "",
-        is_all_paid: true,
-        full_paid_days: 0,
-        half_paid_days: 0,
-        tooltip_info: "",
-        status: true,
-      });
+  const fetchUserRolesData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      // Add organizationId to filter if available
+
+      const response = await getLeaveTypes();
+
+      if (isMounted) {
+        setDataList(response.results);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [data]);
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchUserRolesData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Set form data from passed data or initialize empty
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async (isMounted, id) => {
+      try {
+        setIsLoading(true);
+        const response = await getLeaveTypeData(id);
+        if (isMounted) {
+          setFormData(response);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (id) fetchData(isMounted, id);
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   // Memoized form fields that depend on current form values
   const getFormFields = useMemo(() => {
@@ -108,6 +108,7 @@ export default function AddUpdateLeaveType({
             required: true,
             label: "Leave Type Name",
             placeholder: "e.g. Sick Leave, Annual Leave",
+            validateDuplicate: true,
           },
           {
             InputField: TextInput,
@@ -115,6 +116,7 @@ export default function AddUpdateLeaveType({
             required: true,
             label: "Short Code",
             placeholder: "e.g. SL, AL",
+            validateDuplicate: true,
           },
           {
             InputField: NumberInput,
@@ -226,6 +228,14 @@ export default function AddUpdateLeaveType({
             label: "Applicable Grades / Designations",
             options: Designations,
             placeholder: "Select job levels",
+            SelectAllOption: true,
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "religion",
+            label: "Religion",
+            options: ReligionList,
+            SelectAllOption: true,
           },
           {
             InputField: SwitchInput,
@@ -242,6 +252,7 @@ export default function AddUpdateLeaveType({
               { label: "Calendar Days", value: "calendar_days" },
             ],
             required: true,
+            variant: "stacked",
           },
           {
             InputField: NumberInput,
@@ -280,7 +291,7 @@ export default function AddUpdateLeaveType({
       setIsLoading(true);
       const response = await saveLeaveType({
         ...values,
-        id: data?.id,
+        id: id,
       });
       if (response) {
         toast.success(
@@ -328,6 +339,7 @@ export default function AddUpdateLeaveType({
               submitButtonText: isEditMode ? "Update" : "Submit",
               cancelButtonText: "Cancel",
               columns: 2,
+              DataList: DataList,
               disableSubmit: isLoading,
               loadingMessage: isLoading
                 ? isEditMode
