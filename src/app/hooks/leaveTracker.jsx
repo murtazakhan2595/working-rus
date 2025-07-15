@@ -676,15 +676,30 @@ export const getLeaveOffsetSettingData = async (id) => {
 
 export const saveLeaveOpeningBalance = async (payload) => {
   try {
-    const response = await axios.post(
-      `${baseUrl}/leave-openingbalance/`,
-      payload,
-      {
-        headers: headers(),
+    // If there's an ID, use PATCH to update the existing leave opening balance
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/leave-openingbalance/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
       }
-    );
-    if (response.status === 201) {
-      return response.data;
+    } else{
+      // If no ID, use POST to create a new leave opening balance
+      const response = await axios.post(
+        `${baseUrl}/leave-openingbalance/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201) {
+        return response.data;
+      }
     }
   } catch (error) {
     console.error("Error saving leave opening balance:", error);
@@ -720,3 +735,60 @@ export const getLeaveOpeningBalance = async (payload) => {
     return [];
   }
 }
+
+export const getLeaveOpeningBalanceById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/leave-openingbalance/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting leave opening balance by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+}
+
+export const getLeaveOpeningBalanceTemplate = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/leave-balance/template/`, {
+      headers: headers(),
+      responseType: "blob", // This is crucial for binary files
+    });
+    if (response.status === 200) {
+      return response.data; // This will be a Blob object
+    }
+  } catch (error) {
+    console.error("Error getting leave opening balance template:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
+export const uploadLeaveOpeningBalance = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/leave-balance/bulk-import/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
+  }
+};

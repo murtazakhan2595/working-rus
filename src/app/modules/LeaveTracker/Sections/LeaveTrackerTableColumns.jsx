@@ -5,6 +5,7 @@ import {
   LeaveDurationAction,
   LeaveTypeAction,
   HolidayActions,
+  OpeningBalanceAction,
   MyLeavesAction,
   LeaveCountAction,
   OffsetLeaveSettingAction,
@@ -386,6 +387,45 @@ export const PublicHolidaydsColumn = (reload, data) => [
     isDummyField: true,
     formatter: (_, row, dataList) => (
       <HolidayActions data={row} reloadData={reload} DataList={dataList} />
+    ),
+    headerStyle: { width: "8%" },
+    style: { textAlign: "center" },
+  },
+];
+export const OpeningLeaveBalanceColumn = (reload, data) => [
+  {
+    dataField: "employee",
+    text: "Employee ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showDepartment={true}
+        showBranchName={true}
+        showPosition={true}
+        showEmail={true}
+      />
+    ),
+  },
+
+  {
+    dataField: "remarks",
+    text: "Remarks",
+    formatter: (cell, row) => <div className="">{cell || "N/A"}</div>,
+    minWidth: "120px",
+    dataSort: true,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    isDummyField: true,
+    formatter: (_, row, dataList) => (
+      <OpeningBalanceAction data={row} reloadData={reload} DataList={dataList} />
     ),
     headerStyle: { width: "8%" },
     style: { textAlign: "center" },

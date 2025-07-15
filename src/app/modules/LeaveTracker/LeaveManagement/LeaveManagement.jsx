@@ -35,6 +35,7 @@ export default function LeaveManagement() {
   const [addLeaveType, setAddLeaveType] = useState(false);
   const [addLeaveOffet, setAddLeaveOffet] = useState(false);
   const [reloadHolidays, setReloadHolidays] = useState(false);
+  const [reloadLeaveBalance, setReloadLeaveBalance] = useState(false);
   const [openingBalance, setOpeningBalance] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -129,20 +130,12 @@ export default function LeaveManagement() {
     {
       value: "offset_leave_settings",
       label: "Offset Leave Settings",
-      component: (
-        <OffsetLeaves
-          reload={reloadHolidays}
-        />
-      ),
+      component: <OffsetLeaves reload={reloadHolidays} />,
     },
     {
       value: "opening_leave_balance",
       label: "Opening Leave Balance",
-      component: (
-        <OpeningLeaveBalance
-          reload={reloadHolidays}
-        />
-      ),
+      component: <OpeningLeaveBalance reload={reloadLeaveBalance} />,
     },
   ];
   return (
@@ -263,7 +256,7 @@ export default function LeaveManagement() {
           isOpen={openingBalance}
           setIsOpen={setOpeningBalance}
           reloadData={() => {
-            // setReloadHolidays(!reloadHolidays);
+            setReloadLeaveBalance(!reloadLeaveBalance);
           }}
         />
       )}
