@@ -13,6 +13,7 @@ import { UserBiometricHistory } from "app/modules/Attendance";
 import {
   UpdateEmployeeAttendance,
   ExportAttendance,
+  ImportAttendance,
 } from "app/modules/Attendance/Sections";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
@@ -229,6 +230,7 @@ const Attendance = ({ isTeamView = false }) => {
                   Update Attendance
                 </Button>
               )}
+              <ImportAttendance activeTab={activeTab} filterData={filterData} />
               <ExportAttendance activeTab={activeTab} filterData={filterData} />
             </div>
             <Card>

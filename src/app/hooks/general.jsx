@@ -20,7 +20,10 @@ export const formDataHeader = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   // Don't explicitly set 'Content-Type' for FormData
 });
-
+export const multipartFormDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "multipart/form-data",
+});
 const getDepartmentList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -767,59 +770,6 @@ export const SubmitResetPassword = async (payload) => {
   return false;
 };
 
-// export const getRequestApprovelList = async (request_id) => {
-//   try {
-//     const pageNo = payload?.options?.page ?? "";
-//     const ordering = payload?.ordering ?? "first_name";
-//     const pageSize = payload?.options?.sizePerPage ?? "";
-//     const filterData = payload?.filterData
-//       ? {
-//           ...payload?.filterData,
-//           employee_status: "Active,Probation,Notice Period",
-//         }
-//       : { employee_status: "Active,Probation,Notice Period" };
-//     const URL = `/requests/?ordering=${ordering}&${
-//       pageNo ? `page=${pageNo}&` : ""
-//     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-//       JSON.stringify(filterData)
-//     )}`;
-//     const response = await axios.get(`${baseUrl}${URL}`, {
-//       headers: headers(),
-//     });
-//     if (response.status === 200) {
-//       const employeeResponse = response.data?.results?.employees ?? [];
-//       const employeeList = await employeeResponse.map((employee) => ({
-//         value: employee.id,
-//         id: employee.id,
-//         label: `${employee.first_name} ${employee.last_name} - ${employee.username}`,
-//         username: `${employee.username}`,
-//         name: `${employee.first_name} ${employee.last_name}`,
-//         department_name: employee.department_name,
-//         department_position: employee.department_position,
-//         employee_location: employee.employee_location,
-//         direct_report: employee.direct_report,
-//         branch_id: employee.branch_id,
-//         work_email: employee.work_email,
-//         serial_number: employee.serial_number,
-//         basic_salary: employee.salary,
-//         salary_type: employee.salary_type,
-//         is_eos_applicable: employee.is_eos_applicable,
-//         is_new: employee.is_new,
-//         joining_date: employee.joining_date,
-//         employee_status: employee.employee_status,
-//         user_role: employee.user_role,
-//         name_initials: `${
-//           employee?.first_name?.charAt(0)?.toUpperCase() || ""
-//         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
-//       }));
-//       return { results: employeeList, count: response.data?.count };
-//     } else return { results: [], count: 0 };
-//   } catch (error) {
-//     console.error("Error fetching Personal Info data :", error);
-//   }
-//   return { results: [], count: 0 };
-// };
-
 export const getCurrentRequestApprover = async (request_id) => {
   try {
     const URL = `/requests/${request_id}/`;
@@ -953,6 +903,37 @@ export const getOnboardingDocumentById = async (id) => {
       HandleLogout();
     }
     throw error;
+  }
+};
+
+export const downloadTemplateFile = async (URL) => {
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      return ResponseData;
+    } else return null;
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return null;
+};
+
+export const uploadRecord = async (formData, URL) => {
+  try {
+    const response = await axios.post(`${baseUrl}${URL}`, formData, {
+      headers: multipartFormDataHeader(),
+    });
+    const ResponseData = response.data;
+    return ResponseData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
   }
 };
 
