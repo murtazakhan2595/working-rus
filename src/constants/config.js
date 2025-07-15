@@ -20,8 +20,8 @@ const Config = {
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
   //Sub Modules
-  TEAM_PROFILE: false,
-  TEAM_ATTENDANCE: false,
+  TEAM_PROFILE: true,
+  TEAM_ATTENDANCE: true,
   TEAM_DAILY_TASK_REPORT: false,
   TEAM_LEAVE_REQUEST: true,
   TEAM_EXIT_CLEARANCE: true,
