@@ -31,12 +31,15 @@ import {
   AddUpdateLeaveType,
   ViewLeaveType,
   HolidayActions,
+  OpeningBalanceAction,
   ViewHolidayDetail,
   OffsetLeaves,
   AddUpdateOffsetLeave,
   ImportHolidays,
+  ImportOpeningBalance,
   ViewOffsetLeaveSetting,
   OffsetLeaveSettingAction,
+  OpeningLeaveBalance,
 } from "./LeaveManagement";
 
 export {
@@ -60,14 +63,17 @@ export {
   AddUpdateLeaveType,
   ViewLeaveType,
   HolidayActions,
+  OpeningBalanceAction,
   ViewHolidayDetail,
   EmployeeLeaveCount,
   OffsetLeaves,
   AddUpdateOffsetLeave,
   ImportHolidays,
+  ImportOpeningBalance,
   CancelLeaveRequest,
   LeaveCountAction,
   ViewEmployeeLeaveCount,
   ViewOffsetLeaveSetting,
   OffsetLeaveSettingAction,
+  OpeningLeaveBalance,
 };

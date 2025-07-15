@@ -20,16 +20,22 @@ import { StatsCards } from "./Sections/StatsCards";
 import { FilterInput, DateRangeFilter } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { GetDateRange, getWorkingDays } from "utils/renderValues";
-import { exportRecordToExcel } from "utils/downloadUtils";
+import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
 import { GetUserInfo } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
 import { renderDate, formatDuration } from "utils/renderValues";
 import { CardTitle, CardHeader } from "components/ui/card";
 
 const UserBiometricHistory = ({ isTeamView = false }) => {
-  const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
-  const isViewBrnEmpAttendancePermitted = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
-  const isViewDptEmpAttendancePermitted = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
+  const adminView = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
+  const isBranchView = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
+  const isDepartmentView = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    adminView,
+    isBranchView,
+    isDepartmentView
+  );
   const [isLoading, setIsLoading] = useState(false);
   const {
     branch_id: user_branch,
@@ -37,13 +43,13 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
-    date_range: `${moment().format("YYYY-MM-DD")},${moment().format(
+    range_date: `${moment().format("YYYY-MM-DD")},${moment().format(
       "YYYY-MM-DD"
     )}`,
   });
-  const [ordering, setOrdering] = useState("-id");
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [List, setList] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-timestamp");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 25 });
+  const [List, setList] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -51,7 +57,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterValue === "" || filterValue === null) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -100,10 +106,11 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
       try {
         const attendanceData = await getUserBiometricLogsList({
           filterData: {
-            date_range: `${moment().format("YYYY-MM-DD")},${moment().format(
+            range_date: `${moment().format("YYYY-MM-DD")},${moment().format(
               "YYYY-MM-DD"
             )}`,
           },
+          ordering: "id",
         });
         if (isMounted) {
           if (attendanceData) {
@@ -130,9 +137,15 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
           <FilterInput
             filters={[
               {
+                type: "select",
+                placeholder: "Employee",
+                name: "emp_id",
+                options: Employees,
+              },
+              {
                 type: "date-range",
                 placeholder: "Date",
-                name: "date_range",
+                name: "range_date",
               },
             ]}
             onChange={handleFilterChange}
@@ -157,6 +170,8 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
 
 const UpdateMissingAttanceRecords = async (dataList) => {
   const user_attendance_updated = [];
+  if (!dataList || !Array.isArray(dataList) || dataList.length === 0)
+    return null;
   const usersList = _.uniq(dataList.map((data) => data.user_no));
   for (const user of usersList) {
     if (!user_attendance_updated.includes(user)) {

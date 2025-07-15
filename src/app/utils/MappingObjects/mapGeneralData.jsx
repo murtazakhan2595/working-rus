@@ -1,5 +1,6 @@
 import moment from "moment";
 import { eachDayOfInterval } from "date-fns";
+import { EmployeeDetailUI } from "components";
 
 export function mapCalendarContent({ holidays }) {
   const calendar_content = {};
@@ -34,32 +35,82 @@ export function mapCalendarContent({ holidays }) {
   return calendar_content;
 }
 
-export function mapApproverDetails(approver_logs, approval_levels, data) {
-  const level_list = approval_levels
-    .map((level) => {
-      const level_number = parseInt(level.level_number);
-      const logs = approver_logs.find(
-        (log) =>
-          parseInt(log.level_number) === level_number &&
-          log.action_type !== "CREATED"
-      );
-      const level_detail = {
-        status: "PENDING",
-        designation:
-          level.designation_name || level.assignment_type.replace(/_/g, " "),
-        level_number: level_number,
-        time: null,
-      };
-      if (parseInt(level_number) === parseInt(data?.current_level)) {
-        level_detail.approver = data?.current_approver;
-      } else if (logs) {
-        level_detail.status = logs.action_type;
-        level_detail.approver = logs.changed_by;
-        level_detail.time = logs.timestamp;
-      }
-      return level_detail;
-    })
-    .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+export async function mapApproverDetails({
+  approval_logs = [],
+  approval_levels = [],
+  current_level,
+  current_approver = [],
+}) {
+  const levelList = [];
 
-  return level_list;
+  if (!Array.isArray(approval_levels) || approval_levels.length === 0) {
+    return levelList;
+  }
+
+  for (const level of approval_levels) {
+    const level_number = parseInt(level?.level_number);
+    if (isNaN(level_number)) continue;
+
+    const log = approval_logs.find(
+      (entry) =>
+        parseInt(entry?.level_number) === level_number &&
+        entry?.action_type !== "CREATED"
+    );
+    const levelDetail = {
+      status: "PENDING",
+      info:
+        level?.designation_name ||
+        level?.assignment_type?.replace(/_/g, " ") ||
+        "Unknown",
+      level_number,
+      time: null,
+    };
+    // If this is the current active level
+    if (log) {
+      levelDetail.status = log?.action_type || "UNKNOWN";
+      levelDetail.info = log?.changed_by ? (
+        <EmployeeDetailUI
+          id={log?.changed_by}
+          ViewVariant={"simple-text"}
+          InformationKeys={["name", "position"]}
+        />
+      ) : (
+        "Unknown"
+      );
+      levelDetail.time = log?.timestamp || null;
+    } else if (parseInt(current_level) === level_number) {
+      if (
+        current_approver &&
+        Array.isArray(current_approver) &&
+        current_approver.length > 0
+      ) {
+        const approverInfos = await Promise.all(
+          current_approver.map(async (approver, index) => {
+            return (
+              <span key={`approver-${approver}`}>
+                <EmployeeDetailUI
+                  id={approver}
+                  ViewVariant={"simple-text"}
+                  InformationKeys={["name"]}
+                />
+                {index < current_approver.length - 1 ? "/" : ""}
+              </span>
+            );
+          })
+        );
+
+        levelDetail.info = (
+          <>
+            {approverInfos} - {level?.designation_name}
+          </>
+        );
+      } else {
+        levelDetail.info = "Unknown - No eligible approver with the necessary permissions was found to perform this action.";
+      }
+    }
+
+    levelList.push(levelDetail);
+  }
+
+  return levelList.sort((a, b) => a.level_number - b.level_number);
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "../../../../../components/ui/button";
+import { Button } from "components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "src/@/components/ui/dialog";
 import { Label } from "src/@/components/ui/label";
-import { Input } from "../../../../../components/ui/input";
+import { Input } from "components/ui/input";
 import { toast } from "react-toastify";
 import {
   Download,
@@ -21,12 +21,21 @@ import {
 } from "lucide-react";
 
 // Import API services
-import { uploadHolidaysData } from "app/hooks/leaveTracker";
+import { uploadRecord } from "app/hooks/general";
 import { exportRecordToExcel } from "utils/downloadUtils";
-import { getBranchList } from "app/hooks/general";
 import { HasAccess } from "utils/PermissionUtils";
+import { downloadTemplateFile } from "app/hooks/general";
 
-const ImportEmployeesButton = ({ reloadData = () => {} }) => {
+const ImportRecords = ({
+  reloadData = () => {},
+  title = "Import Records",
+  description = "Upload a file to bulk import data. Make sure your data follows the required format.",
+  downloadTemplateEndpoint = null,
+  uploadEndpoint = null,
+  templateDataToExport = null,
+  module = "Cohrus",
+  formatInformation = [],
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -176,25 +185,16 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const dataToExport = [
-        {
-          "Holiday Name": "Labor Day",
-          "Start Date": "2025-05-01",
-          "End Date": "",
-          Branches: "New York",
-          Country: "United States",
-          Religion: "Islam",
-        },
-        {
-          "Holiday Name": "Chritmas Eve",
-          "Start Date": "2025-12-25",
-          "End Date": "2026-01-03",
-          Branches: "",
-          Country: "United States,Canada",
-          Religion: "Islam",
-        },
-      ];
-      exportRecordToExcel(dataToExport, "Holiday", `Holiday-Import-Template`);
+      if (downloadTemplateEndpoint) {
+        const dataToExport = await downloadTemplateFile(
+          downloadTemplateEndpoint
+        );
+        debugger;
+        console.log(dataToExport);
+      } else {
+        const dataToExport = templateDataToExport || [];
+        exportRecordToExcel(dataToExport, module, `${module}-Import-Template`);
+      }
     } catch (error) {
       console.error("Error downloading template:", error);
       toast.error("Failed to download template", {
@@ -224,7 +224,7 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
       const formData = new FormData();
       formData.append("file", file);
       // Call the API to upload employees data
-      const response = await uploadHolidaysData(formData);
+      const response = await uploadRecord(formData, uploadEndpoint);
       // Handle successful response
 
       const { errors, message } = response;
@@ -243,7 +243,7 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
         //   }
         // );
       } else {
-        toast.success("Holidays imported successfully", {
+        toast.success(`${module}Holidays imported successfully`, {
           position: toast.POSITION.TOP_RIGHT,
         });
         handleClose(false);
@@ -284,11 +284,11 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
       {importPermitted && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="bg-primary hover:bg-primary-dark w-fit"
-          type="button"
+          // className="bg-primary hover:bg-primary-dark w-fit"
+          variant="primary"
         >
           <Upload className="w-4 h-4 mr-2" />
-          Import Holidays
+          Import Attendance
         </Button>
       )}
 
@@ -307,31 +307,15 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
         {/* Modified DialogContent with maxHeight and overflow settings for scrollability */}
         <DialogContent className="sm:max-w-6xl overflow-hidden">
           <DialogHeader>
-            <DialogTitle className="text-primary">Import Holidays</DialogTitle>
+            <DialogTitle className="text-primary">{title}</DialogTitle>
             <DialogDescription className="text-sm text-gray-900">
-              Upload a file to bulk import holiday data. Make sure your data
-              follows the required format.
+              {description}
             </DialogDescription>
           </DialogHeader>
 
           {/* Added a scrollable container for the content */}
           <div className="max-h-[70vh] overflow-y-auto pr-2">
             <div className="grid gap-4 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Download className="w-5 h-5 text-gray-900" />
-                  <span>Download the template for correct formatting</span>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownloadTemplate}
-                  type="button"
-                >
-                  Download
-                </Button>
-              </div>
-
               <div className="border border-blue-300 bg-blue-50 rounded-md p-3 mt-2">
                 <div
                   className="flex items-center justify-between cursor-pointer"
@@ -353,87 +337,93 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
                 {showFieldInfo && (
                   <div className="mt-2">
                     <p className="text-xs text-blue-700 mb-2">
-                      For a successful import, the following fields are required:
+                      For a successful import, the following fields are
+                      required:
                     </p>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Holiday Name:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>Name must be unique and non-existing.</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Start Date:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>Date format required is 'YYYY-MM-DD'.</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            End Date:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>Date format required is 'YYYY-MM-DD'.</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Branches:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>
-                                Multiple branches will be comma(,) seperated.
-                              </li>
-                              <li>
-                                For all the branches keep the field empty.
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium text-blue-700">
-                            Country:
-                          </p>
-                          <div className="max-h-24 overflow-y-auto pl-2 text-xs">
-                            <ul className="list-disc pl-3 text-xs text-blue-700">
-                              <li>
-                                Multiple countries will be comma(,) seperated.
-                              </li>
-                              <li>
-                                For all the countries keep the field empty.
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-medium text-blue-800 mt-3">
-                            Accepted Date Format:
-                          </h4>
-                          <p className="text-xs text-blue-700 pl-2">
-                            All date fields must use:{" "}
-                            <strong>YYYY-MM-DD</strong> format
-                          </p>
-                        </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-medium text-blue-800 mb-1">
+                          Required Fields:
+                        </h4>
+                        {formatInformation.map((item, index) => {
+                          if (!item.required) return null;
+                          const [key, value] = Object.entries(item).find(
+                            ([k]) => k !== "required"
+                          );
+                          return (
+                            <div
+                              key={index}
+                              className="flex justify-start items-start"
+                            >
+                              <span className="text-xs font-medium text-blue-700 min-w-0 flex-shrink-0">
+                                {key}:
+                              </span>
+                              <div>
+                                {value.map((info, infoIndex) => (
+                                  <div
+                                    key={`${infoIndex}`}
+                                    className="text-xs text-blue-700 ml-2 text-right"
+                                  >
+                                    {info}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-medium text-blue-800 mb-1">
+                          Optional Fields:
+                        </h4>
+                        {formatInformation.map((item, index) => {
+                          if (item.required) return null;
+                          const [key, value] = Object.entries(item).find(
+                            ([k]) => k !== "required"
+                          );
+                          return (
+                            <div
+                              key={index}
+                              className="flex justify-start items-start"
+                            >
+                              <span className="text-xs font-medium text-blue-700 min-w-0 flex-shrink-0">
+                                {key}:
+                              </span>
+                              <div>
+                                {value.map((info, infoIndex) => (
+                                  <div
+                                    key={`${infoIndex}`}
+                                    className="text-xs text-blue-700 ml-2 text-right"
+                                  >
+                                    {info}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-
+                    {/* Important Notes */}
+                    <div className="mt-3">
+                      <h4 className="text-xs font-medium text-blue-800 mb-2">
+                        Important Notes:
+                      </h4>
+                      <ul className="text-xs text-blue-700 space-y-1">
+                        <li>
+                          • <strong>Date Format:</strong> Use YYYY-MM-DD for all
+                          date fields
+                        </li>
+                        <li>
+                          • <strong>Time Format:</strong> Time should be entered
+                          in 24-hour format (e.g., 21:45).
+                        </li>
+                        <li>
+                          • <strong>File Format:</strong> Accepts .csv, .xlsx,
+                          and .xls files
+                        </li>
+                      </ul>
+                    </div>
                     <p className="text-xs text-blue-700 mt-2 italic">
                       Using incorrect IDs or values will result in validation
                       errors.
@@ -498,9 +488,9 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
             </div>
           </div>
 
-          <DialogFooter className="flex justify-between sm:justify-between mt-4">
+          <DialogFooter className="flex justify-end mt-4">
             <Button
-              variant="outline"
+              variant="continue"
               onClick={() => {
                 handleClose(false);
                 resetFileInput();
@@ -510,6 +500,13 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
               type="button"
             >
               Cancel
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleDownloadTemplate}
+              type="button"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download Template
             </Button>
             <Button
               onClick={handleUpload}
@@ -525,4 +522,4 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
   );
 };
 
-export default ImportEmployeesButton;
+export default ImportRecords;

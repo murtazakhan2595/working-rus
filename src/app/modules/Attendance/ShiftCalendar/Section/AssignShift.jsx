@@ -5,14 +5,11 @@ import { Formik, useFormikContext } from "formik";
 import { Button } from "components/ui/button";
 import { SelectInputComponent, CheckBoxInput } from "components/FormControl";
 import { toast } from "react-toastify";
-import { connect } from "react-redux";
-import { getEmployeeList, getShiftById } from "app/hooks/attendance";
+import { getShiftById } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { getShiftAssignment, getShift } from "app/hooks/attendance";
-import { Switch } from "../../../../../src/@/components/ui/switch";
-import { CardContent, Card, CardHeader, CardTitle } from "components/ui/card";
-import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
+import { getShift } from "app/hooks/attendance";
+import { AddShiftForm } from "app/modules/OfficeSetting";
 import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 import { generateShiftScheduleLog } from "./getEmployeeActiveShift";
 
@@ -53,7 +50,7 @@ const AssignShift = ({ employees }) => {
     employee: "",
   });
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
-  
+
   const userProfile = useSelector((state) => state.user.userProfile);
 
   const empOptions = employees?.map((emp) => {
@@ -107,14 +104,14 @@ const AssignShift = ({ employees }) => {
           try {
             // Get shift details for the log
             const shiftDetails = await getShiftById(values.shift_assignment);
-            
+
             if (shiftDetails) {
               // Create a schedule-like object for the log
               const scheduleData = {
                 ...shiftDetails,
                 employee: values.employee,
                 start_date: moment().format("YYYY-MM-DD"), // Current date as start
-                end_date: moment().add(30, 'days').format("YYYY-MM-DD"), // Default 30 days
+                end_date: moment().add(30, "days").format("YYYY-MM-DD"), // Default 30 days
               };
 
               await generateShiftScheduleLog({

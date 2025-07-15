@@ -1,6 +1,27 @@
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
-import {EMAIL_REGEX} from 'app/utils/Types/ValidationPattern';
+import { EMAIL_REGEX } from "app/utils/Types/ValidationPattern";
+
+export const validateRequiredFields = (Fields = [], values) => {
+  const errors = {};
+
+  // Check if Fields is a valid array
+  if (!Array.isArray(Fields) || Fields.length === 0) return errors;
+
+  for (const Field of Fields) {
+    if (!Field || typeof Field !== "object") continue;
+
+    const { name, required, label, renderCondition, value } = Field;
+    if (renderCondition === false) continue;
+    // Ensure name exists and is a string
+    if (required && typeof name === "string" && typeof label === "string") {
+      if (!values[name] && !value) errors[name] = `${label} is required`;
+    }
+  }
+
+  return errors;
+};
+
 export const validateChangePasswordForm = (values) => {
   const errors = {};
   if (!values?.confirm_password)

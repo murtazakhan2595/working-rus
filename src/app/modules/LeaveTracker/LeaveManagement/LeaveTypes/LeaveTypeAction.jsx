@@ -108,6 +108,7 @@ const LeaveTypeAction = ({ data, reload, leaveTypeList = [] }) => {
           isOpen={edit.open}
           setIsOpen={(isOpen) => handleEditClose(isOpen, true)}
           data={edit.data}
+          id={data.id}
           reload={reload}
         />
       )}

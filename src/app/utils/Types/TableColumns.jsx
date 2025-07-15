@@ -75,9 +75,11 @@ export const EmployeeColumns = [
     text: "Phone no/Email",
     formatter: (cell, row) => (
       <>
-        <div className="text-base">{`+${row.country_code || ""}${
-          row.mobile_no || ""
-        }`}</div>
+        {row.mobile_no && (
+          <div className="text-base">{`+${row.country_code || ""}${
+            row.mobile_no || ""
+          }`}</div>
+        )}
         <div className="text-base">{row.work_email || ""}</div>
       </>
     ),
