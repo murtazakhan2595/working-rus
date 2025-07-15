@@ -67,7 +67,7 @@ export const EmployeesAttendanceColumns = (TotalDays = 5) => [
     dataField: "attendance_stats",
     text: "Absent Days",
     formatter: (cell) => (
-      <span>{parseInt(TotalDays) - parseInt(cell?.Present)}</span>
+      <span>{Math.max(0, parseInt(TotalDays) - parseInt(cell?.Present))}</span>
     ),
   },
   {
