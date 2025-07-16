@@ -63,13 +63,27 @@ const MyAssetsPage = ({ userProfile }) => {
 
   useEffect(() => {
     fetchData();
-  }, [
-    userProfile.id,
-    tableOptions.page,
-    tableOptions.sizePerPage,
-    ordering,
-    
-  ]);
+  }, [userProfile.id, tableOptions.page, tableOptions.sizePerPage, ordering]);
+
+  // Action handlers for the dropdown menu
+  const handleViewAsset = (row) => {
+    setSelectedAsset(row);
+    setOpenAssetViewSheet(true);
+  };
+
+  const handleEditAsset = (row) => {
+    // Add your edit logic here
+    console.log("Edit asset request:", row);
+    // You can open an edit modal or navigate to edit page
+    toast.info("Edit functionality will be implemented here");
+  };
+
+  const handleWithdrawAsset = (row) => {
+    // Add your withdraw logic here
+    console.log("Withdraw asset request:", row);
+    // You can show a confirmation dialog and then withdraw
+    toast.info("Withdraw functionality will be implemented here");
+  };
 
   const myAssetsTableOptions = {
     page: tableOptions.page,
@@ -78,10 +92,11 @@ const MyAssetsPage = ({ userProfile }) => {
     onSortChange: (sortName) => {
       setOrdering(sortName);
     },
-    onRowClick: (row) => {
-      setSelectedAsset(row);
-      setOpenAssetViewSheet(true);
-    },
+    // Remove onRowClick since we're using action buttons now
+    // onRowClick: (row) => {
+    //   setSelectedAsset(row);
+    //   setOpenAssetViewSheet(true);
+    // },
   };
 
   // If user has no my assets permissions at all
@@ -104,7 +119,9 @@ const MyAssetsPage = ({ userProfile }) => {
       <Header
         content={
           canRequestAsset ? (
-            <Button onClick={() => setIsOpenRequest(true)}>Request Asset</Button>
+            <Button onClick={() => setIsOpenRequest(true)}>
+              Request Asset
+            </Button>
           ) : null
         }
       />
@@ -113,7 +130,11 @@ const MyAssetsPage = ({ userProfile }) => {
           {canViewMyAssets ? (
             <CustomTable
               data={assets}
-              columns={MyAssetRequestColumns}
+              columns={MyAssetRequestColumns(
+                handleViewAsset,
+                handleEditAsset,
+                handleWithdrawAsset
+              )}
               pagination={true}
               dataTotalSize={totalCount}
               tableOptions={myAssetsTableOptions}
