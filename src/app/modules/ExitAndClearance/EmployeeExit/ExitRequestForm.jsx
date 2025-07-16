@@ -17,7 +17,7 @@ import { TextInput } from "components/FormControl";
 import { getLabelByValue } from "utils/getValuesFromTables";
 import { getManagerName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
-import { ReasonForLeaving } from "data/Data";
+import { ResignationReasons } from "data/Data";
 import { CoverFileUpload } from "components/FormControl";
 import { Card, CardContent, CardTitle } from "components/ui/card";
 
@@ -129,7 +129,7 @@ export default function ExitRequestForm({ reload = () => {} }) {
                       name: "exit_type",
                       required: true,
                       label: "Reason for leaving",
-                      options: ReasonForLeaving,
+                      options: ResignationReasons,
                     },
                     {
                       InputField: CoverFileUpload,

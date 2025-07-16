@@ -13,7 +13,7 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { ReasonForLeaving, SalaryTypeOptions } from "data/Data";
+import { ResignationReasons, SalaryTypeOptions } from "data/Data";
 import { GetDispatchStateList } from "./Lists";
 
 function getCountryFullName(countryCode) {
@@ -310,7 +310,7 @@ function ResignationStatus(status) {
   return response ? response.label : "N/A";
 }
 function ResignationReason(value) {
-  const response = ReasonForLeaving.find((option) => option.value === value);
+  const response = ResignationReasons.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
 function TerminationReason({ value, fallBackText = "Unknown Reason" }) {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DetailBox } from "components/SheetCardExtension";
 import { StatusLabel } from "components";
 import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
-import { ReasonForLeaving } from "data/Data";
+import { ResignationReasons } from "data/Data";
 import ApplicationStatus from "./ApplicationStatus";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
@@ -99,7 +99,7 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
     {
       label: "Leaving Reason",
       value:
-        ReasonForLeaving.find((reason) => reason.value === exitData.exit_type)
+        ResignationReasons.find((reason) => reason.value === exitData.exit_type)
           ?.label || "Unknown Reason",
     },
     {
