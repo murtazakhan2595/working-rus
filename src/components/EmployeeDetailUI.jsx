@@ -71,7 +71,10 @@ const EmployeeDetailUI = React.memo(
             {
               name: "report_to",
               label: "Reporting Manager",
-              value: getLabelByValue(userProfile.direct_report, Managers),
+              value: getLabelByValue(
+                parseInt(userProfile.direct_report),
+                Managers
+              ),
             },
           ]
         : []),
@@ -81,6 +84,15 @@ const EmployeeDetailUI = React.memo(
               name: "branch_id",
               label: "Branch",
               value: getLabelByValue(userProfile.branch_id, Branches),
+            },
+          ]
+        : []),
+      ...(InformationKeys.includes("work_location")
+        ? [
+            {
+              name: "employee_location",
+              label: "Work Location",
+              value: userProfile.employee_location,
             },
           ]
         : []),
@@ -133,14 +145,15 @@ const EmployeeDetailUI = React.memo(
         ? [
             {
               name: "contact_no",
-              label: "Contracted Salary",
+              label: "Phone No",
               value: userProfile.contact_no,
             },
           ]
         : []),
     ].filter(Boolean);
     if (variant === "ViewMode" && ViewVariant === "simple-text") {
-      const values = employeeDataList && employeeDataList.map((data) => data.value);
+      const values =
+        employeeDataList && employeeDataList.map((data) => data.value);
       return <span className={className}> {values.join(" - ")}</span>;
     }
     return (
