@@ -608,39 +608,12 @@ export const TaskSortingFilters = [
   },
 ];
 
-export const LeaveStatus = [
-  { label: "Approved", value: "Approved" },
-  { label: "Pending", value: "Pending" },
-  { label: "Denied", value: "Denied" },
-];
-
-export const resignationStatus = [
-  { label: "Pending", value: "pending" },
-  { label: "Accepted by Manager", value: "accepted by manager" },
-  { label: "Rejected by Manager", value: "rejected by manager" },
-  { label: "Accepted by HR", value: "accepted by hr" },
-  { label: "Rejected by HR", value: "rejected by hr" },
-  { label: "Initiated Clearance", value: "initiated clearance" },
-  { label: "Exit Interview", value: "exit interview" },
-];
-
 export const terminationStatus = [
   { label: "Viewed By Manager", value: "viewed by manager" },
   { label: "Accepted by Employee", value: "accepted by employee" },
   { label: "Rejected by Employee", value: "rejected by employee" },
 ];
 
-export function getManagerSelected(managers, managersList = []) {
-  if (managers) {
-    managers = managers.split(", ") || [];
-    const matchingObjects = managers.map((obj) => {
-      return parseInt(obj);
-    });
-    return matchingObjects;
-  }
-
-  return managers;
-}
 export const ResignationStatusOptions = [
   { label: "Pending", value: "pending" },
   { label: "Accepted by Manager", value: "accepted by manager" },
@@ -651,7 +624,7 @@ export const ResignationStatusOptions = [
   { label: "Exit Interview", value: "exit interview" },
 ];
 
-export const ReasonForLeaving = [
+export const ResignationReasons = [
   { value: "voluntary", label: "Voluntary" },
   { value: "involuntary", label: "Involuntary" },
   {
@@ -665,7 +638,7 @@ export const ReasonForLeaving = [
     value: "mutual-agreement",
     label: "Mutual Agreement",
   },
-  { value: "Relocation", label: "Relocation" },
+  { value: "relocation", label: "Relocation" },
   {
     value: "health-reasons",
     label: "Health Reasons",

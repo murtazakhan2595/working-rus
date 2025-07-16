@@ -136,6 +136,7 @@ const MultiStatusLabel = React.forwardRef(
       size,
       iconVariant,
       displayAll,
+      displayCount = 3,
       fallBackText = "",
       ...props
     },
@@ -144,7 +145,9 @@ const MultiStatusLabel = React.forwardRef(
     //  const [searchQuery, setSearchQuery] = React.useState("");
     if (!statusList || !Array.isArray(statusList) || statusList.length === 0)
       return fallBackText ?? null;
-    const displayedStatus = displayAll ? statusList : statusList?.slice(0, 3);
+    const displayedStatus = displayAll
+      ? statusList
+      : statusList?.slice(0, displayCount || 3);
     const remainingCount = statusList.length - displayedStatus.length;
     return (
       <Popover>

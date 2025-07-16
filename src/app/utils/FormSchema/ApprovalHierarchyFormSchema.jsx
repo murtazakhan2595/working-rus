@@ -36,8 +36,6 @@ export const validateHierarchyLevelFormSchema = (level, level_list = []) => {
       if (seenDirectApprover) {
         errors.assignment_type =
           "Direct reporting can only be assigned as an approver for one level.";
-      } else {
-        seenDirectApprover = true;
       }
     } else if (level.assignment_type === "INDIRECT_REPORTING") {
       const seenIndirectApprover =
