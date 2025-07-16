@@ -1,19 +1,21 @@
-import { getEmployeeData } from "app/hooks/employee";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { getCountryFullName } from "utils/getValuesFromTables";
-import PersonalInformation from "./sections/PersonalDetails";
-import ExitDetails from "./sections/ExitDetails";
-import { DepartmentName } from "utils/getValuesFromTables";
-import { DesignationName } from "utils/getValuesFromTables";
-import { ManagerName } from "utils/getValuesFromTables";
+import React from "react";
+import { DetailContent } from "components";
+import { ExitDetails } from "app/modules/ExitAndClearance/ExitDetailsCard";
+import { Card, CardContent } from "components/ui/card";
 
 const ExitRequestDetails = ({ exitData, reloadData = () => {} }) => {
+  const isResignation = Boolean(exitData.exit_category === "RESIGNATION");
+  // Define the fields to display
+  const fields = React.useMemo(
+    () => ExitDetails(isResignation) || [],
+    [isResignation]
+  );
   return (
-    <div className="flex flex-col gap-5">
-      <PersonalInformation reloadData={reloadData} />
-      <ExitDetails exitData={exitData} />
-    </div>
+    <Card>
+      <CardContent className="pt-6">
+        <DetailContent currentItem={exitData} fields={fields} />
+      </CardContent>
+    </Card>
   );
 };
 

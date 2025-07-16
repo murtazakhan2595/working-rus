@@ -50,7 +50,7 @@ export default function ExitRequestForm({ reload = () => {} }) {
   };
   return (
     <>
-      <Card className="max-w-[1040px] m-auto">
+      <Card>
         <CardContent>
           <SheetUI
             isOpen={true}
