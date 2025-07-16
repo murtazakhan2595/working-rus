@@ -374,10 +374,14 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
 
   // Required fields for leave opening balance
   const requiredFields = [
-    { name: "emp", description: "Employee ID (must match existing employee)" },
+    {
+      name: "emp",
+      description:
+        "Employee ID - Serial Number (must match existing employee, i.e TBX-0001)",
+    },
     {
       name: "leave_type",
-      description: "Type of leave (Annual Leave, Sick Leave, etc.)",
+      description: "Type of leave (Annual Leaves, Sick Leaves, etc.)",
     },
     {
       name: "total_allotted",
@@ -524,11 +528,11 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
                       <ul className="text-xs text-blue-700 space-y-1">
                         <li>
                           • <strong>emp:</strong> Must match existing employee
-                          ID in the system
+                          ID - Serial number in the system
                         </li>
                         <li>
                           • <strong>leave_type:</strong> Must match configured
-                          leave types (e.g., Annual Leave, Sick Leave)
+                          leave types (e.g., Annual Leaves, Sick Leaves)
                         </li>
                         <li>
                           • <strong>total_allotted:</strong> Must be a positive
@@ -540,7 +544,7 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
                         </li>
                         <li>
                           • <strong>Data Validation:</strong> Ensure employee
-                          IDs exist before import
+                          IDs - Serial numbers exist before import
                         </li>
                       </ul>
                     </div>
