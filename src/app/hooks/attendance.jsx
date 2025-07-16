@@ -943,7 +943,7 @@ export const saveUserBiometricAttendanceLog = async (
   try {
     const active_Shift = await getActiveShiftData(employee_id, date);
     const attendanceData = await getAttendancebyEmployee(employee_id, date);
-    if (userBiometricList.status === "check-in") {
+    if (userBiometricList.status === "check-in" && !attendanceData) {
       const attendancePayload = mapAttendanceCheckInPayload(
         userBiometricList.timestamp,
         attendanceData,
@@ -954,26 +954,12 @@ export const saveUserBiometricAttendanceLog = async (
         const response = await saveAttendance(
           { ...attendancePayload, additional_info: "Biometric Check-In" },
           active_Shift,
-          attendanceData.id
+          attendanceData?.id
         );
         return Boolean(response);
       }
     }
-    if (userBiometricList.status === "check-out") {
-      const attendancePayload = mapAttendanceCheckOutPayload(
-        userBiometricList.timestamp,
-        attendanceData,
-        active_Shift.is_split_shift
-      );
-      if (attendancePayload) {
-        const response = await saveAttendance(
-          { ...attendancePayload, additional_info: "Biometric Check-Out" },
-          active_Shift,
-          attendanceData.id
-        );
-        return Boolean(response);
-      }
-    }
+
     if (userBiometricList.status === "check-out") {
       if (attendanceData) return Boolean(attendanceData);
       const response = await saveAttendance({
@@ -985,11 +971,14 @@ export const saveUserBiometricAttendanceLog = async (
     }
     const attendance =
       attendanceData ??
-      (await saveAttendance({
-        employee_id: employee_id,
-        date: date,
-        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
-      }));
+      (await saveAttendance(
+        {
+          employee_id: employee_id,
+          date: date,
+          checkin: moment(userBiometricList.timestamp).utc().toISOString(),
+        },
+        active_Shift
+      ));
     if (userBiometricList) {
       if (userBiometricList.status === "break") {
         const breakSaveResponse = await saveBiometricBreak({

@@ -324,7 +324,6 @@ const ImportEmployeesButton = ({ reload }) => {
     }
   };
 
-
   // Function to reset the file input and state
   const resetFileInput = () => {
     setFile(null);
@@ -384,18 +383,28 @@ const ImportEmployeesButton = ({ reload }) => {
     { name: "Designation", description: "Job title or position" },
     { name: "Department", description: "Department name" },
     { name: "Branch", description: "Office location or branch" },
-    { name: "Worktype", description: "Remote, On-site, Hybrid" },
+    {
+      name: "Worktype",
+      description: "REMOTE, ON_SITE, Hybrid, Work_From_Home",
+    },
     {
       name: "Employee Personal Email ID",
       description: "Personal email address",
     },
     { name: "UserID", description: "System user identifier" },
     { name: "Joining Date", description: "Date of Joining (YYYY-MM-DD)" },
-    { name: "Employee Type", description: "Intern, Part-time, Full-time" },
-    { name: "Employee Status", description: "Employee status" },
+    {
+      name: "Employee Type",
+      description: "Intern, Part-Time, Full-Time, Contract, Freelancer",
+    },
+    {
+      name: "Employee Status",
+      description:
+        "Active, Terminated, Deceased, Resigned, Probation, Notice Period, Exit, Absconded, Legal Case",
+    },
     { name: "Date of Birth", description: "Date of Birth (YYYY-MM-DD)" },
     { name: "Marital Status", description: "Marital status" },
-    { name: "Gender", description: "Gender information" },
+    { name: "Gender", description: "MALE, FEMALE" },
   ];
 
   const optionalFields = [
@@ -426,11 +435,11 @@ const ImportEmployeesButton = ({ reload }) => {
     { name: "Nationality", description: "Employee nationality" },
     {
       name: "Direct Report",
-      description: "Direct reporting manager (username)",
+      description: "Direct reporting manager (Emp#)",
     },
     {
       name: "Indirect Report",
-      description: "Indirect reporting manager (username)",
+      description: "Indirect reporting manager (Emp#)",
     },
   ];
 
@@ -603,6 +612,10 @@ const ImportEmployeesButton = ({ reload }) => {
                         <li>
                           • <strong>Edit Mode:</strong> When enabled, Emp# will
                           be used to match existing records
+                        </li>
+                        <li>
+                          • <strong>Direct/Indirect Report:</strong> Use Emp# to
+                          reference reporting managers
                         </li>
                       </ul>
                     </div>

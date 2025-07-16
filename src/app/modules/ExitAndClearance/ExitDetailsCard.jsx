@@ -4,22 +4,16 @@ import {
   RenderResignationAction,
   RenderTerminationAction,
 } from "app/modules/ExitAndClearance/ExitRequests";
-import {
-  DepartmentName,
-  DesignationName,
-  EmployeeID,
-  TerminationStatus,
-  ResignationReason,
-  ResignationStatus,
-  ManagerName,
-} from "utils/getValuesFromTables";
 import { FormatID } from "utils/getValuesFromTables";
 import {
   saveEmployeeExitDetail,
   getEmployeeExitData,
 } from "app/hooks/employeeExitAndClearance";
 import { useSelector } from "react-redux";
-import { UploadClearanceReport,ClearanceSheet } from "app/modules/ExitAndClearance";
+import {
+  UploadClearanceReport,
+  ClearanceSheet,
+} from "app/modules/ExitAndClearance";
 import { Button } from "components/ui/button";
 // import { CoverFileUpload } from "components/FormControl";
 import {
@@ -35,6 +29,152 @@ import { handleRequest } from "app/hooks/general";
 import { renderDate } from "utils/renderValues";
 import { HasAccess } from "utils/PermissionUtils";
 import AttachmentUI from "components/ui/AttachmentUI";
+
+export const ExitDetails = (isResignation) => [
+  {
+    customContent: true,
+    renderContent: (data) => {
+      return (
+        <div className="flex flex-wrap justify-between gap-2 items-center">
+          <EmployeeOverview
+            id={data.employee_id}
+            howId={true}
+            showEmail={true}
+            avatarSize={14}
+          />
+          <div className="flex justify-end gap-2 flex-wrap">
+            <StatusLabel status={data.status}>
+              {data?.status?.toLowerCase()}
+            </StatusLabel>
+            {data?.status?.toLowerCase() === "approved" && (
+              <StatusLabel status={data.clearance_status}>
+                Clearance {data?.clearance_status?.toLowerCase()}
+              </StatusLabel>
+            )}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    title: "Employee Details",
+    field: [
+      {
+        key: "employee_id",
+        label: "",
+        formatter: (cell) => (
+          <EmployeeDetailUI
+            id={cell}
+            InformationKeys={[
+              "name",
+              "department",
+              "position",
+              "branch",
+              "manager",
+              "contact_no",
+              "employment_type",
+              "joining_date",
+            ]}
+            ViewVariant={"vertical"}
+            className
+          />
+        ),
+      },
+    ],
+  },
+  {
+    title: `${isResignation ? "Resignation" : "Termination"} Details`,
+    footerTitle: "Request At",
+    footerField: "created_at",
+    field: [
+      {
+        key: "id",
+        label: "Id",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"EXT-"} />,
+      },
+      {
+        key: isResignation ? "exit_type" : "reason_of_termination",
+        label: "Reason for leaving",
+        // formatter: (cell) => renderDate(cell),
+      },
+      {
+        key: "notice_period",
+        label: "Notice Period",
+        // formatter: (cell) => renderDate(cell),
+      },
+      {
+        key: "exit_date",
+        label: "Exit date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+    ],
+  },
+  {
+    title: `${isResignation ? "Resignation" : "Termination"} Letter`,
+    field: [
+      {
+        key: isResignation ? "resignation_letter" : "termination_letter",
+        formatter: (cell, data) =>
+          cell ? (
+            <AttachmentUI
+              attachment={cell}
+              name={`${data.emp_name || data.serial_number} ${
+                isResignation ? "Resignation" : "Termination"
+              } Letter`}
+              viewOnly={true}
+            />
+          ) : (
+            <div className="text-neutral-1000 text-sm">No letter attached</div>
+          ),
+      },
+    ],
+  },
+  {
+    title: `Clearance Report`,
+    field: [
+      {
+        key: "clearance_report",
+        formatter: (cell, data) =>
+          cell ? (
+            <AttachmentUI
+              attachment={cell}
+              name={`${data.emp_name || data.serial_number} Clearance Report`}
+              viewOnly={true}
+            />
+          ) : (
+            <div className="text-neutral-1000 text-sm">No report attached</div>
+          ),
+      },
+    ],
+  },
+  {
+    title: `Exit Interview Details`,
+    field: [
+      {
+        key: "exit_interviewer_name",
+        label: "Interviewer Name",
+      },
+      {
+        key: "exit_interview_date",
+        label: "Interview date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+      {
+        key: "exit_interview_notes",
+        label: "Interview Notes",
+      },
+    ],
+  },
+  {
+    title: "Approval Details",
+    field: [
+      {
+        key: "approval_details",
+        formatter: (cell) => <StatusList status_list={cell} className="my-3" />,
+      },
+    ],
+  },
+];
 
 const ExitDetailsCard = ({
   currentId,
@@ -107,157 +247,7 @@ const ExitDetailsCard = ({
 
   const fields = React.useMemo(
     () => [
-      {
-        customContent: true,
-        renderContent: (data) => {
-          return (
-            <div className="flex flex-wrap justify-between gap-2 items-center">
-              <EmployeeOverview
-                id={data.employee_id}
-                howId={true}
-                showEmail={true}
-                avatarSize={14}
-              />
-              <div className="flex justify-end gap-2 flex-wrap">
-                <StatusLabel status={data.status}>
-                  {data?.status?.toLowerCase()}
-                </StatusLabel>
-                {data?.status?.toLowerCase() === "approved" && (
-                  <StatusLabel status={data.clearance_status}>
-                    Clearance {data?.clearance_status?.toLowerCase()}
-                  </StatusLabel>
-                )}
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        title: "Employee Details",
-        field: [
-          {
-            key: "employee_id",
-            label: "",
-            formatter: (cell) => (
-              <EmployeeDetailUI
-                id={cell}
-                InformationKeys={[
-                  "name",
-                  "department",
-                  "position",
-                  "branch",
-                  "manager",
-                  "contact_no",
-                  "employment_type",
-                  "joining_date",
-                ]}
-                ViewVariant={"vertical"}
-                className
-              />
-            ),
-          },
-        ],
-      },
-      {
-        title: `${isResignation ? "Resignation" : "Termination"} Details`,
-        footerTitle: "Request At",
-        footerField: "created_at",
-        field: [
-          {
-            key: "id",
-            label: "Id",
-            formatter: (cell, row) => <FormatID value={cell} prefix={"EEC-"} />,
-          },
-          {
-            key: isResignation ? "exit_type" : "reason_of_termination",
-            label: "Reason for leaving",
-            // formatter: (cell) => renderDate(cell),
-          },
-          {
-            key: "notice_period",
-            label: "Notice Period",
-            // formatter: (cell) => renderDate(cell),
-          },
-          {
-            key: "exit_date",
-            label: "Exit date",
-            formatter: (cell) => renderDate(cell, "--"),
-          },
-        ],
-      },
-      {
-        title: `${isResignation ? "Resignation" : "Termination"} Letter`,
-        field: [
-          {
-            key: isResignation ? "resignation_letter" : "termination_letter",
-            formatter: (cell, data) =>
-              cell ? (
-                <AttachmentUI
-                  attachment={cell}
-                  name={`${data.emp_name || data.serial_number} ${
-                    isResignation ? "Resignation" : "Termination"
-                  } Letter`}
-                  viewOnly={true}
-                />
-              ) : (
-                <div className="text-neutral-1000 text-sm">
-                  No letter attached
-                </div>
-              ),
-          },
-        ],
-      },
-      {
-        title: `Clearance Report`,
-        field: [
-          {
-            key: "clearance_report",
-            formatter: (cell, data) =>
-              cell ? (
-                <AttachmentUI
-                  attachment={cell}
-                  name={`${
-                    data.emp_name || data.serial_number
-                  } Clearance Report`}
-                  viewOnly={true}
-                />
-              ) : (
-                <div className="text-neutral-1000 text-sm">
-                  No report attached
-                </div>
-              ),
-          },
-        ],
-      },
-      {
-        title: `Exit Interview Details`,
-        field: [
-          {
-            key: "exit_interviewer_name",
-            label: "Interviewer Name",
-          },
-          {
-            key: "exit_interview_date",
-            label: "Interview date",
-            formatter: (cell) => renderDate(cell, "--"),
-          },
-          {
-            key: "exit_interview_notes",
-            label: "Interview Notes",
-          },
-        ],
-      },
-      {
-        title: "Approval Details",
-        field: [
-          {
-            key: "approval_details",
-            formatter: (cell) => (
-              <StatusList status_list={cell} className="my-3" />
-            ),
-          },
-        ],
-      },
+      ...(ExitDetails(isResignation) || []),
       {
         customContent: true,
         className: "flex flex-wrap justify-end gap-2 my-5",
