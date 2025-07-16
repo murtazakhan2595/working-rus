@@ -4,8 +4,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
 import { Button } from "src/@/components/ui/button";
 import { useSelector } from "react-redux";

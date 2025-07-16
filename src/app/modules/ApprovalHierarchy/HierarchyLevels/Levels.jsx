@@ -67,7 +67,7 @@ const Levels = React.memo(
                   <MultiStatusLabel
                     statusList={request_initiator_designation}
                     variant="info"
-                    displayAll={true}
+                    displayCount={7}
                   />
                 </div>
                 {!viewMode && isEditHierarchyPermitted && (

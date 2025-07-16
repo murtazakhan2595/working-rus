@@ -232,6 +232,9 @@ const AddEditApprovalHierarchyLevels = ({
                         label: "Indirect Reporting",
                       },
                     ],
+                    onFieldUpdate: async (_, __, ___, handleChange) => {
+                      handleChange(`levels[${index}].designation`, null);
+                    },
                   },
                   {
                     InputField: RemoveHierarchyLevels,
