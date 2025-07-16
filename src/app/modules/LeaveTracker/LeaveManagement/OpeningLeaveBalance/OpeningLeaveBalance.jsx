@@ -7,18 +7,20 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
-import { ImportHolidays } from "app/modules/LeaveTracker";
+import { ImportOpeningBalance } from "app/modules/LeaveTracker";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
-import { PublicHolidaydsColumn } from "app/modules/LeaveTracker/Sections";
+import { OpeningLeaveBalanceColumn } from "app/modules/LeaveTracker/Sections";
 import { getHolidaysListData } from "app/hooks/leaveTracker";
 import { CardHeader } from "components/ui/card";
+import { getLeaveOpeningBalance } from "app/hooks/leaveTracker";
 
-export default function Holidays({ reload = false }) {
+export default function OpeningLeaveBalance({ reload = false }) {
   const Branches = GetDispatchStateList("branches", "common") || [];
   const [filterData, setFilterData] = useState({});
   const [isloading, setIsLoading] = useState(true);
-  const [PublicHodidays, setPublicHodidays] = useState({});
+  // const [PublicHodidays, setPublicHodidays] = useState({});
+  const [openiningBalance, setOpeningBalance] = useState({});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
 
@@ -36,13 +38,13 @@ export default function Holidays({ reload = false }) {
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
-    const response = await getHolidaysListData({
+    const response = await getLeaveOpeningBalance({
       filterData,
       options,
       ordering,
     });
     if (response && isMounted) {
-      setPublicHodidays(response);
+      setOpeningBalance(response);
     }
     setIsLoading(false);
   };
@@ -88,55 +90,21 @@ export default function Holidays({ reload = false }) {
         <div>
           <CardTitle className="text-primary">Opening Leave Balance</CardTitle>
           <CardDescription className="text-neutral-1100">
-            {`Here you can add, edit, delete and view public holidays`}
+            {`Here you can add, edit, delete and view the opening leave balance for employees.`}
           </CardDescription>
         </div>
-        <ImportHolidays reloadData={fetchData} />
+        <ImportOpeningBalance reloadData={fetchData} />
       </CardHeader>
       <CardContent>
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              name: "name",
-              placeholder: "Serach by name",
-            },
-            {
-              type: "select",
-              options: Branches,
-              name: "branch",
-              placeholder: "Branch",
-            },
-            {
-              type: "select",
-              options: countriesList,
-              name: "country",
-              placeholder: "Country",
-            },
-            {
-              type: "select",
-              options: [],
-              name: "religion",
-              placeholder: "Religion",
-            },
-            {
-              type: "date-range",
-              options: Branches,
-              name: "date_range",
-              placeholder: "Start Date",
-            },
-          ]}
-          onChange={handleFilterChange}
-          className="justify-end mb-4"
-        />
+    
         {isloading ? (
           <PageLoader />
         ) : (
           <TableCustom
-            data={PublicHodidays?.results || []}
-            columns={PublicHolidaydsColumn(fetchData)}
+            data={openiningBalance?.results || []}
+            columns={OpeningLeaveBalanceColumn(fetchData)}
             pagination={true}
-            dataTotalSize={PublicHodidays?.count || 0}
+            dataTotalSize={openiningBalance?.count || 0}
             tableOptions={tableOptions}
           />
         )}

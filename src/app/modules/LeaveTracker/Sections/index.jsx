@@ -8,6 +8,7 @@ import {
   LeaveOffsetSettingColumn,
   LeaveAplicationDashboardColumns,
   MyLeaveApplicationDashboard,
+  OpeningLeaveBalanceColumn,
 } from "app/modules/LeaveTracker/Sections/LeaveTrackerTableColumns";
 
 export {
@@ -20,4 +21,5 @@ export {
   LeaveOffsetSettingColumn,
   LeaveAplicationDashboardColumns,
   MyLeaveApplicationDashboard,
+  OpeningLeaveBalanceColumn,
 };

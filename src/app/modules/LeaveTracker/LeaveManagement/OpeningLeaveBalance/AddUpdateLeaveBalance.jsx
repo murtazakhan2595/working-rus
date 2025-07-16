@@ -23,8 +23,10 @@ export default function AddUpdateLeaveBalance({
   isOpen = true,
   setIsOpen,
   reload,
-  data = null, // Accept data directly
+  data: directData = null,
+  edit = {}, // new pattern from NavigationSheetComponent
 }) {
+  const data = edit?.data || directData;
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState(null);
@@ -32,15 +34,12 @@ export default function AddUpdateLeaveBalance({
   const [selectedLeaveType, setSelectedLeaveType] = useState(null);
 
   const isEditMode = Boolean(data);
+  console.log("isedit mode", isEditMode, data);
 
-  const employees = useSelector((state) =>
-    (state.emp.employees || []).filter((obj) => obj.id !== 1)
-  );
+  const employees = useSelector((state) => state.emp.employees) || [];
   const Branches = useSelector((state) => state.common.branches);
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
-
-  console.log("Employees from Redux:", employees);
 
   const FormSheetData = {
     triggerText: "",
@@ -53,33 +52,21 @@ export default function AddUpdateLeaveBalance({
   useEffect(() => {
     if (data) {
       // Pre-populate form with existing data
-      const consumed = data.leaves_consumed || 0;
-      const alloted = data.total_alloted || 0;
+      const consumed = data.consumed || 0;
+      const alloted = data.total_allotted || 0;
 
       setFormData({
-        employee: data.employee_id || "",
-        leave_type: data.leave_type_id || "",
+        employee: data.employee || "",
+        leave_type: data.leave_type || "",
         total_alloted: alloted,
         leaves_consumed: consumed,
         remaining_leaves: alloted - consumed,
         remarks: data.remarks || "",
       });
 
-      // Set selected leave type if editing
-      if (data.leave_type_id) {
-        const leaveType = LeaveTypeOptions.find(
-          (type) => type.value === data.leave_type_id
-        );
-        if (leaveType) {
-          setSelectedLeaveType(leaveType);
-        }
-      }
-
       // Set employee data if editing
-      if (data.employee_id) {
-        const employee = employees.find(
-          (emp) => emp.value === data.employee_id
-        );
+      if (data.employee) {
+        const employee = employees.find((emp) => emp.id === data.employee);
         if (employee) {
           setEmployeeData(employee);
         }
@@ -129,6 +116,7 @@ export default function AddUpdateLeaveBalance({
 
       // Prepare payload
       const payload = {
+        id: isEditMode ? data.id : undefined,
         employee: values.employee,
         leave_type: values.leave_type,
         total_allotted: Number(values.total_alloted),
@@ -195,7 +183,7 @@ export default function AddUpdateLeaveBalance({
         label: "Employee",
         disabled: true,
         colsSpan: 2,
-        value: `${displayValues.employee_name} (${displayValues.employee_id})`,
+        value: `${displayValues.employee_name}`,
       });
     } else {
       // In create mode, show searchable dropdown
