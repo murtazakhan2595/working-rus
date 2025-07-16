@@ -223,6 +223,7 @@ const AddEditApprovalHierarchyLevels = ({
                     InputField: SelectInputComponent,
                     name: `levels[${index}].assignment_type`,
                     label: "Approver Type",
+                    value: level.assignment_type,
                     options: [
                       { value: "DESIGNATION", label: "Designation" },
                       { value: "DIRECT_REPORTING", label: "Direct Reporting" },
@@ -242,6 +243,7 @@ const AddEditApprovalHierarchyLevels = ({
                     name: `levels[${index}].designation`,
                     label: "Designation",
                     options: Designations,
+                    value: level.designation,
                     required: true,
                     renderCondition: level.assignment_type === "DESIGNATION",
                   },
@@ -250,7 +252,7 @@ const AddEditApprovalHierarchyLevels = ({
                     InputField: CheckBoxInput,
                     name: `levels[${index}].auto_forward_enabled`,
                     label: "Auto Forward",
-                    colsSpan:2
+                    colsSpan: 2,
                   },
                   ...(level.auto_forward_enabled
                     ? [

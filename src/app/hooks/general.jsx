@@ -345,6 +345,7 @@ const getEmployeeListWithDetail = async () => {
         disbursement_type: employee.disbursement_type,
         work_email: employee.work_email,
         employee_type: employee.employee_type,
+        employee_location: employee.employee_location,
         employee_status: employee.employee_status,
         branch_id: employee.branch_id,
         profile_picture: employee.profile_picture,

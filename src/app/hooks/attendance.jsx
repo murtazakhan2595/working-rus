@@ -918,7 +918,6 @@ export const saveBiometricBreak = async (payload) => {
     const finalPayload = mapBreakPayloadData(payload, existingData.results);
     const ID = finalPayload?.id;
     if (finalPayload) {
-      debugger;
       const response = await saveBreak(finalPayload, ID);
       if (response) {
         return response;
@@ -999,7 +998,6 @@ export const saveUserBiometricAttendanceLog = async (
           time: userBiometricList.timestamp,
         });
         if (breakSaveResponse) {
-          debugger;
           const breakDuration = await calculateBreak({
             filterData: {
               employee_id: employee_id,
