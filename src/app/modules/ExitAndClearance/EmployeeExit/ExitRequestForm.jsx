@@ -10,7 +10,7 @@ import { SelectInputComponent } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { EmployeeExit } from "app/utils/Types/EmployeeExit";
 import { renderDate } from "utils/renderValues";
-import { employeeExit } from "app/hooks/employee";
+import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { toast } from "react-toastify";
 import { NoticePeriod } from "data/Data";
 import { TextInput } from "components/FormControl";
@@ -21,48 +21,32 @@ import { ReasonForLeaving } from "data/Data";
 import { CoverFileUpload } from "components/FormControl";
 import { Card, CardContent, CardTitle } from "components/ui/card";
 
-export default function ExitRequestForm({ reload }) {
-  const {
-    joining_date,
-    department_name,
-    department_position,
-    direct_report,
-    employee_location,
-    phone_no,
-    id,
-  } = useSelector((state) => state.emp.user_details);
-  const designations = useSelector((state) => state.common.designations);
-  const departments = useSelector((state) => state.common.departments);
-  const managers = useSelector((state) => state.emp.reportingManagers);
-  const [isLoading, setLoading] = useState(false);
+export default function ExitRequestForm({ reload = () => {} }) {
+  const { id: user_id } = useSelector((state) => state.emp.user_details);
   const InitialValues = EmployeeExit;
-  const formRef = React.createRef();
   const handleSubmit = async (data, resetForm) => {
-    const formData = new FormData();
-    formData.append("exit_category", "resignation");
-    formData.append("employee_id", id);
-    formData.append("status_resignation", "pending");
-    formData.append("exit_date", data.exit_date);
-    formData.append("notice_period", data.notice_period);
-    formData.append("exit_type", data.reason_for_leaving);
-
-    if (data.resignation_Letter) {
-      formData.append("resignation_letter", data.resignation_Letter);
-    }
     try {
-      const response = await employeeExit(formData);
+      const payload = {
+        ...data,
+        exit_category: "RESIGNATION",
+        employee_id: user_id,
+      };
+      const response = await saveEmployeeExitDetail(payload);
       if (response) {
-        toast.success("Request has been successfully submitted");
-        reload();
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: `Request Submitted Successfully!`,
+          description: `Your resignation request has been submitted successfully and will be reviewed and processed shortly.`,
+        };
       }
     } catch (error) {
-      setLoading(false);
       console.error("Error in handleSubmit:", error);
     }
   };
 
   const handleClose = () => {
-    // navigate("/profile-management");
+    reload();
   };
   return (
     <>
@@ -97,7 +81,6 @@ export default function ExitRequestForm({ reload }) {
               cancelButtonText: "Cancel",
               columns: 3,
               //     renderUpdatedFormValues: setFormValues,
-              disableSubmit: isLoading,
               formFields: [
                 {
                   sheetCardExtension: true,
@@ -105,7 +88,7 @@ export default function ExitRequestForm({ reload }) {
                   InputFields: [
                     {
                       InputField: EmployeeDetailUI,
-                      id: id,
+                      id: user_id,
                       InformationKeys: [
                         "name",
                         "department",
@@ -132,7 +115,7 @@ export default function ExitRequestForm({ reload }) {
                       name: "exit_date",
                       required: true,
                       label: "Exit Date",
-                      maxDate: new Date(),
+                      minDate: new Date(),
                     },
                     {
                       InputField: SelectInputComponent,
@@ -143,7 +126,7 @@ export default function ExitRequestForm({ reload }) {
                     },
                     {
                       InputField: SelectInputComponent,
-                      name: "reason_for_leaving",
+                      name: "exit_type",
                       required: true,
                       label: "Reason for leaving",
                       options: ReasonForLeaving,
@@ -153,6 +136,7 @@ export default function ExitRequestForm({ reload }) {
                       name: "resignation_letter",
                       required: true,
                       label: "Resignation Letter or drag it here",
+                      colsSpan: 3,
                     },
                   ],
                 },
