@@ -110,12 +110,12 @@ const ViewLeaveDetails = ({
         {
           key: "start_date",
           label: "Start Date",
-          formatter: (cell) => renderDate(cell, "--", "time"),
+          formatter: (cell) => renderDate(cell, "--"),
         },
         {
           key: "end_date",
           label: "End Date",
-          formatter: (cell) => renderDate(cell, "--", "time"),
+          formatter: (cell) => renderDate(cell, "--"),
         },
         {
           key: "leave_duration_name",

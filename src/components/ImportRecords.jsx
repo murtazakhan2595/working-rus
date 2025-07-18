@@ -19,12 +19,13 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-
 // Import API services
 import { uploadRecord } from "app/hooks/general";
 import { exportRecordToExcel } from "utils/downloadUtils";
 import { HasAccess } from "utils/PermissionUtils";
 import { downloadTemplateFile } from "app/hooks/general";
+import { downloadFile } from "utils/downloadUtils";
+import { CoverFileUpload } from "components/FormControl";
 
 const ImportRecords = ({
   reloadData = () => {},
@@ -35,6 +36,7 @@ const ImportRecords = ({
   templateDataToExport = null,
   module = "Cohrus",
   formatInformation = [],
+  modifyUploadedFile = async () => {},
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
@@ -174,23 +176,38 @@ const ImportRecords = ({
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const uploadedFile = e.target.files[0];
+      setFile(uploadedFile);
       // Clear previous validation errors when a new file is selected
       setValidationErrors([]);
       setValidationMessage(null);
     }
   };
 
-  const handleDownloadTemplate = async () => {
+  const handleDownloadTemplate = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     try {
       if (downloadTemplateEndpoint) {
         const dataToExport = await downloadTemplateFile(
           downloadTemplateEndpoint
         );
-        debugger;
-        console.log(dataToExport);
+        if (
+          typeof dataToExport === "string" ||
+          typeof dataToExport.data === "string"
+        ) {
+          const csvData =
+            typeof dataToExport === "string" ? dataToExport : dataToExport.data;
+          const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+          downloadFile(blob, `Import-${module}-Template`);
+        } else {
+          console.error("Unexpected response format:", dataToExport);
+          toast.error("Invalid template format received", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
       } else {
         const dataToExport = templateDataToExport || [];
         exportRecordToExcel(dataToExport, module, `${module}-Import-Template`);
@@ -215,14 +232,16 @@ const ImportRecords = ({
       });
       return;
     }
-
     try {
       setIsUploading(true);
       setValidationErrors([]); // Clear previous errors
       setValidationMessage(null);
+      const modifiedFile = await modifyUploadedFile(file);
+      const fileToUpload = modifiedFile ? modifiedFile : file;
+
       // Create form data for file upload
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", fileToUpload);
       // Call the API to upload employees data
       const response = await uploadRecord(formData, uploadEndpoint);
       // Handle successful response
@@ -433,21 +452,13 @@ const ImportRecords = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="file-upload">Upload Employee Data</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="file-upload"
-                    type="file"
-                    accept=".xlsx,.xls,.csv"
-                    onChange={handleFileChange}
-                    ref={fileInputRef}
-                  />
-                </div>
-                {file && (
-                  <p className="text-sm text-gray-900">
-                    Selected file: {file.name}
-                  </p>
-                )}
+                <CoverFileUpload
+                  name="file"
+                  variant="AttachmentFileUpload"
+                  label={`Upload ${module} Data`}
+                  acceptType=".xlsx,.xls,.csv"
+                  onChange={handleFileChange}
+                />
               </div>
 
               {validationErrors.length > 0 && (

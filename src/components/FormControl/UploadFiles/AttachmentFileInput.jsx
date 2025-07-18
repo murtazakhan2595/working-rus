@@ -12,6 +12,8 @@ function AttachmentFileInput({
   handleUpdateFileClick = () => {},
   allowUpdate = true,
   disabled = false,
+  AccetpedFile = null,
+  maxSize,
 }) {
   const [dragActive, setDragActive] = useState(false);
   const AttachmentFileInputRef = useRef(null);
@@ -80,7 +82,7 @@ function AttachmentFileInput({
                 </span>
                 <span className="font-inter"> or drag and drop</span>
                 <div className="text-sm font-inter">
-                  PNG, JPG, GIF up to 10MB
+                  {AccetpedFile} up to {maxSize}MB
                 </div>
               </div>
             </div>

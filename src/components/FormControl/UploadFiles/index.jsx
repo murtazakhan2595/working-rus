@@ -10,12 +10,12 @@ const CoverFileUpload = ({
   value,
   error,
   touch,
-  onChange,
+  onChange = () => {},
   label,
   acceptType,
   required,
   maxSize = 10,
-  variant = "CoverFileUpload",
+  variant = "CoverFileUpload", // [AttachmentFileUpload, CoverFileUpload] other options
   multiple = false,
   deleteAttachment = () => {},
   allowUpdate = true,
@@ -106,6 +106,17 @@ const CoverFileUpload = ({
     document.body.appendChild(tempFileInput);
     tempFileInput.click();
   };
+
+  const AccetpedFile = React.useMemo(() => {
+    if (!acceptType) return "PNG, JPG, GIF, CSV, DOC, PDF"; // default accepted file types
+
+    // Convert ".pdf,.xlsx" to "PDF, XLSX"
+    return acceptType
+      .split(",")
+      .map((ext) => ext.replace(".", "").toUpperCase())
+      .join(", ");
+  }, [acceptType]);
+
   return (
     <FormField
       name={name}
@@ -120,12 +131,14 @@ const CoverFileUpload = ({
         <CoverFileInput
           files={files}
           acceptType={acceptType}
+          maxSize={maxSize}
           handleFile={handleFile}
           multiple={multiple}
           handleRemoveFile={handleRemoveFile}
           handleUpdateFileClick={handleUpdateFileClick}
           allowUpdate={allowUpdate}
           disabled={disabled}
+          AccetpedFile={AccetpedFile}
         />
       )}
       {variant === "AttachmentFileUpload" && (
@@ -134,10 +147,12 @@ const CoverFileUpload = ({
           acceptType={acceptType}
           handleFile={handleFile}
           multiple={multiple}
+          maxSize={maxSize}
           handleRemoveFile={handleRemoveFile}
           handleUpdateFileClick={handleUpdateFileClick}
           allowUpdate={allowUpdate}
           disabled={disabled}
+          AccetpedFile={AccetpedFile}
         />
       )}
     </FormField>

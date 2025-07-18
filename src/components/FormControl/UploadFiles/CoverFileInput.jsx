@@ -11,6 +11,8 @@ export const CoverFileInput = ({
   handleUpdateFileClick = () => {},
   disabled = false,
   allowUpdate = true,
+  AccetpedFile,
+  maxSize,
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
@@ -63,9 +65,7 @@ export const CoverFileInput = ({
             <span className="text-neutral-1000"> or drag and drop</span>
           </p>
           <p className="text-sm text-neutral-1000">
-            {acceptType === ".pdf"
-              ? "Please upload PNG, JPG or PDF up to 10MB"
-              : "PNG, JPG or PDF up to 10MB"}
+            {AccetpedFile} up to {maxSize}MB
           </p>
 
           <input
