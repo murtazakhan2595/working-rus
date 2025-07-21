@@ -6,58 +6,86 @@ import { useSelector } from "react-redux";
 import { uploadHolidaysData } from "app/hooks/leaveTracker";
 import { mapAttendanceData } from "app/utils/MappingObjects/mapAttendanceData";
 import { getActiveShiftData } from "app/hooks/shiftManagement";
+import { renderTime } from "utils/DateTimeUtils";
 
 const ImportAttendance = ({ reloadData = () => {} }) => {
   const Employees = useSelector((state) => state.emp.employees_detail);
-  const modifyUploadedFile = async (file) => {
-    if (!file) {
-      return null;
-    }
-    try {
+
+  // Helper to promisify Papa.parse
+  const parseCSV = (file) =>
+    new Promise((resolve, reject) => {
       Papa.parse(file, {
         header: true,
-        complete: (result) => {
-          const data = result.data;
-          debugger;
-          // ➕ Add new columns to each row
-          const updatedData = data.map(async (row) => {
-            debugger;
-            const {
-              DATE: date,
-              "Employee ID": emp_id,
-              "Check-in Time": checkin,
-              "Check-out Time": checkout,
-            } = row;
-            const { id: employee_id } = Employees.find(
-              (obj) => obj.serial_number == emp_id
-            );
-            const activeShift = await getActiveShiftData(
-              employee_id,
-              moment(date)
-            );
-            const { payable_hours, overtime_hours, total_hours, status } =
-              mapAttendanceData({ checkin, checkout, date }, activeShift);
-            return {
-              Status: status,
-              total_hours: total_hours,
-              payable_hours: payable_hours,
-              overtime_hours: overtime_hours,
-              ...row,
-            };
-          });
-
-          // Convert back to CSV
-          const csv = Papa.unparse(updatedData);
-          // Trigger file download
-          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-          return blob;
-        },
-        error: (err) => {
-          console.error("Parsing error:", err);
-        },
+        skipEmptyLines: true,
+        complete: (results) => resolve(results.data),
+        error: reject,
       });
+    });
+
+  const modifyUploadedFile = async (file) => {
+    if (!file) return null;
+
+    try {
+      // Parse CSV file into JSON
+      const parsedData = await parseCSV(file);
+
+      const updatedData = await Promise.all(
+        parsedData.map(async (row) => {
+          const {
+            Date: date,
+            "Employee ID": emp_id,
+            "Check-in Time": checkin,
+            "Check-out Time": checkout,
+          } = row;
+
+          debugger;
+
+          const employee = Employees.find((obj) => obj.serial_number == emp_id);
+
+          if (!employee) {
+            return row;
+          }
+          const formattedDate = moment(date).format("YYYY-MM-DD");
+          const formattedCheckin = renderTime(checkin, formattedDate);
+          const formattedCheckout = renderTime(checkout, formattedDate);
+          const activeShift = await getActiveShiftData(
+            employee.id,
+            formattedDate
+          );
+          debugger;
+          const {
+            total_hours = "0",
+            payable_hours = "0",
+            overtime_hours = "0",
+            status = "Present",
+          } = mapAttendanceData(
+            {
+              checkin: formattedCheckin,
+              checkout: formattedCheckout,
+              date: formattedDate,
+            },
+            activeShift
+          ) || {};
+
+          return {
+            ...row,
+            Status: status,
+            total_hours,
+            payable_hours,
+            overtime_hours,
+          };
+        })
+      );
+
+      // Convert updated data back to CSV
+      const csv = Papa.unparse(updatedData);
+
+      // Create downloadable blob
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      return blob;
     } catch (error) {
-      console.error("Error uploading holidays:", error);
+      console.error("Error modifying uploaded file:", error);
+      return null;
     }
   };
 

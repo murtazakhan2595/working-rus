@@ -94,6 +94,14 @@ function App() {
   if (loading) {
     return <PageLoader height="100vh" />; // Render the loader if loading is true
   }
+  const used = process.memoryUsage();
+
+  console.log("Memory Usage:");
+  console.log(`RSS           : ${Math.round(used.rss / 1024 / 1024)} MB`);
+  console.log(`Heap Total    : ${Math.round(used.heapTotal / 1024 / 1024)} MB`);
+  console.log(`Heap Used     : ${Math.round(used.heapUsed / 1024 / 1024)} MB`);
+  console.log(`External      : ${Math.round(used.external / 1024 / 1024)} MB`);
+
   return (
     <>
       <Routes>

@@ -176,10 +176,9 @@ const ImportRecords = ({
     }
   };
 
-  const handleFileChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const uploadedFile = e.target.files[0];
-      setFile(uploadedFile);
+  const handleFileChange = async (name, file) => {
+    if (file) {
+      setFile(file);
       // Clear previous validation errors when a new file is selected
       setValidationErrors([]);
       setValidationMessage(null);

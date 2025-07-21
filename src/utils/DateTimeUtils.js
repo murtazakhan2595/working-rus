@@ -1,31 +1,35 @@
 import moment from "moment";
 
 export function renderTime(time, date = moment()) {
-  // Ensure date is a valid moment object
-  const baseDate = moment(date);
+  let baseDate = moment(date, ["YYYY-MM-DD", "YYYY/MM/DD"], true);
+  
+  // Fallback to current date if invalid
   if (!baseDate.isValid()) {
-    console.error("Invalid date input");
-    return null;
+    console.warn("Invalid date input. Falling back to current date.");
+    baseDate = moment();
   }
+
   // Format base date
   const formattedDate = baseDate.format("YYYY-MM-DD");
-  const TimeMoment = moment(time);
-  if (!TimeMoment || !TimeMoment.isValid()) {
-    const timeFormats = ["hh:mm A", "HH:mm", "HH:mm:ss", "hh:mm:ss A"];
-    const formattedTime = moment(time, timeFormats, true).format("HH:mm:ss");
-    const responseTime = moment(`${formattedDate}T${formattedTime}`)
-      .utc()
-      .toISOString();
-    return responseTime;
+
+  // Handle different time formats
+  const timeFormats = ["HH:mm", "hh:mm A", "HH:mm:ss", "hh:mm:ss A"];
+  let TimeMoment = moment(time, timeFormats, true);
+
+  if (!TimeMoment.isValid()) {
+    console.error("Invalid time format:", time);
+    return null;
   }
 
   const formattedTime = TimeMoment.format("HH:mm:ss");
-  // Combine date and time in UTC
-  const responseTime = moment(`${formattedDate}T${formattedTime}`)
-    .utc()
-    .toISOString();
+
+  // Combine date and time into ISO UTC string
+  const combined = moment(`${formattedDate}T${formattedTime}`);
+  const responseTime = combined.utc().toISOString();
+
   return responseTime;
 }
+
 
 /**
  * Calculates and formats the duration between two dates into a readable string.
