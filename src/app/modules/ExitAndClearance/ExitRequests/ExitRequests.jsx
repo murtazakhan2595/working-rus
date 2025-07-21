@@ -127,7 +127,7 @@ const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
       value={activeTab}
     >
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-        <TabsList className="flex items-center justify-center">
+        <TabsList>
           {["Terminations", "Resignations"].map((tab) => (
             <TabsTrigger key={tab} value={tab} variant={"inner-tab"}>
               {tab}
