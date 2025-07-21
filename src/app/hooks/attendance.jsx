@@ -941,10 +941,10 @@ export const saveUserBiometricAttendanceLog = async (
   date
 ) => {
   try {
-    const active_Shift = await getActiveShiftData(employee_id, date);
     const attendanceData = await getAttendancebyEmployee(employee_id, date);
     if (userBiometricList.status === "check-in") {
       if (attendanceData) return Boolean(attendanceData);
+      const active_Shift = await getActiveShiftData(employee_id, date);
       const attendancePayload = mapAttendanceCheckInPayload(
         userBiometricList.timestamp,
         attendanceData,
@@ -962,17 +962,23 @@ export const saveUserBiometricAttendanceLog = async (
     }
 
     if (userBiometricList.status === "check-out") {
-      if (attendanceData) return Boolean(attendanceData);
-      const response = await saveAttendance({
-        employee_id: employee_id,
-        date: date,
-        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
-      });
+      if (!attendanceData) return Boolean(attendanceData);
+      const response = await saveAttendance(
+        {
+          employee_id: employee_id,
+          date: date,
+          checkout: moment(userBiometricList.timestamp).utc().toISOString(),
+          checkin: moment(attendanceData.checkin),
+        },
+        null,
+        attendanceData?.id
+      );
       return Boolean(response);
     }
 
     if (userBiometricList) {
       if (userBiometricList.status === "break") {
+        const active_Shift = await getActiveShiftData(employee_id, date);
         const attendance =
           attendanceData ??
           (await saveAttendance(
