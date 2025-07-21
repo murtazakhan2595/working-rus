@@ -237,8 +237,7 @@ const ImportRecords = ({
 
         setValidationErrors(fileErrors);
       } else {
-        const fileToUpload = modifiedFile ? modifiedFile : file;
-
+        const fileToUpload = modifiedFile ? modifiedFile : file
         // Create form data for file upload
         const formData = new FormData();
         formData.append("file", fileToUpload);

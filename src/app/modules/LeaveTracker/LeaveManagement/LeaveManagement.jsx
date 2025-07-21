@@ -79,39 +79,39 @@ export default function LeaveManagement() {
   const tabsData = [
     ...(true
       ? [
-          {
-            value: "leave-duration",
-            label: "Leave Duration",
-            component: (
-              <LeaveDuration
-                options={options}
-                onPageChange={onPageChange}
-                setOrdering={setOrdering}
-                loading={loading}
-                data={data}
-                reload={fetchData}
-              />
-            ),
-          },
-        ]
+        {
+          value: "leave-duration",
+          label: "Leave Duration",
+          component: (
+            <LeaveDuration
+              options={options}
+              onPageChange={onPageChange}
+              setOrdering={setOrdering}
+              loading={loading}
+              data={data}
+              reload={fetchData}
+            />
+          ),
+        },
+      ]
       : []),
     ...(true
       ? [
-          {
-            value: "leave-types",
-            label: "Leave Types",
-            component: (
-              <LeaveTypes
-                options={options}
-                onPageChange={onPageChange}
-                setOrdering={setOrdering}
-                loading={loading}
-                data={data}
-                reload={fetchData}
-              />
-            ),
-          },
-        ]
+        {
+          value: "leave-types",
+          label: "Leave Types",
+          component: (
+            <LeaveTypes
+              options={options}
+              onPageChange={onPageChange}
+              setOrdering={setOrdering}
+              loading={loading}
+              data={data}
+              reload={fetchData}
+            />
+          ),
+        },
+      ]
       : []),
     {
       value: "public-holidays",
@@ -197,12 +197,11 @@ export default function LeaveManagement() {
         defaultValue="leave-duration"
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
-          <TabsList className="flex justify-center mb-4">
+          <TabsList>
             {tabsData.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-primary-200  data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
               >
                 {tab.label}
               </TabsTrigger>

@@ -364,12 +364,11 @@ const OfficeSetting = () => {
           >
             {/* Horizontal tabs */}
             <div className="w-full mb-6">
-              <TabsList className="flex flex-row w-full gap-4 overflow-x-auto">
+              <TabsList>
                 {availableTabs?.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100"
                   >
                     {tab.label}
                   </TabsTrigger>
