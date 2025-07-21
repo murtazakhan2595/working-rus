@@ -19,8 +19,7 @@ const ViewOpeningBalanceDetail = ({
   DataList = [],
 }) => {
   const [leaveTypeOptions, setLeaveTypeOptions] = useState([]);
-  const [currentItem, setCurrentItem] = useState(null); // Add state for current item
-  console.log("ViewOpeningBalanceDetail currentId:", currentItem);
+  const [currentItem, setCurrentItem] = useState(null);
 
   // Define the fields to display
   const fields = [
@@ -63,8 +62,8 @@ const ViewOpeningBalanceDetail = ({
   const fetchData = async (id, isMounted) => {
     try {
       const response = await getLeaveOpeningBalanceById(id);
-      if (isMounted && response) {
-        setCurrentItem(response); // Store the current item data
+      if (isMounted) {
+        setCurrentItem(response); // Store the fetched data
         return response;
       }
     } catch (error) {
@@ -96,30 +95,6 @@ const ViewOpeningBalanceDetail = ({
     fetchLeaveTypes();
   }, []);
 
-  // Custom content component that includes employee overview
-  const CustomContent = () => {
-    return (
-      <div className="space-y-6">
-        {/* Employee Overview */}
-        {currentItem?.employee && (
-          <div className="flex items-center justify-between w-full gap-4 mt-6">
-            <EmployeeOverview
-              id={currentItem?.employee?.id || currentItem?.employee}
-              showEmail={true}
-              showDepartment={true}
-              showPosition={true}
-              showId={true}
-              showBranchName={true}
-            />
-          </div>
-        )}
-
-        {/* Leave Opening Balance Details */}
-        <DetailContent title="Leave Opening Balance" fields={fields} />
-      </div>
-    );
-  };
-
   return (
     <NavigationSheetComponent
       isOpen={isOpen}
@@ -135,7 +110,24 @@ const ViewOpeningBalanceDetail = ({
       editTooltip="Edit Leave Opening Balance"
       deleteTooltip="Delete Leave Opening Balance"
     >
-      <CustomContent />
+      <div className="space-y-6">
+        {/* Employee Overview */}
+        {currentItem?.employee && (
+          <div className="flex items-center justify-between w-full gap-4 ">
+            <EmployeeOverview
+              id={currentItem?.employee?.id || currentItem?.employee}
+              showEmail={true}
+              showDepartment={true}
+              showPosition={true}
+              showId={true}
+              showBranchName={true}
+            />
+          </div>
+        )}
+
+        {/* Leave Opening Balance Details */}
+        <DetailContent currentItem={currentItem} fields={fields} />
+      </div>
     </NavigationSheetComponent>
   );
 };
