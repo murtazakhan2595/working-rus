@@ -292,6 +292,7 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
           toast.success("Leave allocations imported successfully", {
             position: toast.POSITION.TOP_RIGHT,
           });
+          reloadData(true)
           handleClose();
         }
         return;
