@@ -28,11 +28,11 @@ export default function AddUpdateLeaveType({
   data = null,
   id = null,
 }) {
-  const [formData, setFormData] = useState(LeaveType);
+  const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [DataList, setDataList] = useState(false);
 
-  const isEditMode = Boolean(id);
+  const isEditMode = Boolean(data);
 
   const Branches = useSelector((state) => state.common.branches);
   const Departments = useSelector((state) => state.common.departments);
@@ -72,28 +72,61 @@ export default function AddUpdateLeaveType({
   }, []);
 
   // Set form data from passed data or initialize empty
-
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async (isMounted, id) => {
-      try {
-        setIsLoading(true);
-        const response = await getLeaveTypeData(id);
-        if (isMounted) {
-          setFormData(response);
-        }
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (id) fetchData(isMounted, id);
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
+    if (data) {
+      // Pre-populate form with existing data
+      setFormData({
+        name: data.name || "",
+        short_code: data.short_code || "",
+        leave_count: data.leave_count || "",
+        is_carry_forward_allowed: data.is_carry_forward_allowed || false,
+        max_carry_forward_limit: data.max_carry_forward_limit || 0,
+        is_encashable: data.is_encashable || false,
+        requires_attachment: data.requires_attachment || false,
+        min_days_notice: data.min_days_notice || "",
+        nationalities: data.nationalities || [],
+        branches_ids: data.branches?.map((b) => b.id) || [],
+        departments_ids: data.departments?.map((d) => d.id) || [],
+        genders: data.genders || [],
+        marital_statuses: data.marital_statuses || [],
+        grades: data.grades || [],
+        probation_restriction: data.probation_restriction || false,
+        day_count_type: data.day_count_type || "work_days",
+        max_consecutive_days: data.max_consecutive_days || "",
+        is_all_paid: data.is_all_paid !== undefined ? data.is_all_paid : true,
+        full_paid_days: data.full_paid_days || 0,
+        half_paid_days: data.half_paid_days || 0,
+        tooltip_info: data.tooltip_info || "",
+        status: data.status || true,
+      });
+    } else {
+      // Initialize empty form for new record
+      setFormData({
+        name: "",
+        short_code: "",
+        leave_count: "",
+        is_carry_forward_allowed: false,
+        max_carry_forward_limit: 0,
+        is_encashable: false,
+        requires_attachment: false,
+        min_days_notice: "",
+        nationalities: [],
+        branches_ids: [],
+        departments_ids: [],
+        genders: [],
+        marital_statuses: [],
+        grades: [],
+        probation_restriction: false,
+        day_count_type: "work_days",
+        max_consecutive_days: "",
+        is_all_paid: true,
+        full_paid_days: 0,
+        half_paid_days: 0,
+        tooltip_info: "",
+        status: true,
+      });
+    }
+  }, [data]);
 
   // Memoized form fields that depend on current form values
   const getFormFields = useMemo(() => {
@@ -136,7 +169,6 @@ export default function AddUpdateLeaveType({
             name: "max_carry_forward_limit",
             label: "Max Carry Forward Limit",
             placeholder: "Maximum days to carry forward",
-            required: true,
             shouldRender: formData.is_carry_forward_allowed,
           },
           {
@@ -168,7 +200,6 @@ export default function AddUpdateLeaveType({
             name: "full_paid_days",
             label: "Full Paid Days",
             placeholder: "Enter full paid days",
-            required: true,
             shouldRender: !formData.is_all_paid,
           },
           {
@@ -176,7 +207,6 @@ export default function AddUpdateLeaveType({
             name: "half_paid_days",
             label: "Half Paid Days",
             placeholder: "Enter half paid days",
-            required: true,
             shouldRender: !formData.is_all_paid,
           },
           {
@@ -289,9 +319,26 @@ export default function AddUpdateLeaveType({
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
       setIsLoading(true);
-      const response = await saveLeaveType({
+      
+      // Clean up payload for backend compatibility
+      const cleanedValues = {
         ...values,
-        id: id,
+        // Fix min_days_notice empty string issue
+        min_days_notice: values.min_days_notice === "" ? 0 : values.min_days_notice,
+        
+        // Fix "all-values-in-options" issue - convert to null when "All" is selected
+        nationalities: values.nationalities?.includes("all-values-in-options") ? [] : values.nationalities,
+        branches_ids: values.branches_ids?.includes("all-values-in-options") ? [] : values.branches_ids,
+        departments_ids: values.departments_ids?.includes("all-values-in-options") ? [] : values.departments_ids,
+        genders: values.genders?.includes("all-values-in-options") ? [] : values.genders,
+        marital_statuses: values.marital_statuses?.includes("all-values-in-options") ? [] : values.marital_statuses,
+        grades: values.grades?.includes("all-values-in-options") ? [] : values.grades,
+        religion: values.religion?.includes("all-values-in-options") ? [] : values.religion,
+      };
+      
+      const response = await saveLeaveType({
+        ...cleanedValues,
+        id: data?.id,
       });
       if (response) {
         toast.success(
