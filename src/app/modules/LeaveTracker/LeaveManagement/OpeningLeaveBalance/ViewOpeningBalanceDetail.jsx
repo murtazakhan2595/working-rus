@@ -3,7 +3,6 @@ import {
   NavigationSheetComponent,
   DetailContent,
   StatusList,
-  EmployeeOverview, // Add this import
 } from "components";
 import { getLeaveOpeningBalanceById } from "app/hooks/leaveTracker";
 import { toast } from "react-toastify";
@@ -19,9 +18,6 @@ const ViewOpeningBalanceDetail = ({
   DataList = [],
 }) => {
   const [leaveTypeOptions, setLeaveTypeOptions] = useState([]);
-  const [currentItem, setCurrentItem] = useState(null); // Add state for current item
-  console.log("ViewOpeningBalanceDetail currentId:", currentItem);
-
   // Define the fields to display
   const fields = [
     {
@@ -63,62 +59,38 @@ const ViewOpeningBalanceDetail = ({
   const fetchData = async (id, isMounted) => {
     try {
       const response = await getLeaveOpeningBalanceById(id);
-      if (isMounted && response) {
-        setCurrentItem(response); // Store the current item data
+      if (isMounted) {
         return response;
       }
     } catch (error) {
-      console.error("Error fetching leave opening balance:", error);
+      console.error("Error fetching roles:", error);
     }
   };
 
-  // Fetch leave types
-  useEffect(() => {
-    const fetchLeaveTypes = async () => {
-      try {
-        const response = await getLeaveTypes({});
-        console.log("Leave Types Response:", response);
-        if (response?.results) {
-          setLeaveTypeOptions(
-            response.results.map((type) => ({
-              value: type.id,
-              label: type.name,
-              leave_count: type.leave_count,
-              ...type,
-            }))
-          );
+
+    // Fetch leave types
+    useEffect(() => {
+      const fetchLeaveTypes = async () => {
+        try {
+          const response = await getLeaveTypes({});
+          console.log("Leave Types Response:", response);
+          if (response?.results) {
+            setLeaveTypeOptions(
+              response.results.map((type) => ({
+                value: type.id,
+                label: type.name,
+                leave_count: type.leave_count,
+                ...type,
+              }))
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching leave types:", error);
+          toast.error("Failed to load leave types");
         }
-      } catch (error) {
-        console.error("Error fetching leave types:", error);
-        toast.error("Failed to load leave types");
-      }
-    };
-    fetchLeaveTypes();
-  }, []);
-
-  // Custom content component that includes employee overview
-  const CustomContent = () => {
-    return (
-      <div className="space-y-6">
-        {/* Employee Overview */}
-        {currentItem?.employee && (
-          <div className="flex items-center justify-between w-full gap-4 mt-6">
-            <EmployeeOverview
-              id={currentItem?.employee?.id || currentItem?.employee}
-              showEmail={true}
-              showDepartment={true}
-              showPosition={true}
-              showId={true}
-              showBranchName={true}
-            />
-          </div>
-        )}
-
-        {/* Leave Opening Balance Details */}
-        <DetailContent title="Leave Opening Balance" fields={fields} />
-      </div>
-    );
-  };
+      };
+      fetchLeaveTypes();
+    }, []);
 
   return (
     <NavigationSheetComponent
@@ -135,7 +107,7 @@ const ViewOpeningBalanceDetail = ({
       editTooltip="Edit Leave Opening Balance"
       deleteTooltip="Delete Leave Opening Balance"
     >
-      <CustomContent />
+      <DetailContent title="Leave Opening Balance" fields={fields} />
     </NavigationSheetComponent>
   );
 };
