@@ -606,8 +606,7 @@ const ImportEmployeesButton = ({ reload }) => {
                           employee
                         </li>
                         <li>
-                          • <strong>File Format:</strong> Accepts .csv, .xlsx,
-                          and .xls files
+                          • <strong>File Format:</strong> Accepts .csv file only
                         </li>
                         <li>
                           • <strong>Edit Mode:</strong> When enabled, Emp# will
