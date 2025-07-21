@@ -8,7 +8,7 @@ import { mapAttendanceData } from "app/utils/MappingObjects/mapAttendanceData";
 import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { renderTime } from "utils/DateTimeUtils";
 
-const ImportAttendance = ({ reloadData = () => {} }) => {
+const ImportAttendance = ({ reloadData = () => { } }) => {
   const Employees = useSelector((state) => state.emp.employees_detail);
 
   // Helper to promisify Papa.parse
@@ -24,25 +24,23 @@ const ImportAttendance = ({ reloadData = () => {} }) => {
 
   const modifyUploadedFile = async (file) => {
     if (!file) return null;
-
+    const errors = [];
     try {
       // Parse CSV file into JSON
       const parsedData = await parseCSV(file);
 
       const updatedData = await Promise.all(
-        parsedData.map(async (row) => {
+        parsedData.map(async (row, index) => {
           const {
             Date: date,
             "Employee ID": emp_id,
             "Check-in Time": checkin,
             "Check-out Time": checkout,
           } = row;
-
-          debugger;
-
           const employee = Employees.find((obj) => obj.serial_number == emp_id);
 
           if (!employee) {
+            errors.push(`Row ${index + 1}: Employee Id does not exist.`)
             return row;
           }
           const formattedDate = moment(date).format("YYYY-MM-DD");
@@ -52,7 +50,9 @@ const ImportAttendance = ({ reloadData = () => {} }) => {
             employee.id,
             formattedDate
           );
-          debugger;
+          if (!formattedDate) errors.push(`Row ${index + 1}: Invalid date format.`)
+          if (!formattedCheckin) errors.push(`Row ${index + 1}: Invalid time format in check-in time.`)
+          if (!formattedCheckout) errors.push(`Row ${index + 1}: Invalid time format in check-out time.`)
           const {
             total_hours = "0",
             payable_hours = "0",
@@ -60,8 +60,8 @@ const ImportAttendance = ({ reloadData = () => {} }) => {
             status = "Present",
           } = mapAttendanceData(
             {
-              checkin: formattedCheckin,
-              checkout: formattedCheckout,
+              checkin: moment(formattedCheckin),
+              checkout: moment(formattedCheckout),
               date: formattedDate,
             },
             activeShift
@@ -76,13 +76,13 @@ const ImportAttendance = ({ reloadData = () => {} }) => {
           };
         })
       );
-
+      console.log(updatedData, 'file to store')
       // Convert updated data back to CSV
       const csv = Papa.unparse(updatedData);
 
       // Create downloadable blob
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      return blob;
+      return { file: blob, errors: errors };
     } catch (error) {
       console.error("Error modifying uploaded file:", error);
       return null;
@@ -96,7 +96,7 @@ const ImportAttendance = ({ reloadData = () => {} }) => {
         "Upload a file to bulk import attendance data against employee Id. Make sure your data follows the required format."
       }
       downloadTemplateEndpoint={"/attendance/bulk-upload"}
-      uploadEndpoint={"/attendance/bulk-uload"}
+      uploadEndpoint={"/attendance/bulk-upload"}
       module={"Attendance"}
       formatInformation={[
         { "Employee ID": ["Employee unique id"], required: true },
