@@ -142,6 +142,12 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
                 placeholder: "Date",
                 name: "range_date",
               },
+              {
+                type: "select",
+                placeholder: "Status",
+                name: "status",
+                options: [{ label: 'Break', value: 'break' }, { label: 'Check-In', value: 'check-in' }, { label: 'Check-Out', value: 'check-out' }],
+              },
             ]}
             onChange={handleFilterChange}
             className="justify-end mb-4"

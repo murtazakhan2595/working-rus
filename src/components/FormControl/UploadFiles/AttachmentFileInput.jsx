@@ -2,14 +2,15 @@ import React, { useState, useRef } from "react";
 import { AiOutlinePaperClip } from "react-icons/ai";
 import { Button } from "components/ui/button";
 import AttachmentUI from "components/ui/AttachmentUI";
+import { RenderUploadedFiles } from "./index";
 
 function AttachmentFileInput({
   files,
   acceptType,
   multiple,
   handleFile,
-  handleRemoveFile = () => {},
-  handleUpdateFileClick = () => {},
+  handleRemoveFile = () => { },
+  handleUpdateFileClick = () => { },
   allowUpdate = true,
   disabled = false,
   AccetpedFile = null,
@@ -45,33 +46,24 @@ function AttachmentFileInput({
       handleFile(file);
     }
   };
-  const renderUploadedFiles = () => {
-    return files.map((fileData, index) => (
-      <AttachmentUI
-        attachment={fileData.attachment || fileData}
-        name={fileData.name}
-        removeFile={handleRemoveFile}
-        handleUpdateFileClick={handleUpdateFileClick}
-        id={fileData.id}
-        key={index}
-        allowUpdate={allowUpdate}
-        viewOnly={disabled}
-      />
-    ));
-  };
 
   return (
     <>
-      {renderUploadedFiles()}
+      <RenderUploadedFiles
+        files={files}
+        allowUpdate={allowUpdate}
+        viewOnly={disabled}
+        removeFile={handleRemoveFile}
+        handleUpdateFileClick={handleUpdateFileClick}
+      />
       {(multiple || files.length === 0) && (
         <div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          className={`border border-neutral-500 rounded-lg p-3 ${
-            dragActive ? "border-purple-500 bg-purple-50" : "border-gray-300"
-          }`}
+          className={`border border-neutral-500 rounded-lg p-3 ${dragActive ? "border-purple-500 bg-purple-50" : "border-gray-300"
+            }`}
         >
           <div className="flex items-center mb-2 justify-between">
             <div className="flex items-center gap-2">
