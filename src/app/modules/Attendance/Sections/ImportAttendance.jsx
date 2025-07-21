@@ -57,7 +57,7 @@ const ImportAttendance = ({ reloadData = () => { } }) => {
             total_hours = "0",
             payable_hours = "0",
             overtime_hours = "0",
-            status = "Present",
+            status = 'Present',
           } = mapAttendanceData(
             {
               checkin: moment(formattedCheckin),
@@ -69,7 +69,9 @@ const ImportAttendance = ({ reloadData = () => { } }) => {
 
           return {
             ...row,
-            Status: status,
+            'Check-in Time': formattedCheckin,
+            'Check-out Time': formattedCheckout,
+            Status: row.status ?? status,
             total_hours,
             payable_hours,
             overtime_hours,

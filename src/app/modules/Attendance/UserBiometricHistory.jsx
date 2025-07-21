@@ -37,11 +37,6 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     isDepartmentView
   );
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    branch_id: user_branch,
-    department_name: user_department,
-    id: user_id,
-  } = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
     range_date: `${moment().format("YYYY-MM-DD")},${moment().format(
       "YYYY-MM-DD"
@@ -182,12 +177,11 @@ const UpdateMissingAttanceRecords = async (dataList) => {
 
         if (data.emp_id) {
           try {
-            const response = await saveUserBiometricAttendanceLog(
+            await saveUserBiometricAttendanceLog(
               data.emp_id,
               data,
               date
             );
-            console.log(response, data, "biometric");
           } catch (error) {
             console.error("Error saving attendance for:", data, error);
           }
