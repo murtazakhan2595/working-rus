@@ -26,6 +26,7 @@ import {
   uploadLeaveOpeningBalance,
 } from "app/hooks/leaveTracker";
 import { HasAccess } from "utils/PermissionUtils";
+import { getLeaveTypes } from "app/hooks/leaveTracker";
 
 const ImportOpeningBalance = ({ reloadData = () => {} }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,10 +35,34 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
   const [validationErrors, setValidationErrors] = useState([]);
   const [validationMessage, setValidationMessage] = useState(null);
   const [showFieldInfo, setShowFieldInfo] = useState(true);
+  const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
   // Create a ref for the file input element
   const fileInputRef = useRef(null);
 
-  const importPermitted = HasAccess("IMPORT_EMPLOYEES");
+
+  // Fetch leave types
+  useEffect(() => {
+    const fetchLeaveTypes = async () => {
+      try {
+        const response = await getLeaveTypes({});
+        console.log("Leave Types Response:", response);
+        if (response?.results) {
+          setLeaveTypeOptions(
+            response.results.map((type) => ({
+              value: type.id,
+              label: type.name,
+              leave_count: type.leave_count,
+              ...type,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching leave types:", error);
+        toast.error("Failed to load leave types");
+      }
+    };
+    fetchLeaveTypes();
+  }, []);
 
   // Process and format error messages for better readability
   const formatErrorMessages = (errors) => {
@@ -381,7 +406,7 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
     },
     {
       name: "leave_type",
-      description: "Type of leave (Annual Leaves, Sick Leaves, etc.)",
+      description: `Type of leave (e.g., ${LeaveTypeOptions.map((type) => type.label).join(", ")} ) - must match configured leave types`,
     },
     {
       name: "total_allotted",
@@ -395,7 +420,6 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
 
   return (
     <>
-      {importPermitted && (
         <Button
           onClick={() => setIsOpen(true)}
           className="bg-primary hover:bg-primary-dark w-fit"
@@ -404,7 +428,6 @@ const ImportOpeningBalance = ({ reloadData = () => {} }) => {
           <Upload className="w-4 h-4 mr-2" />
           Import Leave Allocations
         </Button>
-      )}
 
       <Dialog
         open={isOpen}
