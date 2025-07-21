@@ -320,10 +320,20 @@ export default function AddUpdateLeaveType({
     try {
       setIsLoading(true);
       
-      // Only fix the min_days_notice issue - convert empty string to 0 for backend
+      // Clean up payload for backend compatibility
       const cleanedValues = {
         ...values,
+        // Fix min_days_notice empty string issue
         min_days_notice: values.min_days_notice === "" ? 0 : values.min_days_notice,
+        
+        // Fix "all-values-in-options" issue - convert to null when "All" is selected
+        nationalities: values.nationalities?.includes("all-values-in-options") ? [] : values.nationalities,
+        branches_ids: values.branches_ids?.includes("all-values-in-options") ? [] : values.branches_ids,
+        departments_ids: values.departments_ids?.includes("all-values-in-options") ? [] : values.departments_ids,
+        genders: values.genders?.includes("all-values-in-options") ? [] : values.genders,
+        marital_statuses: values.marital_statuses?.includes("all-values-in-options") ? [] : values.marital_statuses,
+        grades: values.grades?.includes("all-values-in-options") ? [] : values.grades,
+        religion: values.religion?.includes("all-values-in-options") ? [] : values.religion,
       };
       
       const response = await saveLeaveType({
