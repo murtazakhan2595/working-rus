@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, } from "src/@/components/ui/tabs";
-import {
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "components/ui/card";
+import { CardContent, CardHeader, CardTitle, CardDescription, } from "components/ui/card";
 import { TableCustom, PageLoader } from "components";
 import { FilterInput } from "components/FormControl";
 import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";

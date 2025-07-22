@@ -84,25 +84,15 @@ export default function AttendanceSummaryWidget() {
   }, [attendance]);
 
   return (
-    <section className="bg-white ">
-      <div className="flex items-center justify-between p-4">
-        <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
-          My Attendance
-        </div>
-        <StatusLabelAttendance status={attendance?.status} />
-      </div>
 
-      {/* Using EmployeeSelfTimesheet component */}
-      <div className="p-4">
-        <EmployeeSelfTimesheet
-          employeeShift={EmployeeShiftData}
-          attendance={attendance}
-          OnBreak={onBreak}
-          disable={isLoading}
-          reloadData={reloadData}
-          isDashboard={true}
-        />
-      </div>
-    </section>
+    <EmployeeSelfTimesheet
+      employeeShift={EmployeeShiftData}
+      attendance={attendance}
+      OnBreak={onBreak}
+      disable={isLoading}
+      reloadData={reloadData}
+      isDashboard={true}
+    />
+
   );
 }
