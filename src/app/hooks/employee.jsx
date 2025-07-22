@@ -70,10 +70,11 @@ const getNewEmployeeCode = async () => {
       headers: headers(),
     });
     const value = response.data?.serial_number;
-    const [prefix, numericPart] = value?.split("-");
+    const [prefix, sufix] = value?.split("-");
+    const numericPart = sufix ? sufix : prefix;
     const incrementedNumber = parseInt(numericPart, 10) + 1;
     const formattedNumber = incrementedNumber.toString().padStart(4, "0");
-    const employee = `${prefix}-${formattedNumber}`;
+    const employee = `${sufix ? `${prefix}-` : ''}${formattedNumber}`;
     return employee;
   } catch (error) {
     if (error?.response?.status === 401) {
