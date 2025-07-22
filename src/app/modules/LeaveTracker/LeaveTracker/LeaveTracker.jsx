@@ -131,22 +131,23 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     };
   }, []);
 
-  const fetchLeaveStatData = async (isMounted) => {
-    try {
-      setIsLoading(true);
-      const Stats = await getLeaveStatsData({
-        filterData: permittedViewFilterData,
-      });
-      if (Stats && isMounted) {
-        setLeaveStats(Stats || {});
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
   useEffect(() => {
+    const fetchLeaveStatData = async (isMounted) => {
+      try {
+        setIsLoading(true);
+        const Stats = await getLeaveStatsData({
+          filterData: permittedViewFilterData,
+        });
+        if (Stats && isMounted) {
+          setLeaveStats(Stats || {});
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     let isMounted = true;
     fetchLeaveStatData(isMounted);
     return () => {
@@ -298,9 +299,8 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
             <div>
               <CardTitle className="text-primary">Leave {activeTab}</CardTitle>
               <CardDescription className="text-neutral-1100">
-                {`Here you can ${
-                  activeTab === "Requests" ? "manage and" : ""
-                } view leave ${activeTab.toLowerCase()}.`}
+                {`Here you can ${activeTab === "Requests" ? "manage and" : ""
+                  } view leave ${activeTab.toLowerCase()}.`}
               </CardDescription>
             </div>
             {activeTab === "Records" && (
@@ -320,23 +320,23 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                 },
                 ...(isAdminView || isBranchView
                   ? [
-                      {
-                        type: "select",
-                        options: Departments,
-                        name: "department",
-                        placeholder: "Department",
-                      },
-                    ]
+                    {
+                      type: "select",
+                      options: Departments,
+                      name: "department",
+                      placeholder: "Department",
+                    },
+                  ]
                   : []),
                 ...(isAdminView || !isBranchView
                   ? [
-                      {
-                        type: "select",
-                        options: Branches,
-                        name: "branch",
-                        placeholder: "Branch",
-                      },
-                    ]
+                    {
+                      type: "select",
+                      options: Branches,
+                      name: "branch",
+                      placeholder: "Branch",
+                    },
+                  ]
                   : []),
                 {
                   type: "select",
@@ -351,19 +351,19 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                 },
                 ...(activeTab === "Records"
                   ? [
-                      {
-                        type: "select",
-                        options: [
-                          ...GlobalStatusOptions(false),
-                          {
-                            label: "Cancelled",
-                            value: "cancelled_by_employee",
-                          },
-                        ],
-                        name: "status",
-                        placeholder: "Status",
-                      },
-                    ]
+                    {
+                      type: "select",
+                      options: [
+                        ...GlobalStatusOptions(false),
+                        {
+                          label: "Cancelled",
+                          value: "cancelled_by_employee",
+                        },
+                      ],
+                      name: "status",
+                      placeholder: "Status",
+                    },
+                  ]
                   : []),
               ]}
               onChange={handleFilterChange}

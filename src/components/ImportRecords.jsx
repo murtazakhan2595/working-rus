@@ -171,7 +171,7 @@ const ImportRecords = ({
     }
   };
 
-  const handleFileChange = async (name, file) => {
+  const handleFileChange = async (_, file) => {
     if (file) {
       setFile(file);
       // Clear previous validation errors when a new file is selected
@@ -447,6 +447,7 @@ const ImportRecords = ({
                   label={`Upload ${module} Data`}
                   acceptType=".xlsx,.xls,.csv"
                   onChange={handleFileChange}
+                  value={file}
                 />
               </div>
 
