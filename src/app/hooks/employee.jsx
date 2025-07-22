@@ -10,6 +10,7 @@ import {
   getCertifications,
   getContactInfo,
   mapEmployeeData,
+  mapEmployeeStatsData
 } from "app/utils/MappingObjects/mapEmployeeData";
 import {
   EmployeeCVDetails,
@@ -24,18 +25,28 @@ import {
 } from "app/utils/Types/Employee";
 import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
-import { HandleLogout } from "./general";
+import { HandleLogout, baseUrl, headers, formDataHeader } from "./general";
 import { renderErrorMessages } from "utils/renderErrors";
+import { getEmployeeCustomList } from "app/hooks/general";
 
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
-const formDataHeader = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  // Don't explicitly set 'Content-Type' for FormData
-});
+
+export const getEmployeeStatsData = async (payload) => {
+  try {
+    const response = await getEmployeeCustomList(payload);
+    if (response.results) {
+      const ResponseData = response.results || [];
+      const ResponseStats = await mapEmployeeStatsData(ResponseData);
+      return ResponseStats;
+    }
+    return {};
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
 
 const getEmployeeData = async (employeeId) => {
   try {
