@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -49,29 +49,36 @@ export default function EmployeeManagement({ isTeamView = false }) {
       setOrdering(sortName);
     },
   };
-console.log("employeeData", employeeData);
-  const fetchData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getEmployeeCustomList({
-        options,
-        filterData,
-        ordering,
-      });
-      if (isMounted) {
-        setEmployeeData(data || { results: [], count: 0 });
-        setEmployeeData(data);
-        setActiveEmployee(data.ActiveEmployee || 0);
-        setTotalEmployee(data.TotalEmployee || 0);
-        setTotalManagers(data.TotalManager || 0);
-        setTotalOffboard(data?.TotalEmployee - data?.ActiveEmployee || 0);
+
+  const fetchData = useCallback(
+    async (isMounted = true) => {
+      setIsLoading(true);
+      try {
+        const data = await getEmployeeCustomList({
+          options,
+          filterData,
+          ordering,
+        });
+
+        if (isMounted) {
+          const fallback = { results: [], count: 0 };
+          setEmployeeData(data || fallback);
+          setActiveEmployee(data?.ActiveEmployee || 0);
+          setTotalEmployee(data?.TotalEmployee || 0);
+          setTotalManagers(data?.TotalManager || 0);
+          setTotalOffboard(
+            (data?.TotalEmployee || 0) - (data?.ActiveEmployee || 0)
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
+    },
+    [options, filterData, ordering] // dependencies
+  );
+
 
   useEffect(() => {
     let isMounted = true;
@@ -79,7 +86,7 @@ console.log("employeeData", employeeData);
     return () => {
       isMounted = false;
     };
-  }, [options, filterData, ordering]);
+  }, [fetchData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -100,12 +107,12 @@ console.log("employeeData", employeeData);
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
     ...(Object.keys(filterData).length === 0
       ? [
-          {
-            label: "Offboarded Employees",
-            value: totalOffboard,
-            icon: UserRoundCheck,
-          },
-        ]
+        {
+          label: "Offboarded Employees",
+          value: totalOffboard,
+          icon: UserRoundCheck,
+        },
+      ]
       : []),
   ];
 
@@ -141,7 +148,7 @@ console.log("employeeData", employeeData);
               Here you can manage, add, edit and view employee profile and data.
             </CardDescription>
           </div>
-          <ImportEmployeesButton reload={fetchData}/>
+          <ImportEmployeesButton reload={fetchData} />
         </CardHeader>
         <CardContent>
           <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row mb-4">
