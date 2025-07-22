@@ -117,11 +117,9 @@ export const MyAttendanceColumn = (reload) => [
     dataField: "checkin",
     formatter: (cell, row) => (
       <div className="flex-col flex gap-1">
-        <span>{moment(cell).format("h:mm A")}</span>
+        <span>{renderDate(cell, '--', 'time')}</span>
         <span>
-          {row.second_checkin
-            ? moment(row.second_checkin).format("h:mm A")
-            : ""}
+          {renderDate(row.second_checkin, '', 'time')}
         </span>
       </div>
     ),
@@ -133,13 +131,13 @@ export const MyAttendanceColumn = (reload) => [
       return (
         <div className="flex-col flex gap-2">
           {cell ? (
-            <span>{moment(cell).format("h:mm A")}</span>
+            <span>{renderDate(cell, '--', 'time')}</span>
           ) : (
             getCheckoutTime(row.checkin, cell)
           )}
           {row.second_checkin ? (
             row.second_checkout ? (
-              <span>{moment(row.second_checkout).format("h:mm A")}</span>
+              <span>{renderDate(row.second_checkout, '', 'time')}</span>
             ) : (
               getCheckoutTime(row.second_checkin, row.second_checkout)
             )
