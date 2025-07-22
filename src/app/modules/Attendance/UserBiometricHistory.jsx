@@ -1,29 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
-import { Button } from "components/ui/button";
 import moment from "moment";
 import {
   saveUserBiometricAttendanceLog,
-  getWeeklySummary,
   getUserBiometricLogsList,
 } from "app/hooks/attendance";
 import { PageLoader, TableCustom } from "components";
 import { UserBiometricLogsColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
-import {
-  UpdateEmployeeAttendance,
-  ExportAttendance,
-} from "app/modules/Attendance/Sections";
 import _ from "lodash";
-import { StatisticsChart } from "./Sections/StatisticsChart";
-import DepartmentOverview from "./Sections/DepartmentOverview";
-import { StatsCards } from "./Sections/StatsCards";
-import { FilterInput, DateRangeFilter } from "components/FormControl";
-import { useSelector } from "react-redux";
-import { GetDateRange, getWorkingDays } from "utils/renderValues";
-import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
-import { GetUserInfo } from "utils/getValuesFromTables";
+import { FilterInput } from "components/FormControl";
+import { GetEmployeeFilteredList } from "utils/Lists";
 import { HasAccess } from "utils/PermissionUtils";
-import { renderDate, formatDuration } from "utils/renderValues";
 import { CardTitle, CardHeader } from "components/ui/card";
 
 const UserBiometricHistory = ({ isTeamView = false }) => {
@@ -50,6 +37,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "" || filterValue === null) {
@@ -60,25 +48,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
       return updatedFilters;
     });
   };
-  const getAttendanceList = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const attendanceData = await getUserBiometricLogsList({
-        filterData,
-        ordering,
-        options,
-      });
-      if (isMounted) {
-        if (attendanceData) {
-          setList(attendanceData);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -88,6 +58,25 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     },
   };
   useEffect(() => {
+    const getAttendanceList = async (isMounted) => {
+      setIsLoading(true);
+      try {
+        const attendanceData = await getUserBiometricLogsList({
+          filterData,
+          ordering,
+          options,
+        });
+        if (isMounted) {
+          if (attendanceData) {
+            setList(attendanceData);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     let isMounted = true;
     getAttendanceList(isMounted);
     return () => {
@@ -131,6 +120,11 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
         <CardContent>
           <FilterInput
             filters={[
+              // {
+              //   type: "search",
+              //   placeholder: "Biometric Id",
+              //   name: "user_no",
+              // },
               {
                 type: "select",
                 placeholder: "Employee",
