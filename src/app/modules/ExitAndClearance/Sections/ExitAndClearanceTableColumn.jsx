@@ -30,7 +30,7 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
       <EmployeeOverview
         id={row.employee_id}
         showId={true}
-        showPosition={true}
+        showBranchName={true}
         showDepartment={true}
       />
     ),
@@ -44,6 +44,7 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
   {
     dataField: "notice_period",
     text: "Notice Period",
+    dataSort: true,
   },
   {
     dataField: "exit_date",

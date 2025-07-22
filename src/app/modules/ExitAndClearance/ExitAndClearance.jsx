@@ -43,7 +43,9 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     branch_id: user_branch,
     department_name: user_department,
   } = GetDispatchStateList("user_details", "emp") || {};
-
+  const Managers = GetDispatchStateList("reportingManagers", "emp") || [];
+  const Departments = GetDispatchStateList("departments", "common") || [];
+  const Branches = GetDispatchStateList("branches", "common") || [];
   const [activeTab, setActiveTab] = useState("Exit Requests");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
@@ -127,6 +129,40 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     },
   ];
 
+  const Filters = [
+    {
+      type: "search",
+      placeholder: "Search by Employee ID",
+      name: "emp_serial_no",
+    },
+    ...(isAdminView || isBranchView
+      ? [
+        {
+          type: "select",
+          options: Departments,
+          name: "department",
+          placeholder: "Department",
+        },
+      ]
+      : []),
+    ...(isAdminView || !isBranchView
+      ? [
+        {
+          type: "select",
+          options: Branches,
+          name: "branch",
+          placeholder: "Branch",
+        },
+      ]
+      : []),
+    {
+      type: "select",
+      options: Managers,
+      name: "report_to",
+      placeholder: "Reporting Manager",
+    },
+  ]
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -177,12 +213,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
               reload={reloadData}
               permittedViewFilterData={permittedViewFilterData}
               isTeamView={isTeamView}
+              Filters={Filters}
             />
           </TabsContent>
           <TabsContent value="Exit Records">
             <ExitRecords
               isTeamView={isTeamView}
               permittedViewFilterData={permittedViewFilterData}
+              Filters={Filters}
             />
           </TabsContent>
           <TabsContent value="Resons of Termination">

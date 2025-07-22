@@ -1,4 +1,3 @@
-import Notifications from "app/modules/Notifications";
 import {
   RecentActivity,
   MyTasks,

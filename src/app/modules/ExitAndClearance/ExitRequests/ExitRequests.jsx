@@ -1,28 +1,21 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { FilterInput } from "components/FormControl";
-import {
-  Resignations,
-  Terminations,
-} from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
-  TabsContent,
 } from "src/@/components/ui/tabs";
 import {
-  Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
 } from "components/ui/card";
 import { TableCustom, PageLoader } from "components";
-import { HasAccess } from "utils/PermissionUtils";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
-const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
+const ExitRequests = ({ reload, permittedViewFilterData,Filters }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Terminations");
   const [ExitRequestList, setExitRequestList] = useState(null);
@@ -31,7 +24,7 @@ const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
     exit_category: "TERMINATION",
   });
 
-  const [ordering, setOrdering] = useState("-exit_date");
+  const [ordering, setOrdering] = useState("-id");
 
   const [options, setOptions] = useState({
     page: 1,
@@ -56,10 +49,7 @@ const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const filter = { ...filterData };
-      if (isTeamView) {
-        filter.reporting_employees = permittedViewFilterData?.reporting_employees || [];
-      }
+      const filter = { ...filterData, ...permittedViewFilterData, request_status: "PENDING" };
       const response = await getEmployeesResignations({
         filterData: filter,
         options,
@@ -86,7 +76,6 @@ const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
     if (isMounted) {
       onPageChange("page", 1);
       setOrdering("-id");
-      setFilterData({});
       fetchData(true);
     }
   }, [reload]);
@@ -99,8 +88,8 @@ const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
           tab === "Resignations"
             ? "RESIGNATION"
             : tab === "Terminations"
-            ? "TERMINATION"
-            : null,
+              ? "TERMINATION"
+              : null,
       };
     });
   };
@@ -144,13 +133,7 @@ const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
       </CardHeader>
       <CardContent>
         <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID",
-              name: "emp_serial_no",
-            },
-          ]}
+          filters={Filters}
           onChange={handleFilterChange}
           className="justify-end mb-4"
         />

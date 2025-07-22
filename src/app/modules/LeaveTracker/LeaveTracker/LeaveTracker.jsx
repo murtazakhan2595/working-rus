@@ -227,7 +227,6 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
               };
             })
           );
-          console.log(dataToExport);
           exportRecordToExcel(
             dataToExport,
             "Leave",
