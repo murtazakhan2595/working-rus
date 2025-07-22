@@ -24,7 +24,7 @@ const ExitRequests = ({ reload, permittedViewFilterData,Filters }) => {
     exit_category: "TERMINATION",
   });
 
-  const [ordering, setOrdering] = useState("-exit_date");
+  const [ordering, setOrdering] = useState("-id");
 
   const [options, setOptions] = useState({
     page: 1,
