@@ -7,7 +7,7 @@ import {
   TableBody,
   TableCell,
   TableFooter,
-} from "../src/@/components/ui/table";
+} from "src/@/components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -15,7 +15,7 @@ import {
   PaginationPrevious,
   PaginationLink,
   PaginationNext,
-} from "../src/@/components/ui/pagination";
+} from "src/@/components/ui/pagination";
 import { SelectInputComponent, CheckBoxInput } from "./FormControl";
 
 export default function TableCustom({
@@ -140,16 +140,15 @@ export default function TableCustom({
                 {columns.map((column, index) => (
                   <TableHead
                     key={index}
-                    className={`min-w-fit text-sm font-medium text-gray-1100 ${
-                      column.dataSort ? "cursor-pointer" : ""
-                    }`}
+                    className={`min-w-fit text-sm font-medium text-gray-1100 ${column.dataSort ? "cursor-pointer" : ""
+                      }`}
                     style={{
                       ...(column.width
                         ? {
-                            width: column.width,
-                            minWidth: column.width,
-                            maxWidth: column.width,
-                          }
+                          width: column.width,
+                          minWidth: column.width,
+                          maxWidth: column.width,
+                        }
                         : {}),
                       ...(column.minWidth ? { minWidth: column.minWidth } : {}),
                       ...(column.headerStyle ? column.headerStyle : {}),
@@ -184,11 +183,9 @@ export default function TableCustom({
                           ? toggleRowExpansion(row.id)
                           : tableOptions?.onRowClick?.(row));
                     }}
-                    className={`${
-                      tableOptions?.onRowClick ? "cursor-pointer" : ""
-                    } ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""} ${
-                      disabledRows?.includes(row.id) ? "opacity-50" : ""
-                    }`}
+                    className={`${tableOptions?.onRowClick ? "cursor-pointer" : ""
+                      } ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""} ${disabledRows?.includes(row.id) ? "opacity-50" : ""
+                      }`}
                   >
                     {/* Select Row Checkbox */}
                     {selectable && (
@@ -207,20 +204,18 @@ export default function TableCustom({
                       columns.map((column, index) => (
                         <TableCell
                           key={index}
-                          className={`min-w-fit w-fit text-neutral-1200 overflow-hidden text-ellipsis ${
-                            column.onClick || column.rowExpandOnClick
-                              ? "cursor-pointer expandable-cell"
-                              : ""
-                          } ${
-                            column.dataAlign === "center" ? "text-center" : ""
-                          }`}
+                          className={`min-w-fit w-fit text-neutral-1200 overflow-hidden text-ellipsis ${column.onClick || column.rowExpandOnClick
+                            ? "cursor-pointer expandable-cell"
+                            : ""
+                            } ${column.dataAlign === "center" ? "text-center" : ""
+                            }`}
                           style={{
                             ...(column.width
                               ? {
-                                  width: column.width,
-                                  minWidth: column.width,
-                                  maxWidth: column.width,
-                                }
+                                width: column.width,
+                                minWidth: column.width,
+                                maxWidth: column.width,
+                              }
                               : {}),
                             ...(column.minWidth
                               ? { minWidth: column.minWidth }
@@ -244,12 +239,12 @@ export default function TableCustom({
                         >
                           {column.formatter
                             ? column.formatter(
-                                row[column.dataField],
-                                row,
-                                data,
-                                index,
-                                expandedRowId === row.id
-                              )
+                              row[column.dataField],
+                              row,
+                              data,
+                              index,
+                              expandedRowId === row.id
+                            )
                             : row[column.dataField]}
                         </TableCell>
                       ))}
@@ -257,11 +252,10 @@ export default function TableCustom({
                   {/* Expanded Row Content */}
                   {expandedRowId === row.id && renderExpandedContent && (
                     <TableRow
-                      className={`transition-all duration-500 ease-in-out transform ${
-                        expandedRowId === row.id
-                          ? "scale-y-100 opacity-100"
-                          : "scale-y-0 opacity-0"
-                      }`}
+                      className={`transition-all duration-500 ease-in-out transform ${expandedRowId === row.id
+                        ? "scale-y-100 opacity-100"
+                        : "scale-y-0 opacity-0"
+                        }`}
                       style={{
                         transformOrigin: "top",
                       }}
@@ -298,32 +292,7 @@ export default function TableCustom({
             sizePerPage={paginationOptions.sizePerPage}
             onPageChange={handlePageSizeChange}
           />
-          <Pagination className="max-w-[calc(100%_-_100px)]">
-            <PaginationContent className="justify-center max-w-full">
-              <PaginationPrevious
-                onClick={() => handlePageChange(currentPage - 1)}
-              />
-              <div className="flex flex-row overflow-x-hidden max-w-[calc(100%_-_185px)]">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      onClick={() => handlePageChange(index + 1)}
-                      className={`hover:bg-plum-300 ${
-                        currentPage - 1 === index
-                          ? "text-plum-1000 bg-plum-300"
-                          : ""
-                      }`}
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-              </div>
-              <PaginationNext
-                onClick={() => handlePageChange(currentPage + 1)}
-              />
-            </PaginationContent>
-          </Pagination>
+          <PagePagination currentPage={currentPage} totalPages={totalPages} handlePageChange={handlePageChange} />
         </div>
       )}
     </div>
@@ -353,3 +322,72 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
     </div>
   );
 };
+
+
+const PagePagination = ({ handlePageChange = () => { }, totalPages, currentPage, }) => {
+  const getPaginationRange = (totalPages, currentPage, siblingCount = 10) => {
+    const totalPageNumbers = siblingCount * 2 + 5;
+
+    if (totalPages <= totalPageNumbers) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const leftSiblingIndex = Math.max(currentPage - siblingCount, 2);
+    const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages - 1);
+
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
+
+    const pages = [];
+
+    pages.push(1); // Always show first page
+
+    if (shouldShowLeftDots) {
+      pages.push("...");
+    }
+
+    for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
+      pages.push(i);
+    }
+
+    if (shouldShowRightDots) {
+      pages.push("...");
+    }
+
+    pages.push(totalPages); // Always show last page
+
+    return pages;
+  };
+
+  return (
+    <Pagination className="max-w-[calc(100%_-_100px)]">
+      <PaginationContent className="justify-center max-w-full">
+        <PaginationPrevious
+          onClick={() => handlePageChange(currentPage - 1)}
+        />
+        <div className="flex flex-row overflow-x-hidden max-w-[calc(100%_-_185px)]">
+          {getPaginationRange(totalPages, currentPage).map((page, index) => (
+            <PaginationItem key={index}>
+              {page === "..." ? (
+                <span className="px-2">...</span>
+              ) : (
+                <PaginationLink
+                  onClick={() => handlePageChange(page)}
+                  className={`hover:bg-plum-300 ${currentPage === page ? "text-plum-1000 bg-plum-300" : ""
+                    }`}
+                >
+                  {page}
+                </PaginationLink>
+              )}
+            </PaginationItem>
+          ))}
+        </div>
+        <PaginationNext
+          onClick={() => handlePageChange(currentPage + 1)}
+        />
+      </PaginationContent>
+    </Pagination>
+  )
+
+
+}

@@ -131,16 +131,15 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
                 name: "emp_id",
                 options: Employees,
               },
-              {
-                type: "date-range",
-                placeholder: "Date",
-                name: "range_date",
-              },
-              {
+               {
                 type: "select",
                 placeholder: "Status",
                 name: "status",
                 options: [{ label: 'Break', value: 'break' }, { label: 'Check-In', value: 'check-in' }, { label: 'Check-Out', value: 'check-out' }],
+              },
+              {
+                type: "date-range-filter",
+                name: "range_date",
               },
             ]}
             onChange={handleFilterChange}

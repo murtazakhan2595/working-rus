@@ -1,13 +1,9 @@
-import { EmployeeID, ManagerName } from "utils/getValuesFromTables";
-import {
-  RenderTerminationAction,
-} from "app/modules/ExitAndClearance/ExitRequests";
+import { ManagerName } from "utils/getValuesFromTables";
+import { RenderTerminationAction, } from "app/modules/ExitAndClearance/ExitRequests";
 import { EmployeeOverview } from "components";
-import moment from "moment";
-import { AiOutlineDownload } from "react-icons/ai";
-import { downloadAttachmentDirectLink } from "utils/fileUtils";
 import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 
 
@@ -55,26 +51,15 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
   },
   {
     dataField: "",
-    text: "Application",
-    formatter: (cell, row) => (
+    text: "Attachment",
+    formatter: (_, row) => (
       <>
-        {row?.termination_letter ? (
-          <button
-            className="justify-start items-center gap-2.5 inline-flex"
-            onClick={(e) => {
-              e.preventDefault();
-              downloadAttachmentDirectLink(
-                row.termination_letter,
-                `Termination_${row.employee_id || row.serial_number}`
-              );
-            }}
-          >
-            <div className="text-[#5c5e64] text-base font-normal">File</div>
-            <AiOutlineDownload />
-          </button>
-        ) : (
-          "N/A"
-        )}
+        <AttachmentUI
+          attachment={row.exit_category === 'RESIGNATION' ? row.resignation_letter : row.exit_category === 'TERMINATION' ? row.termination_letter : null}
+          viewOnly={true}
+          variant={'preview-only'}
+          fallBackText='--'
+        />
       </>
     ),
   },

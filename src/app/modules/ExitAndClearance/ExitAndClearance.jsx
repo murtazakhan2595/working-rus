@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getEmployeeExitStats } from "app/hooks/employeeExitAndClearance";
 import RequestTerminationCard from "./RequestTerminationCard";
@@ -12,9 +12,6 @@ import {
   LogOut,
   Loader,
 } from "lucide-react";
-import { FaRegCheckCircle } from "react-icons/fa";
-import { ImExit } from "react-icons/im";
-import { RxCrossCircled } from "react-icons/rx";
 import { Card } from "components/ui/card";
 import {
   Tabs,
@@ -32,7 +29,7 @@ import useEOSSettlement from "../../hooks/useEOSSettlement";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { AddUpdateTerminationReasons } from "./TerminationReasons";
-import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
+import { GetDispatchStateList } from "utils/Lists";
 
 const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   const isAdminView = HasAccess("VIEW_EXIT");
@@ -42,10 +39,10 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     id: user_id,
     branch_id: user_branch,
     department_name: user_department,
-  } = GetDispatchStateList("user_details", "emp") || {};
-  const Managers = GetDispatchStateList("reportingManagers", "emp") || [];
-  const Departments = GetDispatchStateList("departments", "common") || [];
-  const Branches = GetDispatchStateList("branches", "common") || [];
+  } = useMemo(() => GetDispatchStateList("user_details", "emp") || {}, []);
+  const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
+  const Departments = useMemo(() => GetDispatchStateList("departments", "common") || [], []);
+  const Branches = useMemo(() => GetDispatchStateList("branches", "common") || [], []);
   const [activeTab, setActiveTab] = useState("Exit Requests");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
@@ -71,14 +68,11 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     return () => {
       isMounted = false;
     };
-  }, [isTeamView, isAdminView, isBranchView, isDepartmentView]);
+  }, [isTeamView, isAdminView, isBranchView, isDepartmentView, user_branch, user_department, user_id]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const filter = permittedViewFilterData;
-      if (isTeamView) {
-        filter.reporting_employees = [user_id];
-      }
+      const filter = { ...permittedViewFilterData };
       const response = await getEmployeeExitStats({
         filterData: filter,
       });
@@ -89,14 +83,15 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, [permittedViewFilterData]);
+
   useEffect(() => {
     let isMounted = true;
     if (permittedViewFilterData) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [permittedViewFilterData]);
+  }, [permittedViewFilterData, fetchData]);
 
   const closeRequestTerminationCard = () => {
     fetchData();
