@@ -92,8 +92,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   };
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
-    // if (permittedViewFilterData) fetchData(isMounted);
+    if (permittedViewFilterData) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -104,64 +103,61 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     setReloadData(!reloadData);
   };
 
-  const statsData = [
+  const statsData = React.useMemo(() => [
     { label: "Total Exits", value: ExitStats.Total, icon: FolderInput },
-    {
-      label: "Pending",
-      value: ExitStats.Pending,
-      icon: Loader,
-    },
+    { label: "Pending", value: ExitStats.Pending, icon: Loader },
     { label: "Accepted", value: ExitStats.Approved, icon: CircleCheckBig },
-    {
-      label: "Rejected",
-      value: ExitStats.Rejected,
-      icon: CircleX,
-    },
-    {
-      label: "Clearance Completed",
-      value: ExitStats.Clearance,
-      icon: FileCheck2,
-    },
-    {
-      label: "Exit Interview",
-      value: ExitStats.Exit,
-      icon: LogOut,
-    },
-  ];
+    { label: "Rejected", value: ExitStats.Rejected, icon: CircleX },
+    { label: "Clearance Completed", value: ExitStats.Clearance, icon: FileCheck2 },
+    { label: "Exit Interview", value: ExitStats.Exit, icon: LogOut },
+  ], [ExitStats]);
 
-  const Filters = [
-    {
-      type: "search",
-      placeholder: "Search by Employee ID",
-      name: "emp_serial_no",
-    },
-    ...(isAdminView || isBranchView
-      ? [
-        {
-          type: "select",
-          options: Departments,
-          name: "department",
-          placeholder: "Department",
-        },
-      ]
-      : []),
-    ...(isAdminView || !isBranchView
-      ? [
-        {
-          type: "select",
-          options: Branches,
-          name: "branch",
-          placeholder: "Branch",
-        },
-      ]
-      : []),
-    {
-      type: "select",
-      options: Managers,
-      name: "report_to",
-      placeholder: "Reporting Manager",
-    },
-  ]
+  const Filters = React.useMemo(() => {
+    const baseFilters = [
+      {
+        type: "search",
+        placeholder: "Search by Employee ID",
+        name: "emp_serial_no",
+      },
+    ];
+
+    const departmentFilter =
+      isAdminView || isBranchView
+        ? [
+          {
+            type: "select",
+            options: Departments,
+            name: "department",
+            placeholder: "Department",
+          },
+        ]
+        : [];
+
+    const branchFilter =
+      isAdminView || !isBranchView
+        ? [
+          {
+            type: "select",
+            options: Branches,
+            name: "branch",
+            placeholder: "Branch",
+          },
+        ]
+        : [];
+
+    const managerFilter = [
+      {
+        type: "select",
+        options: Managers,
+        name: "managers",
+        placeholder: "Reporting Manager",
+      },
+    ];
+
+    return [...baseFilters, ...departmentFilter, ...branchFilter, ...managerFilter];
+  }, [isAdminView, isBranchView, Departments, Branches, Managers]); // dependencies
+
+
 
   return (
     <div
