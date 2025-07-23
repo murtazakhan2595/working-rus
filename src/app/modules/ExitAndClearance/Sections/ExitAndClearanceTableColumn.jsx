@@ -23,7 +23,7 @@ import { renderDate } from "utils/renderValues";
  */
 export const ExitRequestColumns = (reloadData = () => { }) => [
   {
-    dataField: "serial_number",
+    dataField: "employee_id__first_name",
     text: "Employees",
     width: "200px",
     formatter: (_, row) => (
