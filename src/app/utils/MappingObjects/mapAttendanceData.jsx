@@ -117,7 +117,7 @@ export function mapAttendanceData(data, shiftDetails) {
         }
       } else if (key === "second_checkin") {
         const shiftStartTime = renderTime(
-          secondShift.start_time,
+          secondShift?.start_time,
           attendanceDate
         );
         payload[key] = renderTime(data[key], attendanceDate);
@@ -150,7 +150,7 @@ export function mapAttendanceData(data, shiftDetails) {
         ) {
           payload["overtime_hours"] = parseFloat(
             parseFloat(payload.payable_hours) -
-              parseFloat(payload.total_hours || 0)
+            parseFloat(payload.total_hours || 0)
           ).toFixed(2);
         } else {
           payload["overtime_hours"] = parseFloat(0).toFixed(2);
@@ -160,7 +160,7 @@ export function mapAttendanceData(data, shiftDetails) {
         payload[key] = renderTime(data[key], attendanceDate);
         const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
-          payload.checkout
+          payload.second_checkout
         );
         const payableHours =
           parseFloat(payload.payable_hours) +
@@ -175,7 +175,7 @@ export function mapAttendanceData(data, shiftDetails) {
         ) {
           const overtime = parseFloat(
             parseFloat(payload.payable_hours) -
-              parseFloat(payload.total_hours || 0)
+            parseFloat(payload.total_hours || 0)
           ).toFixed(2);
           payload["overtime_hours"] = overtime;
           payload["remaining_offset_leave_hours"] = overtime;

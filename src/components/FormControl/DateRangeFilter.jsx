@@ -25,7 +25,7 @@ const TIME_FILTERS = {
 const buttonClassName = "h-8 px-3 text-sm font-medium leading-tight rounded";
 const activeButtonClassName = "bg-fuchsia-50 text-fuchsia-700";
 
-const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange = "Week" }) => {
+const DateRangeFilter = React.memo(({ setDateRange = () => { }, activeDateRange = "Week" }) => {
   const [selectedTimeFilter, setSelectedTimeFilter] = useState(null);
   const [dateRange, setDateRangeState] = useState(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -51,14 +51,14 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
     return {
       from:
         dateRange &&
-        dateRange[0] &&
-        isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
+          dateRange[0] &&
+          isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
           ? parse(dateRange[0], "yyyy-MM-dd", new Date())
           : null,
       to:
         dateRange &&
-        dateRange[1] &&
-        isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
+          dateRange[1] &&
+          isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
           ? parse(dateRange[1], "yyyy-MM-dd", new Date())
           : null,
     };
@@ -118,7 +118,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
 
   const renderDateRangePicker = () => {
     const date = dateRange || { from: null, to: null };
-    
+
     return (
       <div style={{ width: "fit-content" }}>
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -165,10 +165,9 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
   };
 
   return (
-    <CardContent className="w-auto p-1 bg-white rounded" style={{ width: "fit-content" }}>
+    <CardContent className="w-fit p-1 bg-white rounded border rounded-sm">
       <div
-        className="flex flex-wrap items-center self-stretch justify-between my-auto text-neutral-900"
-        style={{ width: "fit-content" }}
+        className="flex flex-wrap items-center self-stretch justify-between my-auto text-neutral-900 w-fit"
       >
         {/* <ArrowLeft className="h-5" /> */}
         {timeFilters.map((filter, index) => (

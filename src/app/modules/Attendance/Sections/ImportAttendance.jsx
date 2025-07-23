@@ -36,9 +36,10 @@ const ImportAttendance = ({ reloadData = () => { } }) => {
             "Employee ID": emp_id,
             "Check-in Time": checkin,
             "Check-out Time": checkout,
+            "Second Check-out Time": second_checkout,
+            "Second Check-in Time": second_checkin,
           } = row;
           const employee = Employees.find((obj) => obj.serial_number == emp_id);
-
           if (!employee) {
             errors.push(`Row ${index + 1}: Employee Id does not exist.`)
             return row;
@@ -46,32 +47,33 @@ const ImportAttendance = ({ reloadData = () => { } }) => {
           const formattedDate = moment(date).format("YYYY-MM-DD");
           const formattedCheckin = renderTime(checkin, formattedDate);
           const formattedCheckout = renderTime(checkout, formattedDate);
+          const formattedSecondCheckin = renderTime(second_checkin, formattedDate);
+          const formattedSecondCheckout = renderTime(second_checkout, formattedDate);
           const activeShift = await getActiveShiftData(
             employee.id,
             formattedDate
           );
           if (!formattedDate) errors.push(`Row ${index + 1}: Invalid date format.`)
-          if (!formattedCheckin) errors.push(`Row ${index + 1}: Invalid time format in check-in time.`)
-          if (!formattedCheckout) errors.push(`Row ${index + 1}: Invalid time format in check-out time.`)
-          const {
-            total_hours = "0",
-            payable_hours = "0",
-            overtime_hours = "0",
-            status = 'Present',
-          } = mapAttendanceData(
-            {
-              checkin: moment(formattedCheckin),
-              checkout: moment(formattedCheckout),
-              date: formattedDate,
-            },
-            activeShift
-          ) || {};
+          if (checkin && !formattedCheckin) errors.push(`Row ${index + 1}: Invalid time format in check-in time.`)
+          if (checkout && !formattedCheckout) errors.push(`Row ${index + 1}: Invalid time format in check-out time.`)
+          if (second_checkout && !formattedSecondCheckout) errors.push(`Row ${index + 1}: Invalid time format in second check-out time.`)
+          if (second_checkin && !formattedSecondCheckin) errors.push(`Row ${index + 1}: Invalid time format in second check-in time.`)
+          const payload = {
+            ...(checkin ? { checkin: moment(formattedCheckin) } : {}),
+            ...(checkout ? { checkout: moment(formattedCheckout) } : {}),
+            ...(second_checkin ? { second_checkin: moment(formattedSecondCheckin) } : {}),
+            ...(second_checkout ? { second_checkout: moment(formattedSecondCheckout) } : {}),
+            date: formattedDate,
+          }
+          const { total_hours = "0", payable_hours = "0", overtime_hours = "0", status = 'Present', } = mapAttendanceData(payload, activeShift) || {};
 
           return {
             ...row,
             'Check-in Time': formattedCheckin,
             'Check-out Time': formattedCheckout,
-            Status: row.status ?? status,
+            'second_checkin': formattedSecondCheckin,
+            'Second Check-out Time': formattedSecondCheckout,
+            Status: row.Status ?? status,
             total_hours,
             payable_hours,
             overtime_hours,

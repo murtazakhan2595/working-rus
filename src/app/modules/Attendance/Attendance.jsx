@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardTitle, CardDescription, CardHeader } from "components/ui/card";
 import { Button } from "components/ui/button";
 import moment from "moment";
 import {
@@ -163,78 +163,88 @@ const Attendance = ({ isTeamView = false }) => {
         {(isAdminView || isBranchView) && (
           <>
             <StatsCards permittedViewFilterData={permittedViewFilterData} />
-            <div className="flex justify-end gap-3 flex-row flex-wrap">
-              <FilterInput
-                filters={[
-                  {
-                    type: "search",
-                    placeholder: "Search by Name",
-                    name: "emp_name",
-                  },
-                  {
-                    type: "select",
-                    options: Departments,
-                    name: "department",
-                    placeholder: "Department",
-                  },
-                  ...(isAdminView
-                    ? [
-                        {
-                          type: "select",
-                          options: Branches,
-                          name: "branch",
-                          placeholder: "Branch",
-                        },
-                      ]
-                    : []),
-                ]}
-                onChange={handleFilterChange}
-              />
-              <DateRangeFilter
-                activeDateRange={activeTab}
-                setDateRange={(dateRange) => {
-                  if (dateRange.toUpperCase() === "DAY") {
-                    const formattedDatee = moment().format("YYYY-MM-DD");
-                    handleFilterChange("start_date", formattedDatee);
-                    handleFilterChange("end_date", formattedDatee);
-                    setTotalDays(1);
-                  } else {
-                    const date_range =
-                      GetDateRange(dateRange)?.split(",") || [];
-                    const end_date =
-                      date_range[1] && date_range[1] !== "null"
-                        ? date_range[1]
-                        : "";
-                    const start_date =
-                      date_range[0] && date_range[0] !== "null"
-                        ? date_range[0]
-                        : "";
 
-                    handleFilterChange("start_date", start_date);
-                    handleFilterChange("end_date", end_date);
-                    setTotalDays(getWorkingDays(start_date, end_date));
-                  }
-                  setActiveTab(dateRange);
-                  return;
-                }}
-              />
-              {(isUpdateEmpAttendancePermitted ||
-                isUpdateBrnAttendancePermitted ||
-                isUpdateDptAttendancePermitted) && (
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenUpdateAttendance(true);
-                  }}
-                >
-                  Update Attendance
-                </Button>
-              )}
-              <ImportAttendance activeTab={activeTab} filterData={filterData} />
-              <ExportAttendance activeTab={activeTab} filterData={filterData} />
-            </div>
             <Card>
+              <CardHeader className='flex flex-row flex-wrap gap-4 justify-between'>
+                <div>
+                  <CardTitle>Employee Attendance</CardTitle>
+                  <CardDescription>Here you can view the attendance record of the employee.</CardDescription>
+                </div>
+                <div>
+                  {(isUpdateEmpAttendancePermitted ||
+                    isUpdateBrnAttendancePermitted ||
+                    isUpdateDptAttendancePermitted) && (
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOpenUpdateAttendance(true);
+                        }}
+                      >
+                        Update Attendance
+                      </Button>
+                    )}
+                  <ImportAttendance activeTab={activeTab} filterData={filterData} />
+                  <ExportAttendance activeTab={activeTab} filterData={filterData} />
+                </div>
+              </CardHeader>
               <CardContent>
+                <div className="flex justify-end gap-3 flex-row flex-wrap mb-4">
+                  <FilterInput
+                    filters={[
+                      {
+                        type: "search",
+                        placeholder: "Search by Name",
+                        name: "emp_name",
+                      },
+                      {
+                        type: "select",
+                        options: Departments,
+                        name: "department",
+                        placeholder: "Department",
+                      },
+                      ...(isAdminView
+                        ? [
+                          {
+                            type: "select",
+                            options: Branches,
+                            name: "branch",
+                            placeholder: "Branch",
+                          },
+                        ]
+                        : []),
+                    ]}
+                    onChange={handleFilterChange}
+                  />
+                  <DateRangeFilter
+                    activeDateRange={activeTab}
+                    setDateRange={(dateRange) => {
+                      if (dateRange.toUpperCase() === "DAY") {
+                        const formattedDatee = moment().format("YYYY-MM-DD");
+                        handleFilterChange("start_date", formattedDatee);
+                        handleFilterChange("end_date", formattedDatee);
+                        setTotalDays(1);
+                      } else {
+                        const date_range =
+                          GetDateRange(dateRange)?.split(",") || [];
+                        const end_date =
+                          date_range[1] && date_range[1] !== "null"
+                            ? date_range[1]
+                            : "";
+                        const start_date =
+                          date_range[0] && date_range[0] !== "null"
+                            ? date_range[0]
+                            : "";
+
+                        handleFilterChange("start_date", start_date);
+                        handleFilterChange("end_date", end_date);
+                        setTotalDays(getWorkingDays(start_date, end_date));
+                      }
+                      setActiveTab(dateRange);
+                      return;
+                    }}
+                  />
+
+                </div>
                 {isLoading ? (
                   <PageLoader />
                 ) : (
