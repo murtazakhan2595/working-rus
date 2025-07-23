@@ -1,22 +1,13 @@
-import React, { useState, useEffect, forwardRef, memo } from "react";
-// import Select from "react-select";
-import { Label } from "src/@/components/ui/label";
+import React, { useState } from "react";
 import DatePicker from "react-datepicker";
-import { cn } from "src/@/lib/utils";
 import moment from "moment";
-import { Input } from "components/ui/input";
 import { Button } from "components/ui/button";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import TextInput from "components/FormControl/TextInput";
-import NumberInput from "components/FormControl/NumberInput";
-import PasswordInput from "components/FormControl/PasswordInput";
-import CheckBoxInputTree from "components/FormControl/CheckBoxInputTree";
-import CoverFileUpload from "components/FormControl/UploadFiles";
 import { ChevronsUpDown, Check, SearchIcon } from "lucide-react";
 import {
   Command,
@@ -26,37 +17,14 @@ import {
   CommandItem,
   CommandList,
 } from "src/@/components/ui/command";
-import { format, parse, isValid } from "date-fns";
-import { Calendar } from "src/@/components/ui/calendar";
-import TextEditorInputField from "./TextEditorInputField";
-import MonthInput from "./MonthInput";
-import CommentsInputField from "./CommentsInputField";
-import SwitchInput from "./SwitchInput";
-import DateRangeFilter from "./DateRangeFilter";
-import TextAreaInput from "./TextAreaInput";
-import SortingFilters from "./SortingFilters";
-import TimePicker from "./TimePicker";
-import { InputSignature } from "./InputSignature";
-import {
-  SelectMultiInputComponent,
-  SelectInputComponent,
-} from "components/FormControl/InputSelect";
-import ImageInput from "components/FormControl/UploadFiles/ImageInput";
-import EmailInput from "components/FormControl/EmailInput";
-import ColorInput from "./ColorInput";
-import DateInput from "./DateInput";
-import RadioGroupInput from "./RadioGroupInput";
-import PhoneNumberInput from "./PhoneNumberInput";
-import CheckBoxInput from "./CheckBoxInput";
+import { SelectInputComponent, } from "components/FormControl/InputSelect";
+import { GetDateRange } from "utils/renderValues";
 import DateRangeInput from "./DateRangeInput";
-import SelectLocationOnMap from "./SelectLocationOnMap";
+import DateRangeFilter from "./DateRangeFilter";
 
 const FilterInput = ({
   filters,
   onChange,
-  value,
-  isClearable = true,
-  type,
   className = "",
 }) => {
   const classNamesStyle = "";
@@ -66,7 +34,6 @@ const FilterInput = ({
   const [openFilterFour, setOpenFilterFour] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
-  const [inputValues, setInputValues] = useState({});
 
   const handleInputChange = (field, value) => {
     onChange(field, value);
@@ -90,14 +57,12 @@ const FilterInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={`${
-              filter.width ? filter.width : "w-[200px]"
-            } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
+            className={`${filter.width ? filter.width : "w-[200px]"
+              } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
           >
             <span
-              className={`${
-                selectedOption ? "text-neutral-1000" : "text-muted-foreground"
-              } truncate max-w-full`}
+              className={`${selectedOption ? "text-neutral-1000" : "text-muted-foreground"
+                } truncate max-w-full`}
               style={{ display: "block" }}
             >
               {selectedOption ? selectedOption.label : filter.placeholder}
@@ -122,11 +87,10 @@ const FilterInput = ({
                     }}
                   >
                     <Check
-                      className={`mr-2 h-4 w-4 ${
-                        filter.values === option.value
-                          ? "opacity-100"
-                          : "opacity-0"
-                      }`}
+                      className={`mr-2 h-4 w-4 ${filter.values === option.value
+                        ? "opacity-100"
+                        : "opacity-0"
+                        }`}
                     />
                     {option.label}
                   </CommandItem>
@@ -146,9 +110,8 @@ const FilterInput = ({
         <DatePicker
           name={filter.name}
           id={filter.name}
-          className={`${filter.className ?? classNamesStyle} ${
-            filter.width ?? DefaultWidth
-          } ${filter.height ?? DefaultHeight}`}
+          className={`${filter.className ?? classNamesStyle} ${filter.width ?? DefaultWidth
+            } ${filter.height ?? DefaultHeight}`}
           dropdownMode="select"
           placeholderText={filter.placeholder}
           selected={date}
@@ -166,69 +129,7 @@ const FilterInput = ({
       </div>
     );
   };
-  const renderDateRangePicker = (filter, index) => {
-    const dateRange = filter.value ? filter.value?.split(",") : null;
-    const date = {
-      from:
-        dateRange &&
-        dateRange[0] &&
-        isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
-          ? parse(dateRange[0], "yyyy-MM-dd", new Date())
-          : null,
-      to:
-        dateRange &&
-        dateRange[1] &&
-        isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
-          ? parse(dateRange[1], "yyyy-MM-dd", new Date())
-          : null,
-    };
-    return (
-      <div key={index} style={{ width: "fit-content" }}>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="date"
-              variant={"ghost"}
-              className={cn(
-                "border-neutral-400 round justify-start border font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              {/* <CalendarIcon /> */}
-              {dateRange && date?.from ? (
-                date.to ? (
-                  <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
-                  </>
-                ) : (
-                  format(date.from, "LLL dd, y")
-                )
-              ) : (
-                <span>{filter.placeholder}</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={(date) => {
-                if (date) {
-                  const startOfWeek = moment(date.from).format("YYYY-MM-DD");
-                  const endOfWeek = moment(date.to).format("YYYY-MM-DD");
-                  onChange(filter.name, `${startOfWeek},${endOfWeek}`);
-                }
-              }}
-              numberOfMonths={2}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-    );
-  };
+
   return (
     <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3`}>
       {filters &&
@@ -301,6 +202,16 @@ const FilterInput = ({
                   handleInputChange={handleInputChange}
                 />
               );
+            case "date-range-filter":
+              return (
+                <RenderDateRangeFilterField
+                  className={FilterClassName}
+                  name={name}
+                  placeholder={`Search ${placeholder}`}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                />
+              );
             default:
               return <div key={index}></div>;
           }
@@ -316,7 +227,7 @@ const RenderInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
   }) => {
     const [inputValue, setInputValue] = useState("");
 
@@ -348,7 +259,7 @@ const RenderSelectInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
     options = [],
   }) => {
     const [inputValue, setInputValue] = useState("");
@@ -386,14 +297,13 @@ const RenderDateRangeInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
   }) => {
     const [inputValue, setInputValue] = useState("");
-    
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <DateRangeInput
-          type={"text"}
           placeholder={placeholder}
           className={`rounded-sm text-neutral-1000`}
           name={name}
@@ -402,8 +312,47 @@ const RenderDateRangeInputField = React.memo(
             setInputValue(value);
             handleInputChange(
               field,
-              value 
+              value
             );
+          }}
+        />
+      </div>
+    );
+  }
+);
+
+const RenderDateRangeFilterField = React.memo(
+  ({
+    className = "",
+    name,
+    height = "",
+    handleInputChange = () => { },
+  }) => {
+    const [activeTab, setActiveTab] = useState("Day");
+
+    return (
+      <div className={`${className} ${height} w-fit relative`}>
+        <DateRangeFilter
+          activeDateRange={activeTab}
+          className={`rounded-sm text-neutral-1000`}
+          setDateRange={(dateRange) => {
+            if (dateRange.toUpperCase() === "DAY") {
+              const formattedDatee = moment().format("YYYY-MM-DD");
+              handleInputChange(name, `${formattedDatee},${formattedDatee}`);
+            } else {
+              const date_range = GetDateRange(dateRange)?.split(",") || [];
+              const end_date =
+                date_range[1] && date_range[1] !== "null"
+                  ? date_range[1]
+                  : "";
+              const start_date =
+                date_range[0] && date_range[0] !== "null"
+                  ? date_range[0]
+                  : "";
+              handleInputChange(name, `${start_date},${end_date}`);
+            }
+            setActiveTab(dateRange);
+            return;
           }}
         />
       </div>

@@ -90,7 +90,21 @@ const Attendance = ({ isTeamView = false }) => {
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterName === 'range_date') {
+        const date_range =
+          GetDateRange(filterValue)?.split(",") || [];
+        const end_date =
+          date_range[1] && date_range[1] !== "null"
+            ? date_range[1]
+            : "";
+        const start_date =
+          date_range[0] && date_range[0] !== "null"
+            ? date_range[0]
+            : "";
+        updatedFilters['start_date'] = start_date;
+        updatedFilters['end_date'] = end_date;
+        setTotalDays(getWorkingDays(start_date, end_date));
+      } else if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -170,7 +184,7 @@ const Attendance = ({ isTeamView = false }) => {
                   <CardTitle>Employee Attendance</CardTitle>
                   <CardDescription>Here you can view the attendance record of the employee.</CardDescription>
                 </div>
-                <div>
+                <div className="flex-row flex flex-wrap gap-2">
                   {(isUpdateEmpAttendancePermitted ||
                     isUpdateBrnAttendancePermitted ||
                     isUpdateDptAttendancePermitted) && (
@@ -188,63 +202,37 @@ const Attendance = ({ isTeamView = false }) => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-end gap-3 flex-row flex-wrap mb-4">
-                  <FilterInput
-                    filters={[
-                      {
-                        type: "search",
-                        placeholder: "Search by Name",
-                        name: "emp_name",
-                      },
-                      {
-                        type: "select",
-                        options: Departments,
-                        name: "department",
-                        placeholder: "Department",
-                      },
-                      ...(isAdminView
-                        ? [
-                          {
-                            type: "select",
-                            options: Branches,
-                            name: "branch",
-                            placeholder: "Branch",
-                          },
-                        ]
-                        : []),
-                    ]}
-                    onChange={handleFilterChange}
-                  />
-                  <DateRangeFilter
-                    activeDateRange={activeTab}
-                    setDateRange={(dateRange) => {
-                      if (dateRange.toUpperCase() === "DAY") {
-                        const formattedDatee = moment().format("YYYY-MM-DD");
-                        handleFilterChange("start_date", formattedDatee);
-                        handleFilterChange("end_date", formattedDatee);
-                        setTotalDays(1);
-                      } else {
-                        const date_range =
-                          GetDateRange(dateRange)?.split(",") || [];
-                        const end_date =
-                          date_range[1] && date_range[1] !== "null"
-                            ? date_range[1]
-                            : "";
-                        const start_date =
-                          date_range[0] && date_range[0] !== "null"
-                            ? date_range[0]
-                            : "";
-
-                        handleFilterChange("start_date", start_date);
-                        handleFilterChange("end_date", end_date);
-                        setTotalDays(getWorkingDays(start_date, end_date));
-                      }
-                      setActiveTab(dateRange);
-                      return;
-                    }}
-                  />
-
-                </div>
+                <FilterInput
+                  filters={[
+                    {
+                      type: "search",
+                      placeholder: "Search by Name",
+                      name: "emp_name",
+                    },
+                    {
+                      type: "select",
+                      options: Departments,
+                      name: "department",
+                      placeholder: "Department",
+                    },
+                    ...(isAdminView
+                      ? [
+                        {
+                          type: "select",
+                          options: Branches,
+                          name: "branch",
+                          placeholder: "Branch",
+                        },
+                      ]
+                      : []),
+                    {
+                      type: "date-range-filter",
+                      name: "range_date",
+                    },
+                  ]}
+                  onChange={handleFilterChange}
+                  className='justify-end mb-4'
+                />
                 {isLoading ? (
                   <PageLoader />
                 ) : (
