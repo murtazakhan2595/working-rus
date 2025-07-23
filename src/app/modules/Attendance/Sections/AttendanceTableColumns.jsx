@@ -52,6 +52,7 @@ export const EmployeesAttendanceColumns = (TotalDays = 5) => [
         id={row.employee_id}
         showId
         showPosition
+        showDepartment
         showBranchName
       />
     ),
