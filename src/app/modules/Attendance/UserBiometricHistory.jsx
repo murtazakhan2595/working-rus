@@ -105,7 +105,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
         console.error(error);
       }
     };
-    saveRecords(isMounted);
+   // saveRecords(isMounted);
     return () => {
       isMounted = false;
     };

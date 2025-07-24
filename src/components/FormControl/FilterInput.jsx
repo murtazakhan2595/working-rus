@@ -26,6 +26,7 @@ const FilterInput = ({
   filters,
   onChange,
   className = "",
+  filterValues = {},
 }) => {
   const classNamesStyle = "";
   const DefaultWidth = "w-56";
@@ -152,6 +153,7 @@ const FilterInput = ({
                   placeholder={placeholder}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
+                  value={filterValues[name] || null}
                 />
               );
             case "select":
@@ -164,6 +166,7 @@ const FilterInput = ({
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
+                  value={filterValues[name] || null}
                 />
               );
             case "select-one":
@@ -199,6 +202,7 @@ const FilterInput = ({
                   name={name}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
+                  value={filterValues[name] || null}
                   handleInputChange={handleInputChange}
                 />
               );
@@ -209,6 +213,7 @@ const FilterInput = ({
                   name={name}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
+                  value={filterValues[name] || null}
                   handleInputChange={handleInputChange}
                 />
               );
@@ -228,8 +233,9 @@ const RenderInputField = React.memo(
     placeholder,
     height = "",
     handleInputChange = () => { },
+    value,
   }) => {
-    const [inputValue, setInputValue] = useState("");
+    const [inputValue, setInputValue] = useState(value);
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
@@ -261,8 +267,8 @@ const RenderSelectInputField = React.memo(
     height = "",
     handleInputChange = () => { },
     options = [],
-  }) => {
-    const [inputValue, setInputValue] = useState("");
+    value, }) => {
+    const [inputValue, setInputValue] = useState(value);
     // Add "All" option to the options array if it exists
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
@@ -298,8 +304,8 @@ const RenderDateRangeInputField = React.memo(
     placeholder,
     height = "",
     handleInputChange = () => { },
-  }) => {
-    const [inputValue, setInputValue] = useState("");
+    value }) => {
+    const [inputValue, setInputValue] = useState(value);
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
