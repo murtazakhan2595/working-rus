@@ -71,7 +71,7 @@ const ImportAttendance = ({ reloadData = () => { } }) => {
             ...row,
             'Check-in Time': formattedCheckin,
             'Check-out Time': formattedCheckout,
-            'second_checkin': formattedSecondCheckin,
+            'Second Check-in Time': formattedSecondCheckin,
             'Second Check-out Time': formattedSecondCheckout,
             Status: row.Status ?? status,
             total_hours,
@@ -105,13 +105,15 @@ const ImportAttendance = ({ reloadData = () => { } }) => {
       formatInformation={[
         { "Employee ID": ["Employee unique id"], required: true },
         { Date: ["Attendance Date"], required: true },
-        { "Check-in Time": ["Employee check-in time"], required: true },
-        { "Check-out Time": ["Employee check-out time"], required: true },
+        { "Check-in Time": ["Employee check-in time"], required: false },
+        { "Check-out Time": ["Employee check-out time"], required: false },
         { Remarks: ["Any addistional attendance details"], required: false },
         {
           Status: ["Attendance status(Present, Absent, Late)"],
-          required: false,
+          required: true,
         },
+        { "Second Check-in Time": ["Employee second check-in time in case of second shift"], required: false },
+        { "Second Check-out Time": ["Employee second check-out time in case of second shift"], required: false },
       ]}
       uploadRecord={uploadHolidaysData}
       modifyUploadedFile={modifyUploadedFile}
