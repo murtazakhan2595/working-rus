@@ -89,6 +89,7 @@ const Attendance = ({ isTeamView = false }) => {
     };
   }, [isBranchView, isDepartmentView, isAdminView]);
   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange('page', 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterName === 'range_date') {
