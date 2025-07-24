@@ -131,7 +131,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
                 name: "emp_id",
                 options: Employees,
               },
-               {
+              {
                 type: "select",
                 placeholder: "Status",
                 name: "status",
@@ -175,15 +175,16 @@ const UpdateMissingAttanceRecords = async (dataList) => {
         const date = moment(data.timestamp).format("YYYY-MM-DD");
 
         if (data.emp_id) {
-          try {
-            await saveUserBiometricAttendanceLog(
-              data.emp_id,
-              data,
-              date
-            );
-          } catch (error) {
-            console.error("Error saving attendance for:", data, error);
-          }
+          if (data.employee_status && !['terminated', 'exit', 'resigned', 'absconded'].includes(data.employee_status?.toLowerCase()))
+            try {
+              await saveUserBiometricAttendanceLog(
+                data.emp_id,
+                data,
+                date
+              );
+            } catch (error) {
+              console.error("Error saving attendance for:", data, error);
+            }
         }
       }
 

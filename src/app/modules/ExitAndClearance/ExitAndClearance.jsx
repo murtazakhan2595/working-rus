@@ -39,10 +39,10 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     id: user_id,
     branch_id: user_branch,
     department_name: user_department,
-  } = useMemo(() => GetDispatchStateList("user_details", "emp") || {}, []);
-  const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
-  const Departments = useMemo(() => GetDispatchStateList("departments", "common") || [], []);
-  const Branches = useMemo(() => GetDispatchStateList("branches", "common") || [], []);
+  } = GetDispatchStateList("user_details", "emp") || {}
+  const Managers = GetDispatchStateList("reportingManagers", "emp") || []
+  const Departments = GetDispatchStateList("departments", "common") || []
+  const Branches = GetDispatchStateList("branches", "common") || []
   const [activeTab, setActiveTab] = useState("Exit Requests");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
@@ -143,14 +143,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     const managerFilter = [
       {
         type: "select",
-        options: Managers,
+        options: [],
         name: "managers",
         placeholder: "Reporting Manager",
       },
     ];
 
     return [...baseFilters, ...departmentFilter, ...branchFilter, ...managerFilter];
-  }, [isAdminView, isBranchView, Departments, Branches, Managers]); // dependencies
+  }, [isAdminView, isBranchView]); // dependencies
 
 
 

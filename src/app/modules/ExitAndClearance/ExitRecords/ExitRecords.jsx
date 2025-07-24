@@ -102,7 +102,7 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
     >
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
         <TabsList className="flex items-center justify-center">
-          {["Resigned", "Terminated"].map((tab) => (
+          {["Terminated","Resigned"].map((tab) => (
             <TabsTrigger key={tab} value={tab} variant={"inner-tab"}>
               {tab}
             </TabsTrigger>

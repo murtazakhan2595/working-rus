@@ -33,24 +33,25 @@ const Attendance = ({ isTeamView = false }) => {
   const isUpdateEmpAttendancePermitted = HasAccess(
     "UPDATE_EMPLOYEE_ATTENDANCE"
   );
-  const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
+  const Departments = useSelector((state) => state.common.departments);
   const {
     branch_id: user_branch,
     department_name: user_department,
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
+  const previousFilters = React.useMemo(() => {
+    const stored = window.localStorage.getItem("attendance-filters");
+    return stored ? JSON.parse(stored) : null;
+  }, []);
+
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openUpdateAttendance, setOpenUpdateAttendance] = useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
-  const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState({
-    start_date: moment().format("YYYY-MM-DD"),
-    end_date: moment().format("YYYY-MM-DD"),
-  });
+  const [filterData, setFilterData] = useState(previousFilters ? previousFilters : { start_date: moment().format("YYYY-MM-DD"), end_date: moment().format("YYYY-MM-DD"), });
   const [ordering, setOrdering] = useState("emp_name");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
@@ -73,13 +74,13 @@ const Attendance = ({ isTeamView = false }) => {
 
   useEffect(() => {
     let isMounted = true;
-    setFilterData(() => {
-      if (isAdminView) return {};
+    setFilterData((prevFilters) => {
+      if (isAdminView) return prevFilters;
       else {
         if (isBranchView) {
-          return { branch: user_branch };
+          return { ...prevFilters, branch: user_branch };
         } else if (isDepartmentView) {
-          return { department: user_department };
+          return { ...prevFilters, department: user_department };
         }
       }
     });
@@ -109,6 +110,7 @@ const Attendance = ({ isTeamView = false }) => {
       } else {
         updatedFilters[filterName] = filterValue;
       }
+      window.localStorage.setItem("attendance-filters", JSON.stringify(updatedFilters));
       return updatedFilters;
     });
   };
@@ -197,8 +199,8 @@ const Attendance = ({ isTeamView = false }) => {
                         Update Attendance
                       </Button>
                     )}
-                  <ImportAttendance activeTab={activeTab} filterData={filterData} />
-                  <ExportAttendance activeTab={activeTab} filterData={filterData} />
+                  <ImportAttendance filterData={filterData} />
+                  <ExportAttendance filterData={filterData} />
                 </div>
               </CardHeader>
               <CardContent>
@@ -230,6 +232,7 @@ const Attendance = ({ isTeamView = false }) => {
                       name: "range_date",
                     },
                   ]}
+                  filterValues={filterData}
                   onChange={handleFilterChange}
                   className='justify-end mb-4'
                 />

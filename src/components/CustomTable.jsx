@@ -325,7 +325,7 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
 
 
 const PagePagination = ({ handlePageChange = () => { }, totalPages, currentPage, }) => {
-  const getPaginationRange = (totalPages, currentPage, siblingCount = 10) => {
+  const getPaginationRange = (totalPages, currentPage, siblingCount = 7) => {
     const totalPageNumbers = siblingCount * 2 + 5;
 
     if (totalPages <= totalPageNumbers) {
