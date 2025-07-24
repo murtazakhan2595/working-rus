@@ -143,7 +143,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     const managerFilter = [
       {
         type: "select",
-        options: [],
+        options: Managers,
         name: "managers",
         placeholder: "Reporting Manager",
       },
