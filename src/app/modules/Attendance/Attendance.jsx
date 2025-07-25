@@ -72,22 +72,6 @@ const Attendance = ({ isTeamView = false }) => {
     };
   }, [isTeamView, isAdminView, isBranchView, isDepartmentView]);
 
-  useEffect(() => {
-    let isMounted = true;
-    setFilterData((prevFilters) => {
-      if (isAdminView) return prevFilters;
-      else {
-        if (isBranchView) {
-          return { ...prevFilters, branch: user_branch };
-        } else if (isDepartmentView) {
-          return { ...prevFilters, department: user_department };
-        }
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [isBranchView, isDepartmentView, isAdminView]);
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange('page', 1);
     setFilterData((prevFilters) => {
