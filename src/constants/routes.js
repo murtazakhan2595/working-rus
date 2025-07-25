@@ -25,6 +25,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import { EmployeeTransfer, MyTransfers } from "app/modules/EmployeeTransfer";
+import { TransferAndRotation } from "app/modules/TransferAndRotation";
 import {
   HRDocuments,
   MyDocuments,
@@ -200,8 +201,8 @@ export const SidebarRoutes = [
         },
 
         Config.EMPLOYEE_TRANSFER && {
-          path: "/employee-tranfer",
-          component: <EmployeeTransfer />,
+          path: "/tranfer-rotations",
+          component: <TransferAndRotation />,
           name: "EMPLOYEE_TRANSFER",
         },
 

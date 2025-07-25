@@ -1,3 +1,5 @@
-import TransferAndRotations from './TransferAndRotations';
+import TransferAndRotation from './TransferAndRotation';
+import { Rotations } from './Rotations';
 
-export { TransferAndRotations };
+
+export { TransferAndRotation, Rotations };
