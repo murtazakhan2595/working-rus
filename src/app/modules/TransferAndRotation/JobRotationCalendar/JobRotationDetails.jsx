@@ -13,6 +13,45 @@ import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import moment from "moment";
+import { BranchName } from "utils/getValuesFromTables";
+import { getJobRotationById } from "app/hooks/transferAndRotation";
+
+// Status transformation function (same as in calendar view)
+const transformJobRotationStatus = (rotation) => {
+  const { status: apiStatus, effective_date, rotation_cap_time } = rotation;
+  const currentDate = moment();
+  const effectiveDate = moment(effective_date);
+  const capEndDate = effectiveDate.clone().add(rotation_cap_time, "days");
+
+  switch (apiStatus) {
+    case "pending":
+      return "Pending Approval";
+
+    case "rejected":
+      return "Cancelled";
+
+    case "approved":
+      if (currentDate.isBefore(effectiveDate)) {
+        return "Scheduled";
+      }
+
+      if (
+        currentDate.isAfter(effectiveDate) &&
+        currentDate.isBefore(capEndDate)
+      ) {
+        return "In Progress";
+      }
+
+      if (currentDate.isAfter(capEndDate)) {
+        return "Overdue";
+      }
+
+      return "Scheduled";
+
+    default:
+      return "Pending Approval";
+  }
+};
 
 const JobRotationDetails = ({
   isOpen,
@@ -71,11 +110,12 @@ const JobRotationDetails = ({
 
     const effectiveDate = moment(data.effective_date);
     const currentDate = moment();
-    const isEffectiveDatePassed = currentDate.isAfter(effectiveDate);
-    const daysUntilEffective = effectiveDate.diff(currentDate, "days");
+    const transformedStatus = transformJobRotationStatus(data);
 
-    if (data.status === "In Progress") {
-      const capEndDate = effectiveDate.clone().add(data.cap_time_days, "days");
+    if (transformedStatus === "In Progress") {
+      const capEndDate = effectiveDate
+        .clone()
+        .add(data.rotation_cap_time, "days");
       const daysRemaining = capEndDate.diff(currentDate, "days");
       return {
         type: "cap_time",
@@ -84,7 +124,7 @@ const JobRotationDetails = ({
       };
     }
 
-    if (data.status === "Overdue") {
+    if (transformedStatus === "Overdue") {
       return {
         type: "overdue",
         message: "Cap time has expired. Action required.",
@@ -92,7 +132,8 @@ const JobRotationDetails = ({
       };
     }
 
-    if (!isEffectiveDatePassed && data.status === "Scheduled") {
+    if (transformedStatus === "Scheduled") {
+      const daysUntilEffective = effectiveDate.diff(currentDate, "days");
       return {
         type: "upcoming",
         message: `${daysUntilEffective} days until effective date`,
@@ -108,6 +149,9 @@ const JobRotationDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
+        // Transform the status for display
+        const transformedStatus = transformJobRotationStatus(data);
+
         return (
           <div className="flex flex-wrap justify-between gap-2 items-center">
             <EmployeeOverview
@@ -121,10 +165,10 @@ const JobRotationDetails = ({
             />
             <div
               className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                data?.status || ""
+                transformedStatus
               )}`}
             >
-              {data?.status || "N/A"}
+              {transformedStatus}
             </div>
           </div>
         );
@@ -136,17 +180,12 @@ const JobRotationDetails = ({
       footerField: "request_date",
       field: [
         {
-          key: "id",
-          label: "Rotation ID",
-          formatter: (cell, row) => <FormatID value={cell} prefix={"JR-"} />,
-        },
-        {
           key: "effective_date",
           label: "Effective Date",
           formatter: (cell) => renderDate(cell),
         },
         {
-          key: "cap_time_days",
+          key: "rotation_cap_time",
           label: "Cap Time",
           formatter: (cell) => `${cell} days`,
         },
@@ -154,24 +193,20 @@ const JobRotationDetails = ({
           key: "reason",
           label: "Reason for Rotation",
         },
-        {
-          key: "requested_by",
-          label: "Requested By",
-        },
       ],
     },
     {
       title: "Transfer Information",
       field: [
         {
-          key: "current_branch",
+          key: "branch",
           label: "From Branch",
-          formatter: (cell) => (cell ? `${cell.name} (${cell.code})` : "N/A"),
+          formatter: (cell) => cell,
         },
         {
           key: "new_branch",
           label: "To Branch",
-          formatter: (cell) => (cell ? `${cell.name} (${cell.code})` : "N/A"),
+          formatter: (cell) => BranchName({ value: cell }),
         },
       ],
     },
@@ -193,98 +228,14 @@ const JobRotationDetails = ({
         );
       },
     },
-    {
-      title: "Approval Details",
-      field: [
-        {
-          key: "approval_details",
-          formatter: (cell) => (
-            <StatusList status_list={cell || []} className="my-3" />
-          ),
-        },
-      ],
-    },
-    {
-      customContent: true,
-      renderContent: (data) => {
-        if (!data || !data.status) return null;
-
-        // Action buttons based on status
-        const renderActionButtons = () => {
-          switch (data.status) {
-            case "Pending Approval":
-              return (
-                <div className="flex flex-wrap justify-end gap-2 my-5">
-                  <Button
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700"
-                    onClick={(event) => handleClick(event, "Rejected", data)}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    onClick={(event) => handleClick(event, "Approved", data)}
-                  >
-                    Approve
-                  </Button>
-                </div>
-              );
-            case "Scheduled":
-              return (
-                <div className="flex flex-wrap justify-end gap-2 my-5">
-                  <Button
-                    variant="outline"
-                    onClick={(event) => handleClick(event, "Cancelled", data)}
-                  >
-                    Cancel Rotation
-                  </Button>
-                </div>
-              );
-            case "In Progress":
-              return (
-                <div className="flex flex-wrap justify-end gap-2 my-5">
-                  <Button
-                    onClick={(event) => handleClick(event, "Completed", data)}
-                  >
-                    Mark Complete
-                  </Button>
-                </div>
-              );
-            case "Overdue":
-              return (
-                <div className="flex flex-wrap justify-end gap-2 my-5">
-                  <Button
-                    variant="outline"
-                    onClick={(event) => handleClick(event, "Extended", data)}
-                  >
-                    Extend Cap Time
-                  </Button>
-                  <Button
-                    onClick={(event) => handleClick(event, "Completed", data)}
-                  >
-                    Mark Complete
-                  </Button>
-                </div>
-              );
-            default:
-              return null;
-          }
-        };
-
-        return renderActionButtons();
-      },
-    },
   ];
 
   const fetchData = async (id, isMounted) => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await getJobRotationData(id);
+      const response = await getJobRotationById(id);
 
-      // Mock: Find the rotation in DataList
-      const rotation = DataList.find((item) => item.id === id);
-      if (isMounted && rotation) {
-        return rotation;
+      if (isMounted && response) {
+        return response;
       }
       return null;
     } catch (error) {

@@ -14,9 +14,53 @@ import {
   TooltipProvider,
 } from "src/@/components/ui/tooltip";
 import JobRotationDetails from "./JobRotationDetails";
+import { BranchName } from "utils/getValuesFromTables";
+import { useSelector } from "react-redux";
+import { getDesignationName } from "utils/getValuesFromTables";
+import { DesignationName } from "utils/getValuesFromTables";
 
-// Status color mapping as per user story
-const STATUS_COLORS = {
+// Status transformation function
+const transformJobRotationStatus = (rotation) => {
+  const { status: apiStatus, effective_date, rotation_cap_time } = rotation;
+  const currentDate = moment();
+  const effectiveDate = moment(effective_date);
+  const capEndDate = effectiveDate.clone().add(rotation_cap_time, "days");
+
+  switch (apiStatus) {
+    case "pending":
+      return "Pending Approval";
+
+    case "rejected":
+      return "Cancelled";
+
+    case "approved":
+      // If effective date hasn't arrived yet
+      if (currentDate.isBefore(effectiveDate)) {
+        return "Scheduled";
+      }
+
+      // If effective date has passed but within cap time
+      if (
+        currentDate.isAfter(effectiveDate) &&
+        currentDate.isBefore(capEndDate)
+      ) {
+        return "In Progress";
+      }
+
+      // If cap time has expired
+      if (currentDate.isAfter(capEndDate)) {
+        return "Overdue";
+      }
+
+      return "Scheduled";
+
+    default:
+      return "Pending Approval";
+  }
+};
+
+// Status color mapping
+export const STATUS_COLORS = {
   "Pending Approval": "#3B82F6", // Blue
   Scheduled: "#10B981", // Green
   "In Progress": "#F59E0B", // Yellow
@@ -26,8 +70,16 @@ const STATUS_COLORS = {
 
 // Event Content Component with Tooltip
 const EventWithTooltip = ({ eventInfo }) => {
-  const { employee, currentBranch, newBranch, status, capTime } =
-    eventInfo.event.extendedProps;
+  console.log("Event Info:", eventInfo.event.extendedProps);
+  const {
+    employee,
+    currentBranch,
+    newBranch,
+    new_designation,
+    status,
+    capTime,
+    originalStatus, // Keep track of original API status if needed
+  } = eventInfo.event.extendedProps;
 
   const fullTitle = eventInfo.event.title;
   const shortTitle =
@@ -36,12 +88,14 @@ const EventWithTooltip = ({ eventInfo }) => {
   const getTooltipContent = () => {
     return (
       <div className="space-y-1 text-sm">
-        <p className="font-medium">
-          {employee.name} ({employee.emp_serial_no})
-        </p>
-        <p className="text-xs">{employee.position}</p>
+        <p className="font-medium">{employee?.label}</p>
         <p className="text-xs">
-          {currentBranch.name} ➝ {newBranch.name}
+          <DesignationName value={employee?.department_position} /> ➝{" "}
+          <DesignationName value={new_designation} />
+        </p>
+        <p className="text-xs">
+          <BranchName value={employee?.branch_id} /> ➝{" "}
+          <BranchName value={newBranch} />
         </p>
         <p className="text-xs">Status: {status}</p>
         <p className="text-xs">Cap Time: {capTime} days</p>
@@ -75,33 +129,53 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
   const [selectedRotation, setSelectedRotation] = useState(null);
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
   const [calendarView, setCalendarView] = useState("dayGridMonth");
+  const branches = useSelector((state) => state.common.branches);
+  const Employees = useSelector((state) => state.emp.employees);
+  const Designations = useSelector((state) => state.common.designations);
+
+  console.log("Employees in Calendar View:", Employees);
+
+  const getBranchLabel = (branches, value, fallBackText = "N/A") => {
+    const branch = branches.find((option) => option.value === parseInt(value));
+    return branch ? branch.label : value ?? fallBackText;
+  };
 
   // Generate calendar events from job rotation data
   const calendarEvents = useMemo(() => {
     if (!jobRotations?.results) return [];
 
     return jobRotations.results.map((rotation) => {
-      const statusColor = STATUS_COLORS[rotation.status] || "#6B7280";
+      // Transform the status based on business logic
+      const transformedStatus = transformJobRotationStatus(rotation);
+      const statusColor = STATUS_COLORS[transformedStatus] || "#6B7280";
+
+      const employee = Employees.find((emp) => emp.id === rotation.employee);
 
       return {
         id: rotation.id,
-        title: `${rotation.employee.name} - Job Rotation`,
+        title: `${employee?.label || "Unknown Employee"} - Job Rotation`,
         start: rotation.effective_date,
         allDay: true,
         backgroundColor: statusColor,
         borderColor: statusColor,
         textColor: "#000",
         extendedProps: {
-          employee: rotation.employee,
-          currentBranch: rotation.current_branch,
-          newBranch: rotation.new_branch,
-          status: rotation.status,
-          capTime: rotation.cap_time_days,
-          rotation: rotation,
+          employee: employee,
+          currentBranch: getBranchLabel(branches, employee?.branch_id),
+          newBranch: getBranchLabel(branches, rotation.new_branch),
+          status: transformedStatus, // Use transformed status
+          originalStatus: rotation.status, // Keep original API status
+          capTime: rotation.rotation_cap_time,
+          new_designation: rotation.new_designation,
+          rotation: {
+            ...rotation,
+            status: transformedStatus, // Override status in rotation object too
+            originalStatus: rotation.status,
+          },
         },
       };
     });
-  }, [jobRotations]);
+  }, [jobRotations, branches, Employees]);
 
   const handleEventClick = (clickInfo) => {
     const rotation = clickInfo.event.extendedProps.rotation;
@@ -188,11 +262,9 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
                     html: `<div class="text-sm sm:text-base">${dayInfo.dayNumberText}</div>`,
                   };
                 }}
-                // Handle view changes from calendar itself
                 viewDidMount={(info) => {
                   setCalendarView(info.view.type);
                 }}
-                // Custom styling for different views
                 slotLabelFormat={
                   calendarView !== "dayGridMonth"
                     ? {
@@ -214,11 +286,9 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
               />
             </div>
           )}
-        <StatusLegend />
+          <StatusLegend />
         </CardContent>
       </Card>
-
-      {/* Status Legend */}
 
       {/* Job Rotation Detail Sheet */}
       {selectedRotation && (
@@ -228,6 +298,7 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
           currentId={selectedRotation}
           DataList={jobRotations?.results || []}
           reloadData={reload}
+          transformStatus={transformJobRotationStatus} // Pass the transform function
         />
       )}
     </div>

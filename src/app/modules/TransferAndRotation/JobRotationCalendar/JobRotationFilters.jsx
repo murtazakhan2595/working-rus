@@ -12,11 +12,9 @@ const JobRotationFilters = ({ onFilterChange, jobRotations }) => {
 
   // Status options for filtering
   const statusOptions = [
-    { label: "Pending Approval", value: "Pending Approval" },
-    { label: "Scheduled", value: "Scheduled" },
-    { label: "In Progress", value: "In Progress" },
-    { label: "Overdue", value: "Overdue" },
-    { label: "Cancelled", value: "Cancelled" },
+    { label: "Pending Approval", value: "pending" },
+    { label: "Scheduled", value: "approved" },
+    { label: "Cancelled", value: "rejected" },
   ];
 
   useEffect(() => {
