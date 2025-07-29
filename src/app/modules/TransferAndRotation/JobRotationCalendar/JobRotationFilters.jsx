@@ -42,7 +42,7 @@ const JobRotationFilters = ({ onFilterChange, jobRotations }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4">
       {/* Filters */}
       <div className="flex justify-between items-center gap-4">
         <div className="flex-1">
