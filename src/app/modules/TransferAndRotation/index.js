@@ -6,6 +6,7 @@ import {
     EmployeeExternalTranfer,
     MyTransfers,
 } from './Transfers';
+import { JobRotationCalendar } from "./JobRotationCalendar";
 
 export {
     TransferAndRotation,
@@ -14,4 +15,5 @@ export {
     EmployeeInternalTranfer,
     EmployeeExternalTranfer,
     MyTransfers,
+    JobRotationCalendar
 };
