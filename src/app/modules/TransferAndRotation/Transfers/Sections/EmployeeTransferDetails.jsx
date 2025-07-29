@@ -20,7 +20,7 @@ import {
 } from "app/hooks/employeeTransfer";
 import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
-import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
+import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapTransferRotationData";
 import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
 import { DetailBox } from "components/SheetCardExtension";
 import {

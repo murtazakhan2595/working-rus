@@ -1,17 +1,8 @@
 import axios from "axios";
-import { initialState } from "state/slices/UserSlice";
-import { HandleLogout } from "./general";
+import { HandleLogout, baseUrl, headers } from "./general";
 import moment from "moment";
-
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
-const formDataHeader = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  // Don't explicitly set 'Content-Type' for FormData
-});
+import {mapRotationPayloadData} from 'app/utils/MappingObjects/mapTransferRotationData'
+import { renderErrorMessages } from "utils/renderErrors";
 
 
 const getJobRotationRequests = async (payload) => {
@@ -19,12 +10,11 @@ const getJobRotationRequests = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/job-rotation-requests?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
-  
+  let URL = `/job-rotation-requests?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -54,6 +44,36 @@ const getJobRotationById = async (id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    return false;
+  }
+};
+
+export const saveJobRotation = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapRotationPayloadData(payload);
+
+    const url = ID
+      ? `${baseUrl}/attendance-adjustment/${ID}/` // Use id if updating
+      : `${baseUrl}/attendance-adjustment/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
     return false;
   }
 };

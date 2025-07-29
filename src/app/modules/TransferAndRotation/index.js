@@ -1,10 +1,11 @@
 import TransferAndRotation from './TransferAndRotation';
-import { Rotations } from './Rotations';
+import { Rotations, RotationRequestForm } from './Rotations';
 import {
     EmployeeTransfer,
     EmployeeInternalTranfer,
     EmployeeExternalTranfer,
     MyTransfers,
+    TransferForm,
 } from './Transfers';
 import { JobRotationCalendar } from "./JobRotationCalendar";
 
@@ -15,5 +16,7 @@ export {
     EmployeeInternalTranfer,
     EmployeeExternalTranfer,
     MyTransfers,
-    JobRotationCalendar
+    JobRotationCalendar,
+    RotationRequestForm,
+    TransferForm,
 };

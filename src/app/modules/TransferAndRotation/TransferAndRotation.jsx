@@ -23,7 +23,7 @@ import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { GetDispatchStateList } from "utils/Lists";
 import { Rotations, EmployeeTransfer } from 'app/modules/TransferAndRotation';
-import { TransferForm, } from "app/modules/TransferAndRotation/Transfers/Sections";
+import { TransferForm, RotationRequestForm } from "app/modules/TransferAndRotation";
 
 const TransferAndRotation = ({ }) => {
   const isAdminView = HasAccess("VIEW_EXIT");
@@ -38,7 +38,8 @@ const TransferAndRotation = ({ }) => {
   const Departments = GetDispatchStateList("departments", "common") || []
   const Branches = GetDispatchStateList("branches", "common") || []
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
-  const [activeTab, setActiveTab] = useState("Transfers");
+  const [OpenRotationForm, setOpenRotationForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("Rotations");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
 
@@ -81,7 +82,7 @@ const TransferAndRotation = ({ }) => {
     };
   }, [permittedViewFilterData]);
 
-  
+
 
 
   const statsData = React.useMemo(() => [
@@ -93,6 +94,19 @@ const TransferAndRotation = ({ }) => {
     { label: "Exit Interview", value: ExitStats.Exit, icon: LogOut },
   ], [ExitStats]);
 
+  const handleRequestClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpenTransferForm(false);
+    setOpenRotationForm(false);
+    const triggeredResquest = event.target.title;
+    if (triggeredResquest === 'transfer')
+      setOpenTransferForm(true);
+    else if (triggeredResquest === 'rotations')
+      setOpenRotationForm(true);
+
+    console.log(event.target)
+  }
 
   return (
     <div
@@ -103,6 +117,7 @@ const TransferAndRotation = ({ }) => {
           <>
             {activeTab === "Transfers" && (
               <Button
+                title='transfer'
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
@@ -112,13 +127,12 @@ const TransferAndRotation = ({ }) => {
                 Request Transfer
               </Button>
             )}
-            {activeTab === "Resons of Termination" && (
+            {activeTab === "Rotations" && (
               <Button
-                onClick={() => {
-                  setOpenTransferForm(true);
-                }}
+                title='rotations'
+                onClick={handleRequestClick}
               >
-                Add Termination Reason
+                Request Rotation
               </Button>
             )}
           </>
@@ -159,6 +173,18 @@ const TransferAndRotation = ({ }) => {
             //fetchData(true);
           }}
         // transfer_type={activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"}
+        />
+      )}
+      {OpenRotationForm && (
+        <RotationRequestForm
+          isOpen={OpenRotationForm}
+          setIsOpen={() => {
+            setOpenRotationForm(false);
+            //fetchData(true);
+          }}
+          isAdminView={isAdminView}
+          isBranchView={isBranchView}
+          isDepartmentView={isDepartmentView}
         />
       )}
     </div>
