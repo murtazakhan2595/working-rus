@@ -22,7 +22,9 @@ import Stats from "components/ui/Stats";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { GetDispatchStateList } from "utils/Lists";
-import { Rotations } from 'app/modules/TransferAndRotation';
+import { Rotations, EmployeeTransfer } from 'app/modules/TransferAndRotation';
+import { TransferForm, } from "app/modules/TransferAndRotation/Transfers/Sections";
+
 const TransferAndRotation = ({ }) => {
   const isAdminView = HasAccess("VIEW_EXIT");
   const isBranchView = HasAccess("VIEW_BRANCH_EXIT");
@@ -35,7 +37,8 @@ const TransferAndRotation = ({ }) => {
   const Managers = GetDispatchStateList("reportingManagers", "emp") || []
   const Departments = GetDispatchStateList("departments", "common") || []
   const Branches = GetDispatchStateList("branches", "common") || []
-  const [activeTab, setActiveTab] = useState("Tranfers");
+  const [OpenTransferForm, setOpenTransferForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("Transfers");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
 
@@ -78,6 +81,8 @@ const TransferAndRotation = ({ }) => {
     };
   }, [permittedViewFilterData]);
 
+  
+
 
   const statsData = React.useMemo(() => [
     { label: "Total Exits", value: ExitStats.Total, icon: FolderInput },
@@ -96,13 +101,32 @@ const TransferAndRotation = ({ }) => {
       <Header
         content={
           <>
-
+            {activeTab === "Transfers" && (
+              <Button
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setOpenTransferForm(true);
+                }}
+              >
+                Request Transfer
+              </Button>
+            )}
+            {activeTab === "Resons of Termination" && (
+              <Button
+                onClick={() => {
+                  setOpenTransferForm(true);
+                }}
+              >
+                Add Termination Reason
+              </Button>
+            )}
           </>
         }
       />
       <Stats stats={statsData} />
       <Tabs
-        defaultValue="Tranfers"
+        defaultValue="Transfers"
         className="w-full"
         onValueChange={(tab) => {
           setActiveTab(tab);
@@ -110,7 +134,7 @@ const TransferAndRotation = ({ }) => {
         value={activeTab}
       >
         <TabsList>
-          {["Tranfers", "Rotations"].map(
+          {["Transfers", "Rotations"].map(
             (tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}
@@ -122,8 +146,21 @@ const TransferAndRotation = ({ }) => {
           <TabsContent value="Rotations">
             <Rotations />
           </TabsContent>
+          <TabsContent value="Transfers">
+            <EmployeeTransfer />
+          </TabsContent>
         </Card>
       </Tabs>
+      {OpenTransferForm && (
+        <TransferForm
+          isOpen={OpenTransferForm}
+          setIsOpen={() => {
+            setOpenTransferForm(false);
+            //fetchData(true);
+          }}
+        // transfer_type={activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"}
+        />
+      )}
     </div>
   );
 };

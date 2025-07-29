@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
-import {
-  InternalTransferColumns,
-  TransferForm,
-} from "app/modules/EmployeeTransfer/Sections";
+import { TransferForm, } from "app/modules/TransferAndRotation/Transfers/Sections";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import { Header } from "components";
 import {
@@ -23,10 +20,13 @@ import { Button } from "components/ui/button";
 import {
   EmployeeInternalTranfer,
   EmployeeExternalTranfer,
-} from "app/modules/EmployeeTransfer";
+} from "app/modules/TransferAndRotation";
 import Config from "constants/config";
 import { HasAccess } from "utils/PermissionUtils";
 import { FilterInput } from "components/FormControl";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
 
 const ExternalTabs = [
   Config.TEAM_INTERNALTRANSFER ? "Internal" : null,
@@ -37,7 +37,7 @@ const InternalTabs = ["Requests", "Records"];
 
 export default function EmployeeTransfer() {
 
-   const viewEmployeeTransferPermitted = HasAccess("VIEW_EMPLOYEE_TRANSFER");
+  const viewEmployeeTransferPermitted = HasAccess("VIEW_EMPLOYEE_TRANSFER");
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userID = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(true);
@@ -206,69 +206,7 @@ export default function EmployeeTransfer() {
   };
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
-      <Header
-        content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenTransferForm(true);
-            }}
-          >
-            Request Transfer
-          </Button>
-        }
-      />
-      <Stats stats={statsData} />
-      <div className="flex justify-end items-center gap-2">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID and Name",
-              name: "employee_name_or_id",
-              values: filterData.employee_name_or_id || "", // Add current value
-            },
-            {
-              type: "select-one",
-              option: Departments,
-              name: "old_department",
-              placeholder: "Department",
-              values: Array.isArray(filterData.old_department)
-                ? filterData.old_department[0] || ""
-                : filterData.old_department || "", // Convert array back to single value for display
-            },
-            {
-              type: "select-two",
-              option: Designations,
-              name: "designation",
-              placeholder: "Designation",
-              values: Array.isArray(filterData.designation)
-                ? filterData.designation[0] || ""
-                : filterData.designation || "",
-            },
-            {
-              type: "select-three",
-              option: Branches,
-              name: "old_branch",
-              placeholder: "Branch",
-              values: Array.isArray(filterData.old_branch)
-                ? filterData.old_branch[0] || ""
-                : filterData.old_branch || "",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-        <Button
-          variant="outline"
-          onClick={handleResetFilters}
-          className="shrink-0"
-        >
-          Reset Filters
-        </Button>
-      </div>
+    <div >
       <Tabs
         defaultValue="Internal"
         className="w-full"
@@ -285,7 +223,7 @@ export default function EmployeeTransfer() {
                 <TabsTrigger
                   key={tab}
                   value={tab}
-                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                  variant={"inner-tab"}
                 >
                   {tab}
                 </TabsTrigger>
@@ -295,7 +233,57 @@ export default function EmployeeTransfer() {
         </div>
         {viewEmployeeTransferPermitted && (
           <Card>
+            <CardHeader>
+              <CardTitle>Employee Transfers</CardTitle>
+              <CardDescription>Here you can view and manage the employee transfer requests</CardDescription>
+            </CardHeader>
             <CardContent>
+              <FilterInput
+                filters={[
+                  {
+                    type: "search",
+                    placeholder: "Search by ID and Name",
+                    name: "employee_name_or_id",
+                    values: filterData.employee_name_or_id || "", // Add current value
+                  },
+                  {
+                    type: "select",
+                    options: Departments,
+                    name: "old_department",
+                    placeholder: "Department",
+                    values: Array.isArray(filterData.old_department)
+                      ? filterData.old_department[0] || ""
+                      : filterData.old_department || "", // Convert array back to single value for display
+                  },
+                  {
+                    type: "select",
+                    options: Designations,
+                    name: "designation",
+                    placeholder: "Designation",
+                    values: Array.isArray(filterData.designation)
+                      ? filterData.designation[0] || ""
+                      : filterData.designation || "",
+                  },
+                  {
+                    type: "select",
+                    options: Branches,
+                    name: "old_branch",
+                    placeholder: "Branch",
+                    values: Array.isArray(filterData.old_branch)
+                      ? filterData.old_branch[0] || ""
+                      : filterData.old_branch || "",
+                  },
+                ]}
+                filterValues={filterData}
+                onChange={handleFilterChange}
+              />
+              <Button
+                variant="outline"
+                onClick={handleResetFilters}
+                className="shrink-0"
+              >
+                Reset Filters
+              </Button>
               <TabsContent value="Internal">
                 <EmployeeInternalTranfer
                   TabList={InternalTabs}
