@@ -34,6 +34,7 @@ const Config = {
   EMPLOYEE_CREATION: true,
   HR_DOCUMENTS: true,
   EMPLOYEE_TRANSFER: true,
+  VIEW_JOB_ROTATION: true,
 
   //-------------ATTENDANCE-----------
   ATTENDANCE: true,

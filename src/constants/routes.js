@@ -208,12 +208,11 @@ export const SidebarRoutes = [
           component: <TransferAndRotation />,
           name: "EMPLOYEE_TRANSFER",
         },
-        Config.EMPLOYEE_TRANSFER && {
+        Config.VIEW_JOB_ROTATION && {
           path: "/job-rotation-calendar",
           component: <JobRotationCalendar />,
-          name: "EMPLOYEE_TRANSFER",
+          name: "VIEW_JOB_ROTATION",
         },
-
         Config.EMPLOYEE_CREATION && {
           path: "/create-employee",
           component: <CreateUpdateEmployee />,
@@ -515,6 +514,8 @@ export const SidebarRoutes = [
     name: "CHANGE_PASSWORD",
   },
 ];
+
+console.log("SidebarRoutes", SidebarRoutes);
 
 const RemainingSidebarRoutes = [
   Config.PAYROLL && {
