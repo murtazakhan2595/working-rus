@@ -1,4 +1,5 @@
 import { EmployeeTransfer, JobRotation } from "app/utils/Types/TransferAndRotation";
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapEmployeeTransferData(data) {
   const employeeTransferDetails = Object.keys(EmployeeTransfer).reduce((acc, key) => {
@@ -52,4 +53,19 @@ export function mapRotationPayloadData(data) {
 
   // Return the constructed payload
   return payload;
+}
+
+export async function mapRotationData(data, fetchApprovalDetails = true) {
+  const Details = {};
+
+  for (const key of Object.keys(JobRotation)) {
+    if (key === "approval_details" && fetchApprovalDetails) {
+      Details[key] = await mapApproverDetails(data);
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
+        Details[key] = data[key];
+    }
+  }
+
+  return Details;
 }

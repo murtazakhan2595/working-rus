@@ -1,7 +1,7 @@
 import axios from "axios";
-import { HandleLogout, baseUrl, headers } from "./general";
+import { HandleLogout, baseUrl, headers, getCurrentRequestApprover } from "./general";
 import moment from "moment";
-import {mapRotationPayloadData} from 'app/utils/MappingObjects/mapTransferRotationData'
+import { mapRotationPayloadData, mapRotationData } from 'app/utils/MappingObjects/mapTransferRotationData'
 import { renderErrorMessages } from "utils/renderErrors";
 
 
@@ -37,7 +37,14 @@ const getJobRotationById = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      return response.data;
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.hierarchy_request);
+      const ResponseData = await mapRotationData({
+        ...Response,
+        ...currentapprover,
+      });
+
+      return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
     console.error("Error fetching job rotation by ID:", error);
@@ -54,8 +61,8 @@ export const saveJobRotation = async (payload, id) => {
     const finalPayload = mapRotationPayloadData(payload);
 
     const url = ID
-      ? `${baseUrl}/attendance-adjustment/${ID}/` // Use id if updating
-      : `${baseUrl}/attendance-adjustment/`; // No id means create new
+      ? `${baseUrl}/job-rotation-requests/${ID}/` // Use id if updating
+      : `${baseUrl}/job-rotation-requests/`; // No id means create new
 
     const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
 
@@ -120,5 +127,31 @@ export const transformJobRotationStatus = (rotation) => {
       return "Pending Approval";
   }
 };
+
+export const getJobRotationReasons = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/rotation-reasons?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation requests:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
 
 export { getJobRotationRequests, getJobRotationById };

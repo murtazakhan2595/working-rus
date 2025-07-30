@@ -16,7 +16,7 @@ export const EmployeeTransfer = {
 };
 
 export const JobRotation = {
-  rotation_type: null,
+  rotation_type: "temporary",
   rotation_expiry_date: null,
   rotation_cap_time: null,
   effective_date: null,
@@ -27,4 +27,15 @@ export const JobRotation = {
   new_branch: null,
   new_department: null,
   reason: null,
+  created_by: null,
+  new_designation: null,
+  new_reporting_manager: null,
+  created_at: null,
+  old_department: null,
+  old_designation: null,
+  old_branch: null,
+  old_reporting_manager: null,
+  approval_details:null,
 }
+
+

@@ -83,7 +83,10 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Manager Shift Schedule", value: "SHIFT_SCHEDULE_MANAGER" }]
     : []),
   ...(Config.EMPLOYEE_TRANSFER
-    ? [{ label: "Job Rotation", value: "JOB_ROTATION" }]
+    ? [{ label: "Job Rotation By Manager", value: "JOB_ROTATION_MANAGER" }]
+    : []),
+  ...(Config.EMPLOYEE_TRANSFER
+    ? [{ label: "Job Rotation By Employee", value: "JOB_ROTATION_EMPLOYEE" }]
     : []),
 ];
 
