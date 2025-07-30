@@ -73,9 +73,17 @@ const ShiftCalendar = () => {
             ...filterDataToSend
           },
         });
-        console.log("INFO SHIFT CALENDAR", response);
         if (response) {
-          setTeamMembers(response);
+          if (filters.shift_status) {
+            if (filters.shift_status === 'assigned') {
+              const assignedEmp = response.results.filter(obj => obj.default_shift);
+              setTeamMembers({ results: assignedEmp, count: assignedEmp.length });
+            } else if (filters.shift_status === 'not_assigned') {
+              const assignedEmp = response.results.filter(obj => !obj.default_shift);
+              setTeamMembers({ results: assignedEmp, count: assignedEmp.length });
+            }
+          } else
+            setTeamMembers(response);
         }
       } catch (err) {
         // Remove console.error
@@ -161,7 +169,7 @@ const ShiftCalendar = () => {
                 fetchDraftSchedules();
                 fetchPendingSchedules(); // Also reload pending schedules when draft is processed
               }}
-                employees={teamMembers.results}
+              employees={teamMembers.results}
             />
           ),
         },
@@ -179,7 +187,7 @@ const ShiftCalendar = () => {
                 fetchPendingSchedules();
                 fetchDraftSchedules(); // Also reload draft schedules when schedule is rejected
               }}
-                employees={teamMembers.results}
+              employees={teamMembers.results}
             />
           ),
         },
@@ -190,7 +198,7 @@ const ShiftCalendar = () => {
         {
           value: "shift-calendar",
           label: "Shift Calendar",
-            component: <Emplist teamMembers={displayData} />,
+          component: <Emplist teamMembers={displayData} />,
         },
       ]
       : []),
@@ -198,7 +206,7 @@ const ShiftCalendar = () => {
     {
       value: "shift-request",
       label: "Shift Request",
-      component: <ShiftRequest/>,
+      component: <ShiftRequest />,
     },
     ...(isViewLogsPermitted
       ? [
@@ -254,7 +262,7 @@ const ShiftCalendar = () => {
             <ShiftCalendarFilters
               key={activeTab} // Add key prop to force remount on tab change
               onFilterChange={handleFilterChange}
-            teamMembers={teamMembers}
+              teamMembers={teamMembers}
               showShiftStatus={activeTab === "shift-calendar"}
             />
           )}
