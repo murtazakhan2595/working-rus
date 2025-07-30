@@ -230,7 +230,7 @@ const Attendance = ({ isTeamView = false }) => {
                   Update Attendance
                 </Button>
               )}
-              {/* <ImportAttendance activeTab={activeTab} filterData={filterData} /> */}
+              <ImportAttendance activeTab={activeTab} filterData={filterData} />
               <ExportAttendance activeTab={activeTab} filterData={filterData} />
             </div>
             <Card>

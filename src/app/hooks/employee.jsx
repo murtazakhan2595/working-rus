@@ -851,27 +851,7 @@ const employeeExit = async (payload) => {
   }
 };
 
-const getEmployeeExitDataById = async (employeeid) => {
-  try {
-    let URL = `${baseUrl}/employeeExit`;
-    if (employeeid) {
-      URL += `?search=${encodeURIComponent(
-        JSON.stringify({ employee_id: employeeid })
-      )}`;
-    }
-    const response = await axios.get(URL, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      return response;
-    }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching Personal Info data :", error);
-  }
-};
+
 const getEmployeeExitData = async (payload) => {
   const filterData = payload?.filterData ?? {};
   try {
@@ -1233,7 +1213,6 @@ export {
   employeeExit,
   getEmployeeExitData,
   updateExitData,
-  getEmployeeExitDataById,
   getUserRoles,
   getDepartmentNames,
   getDesignations,

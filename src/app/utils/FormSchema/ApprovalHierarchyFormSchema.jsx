@@ -7,13 +7,62 @@ export const validateApprovalHierarchyFormSchema = (values) => {
   return errors;
 };
 
-export const validateHierarchyLevelFormSchema = (values) => {
+export const validateHierarchyLevelFormSchema = (level, level_list = []) => {
   const errors = {};
-  // if (!values?.name?.trim()) errors.name = "Name is required";
-  if (!values?.level_number) errors.request_type = "Level number is required";
-  if (values.assignment_type && values.assignment_type === "DESIGNATION")
-    if (!values.designation) errors.designation = "Designation is required";
-  return errors;
+  if (!level.assignment_type) {
+    errors.assignment_type = "Approver type is required.";
+  } else {
+    if (level.assignment_type === "DESIGNATION") {
+      if (!level.designation) {
+        errors.designation = "Designation is required";
+      } else {
+        const isDesignationExist =
+          level_list?.filter(
+            (obj) =>
+              parseInt(obj.designation) === parseInt(level.designation) &&
+              level.level_number !== obj.level_number
+          )?.length || 0 > 0;
+        if (isDesignationExist) {
+          errors.designation = "Designation must be unique";
+        }
+      }
+    } else if (level.assignment_type === "DIRECT_REPORTING") {
+      const seenDirectApprover =
+        level_list?.filter(
+          (obj) =>
+            obj.assignment_type === "DIRECT_REPORTING" &&
+            level.level_number !== obj.level_number
+        )?.length || 0 > 0;
+      if (seenDirectApprover) {
+        errors.assignment_type =
+          "Direct reporting can only be assigned as an approver for one level.";
+      }
+    } else if (level.assignment_type === "INDIRECT_REPORTING") {
+      const seenIndirectApprover =
+        level_list?.filter(
+          (obj) =>
+            obj.assignment_type === "INDIRECT_REPORTING" &&
+            level.level_number !== obj.level_number
+        )?.length || 0 > 0;
+      if (seenIndirectApprover) {
+        errors.assignment_type =
+          "Indirect reporting can only be assigned as an approver for one level.";
+      }
+    }
+  }
+  if (level.auto_forward_enabled)
+    if (!level.auto_forward_threshold)
+      errors.auto_forward_threshold = "Threshold in hours is required";
+  if (level.is_final_approval) {
+    const finalApprovalCount =
+      level_list?.filter(
+        (obj) =>
+          obj.is_final_approval && level.level_number !== obj.level_number
+      )?.length || 0;
+    if (finalApprovalCount > 0)
+      errors.is_final_approval = "Only one level can have final approval";
+  }
+  return Object.keys(errors).length > 0 ? errors : null;
 };
 
 export const validateAddHierarchyLevelsForm = (
@@ -68,57 +117,14 @@ export const validateAddHierarchyLevelsForm = (
   ) {
     errors.levels = "At least one level is required";
   } else {
-    const seenDesignations = new Set();
-    let seenDirectApprover = false;
-    let seenIndirectApprover = false;
-    let finalApprovalCount = 0;
-
-    values.levels.forEach((level, index) => {
-      const levelErrors = {};
-      if (!level.assignment_type) {
-        levelErrors.assignment_type = "Approver type is required.";
-      } else {
-        if (level.assignment_type === "DESIGNATION") {
-          if (!level.designation) {
-            levelErrors.designation = "Designation is required";
-          } else if (seenDesignations.has(level.designation)) {
-            levelErrors.designation = "Designation must be unique";
-          } else {
-            seenDesignations.add(level.designation);
-          }
-        } else if (level.assignment_type === "DIRECT_REPORTING") {
-          if (seenDirectApprover) {
-            levelErrors.assignment_type =
-              "Direct reporting can only be assigned as an approver for one level.";
-          } else {
-            seenDirectApprover = true;
-          }
-        } else if (level.assignment_type === "INDIRECT_REPORTING") {
-          if (seenIndirectApprover) {
-            levelErrors.assignment_type =
-              "Indirect reporting can only be assigned as an approver for one level.";
-          } else {
-            seenIndirectApprover = true;
-          }
-        }
-      }
-
-      if (level.auto_forward_enabled)
-        if (!level.auto_forward_threshold)
-          levelErrors.auto_forward_threshold = "Threshold in hours is required";
-
-      if (level.is_final_approval) {
-        if (finalApprovalCount > 0)
-          levelErrors.is_final_approval =
-            "Only one level can have final approval";
-        finalApprovalCount++;
-      }
-
-      if (Object.keys(levelErrors).length > 0) {
-        if (!errors.levels) errors.levels = [];
-        errors.levels[index] = levelErrors;
-      }
-    });
+    const levelList = values.levels;
+    const levelErrors = levelList
+      .map((level) => {
+        return validateHierarchyLevelFormSchema(level, values.levels);
+      })
+      ?.filter(Boolean);
+    console.log(levelErrors);
+    if (levelErrors && levelErrors.length > 0) errors.levels = levelErrors;
   }
 
   return errors;

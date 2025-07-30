@@ -1,25 +1,7 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { ExitDetailsCard } from "app/modules/ExitAndClearance/ExitRequests";
+import { ExitDetailsCard } from "app/modules/ExitAndClearance";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu"; // Replace with correct path
-import { Button } from "src/@/components/ui/button"; // Replace with correct path
-import { useSelector } from "react-redux";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
-import { toast } from "react-toastify";
-import { StatusCircleLabel } from "components/StatusLabel";
-import {
-  ClearanceSheet,
-  Status,
-  ExitStatusCurrentStep,
-} from "app/modules/ExitAndClearance/Sections";
-import { MoreHorizontal } from "lucide-react";
 
 const RenderTerminationAction = ({
   data,

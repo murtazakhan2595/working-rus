@@ -137,36 +137,28 @@ export const saveEmployeeExitDetail = async (payload, id) => {
     return false;
   }
 };
-
-// const saveEmployeeExitDetail = async (payload, id) => {
-//   try {
-//     if (id) {
-//       const URL = `${baseUrl}/employeeExit/${id}`;
-//       const response = await axios.patch(URL, payload, {
-//         headers: formDataHeader(),
-//       });
-//       if (response) {
-//         return response;
-//       }
-//     } else {
-//       const URL = `${baseUrl}/employeeExit`;
-//       const response = await axios.post(URL, payload, {
-//         headers: formDataHeader(),
-//       });
-//       if (response) {
-//         return response;
-//       }
-//     }
-//   } catch (error) {
-//     if (error?.response?.status === 401) {
-//       // HandleLogout();
-//     }
-
-//     console.error("Error fetching Personal Info data :", error);
-//     return false;
-//   }
-// };
-
+export const getExitDataByEmpId = async (employee_id, filter) => {
+  try {
+    if (!employee_id) return null;
+    const response = await getEmployeesResignations({
+      filterData: { employee_id: employee_id, ...filter },
+    });
+    if (response.results && response.results.length > 0) {
+      const exit_id = response.results[0]?.id;
+      if (exit_id) {
+        const ExitData = await getEmployeeExitData(exit_id);
+        return ExitData;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return null;
+  }
+  return null;
+};
 const getTerminationReason = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "-id";

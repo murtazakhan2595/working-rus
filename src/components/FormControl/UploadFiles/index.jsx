@@ -3,6 +3,7 @@ import { getFileNameFromURL } from "utils/downloadUtils";
 import { FormField } from "components/FormControl";
 import { CoverFileInput } from "./CoverFileInput";
 import AttachmentFileInput from "./AttachmentFileInput";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 const CoverFileUpload = ({
   name,
@@ -141,5 +142,29 @@ const CoverFileUpload = ({
       )}
     </FormField>
   );
+};
+
+export const RenderUploadedFiles = ({
+  files,
+  viewOnly = false,
+  allowUpdate = true,
+  handleUpdateFileClick = () => {},
+  removeFile = () => {},
+}) => {
+  if (!files) return null;
+  return files.map((fileData, index) => (
+    <>
+      <AttachmentUI
+        attachment={fileData.attachment || fileData}
+        name={fileData.name}
+        removeFile={removeFile}
+        handleUpdateFileClick={handleUpdateFileClick}
+        id={fileData.id}
+        key={index}
+        allowUpdate={allowUpdate}
+        viewOnly={viewOnly}
+      />
+    </>
+  ));
 };
 export default CoverFileUpload;
