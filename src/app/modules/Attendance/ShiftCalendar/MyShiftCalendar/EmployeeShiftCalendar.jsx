@@ -563,7 +563,7 @@ const EmployeeShiftCalendar = () => {
             </p>
           )}
         </div>
-        {isRequestChangeShiftPermitted && (directShift || scheduleShifts?.count > 0) && (
+        {isRequestChangeShiftPermitted && (scheduleShifts?.count > 0) && (
           <Button onClick={() => setIsRequestModalOpen(true)}>
             Request Shift Change
           </Button>
