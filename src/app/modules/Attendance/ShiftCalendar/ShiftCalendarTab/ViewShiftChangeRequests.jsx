@@ -1,24 +1,16 @@
-import { RenderTeamMembers } from "app/modules/Dashboard/Screens/MyTeams";
 import { CardContent } from "components/ui/card";
 import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
-import Calendar from "./Calendar";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
-import Listview from "../../Sections/Listview";
-import { toast } from "react-toastify";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import CustomTable from "components/CustomTable";
 import { CardDescription } from "components/ui/card";
 import { EmployeeColumns } from "./shiftChangeRequestColumns";
-import moment from "moment";
-import {
-    fetchEmployeeShiftData,
-    getChangeRequestComparison,
-} from "./shiftScheduleUtils";
+import { getChangeRequestComparison, } from "./shiftScheduleUtils";
 import { HasAccess } from "utils/PermissionUtils";
 import { useSelector } from "react-redux";
-import { FilterInput, SelectInputComponent } from "components/FormControl";
+import { FilterInput } from "components/FormControl";
 import { PageLoader } from "components";
 
 const ViewShiftChangeRequests = () => {
@@ -110,7 +102,6 @@ const ViewShiftChangeRequests = () => {
             <CardContent>
                 <FilterInput
                     filters={[
-
                         {
                             type: "select",
                             options: [
