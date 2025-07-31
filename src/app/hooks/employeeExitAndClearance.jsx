@@ -21,7 +21,7 @@ const getEmployeesResignations = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
 
   try {
-    const URL = `/employeeExit?order=${ordering}&${
+    const URL = `/employeeExit?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -43,7 +43,7 @@ const getEmployeesResignations = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      // HandleLogout();
+      HandleLogout();
     }
     console.error("Error fetching employee exit data:", error);
     console.error("Error details:", {

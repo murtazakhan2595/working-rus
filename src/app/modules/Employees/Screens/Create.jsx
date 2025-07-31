@@ -23,11 +23,7 @@ const CreateUpdateEmployee = () => {
 
   return (
     <>
-      <div
-        className={`max-w-[1040px] mx-auto ${window.location.pathname.substring(
-          1
-        )}`}
-      >
+      <div className={`max-w-[1040px] mx-auto ${window.location.pathname.substring(1)}`}>
         <Header />
         <Card>
           <CardHeader className="flex flex-row flex-wrap justify-end gap-2 items-center">
@@ -36,7 +32,7 @@ const CreateUpdateEmployee = () => {
           <CardContent>
             <EmployeeForm
               id={id}
-              setIsOpen={() => {}}
+              setIsOpen={() => { }}
               SalarySetupAllowed={!id && SalarySetupAllowed}
             />
           </CardContent>

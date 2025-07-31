@@ -134,19 +134,12 @@ const validateLeaveTypeFormSchema = (values) => {
       errors.max_carry_forward_limit =
         "Max carry forward limit cannot exceed total leave count";
     }
-  } else {
-    // Clear the field when carry forward is disabled
-    if (values.max_carry_forward_limit) {
-      values.max_carry_forward_limit = 0;
-    }
   }
 
-  // Min Days Notice validation
-  if (!values.min_days_notice) {
-    errors.min_days_notice = "Min days notice required is required";
-  } else if (isNaN(values.min_days_notice)) {
+  // Min Days Notice validation - make it optional
+  if (values.min_days_notice && isNaN(values.min_days_notice)) {
     errors.min_days_notice = "Min days notice must be a number";
-  } else if (values.min_days_notice < 0) {
+  } else if (values.min_days_notice && values.min_days_notice < 0) {
     errors.min_days_notice = "Min days notice cannot be negative";
   }
 
@@ -185,14 +178,6 @@ const validateLeaveTypeFormSchema = (values) => {
         errors.full_paid_days = `Total paid days (${totalPaidDays}) cannot exceed leave count (${leaveCount})`;
         errors.half_paid_days = `Total paid days (${totalPaidDays}) cannot exceed leave count (${leaveCount})`;
       }
-    }
-  } else {
-    // Clear the fields when all paid is enabled
-    if (values.full_paid_days) {
-      values.full_paid_days = 0;
-    }
-    if (values.half_paid_days) {
-      values.half_paid_days = 0;
     }
   }
 

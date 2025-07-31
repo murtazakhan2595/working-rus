@@ -11,8 +11,10 @@ export function renderTime(time, date = moment()) {
   const formattedDate = baseDate.format("YYYY-MM-DD");
   const TimeMoment = moment(time);
   if (!TimeMoment || !TimeMoment.isValid()) {
-    const timeFormats = ["hh:mm A", "HH:mm", "HH:mm:ss", "hh:mm:ss A"];
+    const timeFormats = ["hh:mm A", "HH:mm", "HH:mm:ss", "hh:mm:ss A", 'h:mm'];
+    if (time.charAt(0) === '0' && time.charAt(1) === ':') time = '0' + time;
     const formattedTime = moment(time, timeFormats, true).format("HH:mm:ss");
+    
     const responseTime = moment(`${formattedDate}T${formattedTime}`)
       .utc()
       .toISOString();

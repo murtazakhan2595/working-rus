@@ -94,6 +94,7 @@ function App() {
   if (loading) {
     return <PageLoader height="100vh" />; // Render the loader if loading is true
   }
+
   return (
     <>
       <Routes>

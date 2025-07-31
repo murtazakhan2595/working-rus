@@ -61,13 +61,17 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
           user_id,
           moment().add(1, "day")
         );
+        const today_shift = await getActiveShiftData(
+          user_id,
+          moment()
+        );
         if (isMounted) {
           setShiftDetails([
             {
               day: "yesterday",
               details: yesterday_shift || {},
             },
-            { day: "today", details: emp_attendance_detail.today_shift || {} },
+            { day: "today", details: today_shift || {} },
             {
               day: "tomorrow",
               details: tomorrow_shift || {},
@@ -76,7 +80,7 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
 
           const offSetCount = parseInt(
             emp_attendance_detail.monthly_overtime /
-              emp_attendance_detail.monthly_total_hours
+            emp_attendance_detail.monthly_total_hours
           );
           setOffsetCount(offSetCount || 0);
         }

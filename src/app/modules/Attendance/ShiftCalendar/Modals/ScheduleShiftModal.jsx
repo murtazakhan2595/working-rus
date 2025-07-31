@@ -29,8 +29,6 @@ const ScheduleShiftModal = ({
   isDraft = false, // New prop to indicate if this is for draft schedules
 }) => {
 
-  console.log("employees IN SHIFT SCHEDULE", employees);
-
   const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shifts, setShifts] = useState([]);
@@ -300,24 +298,9 @@ const ScheduleShiftModal = ({
           if (day.startTime && day.endTime) {
             const start = moment(day.startTime);
             const end = moment(day.endTime);
-            console.log("INOF", start, end)
-            console.log("🟪 calculateHours received moment objects:", {
-              dayDate: day.date,
-              startTime: day.startTime,
-              endTime: day.endTime,
-              startType: typeof day.startTime,
-              endType: typeof day.endTime,
-              startIsMoment: day.startTime && day.startTime._isAMomentObject,
-              endIsMoment: day.endTime && day.endTime._isAMomentObject,
-              startFormatted: day.startTime ? moment(day.startTime).format("YYYY-MM-DD HH:mm:ss") : null,
-              endFormatted: day.endTime ? moment(day.endTime).format("YYYY-MM-DD HH:mm:ss") : null,
-              startDisplay: day.startTime ? moment(day.startTime).format("hh:mm A") : null,
-              endDisplay: day.endTime ? moment(day.endTime).format("hh:mm A") : null
-            });
             // Get the time in 12-hour format with AM/PM indicator
             const startTimeStr = start.format("hh:mm A"); // e.g. "09:00 AM"
             const endTimeStr = end.format("hh:mm A"); // e.g. "05:00 PM"
-            console.log("INFO 2", startTimeStr, endTimeStr)
 
             // Parse these strings to get the correct hour (with proper AM/PM handling)
             const baseDate = moment(day.date).startOf("day");
@@ -535,7 +518,6 @@ const ScheduleShiftModal = ({
           };
         }
 
-        console.log("Edit Payload:", payload);
         const response = await saveShiftSchedule(payload);
 
         if (response) {
@@ -635,7 +617,6 @@ const ScheduleShiftModal = ({
             };
           }
 
-          console.log(`Payload for Employee ${employeeId}:`, payload);
           const response = await saveShiftSchedule(payload);
 
           if (response) {
@@ -644,9 +625,7 @@ const ScheduleShiftModal = ({
               total: totalEmployees,
               completed: completedRequests,
             });
-            console.log(
-              `Successfully saved schedule for employee ${employeeId}`
-            );
+            
           } else {
             toast.error(`Failed to save schedule for employee ${employeeId}`);
             console.error(`Failed to save schedule for employee ${employeeId}`);

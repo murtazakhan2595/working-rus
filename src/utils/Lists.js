@@ -24,7 +24,7 @@ export function getDropdownList(
   additionalOption = null
 ) {
   // If the input array is empty or not an array, return only the additional option if provided
-  if (!Array.isArray(items) || items.length === 0)
+  if (!Array.isArray(items) || items?.length === 0)
     return additionalOption ? [additionalOption] : [];
 
   // Map items to dropdown-friendly format
@@ -51,7 +51,7 @@ export function getDropdownListWithExtraKeys(
   separator = null
 ) {
   // If the input array is empty or not an array, return only the additional option if provided
-  if (!Array.isArray(items) || items.length === 0) {
+  if (!Array.isArray(items) || items?.length === 0) {
     return additionalOption ? [additionalOption] : [];
   }
 
@@ -91,7 +91,7 @@ export function getFormattedDropdownItems(
   additionalOption = null
 ) {
   // If the input array is empty or not an array, return only the additional option if provided
-  if (!Array.isArray(items) || items.length === 0)
+  if (!Array.isArray(items) || items?.length === 0)
     return additionalOption ? [additionalOption] : [];
 
   // Map items to dropdown-friendly format
@@ -118,7 +118,7 @@ export function getFormattedDropdownItems(
  */
 export function createDropdownOptions(options) {
   // If the input is invalid or empty, return an empty array.
-  if (!options || options.length === 0) return [];
+  if (!options || options?.length === 0) return [];
   // Map each string to an object with `label` and `value` properties.
   const dropdownOptions = options.map((option) => {
     return { label: option, value: option };
@@ -128,7 +128,7 @@ export function createDropdownOptions(options) {
 }
 
 export function getLabelDropdownList(list, label = "name", value = "id") {
-  if (!list || list.length === 0) return [];
+  if (!list || list?.length === 0) return [];
   const dropdownList = list.map((obj) => {
     return {
       label: (
@@ -151,9 +151,9 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
 export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
   if (
     employeeLeaveType &&
-    employeeLeaveType.length > 0 &&
+    employeeLeaveType?.length > 0 &&
     LeaveTypes &&
-    LeaveTypes.length > 0
+    LeaveTypes?.length > 0
   ) {
     const employeeLeaveTypeList = employeeLeaveType.map((item) => {
       const leaveType = LeaveTypes.find(
@@ -244,7 +244,7 @@ export function getTaskFilteredData(tasksList, filterData) {
     }
     if (filterData?.assigned_to === "noMemberSelected") {
       return tasksList.filter(
-        (task) => !task.noMemberSelected || task.noMemberSelected.length === 0
+        (task) => !task.noMemberSelected || task.noMemberSelected?.length === 0
       );
     }
   }
@@ -264,7 +264,7 @@ export function convertJSONArrayToStringsArray(
   value = "value"
 ) {
   // Check if the input is valid
-  if (!Array.isArray(data) || data.length === 0) {
+  if (!Array.isArray(data) || data?.length === 0) {
     return []; // Return an empty array if data is not valid
   }
 
@@ -287,7 +287,7 @@ export function convertStringsArrayToJsonArray(
   valueKey = "value"
 ) {
   // Check if the input is valid
-  if (!Array.isArray(data) || data.length === 0) {
+  if (!Array.isArray(data) || data?.length === 0) {
     return []; // Return an empty array if data is not valid
   }
 
@@ -354,7 +354,7 @@ export const FilterTreeBySelectedLeafs = (
   const isMatch = selectedLeafs.includes(node[label]);
 
   // If current node is a match or has matching children, include it in the result
-  if (isMatch || filteredChildren.length > 0) {
+  if (isMatch || filteredChildren?.length > 0) {
     return {
       ...node,
       childrens: filteredChildren, // preserve only matching sub-branches
@@ -378,7 +378,7 @@ export const GetEmployeeFilteredList = (
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
 
-  if (!Array.isArray(Employees) || Employees.length === 0) return [];
+  if (!Array.isArray(Employees) || Employees?.length === 0) return [];
 
   // Admin view returns all employees
   if (adminView && !isTeamView) {
@@ -405,7 +405,7 @@ export const GetEmployeeFilteredList = (
     });
   }
 
-  if (filters.length === 0) return [];
+  if (filters?.length === 0) return [];
   return Employees.filter((employee) => {
     return filters.some(({ keys, value }) => {
       return keys.some((key) => {
@@ -427,6 +427,7 @@ export const GetCommonFilteredList = (label) => {
 };
 
 export const GetDispatchStateList = (label, list) => {
+
   const List = useSelector((state) => {
     if (!state || typeof state !== "object") return null;
     if (!list || !label) return null;

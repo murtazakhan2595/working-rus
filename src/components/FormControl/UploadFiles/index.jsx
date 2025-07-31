@@ -10,14 +10,14 @@ const CoverFileUpload = ({
   value,
   error,
   touch,
-  onChange = () => {},
+  onChange = () => { },
   label,
   acceptType,
   required,
   maxSize = 10,
   variant = "CoverFileUpload", // [AttachmentFileUpload, CoverFileUpload] other options
   multiple = false,
-  deleteAttachment = () => {},
+  deleteAttachment = () => { },
   allowUpdate = true,
   className = "w-full", // Custom styling
   disabled = false,
@@ -55,9 +55,10 @@ const CoverFileUpload = ({
       const reader = new FileReader();
       reader.onload = () => {
         setFiles((prevFiles) => {
-          let updatedFiles;
+          let updatedFiles = [];
+
           if (attachmentId) {
-            // Replace existing file with the same attachmentId
+            // Replace the file with matching id
             updatedFiles = prevFiles.map((existingFile) =>
               existingFile.id === attachmentId ? file : existingFile
             );
@@ -65,8 +66,11 @@ const CoverFileUpload = ({
             // Add new file
             updatedFiles = [...prevFiles, file];
           }
-          // Send updated file list to parent
-          onChange(name, multiple ? updatedFiles : file);
+
+          // Handle single vs multiple mode
+          const valueToSend = multiple ? updatedFiles : file;
+
+          onChange(name, valueToSend);
           return updatedFiles;
         });
       };
@@ -75,13 +79,37 @@ const CoverFileUpload = ({
   };
 
   const handleRemoveFile = (attachment, id) => {
-    const updatedFiles = files.filter((file) => file.attachment !== attachment);
+    const updatedFiles = files.filter((file) => {
+      // Check if file.attachment is a File object or string (URL)
+      const fileAttachment = file.attachment || file;
+      if (id) return file.id !== id;
+      if (typeof attachment === "string") {
+        // Remove by matching URL string
+        return fileAttachment !== attachment;
+      }
+      if (attachment instanceof File) {
+        // Remove by matching File object (by name and size or reference)
+        if (fileAttachment instanceof File) {
+          return (
+            fileAttachment.name !== attachment.name ||
+            fileAttachment.size !== attachment.size
+          );
+        }
+        // In case fileAttachment is URL and attachment is File, keep it
+        return true;
+      }
+
+      // Fallback (don't remove)
+      return true;
+    });
+
     setFiles(updatedFiles);
     onChange(name, updatedFiles.length && multiple ? updatedFiles : null);
     if (id) {
       deleteAttachment(id);
     }
   };
+
 
   const handleUpdateFileClick = (event, attachmentId) => {
     event.preventDefault();
@@ -163,8 +191,8 @@ export const RenderUploadedFiles = ({
   files,
   viewOnly = false,
   allowUpdate = true,
-  handleUpdateFileClick = () => {},
-  removeFile = () => {},
+  handleUpdateFileClick = () => { },
+  removeFile = () => { },
 }) => {
   if (!files) return null;
   return files.map((fileData, index) => (

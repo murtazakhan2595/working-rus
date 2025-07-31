@@ -31,7 +31,7 @@ import { Button } from "components/ui/button";
 import { AddUpdateTerminationReasons } from "./TerminationReasons";
 import { GetDispatchStateList } from "utils/Lists";
 
-const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
+const TransferAndRotations = ({}) => {
   const isAdminView = HasAccess("VIEW_EXIT");
   const isBranchView = HasAccess("VIEW_BRANCH_EXIT");
   const isDepartmentView = HasAccess("VIEW_DPT_EXIT");
@@ -190,7 +190,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
         value={activeTab}
       >
         <TabsList>
-          {["Exit Requests", "Exit Records", "Resons of Termination"].map(
+          {["Tranfers", "Rotations"].map(
             (tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}
@@ -238,11 +238,4 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    departments: state.common.departments,
-  };
-};
-
-export default connect(mapStateToProps)(ExitAndClearance);
+export default TransferAndRotations

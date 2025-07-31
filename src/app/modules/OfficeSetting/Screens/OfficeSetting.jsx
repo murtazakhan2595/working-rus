@@ -25,7 +25,6 @@ import { Shift } from "app/modules/OfficeSetting";
 import { PageLoader } from "components";
 import OnboardingChecklist from "./OnboardingChecklist";
 import OnboardingTab from "./OnboardingChecklist/OnboardingTab";
-import { getOnboardingDocument } from "app/hooks/officeSetting";
 import ViewOrganization from "./Organizations/ViewOrganization";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
@@ -61,9 +60,6 @@ const OfficeSetting = () => {
   const userPermissions = userPermissionsRaw.filter(Boolean); // Remove any undefined/null values
 
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
-
-  const [onboardingDocs, setOnboardingDocs] = useState([]);
-  const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   const [countryData, setCountryData] = useState({});
   const [stateData, setStateData] = useState({});
@@ -104,20 +100,6 @@ const OfficeSetting = () => {
     } catch (error) {
       console.error("ERROR", error);
       setLoading(false);
-    }
-  };
-
-  // Function to fetch onboarding documents
-  const getOnboardingDocuments = async () => {
-    setOnboardingLoading(true);
-    try {
-      const response = await getOnboardingDocument();
-
-      setOnboardingDocs(response.results);
-    } catch (error) {
-      console.error("Error fetching onboarding documents:", error);
-    } finally {
-      setOnboardingLoading(false);
     }
   };
 
@@ -165,8 +147,6 @@ const OfficeSetting = () => {
     const fetchData = async () => {
       // First get organization data
       await getOrganization();
-      // Then fetch the rest of the data that depends on organization
-      await getOnboardingDocuments();
     };
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -364,12 +344,11 @@ const OfficeSetting = () => {
           >
             {/* Horizontal tabs */}
             <div className="w-full mb-6">
-              <TabsList className="flex flex-row w-full gap-4 overflow-x-auto">
+              <TabsList>
                 {availableTabs?.map((tab) => (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100"
                   >
                     {tab.label}
                   </TabsTrigger>

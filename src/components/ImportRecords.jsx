@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "components/ui/button";
 import {
   Dialog,
@@ -8,8 +8,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "src/@/components/ui/dialog";
-import { Label } from "src/@/components/ui/label";
-import { Input } from "components/ui/input";
 import { toast } from "react-toastify";
 import {
   Download,
@@ -28,7 +26,7 @@ import { downloadFile } from "utils/downloadUtils";
 import { CoverFileUpload } from "components/FormControl";
 
 const ImportRecords = ({
-  reloadData = () => {},
+  reloadData = () => { },
   title = "Import Records",
   description = "Upload a file to bulk import data. Make sure your data follows the required format.",
   downloadTemplateEndpoint = null,
@@ -36,7 +34,7 @@ const ImportRecords = ({
   templateDataToExport = null,
   module = "Cohrus",
   formatInformation = [],
-  modifyUploadedFile = async () => {},
+  modifyUploadedFile = async () => { },
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
@@ -84,8 +82,7 @@ const ImportRecords = ({
 
             if (dateFields.length > 0) {
               formattedErrors.push(
-                `${
-                  rowNum ? `Row ${rowNum}: ` : ""
+                `${rowNum ? `Row ${rowNum}: ` : ""
                 }Date fields must use YYYY-MM-DD format: ${dateFields.join(
                   ", "
                 )}`
@@ -133,8 +130,7 @@ const ImportRecords = ({
                       .replace(/_/g, " ")
                       .replace(/\b\w/g, (l) => l.toUpperCase());
                     formattedErrors.push(
-                      `${
-                        rowNum ? `Row ${rowNum}: ` : ""
+                      `${rowNum ? `Row ${rowNum}: ` : ""
                       }${formattedField}: ${errorMessage}`
                     );
                   }
@@ -145,8 +141,7 @@ const ImportRecords = ({
                   .replace(/_/g, " ")
                   .replace(/\b\w/g, (l) => l.toUpperCase());
                 formattedErrors.push(
-                  `${
-                    rowNum ? `Row ${rowNum}: ` : ""
+                  `${rowNum ? `Row ${rowNum}: ` : ""
                   }${formattedField}: ${fieldErrors}`
                 );
               }
@@ -176,10 +171,9 @@ const ImportRecords = ({
     }
   };
 
-  const handleFileChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const uploadedFile = e.target.files[0];
-      setFile(uploadedFile);
+  const handleFileChange = async (_, file) => {
+    if (file) {
+      setFile(file);
       // Clear previous validation errors when a new file is selected
       setValidationErrors([]);
       setValidationMessage(null);
@@ -236,36 +230,31 @@ const ImportRecords = ({
       setIsUploading(true);
       setValidationErrors([]); // Clear previous errors
       setValidationMessage(null);
-      const modifiedFile = await modifyUploadedFile(file);
-      const fileToUpload = modifiedFile ? modifiedFile : file;
+      const { file: modifiedFile, errors: fileErrors } = await modifyUploadedFile(file);
+      if (fileErrors && Array.isArray(fileErrors) && fileErrors.length > 0) {
 
-      // Create form data for file upload
-      const formData = new FormData();
-      formData.append("file", fileToUpload);
-      // Call the API to upload employees data
-      const response = await uploadRecord(formData, uploadEndpoint);
-      // Handle successful response
-
-      const { errors, message } = response;
-      if (errors && Array.isArray(errors) && errors.length > 0) {
-        // Format validation errors for display
-        // const formattedErrors = formatErrorMessages(errors);
-        setValidationErrors(errors);
-        setValidationMessage(message);
-
-        // Reset file input when errors occur
-        // Also show a toast notification
-        // toast.error(
-        //   "Failed to import holidays. Please check the validation errors.",
-        //   {
-        //     position: toast.POSITION.TOP_RIGHT,
-        //   }
-        // );
+        setValidationErrors(fileErrors);
       } else {
-        toast.success(`${module}Holidays imported successfully`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        handleClose(false);
+        const fileToUpload = modifiedFile ? modifiedFile : file
+        // Create form data for file upload
+        const formData = new FormData();
+        formData.append("file", fileToUpload);
+        // Call the API to upload employees data
+        const response = await uploadRecord(formData, uploadEndpoint);
+        // Handle successful response
+
+        const { errors, message } = response;
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+          // Format validation errors for display
+          // const formattedErrors = formatErrorMessages(errors);
+          setValidationErrors(errors);
+          setValidationMessage(message);
+        } else {
+          toast.success(`${module}Holidays imported successfully`, {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          handleClose(false);
+        }
       }
     } catch (error) {
       console.error("Error uploading holidays:", error);
@@ -458,6 +447,7 @@ const ImportRecords = ({
                   label={`Upload ${module} Data`}
                   acceptType=".xlsx,.xls,.csv"
                   onChange={handleFileChange}
+                  value={file}
                 />
               </div>
 
