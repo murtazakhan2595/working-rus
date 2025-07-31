@@ -18,12 +18,12 @@ const EmployeeExit = ({ userProfile }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      debugger
       const response = await getExitDataByEmpId(userProfile.id, {
         request_status: "PENDING,APPROVED",
       });
       if (response) {
-        const data = response?.data.results.result;
-        setExitDetails(data[0]);
+        setExitDetails(response);
       }
     } catch (e) {
       console.error(e);

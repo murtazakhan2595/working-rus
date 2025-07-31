@@ -22,7 +22,7 @@ import { toast } from "react-toastify";
 export default function AddUpdateLeaveBalance({
   isOpen = true,
   setIsOpen,
-  reload,
+  reloadData=()=>{},
   data: directData = null,
   edit = {}, // new pattern from NavigationSheetComponent
 }) {
@@ -154,7 +154,7 @@ export default function AddUpdateLeaveBalance({
   };
 
   const handleClose = () => {
-    if (reload) reload();
+    reloadData();
     setIsOpen(false);
   };
 

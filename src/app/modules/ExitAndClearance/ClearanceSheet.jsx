@@ -6,7 +6,6 @@ import {
   NumberInput,
 } from "components/FormControl";
 import { FinalSettlement } from "app/utils/Types/Payroll";
-import { Formik } from "formik";
 import { useEffect, useState } from "react";
 import {
   saveFinalSettlement,

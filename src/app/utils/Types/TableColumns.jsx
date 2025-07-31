@@ -1,4 +1,4 @@
-import { EmployeeID, GetNameList } from "utils/getValuesFromTables";
+import { EmployeeID } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
@@ -6,12 +6,10 @@ import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActio
 import moment from "moment";
 import { formatNumber } from "utils/renderValues";
 import { AiOutlineDownload } from "react-icons/ai";
-import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
-import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock, MapPin, Tag } from "lucide-react";
+import { Clock} from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { getAssetById } from "app/hooks/assets";
@@ -181,27 +179,7 @@ export const AllJobApplicationColumns = (
   },
 ];
 
-export const ExitTerminatedColumns = [
-  {
-    dataField: "employee_id",
-    text: "",
-    formatter: (cell, row, list) => (
-      <RenderTerminatedRow
-        terminatedEmployee={row}
-        terminatedEmployeeList={list}
-      />
-    ),
-  },
-];
-export const ExitResignedColumns = [
-  {
-    dataField: "employee_id",
-    text: "",
-    formatter: (cell, row, list) => (
-      <RenderResignedRow resignedEmployee={row} resignedEmployeeList={list} />
-    ),
-  },
-];
+
 
 export const MyClaimsRequestColumns = (expenseTypeOptions) => [
   {
@@ -772,7 +750,7 @@ export const AssetsColumns = [
   },
 ];
 
-export const MyAssetRequestColumns = [
+export const MyAssetRequestColumns = (onView, onEdit, onWithdraw) => [
   {
     dataField: "id",
     text: "Request ID",
@@ -849,37 +827,17 @@ export const MyAssetRequestColumns = [
       const handleView = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("View asset request:", row);
-        // Add your view logic here - could open a modal or navigate to details page
+        if (onView) {
+          onView(row);
+        }
       };
 
-      const handleEdit = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log("Edit asset request:", row);
-        // Add your edit logic here - could open edit modal
-      };
-
-      const handleWithdraw = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log("Withdraw asset request:", row);
-        // Add your withdraw logic here
-      };
-
-      // Only show edit/withdraw for pending requests
-      const canEdit = row.asset_status === "Pending";
-      const canWithdraw = row.asset_status === "Pending";
 
       return (
         <div onClick={(e) => e.stopPropagation()}>
           <DropdownActionMenu
             onView={handleView}
-            onEdit={canEdit ? handleEdit : null}
-            onCustom={canWithdraw ? handleWithdraw : null}
             viewText="View Request"
-            editText="Edit Request"
-            customText="Withdraw Request"
             menuTooltip="Asset Request Actions"
           />
         </div>
@@ -1045,7 +1003,6 @@ export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
       // Determine available actions based on status
       const isPending = row.asset_status === "Pending";
       const isRejected = row.asset_status === "Rejected";
-      const isAccepted = row.asset_status === "Accepted";
 
       // Show Edit for Pending and Rejected requests
       // Show Reject for Pending requests only

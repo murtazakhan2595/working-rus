@@ -264,7 +264,22 @@ const AssetRequestViewSheet = ({
       }
       console.log("updatedRequest", updatedRequest);
 
-      const response = await requestAsset(updatedRequest);
+      // Function to remove null/undefined values from payload
+      const cleanPayload = (obj) => {
+        const cleaned = {};
+        for (const [key, value] of Object.entries(obj)) {
+          if (value !== null && value !== undefined && value !== "") {
+            cleaned[key] = value;
+          }
+        }
+        return cleaned;
+      };
+
+      // Clean the payload
+      const cleanedPayload = cleanPayload(updatedRequest);
+      console.log("cleanedPayload", cleanedPayload);
+
+      const response = await requestAsset(cleanedPayload);
 
       if (response) {
         setIsSubmittingRejection(false);

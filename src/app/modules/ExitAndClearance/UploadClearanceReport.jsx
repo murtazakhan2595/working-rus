@@ -1,39 +1,7 @@
-import { toast } from "react-toastify";
-import React, { useState, useRef } from "react";
-import {
-  RenderResignationAction,
-  RenderTerminationAction,
-} from "app/modules/ExitAndClearance/ExitRequests";
-import {
-  DepartmentName,
-  DesignationName,
-  EmployeeID,
-  TerminationStatus,
-  ResignationReason,
-  ResignationStatus,
-  ManagerName,
-} from "utils/getValuesFromTables";
-import { FormatID } from "utils/getValuesFromTables";
-import {
-  saveEmployeeExitDetail,
-  getEmployeeExitData,
-} from "app/hooks/employeeExitAndClearance";
-import { useSelector } from "react-redux";
-import { TerminationReason } from "utils/getValuesFromTables";
-import { Labels } from "components/StatusLabel";
-import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
-import { ClearanceSheet } from "app/modules/ExitAndClearance/ExitRequests";
-import { Button } from "components/ui/button";
+import React, { useState } from "react";
+import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { CoverFileUpload } from "components/FormControl";
-import {
-  SheetUI,
-  EmployeeDetailUI,
-  StatusLabel,
-  NavigationSheetComponent,
-  DetailContent,
-  StatusList,
-  StatusButtons,
-} from "components";
+import { SheetUI } from "components";
 
 const UploadClearanceReport = ({ isOpen, setIsOpen, exit_id }) => {
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
