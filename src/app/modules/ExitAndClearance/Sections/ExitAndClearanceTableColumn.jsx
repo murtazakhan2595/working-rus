@@ -1,104 +1,11 @@
-import { EmployeeID, ManagerName } from "utils/getValuesFromTables";
-import {
-  ResignationStatusView,
-  RenderResignationAction,
-  TerminationStatusView,
-  RenderTerminationAction,
-} from "app/modules/ExitAndClearance/ExitRequests";
+import { ManagerName } from "utils/getValuesFromTables";
+import { RenderTerminationAction, } from "app/modules/ExitAndClearance/ExitRequests";
 import { EmployeeOverview } from "components";
-import moment from "moment";
-import { AiOutlineDownload } from "react-icons/ai";
-import { downloadAttachmentDirectLink } from "utils/fileUtils";
 import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import AttachmentUI from "components/ui/AttachmentUI";
 
-export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
-  const columns = [
-    {
-      dataField: "emp_name",
-      text: "Employees",
-      formatter: (cell, row) => (
-        <EmployeeOverview
-          id={row.employee_id}
-          showPosition={true}
-          showDepartment={true}
-        />
-      ),
-      dataSort: true,
-      minWidth: "180px",
-      onClick: (recordIndex, data, row) => {
-        handleRowClicked(recordIndex, data, row);
-      },
-    },
-    {
-      dataField: "serial_number",
-      minWidth: "105px",
-      text: "ID",
-      formatter: (cell) => <EmployeeID value={cell} />,
-      dataSort: true,
-    },
-    {
-      dataField: "report_to",
-      text: "Report To",
-      formatter: (cell, row) => <ManagerName value={cell} />,
-    },
-    {
-      dataField: "notice_period",
-      text: "Notice Period",
-    },
-    {
-      dataField: "exit_date",
-      text: "Exit date",
-      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-      dataSort: true,
-      minWidth: "115px",
-    },
-    {
-      dataField: "",
-      text: "Application",
-      formatter: (cell, row) => (
-        <>
-          {row?.resignation_letter ? (
-            <button
-              className="justify-start items-center gap-2.5 inline-flex"
-              onClick={(e) => {
-                e.preventDefault();
-                downloadAttachmentDirectLink(
-                  row.resignation_letter,
-                  `Resignation_${row.employee_id || row.emp_name}`
-                );
-              }}
-            >
-              <div className="text-[#5c5e64] text-base font-normal">File</div>
-              <AiOutlineDownload />
-            </button>
-          ) : (
-            "N/A"
-          )}
-        </>
-      ),
-    },
-    {
-      dataField: "status_resignation",
-      text: "Status",
-      dataSort: true,
-      formatter: (cell, row) => (
-        <ResignationStatusView status={cell} row={row} />
-      ),
-    },
-    {
-      dataField: "",
-      text: "Action",
-      formatter: (cell, row) => (
-        <RenderResignationAction row={row} reload={reload} />
-      ),
-      headerAlign: "right",
 
-      width: "80px",
-    },
-  ];
-  return columns;
-};
 
 /**
  * ExitRequestColumns
@@ -110,16 +17,16 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
  * @param {boolean} hideActions - A boolean to hide actions.
  * @returns {array} An array of column definitions.
  */
-export const ExitRequestColumns = (reloadData = () => {}) => [
+export const ExitRequestColumns = (reloadData = () => { }) => [
   {
-    dataField: "serial_number",
+    dataField: "employee_id__first_name",
     text: "Employees",
     width: "200px",
     formatter: (_, row) => (
       <EmployeeOverview
         id={row.employee_id}
         showId={true}
-        showPosition={true}
+        showBranchName={true}
         showDepartment={true}
       />
     ),
@@ -133,6 +40,7 @@ export const ExitRequestColumns = (reloadData = () => {}) => [
   {
     dataField: "notice_period",
     text: "Notice Period",
+    dataSort: true,
   },
   {
     dataField: "exit_date",
@@ -143,28 +51,23 @@ export const ExitRequestColumns = (reloadData = () => {}) => [
   },
   {
     dataField: "",
-    text: "Application",
-    formatter: (cell, row) => (
+    text: "Attachment",
+    formatter: (_, row) => (
       <>
-        {row?.termination_letter ? (
-          <button
-            className="justify-start items-center gap-2.5 inline-flex"
-            onClick={(e) => {
-              e.preventDefault();
-              downloadAttachmentDirectLink(
-                row.termination_letter,
-                `Termination_${row.employee_id || row.serial_number}`
-              );
-            }}
-          >
-            <div className="text-[#5c5e64] text-base font-normal">File</div>
-            <AiOutlineDownload />
-          </button>
-        ) : (
-          "N/A"
-        )}
+        <AttachmentUI
+          attachment={row.exit_category === 'RESIGNATION' ? row.resignation_letter : row.exit_category === 'TERMINATION' ? row.termination_letter : null}
+          viewOnly={true}
+          variant={'preview-only'}
+          fallBackText='--'
+        />
       </>
     ),
+  },
+  {
+    dataField: "clearance_status",
+    text: "Clearance Status",
+    formatter: (cell, row) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    dataSort: true,
   },
   {
     dataField: "status",
@@ -184,14 +87,3 @@ export const ExitRequestColumns = (reloadData = () => {}) => [
     ),
   },
 ];
-// if (!hideActions) {
-//   columns.push({
-//     dataField: "",
-//     text: "Action",
-//     formatter: (cell, row) => (
-//       <RenderTerminationAction row={row} reload={reload} viewMode={false} />
-//     ),
-//     width: "80px",
-//     headerAlign: "right",
-//   });
-// }

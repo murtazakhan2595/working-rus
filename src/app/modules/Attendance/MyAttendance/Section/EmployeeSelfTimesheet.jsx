@@ -22,12 +22,13 @@ import {
   mapAttendanceCheckInPayload,
   mapAttendanceCheckOutPayload,
 } from "app/utils/MappingObjects/mapAttendanceData";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+
 export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
-  isDashboard = false,
 }) {
-  const { id: user_id, biometric_id: user_biometric_id } =
+  const { id: user_id, biometric_id: user_biometric_id, employee_status } =
     useSelector((state) => state.emp.user_details) || {};
   const { today_shift } = useSelector(
     (state) => state.attendance.attendance_details
@@ -123,7 +124,6 @@ export default function EmployeeSelfTimesheet({
 
   useEffect(() => {
     let isMounted = true;
-
     if (user_id) fetchAttendanceData(isMounted, user_id);
     return () => {
       isMounted = false;
@@ -131,154 +131,161 @@ export default function EmployeeSelfTimesheet({
   }, [user_id]);
 
   return (
-    // if isDashboard is false, then the div will  have border and shadow
-    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white h-full"}>
-      {/* if isDashboard is true, then the div will not have border and shadow */}
-      <div className={isDashboard ? "" : "p-4 "}>
-        <div className="flex items-center justify-between text-lg font-semibold">
-          <span className="text-plum-900">Time Log</span>
+    <Card className='h-full'>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span className="text-plum-900">Attendance Log</span>
           <span className="text-sm text-slate-1200">
             {renderDate(moment())}
           </span>
-        </div>
-      </div>
-      <div className={isDashboard ? "" : "p-4"}>
-        <div className="space-y-2">
-          {!today_shift?.isOffToday && (
-            <>
-              {" "}
-              <DetailBox
-                value={
-                  attendance?.checkin
-                    ? renderDate(attendance?.checkin, "--", "time")
-                    : "Start working!"
-                }
-                valueClassName="text-end"
-                label="Check-in Time"
-              />
-              {attendance?.checkin && (
-                <DetailBox
-                  value={
-                    attendance?.checkout
-                      ? renderDate(attendance?.checkout, "--", "time")
-                      : "Still Working"
-                  }
-                  valueClassName="text-end"
-                  label="Check-out Time"
-                />
-              )}
-              {today_shift?.shift_assigned ? (
-                !today_shift?.isOffToday && (
-                  <DetailBox
-                    value={today_shift?.shifts.map(
-                      ({ start_time, end_time }) => (
-                        <span>
-                          {start_time} - {end_time}
-                        </span>
-                      )
-                    )}
-                    valueClassName="text-end flex flex-col w-fil min-w-[165px]"
-                    label="Shift Time"
-                  />
-                )
-              ) : (
-                <DetailBox
-                  value={"No shift assigned"}
-                  valueClassName="text-end"
-                  label="Shift Time"
-                />
-              )}
-              {attendance?.status && (
-                <DetailBox
-                  value={
-                    today_shift?.isOffToday ? (
-                      <StatusLabel variant="info">
-                        {today_shift?.OffLabel}
-                      </StatusLabel>
-                    ) : (
-                      <StatusLabel status={attendance?.status}>
-                        {attendance?.status}
-                      </StatusLabel>
-                    )
-                  }
-                  label="Attendance Status"
-                  labelClassName="w-50"
-                  valueClassName="justify-end flex"
-                />
-              )}
-            </>
-          )}
-          <div className="flex flex-row flex-wrap items-center justify-center mt-4">
-            <div className="relative">
-              <svg className="w-32 h-32">
-                <circle
-                  className="text-gray-200"
-                  strokeWidth="5"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="58"
-                  cx="64"
-                  cy="64"
-                />
-                <circle
-                  className="text-plum-900"
-                  strokeWidth="5"
-                  strokeDasharray={365}
-                  strokeDashoffset={
-                    payableHours > 0 && parseFloat(attendance?.total_hours) > 0
-                      ? 365 *
-                        (1 - payableHours / parseFloat(attendance?.total_hours))
-                      : 365 // Full offset for 0 hours or invalid state
-                  }
-                  strokeLinecap="round"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="58"
-                  cx="64"
-                  cy="64"
-                />
-              </svg>
-              <div className="absolute text-xl font-semibold text-center align-middle transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2">
-                {formatDuration(payableHours, true)}
-              </div>
-            </div>
-          </div>
-          {today_shift?.isOffToday && (
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {['Terminated', 'Exit', 'Resigned', 'Resigned', 'Absconded'].includes(employee_status) ?
+          (
             <div className="text-red-800 flex flex-wrap justify-center items-center">
-              <TriangleAlert size={14} /> You are on{" "}
-              {today_shift?.OffLabel?.toLowerCase()} today
+              <TriangleAlert size={36} /> You are no longer an active employee of the organization. Your status has been updated to "{employee_status}". Please contact your manager or admin if you believe this is an error or system glitch.
             </div>
-          )}
-          <div className="flex justify-between mt-4">
-            <div>
-              <div>
-                <RenderBreakButton
-                  disable={disable}
-                  attendance={attendance}
-                  Shift={today_shift}
-                  OnBreak={OnBreak}
-                  reloadData={fetchAttendanceData}
-                />
+          ) : (
+            <div className="space-y-2">
+              {!today_shift?.isOffToday && (
+                <>
+                  {" "}
+                  <DetailBox
+                    value={
+                      attendance?.checkin
+                        ? renderDate(attendance?.checkin, "--", "time")
+                        : "Start working!"
+                    }
+                    valueClassName="text-end"
+                    label="Check-in Time"
+                  />
+                  {attendance?.checkin && (
+                    <DetailBox
+                      value={
+                        attendance?.checkout
+                          ? renderDate(attendance?.checkout, "--", "time")
+                          : "Still Working"
+                      }
+                      valueClassName="text-end"
+                      label="Check-out Time"
+                    />
+                  )}
+                  {today_shift?.shift_assigned ? (
+                    !today_shift?.isOffToday && (
+                      <DetailBox
+                        value={today_shift?.shifts.map(
+                          ({ start_time, end_time }) => (
+                            <span>
+                              {start_time} - {end_time}
+                            </span>
+                          )
+                        )}
+                        valueClassName="text-end flex flex-col w-fil min-w-[165px]"
+                        label="Shift Time"
+                      />
+                    )
+                  ) : (
+                    <DetailBox
+                      value={"No shift assigned"}
+                      valueClassName="text-end"
+                      label="Shift Time"
+                    />
+                  )}
+                  {attendance?.status && (
+                    <DetailBox
+                      value={
+                        today_shift?.isOffToday ? (
+                          <StatusLabel variant="info">
+                            {today_shift?.OffLabel}
+                          </StatusLabel>
+                        ) : (
+                          <StatusLabel status={attendance?.status}>
+                            {attendance?.status}
+                          </StatusLabel>
+                        )
+                      }
+                      label="Attendance Status"
+                      labelClassName="w-50"
+                      valueClassName="justify-end flex"
+                    />
+                  )}
+                </>
+              )}
+              <div className="flex flex-row flex-wrap items-center justify-center mt-4">
+                <div className="relative">
+                  <svg className="w-32 h-32">
+                    <circle
+                      className="text-gray-200"
+                      strokeWidth="5"
+                      stroke="currentColor"
+                      fill="transparent"
+                      r="58"
+                      cx="64"
+                      cy="64"
+                    />
+                    <circle
+                      className="text-plum-900"
+                      strokeWidth="5"
+                      strokeDasharray={365}
+                      strokeDashoffset={
+                        payableHours > 0 && parseFloat(attendance?.total_hours) > 0
+                          ? 365 *
+                          (1 - payableHours / parseFloat(attendance?.total_hours))
+                          : 365 // Full offset for 0 hours or invalid state
+                      }
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="transparent"
+                      r="58"
+                      cx="64"
+                      cy="64"
+                    />
+                  </svg>
+                  <div className="absolute text-xl font-semibold text-center align-middle transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2">
+                    {formatDuration(payableHours, true)}
+                  </div>
+                </div>
+              </div>
+              {today_shift?.isOffToday && (
+                <div className="text-red-800 flex flex-wrap justify-center items-center">
+                  <TriangleAlert size={14} /> You are on{" "}
+                  {today_shift?.OffLabel?.toLowerCase()} today
+                </div>
+              )}
+
+              <div className="flex justify-between mt-4">
+                <div>
+                  <div>
+                    <RenderBreakButton
+                      disable={disable}
+                      attendance={attendance}
+                      Shift={today_shift}
+                      OnBreak={OnBreak}
+                      reloadData={fetchAttendanceData}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex flex-col gap-2">
+                    <RenderLogInButton
+                      disable={disable}
+                      attendance={attendance}
+                      Shift={today_shift}
+                      OnBreak={OnBreak}
+                      reloadData={fetchAttendanceData}
+                    />
+                    {attendance?.status === "Late" && (
+                      <TimeAdjustmentRequest attendance={attendance} />
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-            <div>
-              <div className="flex flex-col gap-2">
-                <RenderLogInButton
-                  disable={disable}
-                  attendance={attendance}
-                  Shift={today_shift}
-                  OnBreak={OnBreak}
-                  reloadData={fetchAttendanceData}
-                />
-                {attendance?.status === "Late" && (
-                  <TimeAdjustmentRequest attendance={attendance} />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          )
+        }
+      </CardContent>
+    </Card>
   );
 }
 
@@ -287,7 +294,7 @@ const RenderBreakButton = ({
   attendance,
   Shift,
   OnBreak,
-  reloadData = () => {},
+  reloadData = () => { },
 }) => {
   const isSplitShift = Shift?.is_split_shift;
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -381,7 +388,7 @@ const RenderLogInButton = ({
   attendance,
   Shift,
   OnBreak,
-  reloadData = () => {},
+  reloadData = () => { },
 }) => {
   const isSplitShift = Shift?.is_split_shift;
   const userProfile = useSelector((state) => state.user.userProfile);

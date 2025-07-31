@@ -233,7 +233,7 @@ export const fetchEmployeeShiftData = async (employeeId) => {
     // Fetch approved scheduled shifts
     const empScheduleShift = await getShiftSchedule({
       filterData: {
-        status: "Approved",
+        status: "APPROVED",
         employee: employeeId,
         is_change_request: "true,false", 
       },

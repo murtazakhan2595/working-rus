@@ -69,9 +69,8 @@ const getEmployeeList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
 
-  let URL = `/customemp?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/customemp?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -93,9 +92,8 @@ const getShift = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/shift?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/shift?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -116,9 +114,8 @@ const getShiftAssignment = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/shiftassignment?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/shiftassignment?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -140,11 +137,10 @@ const getAttendance = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "-date";
-  let URL = `/attendance?${ordering ? `ordering=${ordering}&` : ""}${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/attendance?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -170,13 +166,11 @@ const getAttendanceSummary = async (payload) => {
   const end_date = dateRange[1] && dateRange[1] !== "null" ? dateRange[1] : "";
   const start_date =
     dateRange[0] && dateRange[0] !== "null" ? dateRange[0] : "";
-  let URL = `/attendance/summary/?ordering=${ordering}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}${end_date ? `&end_date=${end_date}` : ""}${
-    start_date ? `&start_date=${start_date}` : ""
-  }`;
+  let URL = `/attendance/summary/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}${end_date ? `&end_date=${end_date}` : ""}${start_date ? `&start_date=${start_date}` : ""
+    }`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -300,9 +294,8 @@ const getBreak = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/breaks?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/breaks?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -443,11 +436,9 @@ const getAttendanceStats = async (payload) => {
     const filterData = payload?.filterData ?? {};
     const ordering = payload?.ordering ?? "";
 
-    const URL = `/attendance/summary/overall?${
-      ordering ? `ordering=${ordering}&` : ""
-    }${pageNo ? `page=${pageNo}&` : ""}${
-      pageSize ? `page_size=${pageSize}&` : ""
-    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+    const URL = `/attendance/summary/overall?${ordering ? `ordering=${ordering}&` : ""
+      }${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+      }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -557,11 +548,10 @@ export const getTimeAdjustmentListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/time-adjustments?${ordering ? `ordering=${ordering}&` : ""}${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/time-adjustments?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -751,11 +741,9 @@ export const getAttendanceAdjustmentListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/attendance-adjustment/?${
-    ordering ? `ordering=${ordering}&` : ""
-  }${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/attendance-adjustment/?${ordering ? `ordering=${ordering}&` : ""
+    }${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -832,11 +820,9 @@ export const getAttendanceAdjustmentLogsList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/attendance-update-logs/?${
-    ordering ? `ordering=${ordering}&` : ""
-  }${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/attendance-update-logs/?${ordering ? `ordering=${ordering}&` : ""
+    }${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -941,9 +927,11 @@ export const saveUserBiometricAttendanceLog = async (
   date
 ) => {
   try {
-    const active_Shift = await getActiveShiftData(employee_id, date);
+    const logTime = moment(userBiometricList.timestamp).utc().toISOString();
     const attendanceData = await getAttendancebyEmployee(employee_id, date);
-    if (userBiometricList.status === "check-in" && !attendanceData) {
+    if (userBiometricList.status === "check-in") {
+      if (attendanceData) return Boolean(attendanceData);
+      const active_Shift = await getActiveShiftData(employee_id, date);
       const attendancePayload = mapAttendanceCheckInPayload(
         userBiometricList.timestamp,
         attendanceData,
@@ -961,26 +949,34 @@ export const saveUserBiometricAttendanceLog = async (
     }
 
     if (userBiometricList.status === "check-out") {
-      if (attendanceData) return Boolean(attendanceData);
-      const response = await saveAttendance({
-        employee_id: employee_id,
-        date: date,
-        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
-      });
-      return Boolean(response);
-    }
-    const attendance =
-      attendanceData ??
-      (await saveAttendance(
+      if (!attendanceData) return Boolean(attendanceData);
+      if (moment(attendanceData.checkout) && moment(attendanceData.checkout).isSameOrAfter(moment(logTime))) return Boolean(attendanceData);
+      const response = await saveAttendance(
         {
           employee_id: employee_id,
           date: date,
-          checkin: moment(userBiometricList.timestamp).utc().toISOString(),
+          checkout: logTime,
+          checkin: moment(attendanceData.checkin),
         },
-        active_Shift
-      ));
+        null,
+        attendanceData?.id
+      );
+      return Boolean(response);
+    }
+
     if (userBiometricList) {
       if (userBiometricList.status === "break") {
+        const active_Shift = await getActiveShiftData(employee_id, date);
+        const attendance =
+          attendanceData ??
+          (await saveAttendance(
+            {
+              employee_id: employee_id,
+              date: date,
+              checkin: logTime,
+            },
+            active_Shift
+          ));
         const breakSaveResponse = await saveBiometricBreak({
           employee_id: employee_id,
           attendance: attendance.id,
@@ -1019,11 +1015,10 @@ export const getUserBiometricLogsList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/user-record-list/?${ordering ? `ordering=${ordering}&` : ""}${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/user-record-list/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
