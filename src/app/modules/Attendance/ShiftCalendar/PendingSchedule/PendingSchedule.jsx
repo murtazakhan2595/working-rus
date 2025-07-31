@@ -73,35 +73,28 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const confirmApprove = async () => {
     setProcessing(true);
     try {
+      const originalSchedule = approveState.data;
+      setApproveState(null);
       // Generate log for the new approved entry
       await generateShiftScheduleLog({
-        scheduleData: approveState.data,
+        scheduleData: originalSchedule,
         logType: "Change Request",
         userProfile,
         status: "Approved",
       });
-      // Create a new approved record
-      const originalSchedule = approveState.data;
 
-      // Create new approved schedule
+      // Approve Schedule
       const newResponse = await handleRequest(originalSchedule.hierarchy_request, true);
 
       if (newResponse) {
-        // Delete the old pending schedule
-        //    const deleteResponse = await deleteShiftSchedule(originalSchedule.id);
-
-        // if (deleteResponse) {
         toast.success("Schedule approved successfully!");
-        setApproveState(null);
         setActiveSchedule(null);
 
         // Reload the data
         if (typeof reload === "function") {
           reload();
         }
-        // } else {
-        //   toast.error("Failed to process pending schedule");
-        // }
+
       } else {
         toast.error("Failed to create approved schedule");
       }
@@ -121,6 +114,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     setProcessing(true);
     try {
       const originalSchedule = rejectState.data;
+      setRejectState(null);
       // No log generation when moving rejected schedules back to drafts
       await generateShiftScheduleLog({
         scheduleData: rejectState.data,
@@ -143,7 +137,6 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
 
       if (response) {
         toast.success("Schedule rejected and moved back to drafts");
-        setRejectState(null);
         setRejectReason("");
         setActiveSchedule(null); // Clear selection after rejection
 
