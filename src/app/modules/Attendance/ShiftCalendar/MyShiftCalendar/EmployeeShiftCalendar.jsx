@@ -549,6 +549,8 @@ const EmployeeShiftCalendar = () => {
       return updatedFilters;
     });
   };
+console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -562,7 +564,7 @@ const EmployeeShiftCalendar = () => {
             </p>
           )}
         </div>
-        {isRequestChangeShiftPermitted && (scheduleShifts?.count > 0) && (
+        {isRequestChangeShiftPermitted && (
           <Button onClick={() => setIsRequestModalOpen(true)}>
             Request Shift Change
           </Button>
