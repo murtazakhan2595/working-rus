@@ -115,8 +115,8 @@ export const URLS = [
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
-    Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net",
-    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+    Frontend: "https://demo.cohrus.com",
+    Backend: "https://be-demo.cohrus.com/api",
   },
   {
     Frontend: "https://staging.cohrus.com",
