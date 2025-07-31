@@ -122,10 +122,6 @@ export const URLS = [
     Frontend: "https://staging.cohrus.com",
     Backend: "https://staging-be.cohrus.com/api",
   },
-  {
-    Frontend: "http://localhost:3000/",
-    Backend: "https://be-alghurair.cohrus.com/api",
-  },
 ];
 
 export const WEBSOCKET_PATHS = [
