@@ -9,8 +9,8 @@ const Config = {
   MY_ATTENDANCE: true,
   DAILY_TASK_REPORT: false,
   MY_LEAVE_TRACKER: true,
-  MY_PAYROLL: false,
-  MY_CLAIMS: false,
+  MY_PAYROLL: true,
+  MY_CLAIMS: true,
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
@@ -51,25 +51,25 @@ const Config = {
   LEAVE_REQUEST: true,
 
   //-------------PAYROLL-----------
-  PAYROLL: false,
+  PAYROLL: true,
   //Sub Modules
-  EMPLOYEES_PAYROLL: false,
-  SALARY_SETUP: false,
-  CLAIM_REQUEST: false,
+  EMPLOYEES_PAYROLL: true,
+  SALARY_SETUP: true,
+  CLAIM_REQUEST: true,
   PAY_RUN: false,
   ON_HOLD_SALARIES: false,
   END_OF_SERVICE: false,
 
   //-------------TASK_MANAGEMENT-----------
-  TASK_MANAGEMENT: false,
+  TASK_MANAGEMENT: true,
   //Sub Modules
-  PROJECT_BOARD: false,
+  PROJECT_BOARD: true,
 
   //-------------TALENT_SPHERE-----------
-  TALENT_SPHERE: false,
+  TALENT_SPHERE: true,
   //Sub Modules
-  JOBS: false,
-  APPLICANTS: false,
+  JOBS: true,
+  APPLICANTS: true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
@@ -99,12 +99,28 @@ const Config = {
 
 export const URLS = [
   {
-    Frontend: "https://alghurair.cohrus.com/",
-    Backend: "https://be-alghurair.cohrus.com/api",
+    Frontend: "https://app.cohrus.com",
+    Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
-    Frontend: "http://localhost:3000/",
-    Backend: "https://be-alghurair.cohrus.com/api",
+    Frontend: "https://staging-hrms.tecbrix.cloud",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+  },
+  {
+    Frontend: "http://localhost:3000",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+  },
+  {
+    Frontend: "https://production-hdfnfucnc9gpcaaw.z02.azurefd.net",
+    Backend: "https://hrms-be.tecbrix.cloud/api",
+  },
+  {
+    Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+  },
+  {
+    Frontend: "https://staging.cohrus.com",
+    Backend: "https://staging-be.cohrus.com/api",
   },
 ];
 
