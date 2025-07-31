@@ -23,5 +23,6 @@ export const EmployeeExit = {
   clearance_status: null,
   status: null,
   created_at: null,
+  approval_details: null,
 };
 

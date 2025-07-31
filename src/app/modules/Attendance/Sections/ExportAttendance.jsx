@@ -8,19 +8,16 @@ import ActionAlert from "components/ui/ActionAlert";
 import { HasAccess } from "utils/PermissionUtils";
 import { renderDate, formatDuration } from "utils/renderValues";
 
-const ExportAttendance = ({ activeTab = "day", filterData = {} }) => {
+const ExportAttendance = ({ filterData = {} }) => {
   const isExportAttendancePermitted = HasAccess("EXPORT_ATTENDANCE");
   const [disableExport, setDisableExport] = useState(false);
   const [openActionMessage, setOpenActionMessage] = useState(false);
   const exportAttendanceToExcel = async () => {
     setDisableExport(true);
     try {
-      const dateFilter =
-        activeTab.toLowerCase() === "day"
-          ? { date: moment().format("YYYY-MM-DD") }
-          : { date_range: GetDateRange(activeTab) };
+
       const response = await getAttendance({
-        filterData: { ...filterData, ...dateFilter },
+        filterData: { ...filterData },
         ordering: "date",
       });
       if (response) {
@@ -57,11 +54,11 @@ const ExportAttendance = ({ activeTab = "day", filterData = {} }) => {
                 "Break Hours": formatDuration(row.break_duration),
                 "Remaining Hours": row.checkout
                   ? formatDuration(
-                      Math.max(
-                        0,
-                        (row.total_hours ?? 0) - (row.payable_hours ?? 0)
-                      )
+                    Math.max(
+                      0,
+                      (row.total_hours ?? 0) - (row.payable_hours ?? 0)
                     )
+                  )
                   : "--",
 
                 Status: row.status,
@@ -71,7 +68,7 @@ const ExportAttendance = ({ activeTab = "day", filterData = {} }) => {
           exportRecordToExcel(
             dataToExport,
             "Attendance",
-            `Attendance_${dateFilter.date || dateFilter.date_range}`
+            `Attendance(${filterData?.start_date||''}-${filterData?.end_date||''})`
           );
         }
         // setAttendanceData(attendanceData.results);

@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Calendar } from "src/@/components/ui/calendar";
 import { format, isValid, parse } from "date-fns";
-import { CalendarIcon, CalendarDays } from "lucide-react";
-import moment from "moment";
+import { CalendarIcon } from "lucide-react";
 import {
   FormField,
   FormPopoverButton,
@@ -27,6 +26,7 @@ const DateRangeInput = React.memo(
     disabled = false,
     numberOfMonths = 2,
     showResetButton = true,
+    inputStyle='',
     minDate = null, // Minimum allowed date (in YYYY-MM-DD format)
     maxDate = null, // Maximum allowed date (in YYYY-MM-DD format)
     showManualInput = true, // New prop to enable/disable manual input
@@ -260,6 +260,7 @@ const DateRangeInput = React.memo(
           setOpen={setIsOpen}
           disabled={disabled}
           invalidField={!!(error)}
+          className={inputStyle}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />

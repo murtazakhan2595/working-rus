@@ -53,19 +53,19 @@ export function StatsCards({ permittedViewFilterData }) {
     {
       title: "Present",
       value: cardStats?.present || 0,
-      status: "Present",
+      status: "present",
       description: "Here is the list of all employees who are present today",
     },
     {
       title: "Late",
       value: cardStats?.late || 0,
-      status: "Late",
+      status: "late",
       description: "Here is the list of all employees who are late today",
     },
     {
       title: "Absent",
       value: cardStats?.absent || 0,
-      status: "Absent",
+      status: "absent",
       description: "Here is the list of the all employees who are absent today",
     },
     {

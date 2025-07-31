@@ -11,8 +11,11 @@ export const validateRequiredFields = (Fields = [], values) => {
   for (const Field of Fields) {
     if (!Field || typeof Field !== "object") continue;
 
-    const { name, required, label, renderCondition, value } = Field;
-    if (renderCondition === false) continue;
+    const { name, required, label, renderCondition, shouldRender, value } = Field;
+    
+    // Skip validation if field should not be rendered
+    if (renderCondition === false || shouldRender === false) continue;
+    
     // Ensure name exists and is a string
     if (required && typeof name === "string" && typeof label === "string") {
       if (!values[name] && !value) errors[name] = `${label} is required`;

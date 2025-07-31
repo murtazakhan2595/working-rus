@@ -11,8 +11,8 @@ import {
   EmployeePersonalInformation,
   EmployeeContactInformation,
 } from "app/utils/Types/Employee";
-
-import {mapDefaultShiftData} from 'app/utils/MappingObjects/mapShiftManagementData';
+import { calculateTotalCount } from "utils/renderValues";
+import { mapDefaultShiftData } from 'app/utils/MappingObjects/mapShiftManagementData';
 
 export function mapEmployeePayloadData(data, id) {
   // Initialize an empty payload object
@@ -77,9 +77,8 @@ async function mapEmployeeData(data) {
   const employee = {
     id: data.id,
     name: `${data.first_name} ${data.last_name}`,
-    name_initials: `${data?.first_name?.charAt(0)?.toUpperCase() || ""}${
-      data?.last_name?.charAt(0)?.toUpperCase() || ""
-    }`,
+    name_initials: `${data?.first_name?.charAt(0)?.toUpperCase() || ""}${data?.last_name?.charAt(0)?.toUpperCase() || ""
+      }`,
     ...PersonalInformation,
     ...EmployeeContactInformation,
     ...BankDetails,
@@ -92,9 +91,8 @@ export async function mapEmployeeInfoData(data) {
   const employee = {
     id: data.id,
     name: `${data.first_name} ${data.last_name}`,
-    name_initials: `${data?.first_name?.charAt(0)?.toUpperCase() || ""}${
-      data?.last_name?.charAt(0)?.toUpperCase() || ""
-    }`,
+    name_initials: `${data?.first_name?.charAt(0)?.toUpperCase() || ""}${data?.last_name?.charAt(0)?.toUpperCase() || ""
+      }`,
     default_shift_id: data.shift_assignment,
     default_shift: mapDefaultShiftData(data.default_shift),
   };
@@ -299,6 +297,21 @@ function mapEmployeeDocsChecklist(data) {
     return doc;
   });
   return employeeDocsChecklist;
+}
+
+export async function mapEmployeeStatsData(data) {
+  if (!data || data.length === 0)
+    return { Active: 0, Managers: 0, Exit: 0, Total: 0 };
+  const Active = calculateTotalCount(data, "employee_status", "Active");
+  const Total = data.length || 0;
+  const Managers = data.filter((item) =>
+    Array.isArray(item.user_role_name) &&
+    item.user_role_name.some((role) =>
+      typeof role === "string" && role.toLowerCase().includes("manager")
+    )
+  )?.length || 0;
+  const Exit = data.filter((item) => ['Terminated', 'Deceased', 'Resigned', 'Absconded', 'Exit'].includes(item.employee_status))?.length || 0;
+  return { Active, Managers, Exit, Total };
 }
 
 export {

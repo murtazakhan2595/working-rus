@@ -22,8 +22,7 @@ function CustomCaption({ date, locale, displayMonth, onMonthSelect, onYearSelect
   
   // Generate arrays for months and years
   const months = Array.from({ length: 12 }, (_, i) => {
-    const month = new Date();
-    month.setMonth(i);
+    const month = new Date(2000, i); // fixed year, day default to 1st
     return {
       value: i.toString(),
       label: month.toLocaleString(locale || 'default', { month: 'long' })
@@ -55,7 +54,7 @@ function CustomCaption({ date, locale, displayMonth, onMonthSelect, onYearSelect
     goToMonth(newDate);
     if (onYearSelect) onYearSelect(newDate, displayIndex);
   };
-
+console.log(months,'month 843987598349')
   return (
     <div className="flex items-center justify-center gap-2 py-1">
       <Select 

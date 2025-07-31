@@ -55,11 +55,12 @@ function App() {
         return;
       }
     } catch (error) {
+      console.error("Error fetching data:", error);
       const pathname = location.pathname;
       const errorResponse = error.response;
       if (
         errorResponse &&
-        (errorResponse.status === 401 || errorResponse.status === 403)
+        (errorResponse?.status === 401 || errorResponse?.status === 403)
       ) {
         // // Token expired or invalid
         const protectedRoutes = [
@@ -76,11 +77,9 @@ function App() {
           dispatch(setUserLogout());
           navigate("/login");
         }
-      } else if (pathname === "/" && errorResponse.status === 404) {
+      } else if (pathname === "/" && errorResponse?.status === 404) {
         dispatch(setUserLogout());
         navigate("/login");
-      } else {
-        console.error("Error fetching data:", error);
       }
       setLoading(false);
     }
@@ -95,6 +94,7 @@ function App() {
   if (loading) {
     return <PageLoader height="100vh" />; // Render the loader if loading is true
   }
+
   return (
     <>
       <Routes>

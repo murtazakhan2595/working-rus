@@ -235,7 +235,6 @@ const AttendanceUpdateRequest = ({ id }) => {
                   {
                     InputField: RadioGroupInput,
                     name: "status",
-                    required: true,
                     label: "Status",
                     options: [
                       { value: "Present", label: "Present" },

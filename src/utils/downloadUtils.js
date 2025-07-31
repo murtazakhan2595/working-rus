@@ -29,10 +29,10 @@ export const downloadFiles = async (file, name) => {
 // Fix the getFileNameFromURL function
 export const getFileNameFromURL = (url) => {
   // Handle cases where url might not be a string
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== "string") {
     return "Attachment Document";
   }
-  
+
   try {
     const parts = url.split("/");
     const name = parts.length ? parts[parts.length - 1] : null;
@@ -44,17 +44,19 @@ export const getFileNameFromURL = (url) => {
     return "Attachment Document";
   }
 };
-const downloadFile = (data, fileName) => {
+export const downloadFile = (data, fileName) => {
   const url = window.URL.createObjectURL(data);
-  // Create a temporary link element
   const link = document.createElement("a");
   link.href = url;
   link.download = fileName;
-  link.click();
 
-  // Clean up
+  // Add to DOM to ensure compatibility
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link); // safer than link.remove()
   window.URL.revokeObjectURL(url);
 };
+
 
 const getImageExtension = (contentType) => {
   switch (contentType) {

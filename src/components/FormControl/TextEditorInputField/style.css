@@ -22,10 +22,6 @@
 .image-none img {
   display: none;
 }
-
-.textEditorText h3 {
-  font-size: 20px;
-}
 .textEditorText h3,
 .textEditorText h1,
 .textEditorText h2,
@@ -33,7 +29,26 @@
 .textEditorText h6,
 .textEditorText h4 {
   margin: 1rem auto;
+  line-height: 26px;
 }
+
+.textEditorText h1 {
+  font-size: 28px;
+}
+
+.textEditorText h2 {
+  font-size: 26px;
+}
+
+.textEditorText h3 {
+  font-size: 24px;
+}
+
+.textEditorText h4 {
+  font-size: 22px;
+}
+
+
 
 .mention {
   background-color: #fbebfb;
