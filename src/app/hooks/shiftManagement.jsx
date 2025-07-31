@@ -194,7 +194,7 @@ export const getCustomShiftByEmployeeID = async (
     const response = await getShiftSchedule({
       filterData: {
         employee: employee_id,
-        status: "Approved",
+        status: "APPROVED",
         end_date_gte: formattedDate,
         start_date_lte: formattedDate,
         is_change_request: "true,false",
@@ -232,7 +232,7 @@ export const getCustomShiftListEmployeeID = async (
     const scheduleResponse = await getShiftSchedule({
       filterData: {
         employee: employee_id,
-        status: "Approved",
+        status: "APPROVED",
         end_date_gte: formattedStartDate, // Schedule ends on or after start date
         start_date_lte: formattedEndDate, // Schedule starts on or before end date
         is_change_request: "true,false", // Include both regular schedules and change requests
