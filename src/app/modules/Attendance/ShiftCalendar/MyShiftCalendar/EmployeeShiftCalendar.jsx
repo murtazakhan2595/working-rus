@@ -549,7 +549,6 @@ const EmployeeShiftCalendar = () => {
       return updatedFilters;
     });
   };
-console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
   return (
     <div className="space-y-6">
       {/* Header */}
