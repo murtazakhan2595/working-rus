@@ -75,13 +75,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     try {
       const originalSchedule = approveState.data;
       setApproveState(null);
-      // Generate log for the new approved entry
-      await generateShiftScheduleLog({
-        scheduleData: originalSchedule,
-        logType: "Change Request",
-        userProfile,
-        status: "Approved",
-      });
+
 
       // Approve Schedule
       const newResponse = await handleRequest(originalSchedule.hierarchy_request, true);
@@ -89,7 +83,13 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
       if (newResponse) {
         toast.success("Schedule approved successfully!");
         setActiveSchedule(null);
-
+        // Generate log for the new approved entry
+        await generateShiftScheduleLog({
+          scheduleData: originalSchedule,
+          logType: "Shift Approved",
+          userProfile,
+          status: "Approved",
+        });
         // Reload the data
         if (typeof reload === "function") {
           reload();
@@ -115,13 +115,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     try {
       const originalSchedule = rejectState.data;
       setRejectState(null);
-      // No log generation when moving rejected schedules back to drafts
-      await generateShiftScheduleLog({
-        scheduleData: rejectState.data,
-        logType: "Change Request",
-        userProfile,
-        status: "Rejected",
-      });
+
       // Create a new approved record
 
       // Create new approved schedule
@@ -139,7 +133,13 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
         toast.success("Schedule rejected and moved back to drafts");
         setRejectReason("");
         setActiveSchedule(null); // Clear selection after rejection
-
+        // No log generation when moving rejected schedules back to drafts
+        await generateShiftScheduleLog({
+          scheduleData: rejectState.data,
+          logType: "Shift Rejected",
+          userProfile,
+          status: "Rejected",
+        });
         // Reload the data
         if (typeof reload === "function") {
           reload();
