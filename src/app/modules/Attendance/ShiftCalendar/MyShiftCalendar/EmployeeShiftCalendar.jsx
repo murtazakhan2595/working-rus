@@ -166,11 +166,12 @@ const EmployeeShiftCalendar = () => {
         filterData: {
           employee: employeeId,
           ordering: "-created_at",
-          shift_requested: "Employee", 
+          shift_requested: "Employee",
+          is_change_request: "true",
           status: selectedStatus,
         },
         options,
-        ordering
+        ordering,
       });
 
       if (response && response.results) {
