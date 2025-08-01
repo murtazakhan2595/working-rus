@@ -753,6 +753,23 @@ export const getLeaveOpeningBalanceById = async (id) => {
   }
 }
 
+export const getLeaveOpeningBalanceSummary = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/leave-balance/summary/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting leave opening balance summary by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
 export const getLeaveOpeningBalanceTemplate = async () => {
   try {
     const response = await axios.get(`${baseUrl}/leave-balance/template/`, {
