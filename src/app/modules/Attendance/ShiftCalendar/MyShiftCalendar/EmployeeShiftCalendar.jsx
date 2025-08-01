@@ -118,7 +118,7 @@ const EmployeeShiftCalendar = () => {
 
   useEffect(() => {
     if (employeeId) {
-      fetchEmployeeShifts();
+      fetchEmployeeShifts(); 
       fetchChangeRequests();
     }
   }, [employeeId]);
@@ -167,10 +167,11 @@ const EmployeeShiftCalendar = () => {
           employee: employeeId,
           ordering: "-created_at",
           shift_requested: "Employee",
+          is_change_request: "true",
           status: selectedStatus,
         },
         options,
-        ordering
+        ordering,
       });
 
       if (response && response.results) {
@@ -199,34 +200,78 @@ const EmployeeShiftCalendar = () => {
 
   const generateCalendarEvents = (approvedSchedules, directShiftData) => {
     const events = [];
-    const coveredDates = new Set(); // Track dates covered by schedules
+    const dateToSchedules = new Map(); // Track all schedules for each date
 
-    // 1. PRIORITY: Add approved schedule shifts first and track covered dates
+    // 1. Collect all schedules and organize them by date
     approvedSchedules.forEach((schedule) => {
       if (schedule.is_org_based && schedule.shift_details) {
         // Organization-based scheduled shift
         const scheduleEvents = generateOrgScheduleEvents(schedule);
-        events.push(...scheduleEvents);
-
-        // Track dates covered by this schedule
         scheduleEvents.forEach(event => {
           const eventDate = moment(event.start).format('YYYY-MM-DD');
-          coveredDates.add(eventDate);
+          if (!dateToSchedules.has(eventDate)) {
+            dateToSchedules.set(eventDate, []);
+          }
+          dateToSchedules.get(eventDate).push({
+            event,
+            schedule,
+            type: 'org_schedule',
+            created_at: schedule.created_at
+          });
         });
       } else if (schedule.custom_schedule) {
         // Custom scheduled shift
         const scheduleEvents = generateCustomScheduleEvents(schedule);
-        events.push(...scheduleEvents);
-
-        // Track dates covered by this schedule
-        Object.keys(schedule.custom_schedule).forEach(date => {
-          coveredDates.add(date);
+        scheduleEvents.forEach(event => {
+          const eventDate = moment(event.start).format('YYYY-MM-DD');
+          if (!dateToSchedules.has(eventDate)) {
+            dateToSchedules.set(eventDate, []);
+          }
+          dateToSchedules.get(eventDate).push({
+            event,
+            schedule,
+            type: 'custom_schedule',
+            created_at: schedule.created_at
+          });
         });
       }
     });
 
-    // 2. FALLBACK: Add direct shift assignment for dates NOT covered by schedules
+    // 2. For each date, select the best schedule to display
+    dateToSchedules.forEach((schedulesForDate, date) => {
+      if (schedulesForDate.length === 1) {
+        // Only one schedule for this date
+        events.push(schedulesForDate[0].event);
+      } else {
+        // Multiple schedules for this date - prioritize by:
+        // 1. Custom schedules over org schedules (more specific)
+        // 2. Newer schedules over older ones
+        const customSchedules = schedulesForDate.filter(s => s.type === 'custom_schedule');
+        const orgSchedules = schedulesForDate.filter(s => s.type === 'org_schedule');
+        
+        let selectedSchedule;
+        
+        if (customSchedules.length > 0) {
+          // Prefer custom schedules (more specific)
+          selectedSchedule = customSchedules.sort((a, b) => 
+            moment(b.created_at).diff(moment(a.created_at))
+          )[0];
+        } else if (orgSchedules.length > 0) {
+          // Use org schedules if no custom schedules
+          selectedSchedule = orgSchedules.sort((a, b) => 
+            moment(b.created_at).diff(moment(a.created_at))
+          )[0];
+        }
+        
+        if (selectedSchedule) {
+          events.push(selectedSchedule.event);
+        }
+      }
+    });
+
+    // 3. FALLBACK: Add direct shift assignment for dates NOT covered by schedules
     if (directShiftData) {
+      const coveredDates = new Set(dateToSchedules.keys());
       const directShiftEvents = generateDirectShiftEvents(directShiftData, coveredDates);
       events.push(...directShiftEvents);
     }
@@ -273,7 +318,7 @@ const EmployeeShiftCalendar = () => {
     let currentDate = startOfMonth.clone();
     while (currentDate.isSameOrBefore(endOfMonth)) {
       const dateKey = currentDate.format("YYYY-MM-DD");
-
+      
       // Skip weekends for default org shifts AND skip dates covered by schedules
       if (currentDate.day() !== 0 && currentDate.day() !== 6 && !coveredDates.has(dateKey)) {
         const startTime = shiftStart.format("HH:mm");
@@ -448,7 +493,7 @@ const EmployeeShiftCalendar = () => {
 
   const reload = () => {
     fetchChangeRequests();
-    fetchEmployeeShifts();
+    fetchEmployeeShifts(); 
   };
 
   const onPageChange = (name, value) => {
@@ -513,7 +558,7 @@ const EmployeeShiftCalendar = () => {
           <span
             className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize ${
               statusColors[cell?.toLowerCase()] || ""
-              }`}
+            }`}
           >
             {cell || "N/A"}
           </span>
@@ -614,7 +659,7 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
                   hour12: false,
                 }}
                 eventContent={(eventInfo) => <EventWithTooltip eventInfo={eventInfo} />}
-
+      
                 dayCellContent={(dayInfo) => {
                   return {
                     html: `<div class="text-sm sm:text-base">${dayInfo.dayNumberText}</div>`,
@@ -655,7 +700,7 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
         </CardContent>
       </Card>
       {/* Change Request Records */}
-      {isViewMyShiftChangeRequestsPermitted && <Card>
+     {isViewMyShiftChangeRequestsPermitted && <Card>
         <CardHeader>
           <CardTitle>My Shift Change Requests</CardTitle>
           <div className="flex justify-end">

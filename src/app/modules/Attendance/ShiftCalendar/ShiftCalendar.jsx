@@ -41,7 +41,6 @@ const ShiftCalendar = () => {
   const isViewShiftCalendarPermitted = HasAccess("VIEW_SHIFT_CALENDAR");
   const isScheduleShiftPermitted = HasAccess("SCHEDULE_EMPLOYEE_SHIFT");
   const isViewPendingSchedulesPermitted = HasAccess("VIEW_PENDING_SCHEDULES");
-  const isRequestChangeForTeam = HasAccess("REQUEST_SHIFT_CHANGE_FOR_TEAM");
   const isEditPendingSchedulesPermitted = HasAccess("EDIT_PENDING_SCHEDULES");
 
   // Handle tab change and reset filters
