@@ -286,9 +286,10 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName }) => {
       className={`
         relative mb-3 p-4 rounded-lg border-2 cursor-pointer
         transition-all duration-150 
-        ${isActive
-          ? "bg-plum-300 text-plum-1100 border-plum-400 shadow-md transform scale-[1.01]"
-          : "border-gray-200 hover:bg-plum-500 hover:text-plum-900 hover:border-plum-300"
+        ${
+          isActive
+            ? "bg-plum-300 text-plum-1100 border-plum-400 shadow-md transform scale-[1.01]"
+            : "border-gray-200 hover:bg-plum-500 hover:text-plum-900 hover:border-plum-300"
         }
       `}
       onClick={() => handleSelect(pendingShift)}
@@ -336,16 +337,18 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName }) => {
         <div className="flex flex-col items-end justify-center gap-2 min-w-[90px]">
           <span
             className={`
-            px-3 py-1.5 rounded-full text-xs font-medium
-            ${pendingShift.status === "Pending"
+            px-3 py-1.5 rounded-full text-xs font-medium lowercase capitalize
+            ${
+              pendingShift?.status?.toLowerCase() === "pending"
                 ? "bg-yellow-100 text-yellow-800"
-                : pendingShift.status === "Approved"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }
+                : pendingShift?.status?.toLowerCase() === "approved"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }
           `}
           >
-            {pendingShift.status}
+            {pendingShift.status?.charAt(0).toUpperCase() +
+              pendingShift.status?.slice(1).toLowerCase()}
           </span>
 
           <span

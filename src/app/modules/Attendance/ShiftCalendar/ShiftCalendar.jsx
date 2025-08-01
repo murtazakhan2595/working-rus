@@ -93,7 +93,7 @@ const ShiftCalendar = () => {
   const fetchPendingSchedules = useCallback(async () => {
     try {
       const response = await getShiftSchedule({
-        filterData: { status: "Pending" }, // Backend will filter out drafts by default
+        filterData: { status: "PENDING" }, // Backend will filter out drafts by default
         ordering: "-id",
       });
       if (response) {
