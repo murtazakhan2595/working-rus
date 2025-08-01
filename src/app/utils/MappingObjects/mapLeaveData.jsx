@@ -121,10 +121,7 @@ export async function mapLeaveData(data, fetchApprovalDetails = true) {
 
   for (const key of Object.keys(Leave)) {
     if (key === "approval_details" && fetchApprovalDetails) {
-      LeaveDetails[key] = await mapApproverDetails({
-        ...data,
-        approval_logs: data.approver_logs,
-      });
+      LeaveDetails[key] = await mapApproverDetails({ ...data, });
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         if (key === "status") {

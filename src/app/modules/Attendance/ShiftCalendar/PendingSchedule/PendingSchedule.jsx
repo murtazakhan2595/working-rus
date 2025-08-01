@@ -9,6 +9,7 @@ import {
 } from "components/ui/card";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { handleRequest } from "app/hooks/general";
 import { getShiftSchedule, saveShiftSchedule, deleteShiftSchedule } from "app/hooks/shiftManagement";
 import moment from "moment";
 import { EmployeeOverview, EmployeeID } from "components";
@@ -30,8 +31,6 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
 
   const userProfile = useSelector((state) => state.user.userProfile);
   const isApprovePermitted = HasAccess("APPROVE_SHIFT_SCHEDULES");
-
-  console.log("Pending Schedules", pendingSchedules);
 
   const handleScheduleSelect = (schedule) => {
     setActiveSchedule(schedule);
@@ -74,52 +73,28 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const confirmApprove = async () => {
     setProcessing(true);
     try {
+      const originalSchedule = approveState.data;
+      setApproveState(null);
       // Generate log for the new approved entry
       await generateShiftScheduleLog({
-        scheduleData: approveState.data,
+        scheduleData: originalSchedule,
         logType: "Change Request",
         userProfile,
         status: "Approved",
       });
-      // Create a new approved record
-      const originalSchedule = approveState.data;
 
-      // Prepare payload for new approved schedule
-      const newApprovedPayload = {
-        employee: originalSchedule.employee,
-        shift: originalSchedule.shift,
-        schedule_name: originalSchedule.schedule_name,
-        start_date: originalSchedule.start_date,
-        end_date: originalSchedule.end_date,
-        is_org_based: originalSchedule.is_org_based,
-        custom_schedule: originalSchedule.custom_schedule,
-        total_weekly_hours: originalSchedule.total_weekly_hours,
-        assigned_by: originalSchedule.assigned_by,
-        status: "Approved",
-        is_off_day: originalSchedule.is_off_day,
-        approved_by: userProfile.id,
-        // Note: draft will be false by default (backend handles this)
-      };
-
-      // Create new approved schedule
-      const newResponse = await saveShiftSchedule(newApprovedPayload);
+      // Approve Schedule
+      const newResponse = await handleRequest(originalSchedule.hierarchy_request, true);
 
       if (newResponse) {
-        // Delete the old pending schedule
-        const deleteResponse = await deleteShiftSchedule(originalSchedule.id);
+        toast.success("Schedule approved successfully!");
+        setActiveSchedule(null);
 
-        if (deleteResponse) {
-          toast.success("Schedule approved successfully!");
-          setApproveState(null);
-          setActiveSchedule(null);
-
-          // Reload the data
-          if (typeof reload === "function") {
-            reload();
-          }
-        } else {
-          toast.error("Failed to process pending schedule");
+        // Reload the data
+        if (typeof reload === "function") {
+          reload();
         }
+
       } else {
         toast.error("Failed to create approved schedule");
       }
@@ -136,21 +111,32 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
       toast.error("Please provide a reason for rejection");
       return;
     }
-
     setProcessing(true);
     try {
+      const originalSchedule = rejectState.data;
+      setRejectState(null);
       // No log generation when moving rejected schedules back to drafts
-      const response = await saveShiftSchedule({
-        id: rejectState?.data?.id,
-        approved_by: userProfile.id,
+      await generateShiftScheduleLog({
+        scheduleData: rejectState.data,
+        logType: "Change Request",
+        userProfile,
         status: "Rejected",
-        rejection_reason: rejectReason,
-        draft: true, // Move back to draft tab
       });
+      // Create a new approved record
+
+      // Create new approved schedule
+      const response = await handleRequest(originalSchedule.hierarchy_request, false);
+
+      // const response = await saveShiftSchedule({
+      //   id: rejectState?.data?.id,
+      //   approved_by: userProfile.id,
+      //   status: "Rejected",
+      //   rejection_reason: rejectReason,
+      //   draft: true, // Move back to draft tab
+      // });
 
       if (response) {
         toast.success("Schedule rejected and moved back to drafts");
-        setRejectState(null);
         setRejectReason("");
         setActiveSchedule(null); // Clear selection after rejection
 
@@ -208,8 +194,8 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
             ))}
           {(!pendingSchedules?.results ||
             pendingSchedules.results.length === 0) && (
-            <div className="text-center py-4">No pending schedule found</div>
-          )}
+              <div className="text-center py-4">No pending schedule found</div>
+            )}
         </CardContent>
       </Card>
 
@@ -237,12 +223,12 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
                   : "Reject with Reason"}
               </Button>
               <Button
-              onClick={handleApprove}
-              disabled={!activeSchedule || processing}
-            >
-              {processing && approveState?.open ? "Processing..." : "Approve"}
-            </Button>
-          </div>)}
+                onClick={handleApprove}
+                disabled={!activeSchedule || processing}
+              >
+                {processing && approveState?.open ? "Processing..." : "Approve"}
+              </Button>
+            </div>)}
         </div>
       </div>
 
@@ -300,10 +286,9 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName }) => {
       className={`
         relative mb-3 p-4 rounded-lg border-2 cursor-pointer
         transition-all duration-150 
-        ${
-          isActive
-            ? "bg-plum-300 text-plum-1100 border-plum-400 shadow-md transform scale-[1.01]"
-            : "border-gray-200 hover:bg-plum-500 hover:text-plum-900 hover:border-plum-300"
+        ${isActive
+          ? "bg-plum-300 text-plum-1100 border-plum-400 shadow-md transform scale-[1.01]"
+          : "border-gray-200 hover:bg-plum-500 hover:text-plum-900 hover:border-plum-300"
         }
       `}
       onClick={() => handleSelect(pendingShift)}
@@ -352,13 +337,12 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName }) => {
           <span
             className={`
             px-3 py-1.5 rounded-full text-xs font-medium
-            ${
-              pendingShift.status === "Pending"
+            ${pendingShift.status === "Pending"
                 ? "bg-yellow-100 text-yellow-800"
                 : pendingShift.status === "Approved"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }
           `}
           >
             {pendingShift.status}
