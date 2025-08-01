@@ -9,7 +9,6 @@ import {
 import { Header } from "components";
 import { useSelector } from "react-redux";
 import { getEmployeeList } from "app/hooks/general";
-import AssignShift from "./Section/AssignShift";
 import Emplist from "./ShiftCalendarTab/Emplist";
 import ShiftRequest from "./ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
@@ -241,13 +240,12 @@ const ShiftCalendar = () => {
         onValueChange={handleTabChange}
         defaultValue="shift-calendar"
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
-          <TabsList className="flex justify-center mb-4">
+        <div className="">
+          <TabsList>
             {tabsData.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-primary-200 w-40 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
               >
                 {tab.label}
               </TabsTrigger>
@@ -256,8 +254,7 @@ const ShiftCalendar = () => {
         </div>
 
         {/* Show filters for shift calendar, schedule shift, and pending schedule tabs */}
-        {(activeTab === "shift-calendar" ||
-          activeTab === "schedule-shift" ||
+        {(activeTab === "schedule-shift" ||
           activeTab === "pending-schedule") && (
             <ShiftCalendarFilters
               key={activeTab} // Add key prop to force remount on tab change
