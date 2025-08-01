@@ -30,13 +30,14 @@ export default function EmployeeManagement({ isTeamView = false }) {
   const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
   const isAdminView = HasAccess("VIEW_EMPLOYEES");
   const navigate = useNavigate();
-  const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
+  const [filterData, setFilterData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
-  const [filterData, setFilterData] = useState({});
+  const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [StatsData, setStatsData] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [forceReloadData, setForceReloadData] = useState(true);
 
   const [ordering, setOrdering] = useState("-id");
 
@@ -86,8 +87,11 @@ export default function EmployeeManagement({ isTeamView = false }) {
     };
   }, [permittedViewFilterData]);
 
-  const fetchData = useCallback(
-    async (isMounted = true) => {
+
+
+
+  useEffect(() => {
+    const fetchData = async (isMounted = true) => {
       setIsLoading(true);
       try {
         const data = await getEmployeeCustomList({
@@ -105,18 +109,13 @@ export default function EmployeeManagement({ isTeamView = false }) {
       } finally {
         if (isMounted) setIsLoading(false);
       }
-    },
-    [options, filterData, ordering] // dependencies
-  );
-
-
-  useEffect(() => {
+    }
     let isMounted = true;
     if (permittedViewFilterData) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [fetchData, permittedViewFilterData]);
+  }, [permittedViewFilterData, options, filterData, ordering, forceReloadData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -170,7 +169,7 @@ export default function EmployeeManagement({ isTeamView = false }) {
               Here you can manage, add, edit and view employee profile and data.
             </CardDescription>
           </div>
-          <ImportEmployeesButton reload={fetchData} />
+          <ImportEmployeesButton reload={() => { setForceReloadData(!forceReloadData) }} />
         </CardHeader>
         <CardContent>
           <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row mb-4">

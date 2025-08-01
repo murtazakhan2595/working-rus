@@ -118,7 +118,7 @@ const EmployeeShiftCalendar = () => {
 
   useEffect(() => {
     if (employeeId) {
-      fetchEmployeeShifts(); 
+      fetchEmployeeShifts();
       fetchChangeRequests();
     }
   }, [employeeId]);
@@ -167,7 +167,7 @@ const EmployeeShiftCalendar = () => {
           employee: employeeId,
           is_change_request: "true",
           ordering: "-created_at",
-          shift_requested: "Employee", 
+          shift_requested: "Employee",
           status: selectedStatus,
         },
         options,
@@ -208,7 +208,7 @@ const EmployeeShiftCalendar = () => {
         // Organization-based scheduled shift
         const scheduleEvents = generateOrgScheduleEvents(schedule);
         events.push(...scheduleEvents);
-        
+
         // Track dates covered by this schedule
         scheduleEvents.forEach(event => {
           const eventDate = moment(event.start).format('YYYY-MM-DD');
@@ -218,7 +218,7 @@ const EmployeeShiftCalendar = () => {
         // Custom scheduled shift
         const scheduleEvents = generateCustomScheduleEvents(schedule);
         events.push(...scheduleEvents);
-        
+
         // Track dates covered by this schedule
         Object.keys(schedule.custom_schedule).forEach(date => {
           coveredDates.add(date);
@@ -274,7 +274,7 @@ const EmployeeShiftCalendar = () => {
     let currentDate = startOfMonth.clone();
     while (currentDate.isSameOrBefore(endOfMonth)) {
       const dateKey = currentDate.format("YYYY-MM-DD");
-      
+
       // Skip weekends for default org shifts AND skip dates covered by schedules
       if (currentDate.day() !== 0 && currentDate.day() !== 6 && !coveredDates.has(dateKey)) {
         const startTime = shiftStart.format("HH:mm");
@@ -449,7 +449,7 @@ const EmployeeShiftCalendar = () => {
 
   const reload = () => {
     fetchChangeRequests();
-    fetchEmployeeShifts(); 
+    fetchEmployeeShifts();
   };
 
   const onPageChange = (name, value) => {
@@ -514,7 +514,7 @@ const EmployeeShiftCalendar = () => {
           <span
             className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize ${
               statusColors[cell?.toLowerCase()] || ""
-            }`}
+              }`}
           >
             {cell || "N/A"}
           </span>
@@ -615,7 +615,7 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
                   hour12: false,
                 }}
                 eventContent={(eventInfo) => <EventWithTooltip eventInfo={eventInfo} />}
-      
+
                 dayCellContent={(dayInfo) => {
                   return {
                     html: `<div class="text-sm sm:text-base">${dayInfo.dayNumberText}</div>`,
@@ -656,7 +656,7 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
         </CardContent>
       </Card>
       {/* Change Request Records */}
-     {isViewMyShiftChangeRequestsPermitted && <Card>
+      {isViewMyShiftChangeRequestsPermitted && <Card>
         <CardHeader>
           <CardTitle>My Shift Change Requests</CardTitle>
           <div className="flex justify-end">
