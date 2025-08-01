@@ -170,6 +170,24 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     }
   };
 
+  const FinalPendingSchedule = React.useMemo(() => {
+    if (!userProfile?.role || !Array.isArray(userProfile.role)) return [];
+    if (!pendingSchedules?.results || !Array.isArray(pendingSchedules.results)) return [];
+
+    // Admin role check (assuming role 1 is admin)
+    if (userProfile.role.includes(1)) return pendingSchedules.results;
+
+    // Filter only if current_approver is an array
+    const ownRequest = pendingSchedules.results.filter(
+      (obj) =>
+        Array.isArray(obj.current_approver) &&
+        obj.current_approver.includes(userProfile.id)
+    );
+
+    return ownRequest;
+  }, [pendingSchedules, userProfile]);
+
+
   return (
     <div className="flex gap-2">
       <Card className="min-w-[40%]">
@@ -177,21 +195,23 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
           <CardTitle>
             <div className="flex justify-between">
               <p className="text-sm">All Members</p>
-              <p className="text-sm">{pendingSchedules?.count || 0}</p>
+              <p className="text-sm">{FinalPendingSchedule?.length || 0}</p>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="max-h-[700px] overflow-auto">
-          {pendingSchedules?.count > 0 &&
-            pendingSchedules?.results?.map((schedule, index) => (
-              <ListView
-                pendingShift={schedule}
-                key={index}
-                handleSelect={handleScheduleSelect}
-                active={activeSchedule}
-                getShiftName={getShiftName}
-              />
-            ))}
+          {FinalPendingSchedule &&
+            FinalPendingSchedule?.map((schedule, index) => {
+              return (
+                <ListView
+                  pendingShift={schedule}
+                  key={index}
+                  handleSelect={handleScheduleSelect}
+                  active={activeSchedule}
+                  getShiftName={getShiftName}
+                />
+              )
+            })}
           {(!pendingSchedules?.results ||
             pendingSchedules.results.length === 0) && (
               <div className="text-center py-4">No pending schedule found</div>
