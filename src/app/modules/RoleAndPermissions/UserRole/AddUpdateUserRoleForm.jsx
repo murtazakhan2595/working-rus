@@ -189,9 +189,10 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
               initialValues: formData,
               enableReinitialize: true,
               handleSubmit: handleSubmit,
-              onSubmitClick: (values) => {
-                validateUserRoleName(values.name);
-              },
+              // onSubmitClick: (values) => {
+              //   validateUserRoleName(values.name);
+              // },
+              DataList:UserRoles,
               validateFormSchema: (values) => {
                 const errors = validateUserRoleFormSchema(values);
                 if (values.name && RoleNameExist)
@@ -214,9 +215,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
                       name: "name",
                       required: true,
                       label: "Role Name",
-                      onFieldUpdate: (_, value) => {
-                        validateUserRoleName(value);
-                      },
+                      validateDuplicate:true,
                     },
                     {
                       InputField: TextAreaInput,
