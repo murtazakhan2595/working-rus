@@ -278,7 +278,6 @@ const ShiftCalendar = () => {
           isOpen={isScheduleModalOpen}
           setIsOpen={setIsScheduleModalOpen}
           selectedDates={null}
-          employees={displayData.results}
           isDraft={activeTab === "schedule-shift"} // Pass isDraft based on current tab
           onScheduleSuccess={() => {
             if (activeTab === "schedule-shift") {
