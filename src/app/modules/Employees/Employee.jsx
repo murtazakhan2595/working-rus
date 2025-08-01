@@ -19,20 +19,25 @@ import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ImportEmployeesButton from "./Screens/Sections/ImportEmployeesButton"; // Adjust the path as needed
+import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
 
-export default function EmployeeManagement() {
-  const navigate = useNavigate();
+export default function EmployeeManagement({ isTeamView = false }) {
+  const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
+  const Departments = GetDispatchStateList("departments", "common") || [];
+  const Branches = GetDispatchStateList("branches", "common") || [];
+  const Designations = GetDispatchStateList("designations", "common") || [];
+  const UserRoles = GetDispatchStateList("user_roles", "roles_permissions") || [];
   const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
+  const isAdminView = HasAccess("VIEW_EMPLOYEES");
+  const navigate = useNavigate();
+  const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
   const [StatsData, setStatsData] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const Departments = useSelector((state) => state.common.departments);
-  const Designations = useSelector((state) => state.common.designations);
-  const Branches = useSelector((state) => state.common.branches);
-  const UserRoles = useSelector((state) => state.roles_permissions.user_roles);
+
   const [ordering, setOrdering] = useState("-id");
 
   const onPageChange = (name, value) => {
@@ -49,10 +54,22 @@ export default function EmployeeManagement() {
   };
 
   useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setPermittedViewFilterData(() => {
+        if (isTeamView) return { reporting_employee: [user_id] };
+        else if (isAdminView) return {};
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isTeamView, isAdminView]);
+
+  useEffect(() => {
     const fetchEmployeeStatData = async (isMounted) => {
       try {
         setIsLoading(true);
-        const Stats = await getEmployeeStatsData();
+        const Stats = await getEmployeeStatsData({ filterData: permittedViewFilterData });
         if (Stats && isMounted) {
           setStatsData(Stats || {});
         }
@@ -63,11 +80,11 @@ export default function EmployeeManagement() {
       }
     };
     let isMounted = true;
-    fetchEmployeeStatData(isMounted);
+    if (permittedViewFilterData) fetchEmployeeStatData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [permittedViewFilterData]);
 
   const fetchData = useCallback(
     async (isMounted = true) => {
@@ -75,7 +92,7 @@ export default function EmployeeManagement() {
       try {
         const data = await getEmployeeCustomList({
           options,
-          filterData,
+          filterData: { ...filterData, ...permittedViewFilterData },
           ordering,
         });
 
@@ -95,11 +112,11 @@ export default function EmployeeManagement() {
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    if (permittedViewFilterData) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [fetchData]);
+  }, [fetchData, permittedViewFilterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
