@@ -20,7 +20,7 @@ import { GetDateDifference } from "utils/renderValues";
 import { TextAreaInput } from "components/FormControl";
 import { CoverFileUpload } from "components/FormControl";
 
-const LeaveRequest = ({ id, reloadData = () => {} }) => {
+const LeaveRequest = ({ id, reloadData = () => { } }) => {
   const CalendarContent = useSelector((state) => state.common.calendar_content);
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
@@ -203,6 +203,13 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
     //   setFormData(FormValues);
     setIsOpen(true);
   };
+  const handleClose = () => {
+    setIsOpen(false);
+    reloadData(true);
+    setFormValues(Leave)
+    setFormData(Leave)
+  }
+
   return (
     <>
       <Button size="sm" onClick={handleAddLeaveClick}>
@@ -211,10 +218,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
       {isOpen && (
         <SheetUI
           isOpen={isOpen}
-          setIsOpen={() => {
-            setIsOpen(false);
-            reloadData(true);
-          }}
+          setIsOpen={handleClose}
           variant="sheet"
           sheetConfig={FormSheetData}
           formConfig={{
@@ -322,15 +326,15 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
                   },
                   ...(LeaveValidationInfo.halfPaidAllowed
                     ? [
-                        {
-                          InputField: CheckBoxInput,
-                          name: "is_full_paid",
-                          label: "Full Paid",
-                          colsSpan: 2,
-                          description: `Unselect the check if you wanted to apply for half paid leave. You will be granted ${FormValues.full_paid_days} full paid and ${FormValues.half_paid_days} half paid leaves.`,
-                          onFieldUpdate: (_, value) => {},
-                        },
-                      ]
+                      {
+                        InputField: CheckBoxInput,
+                        name: "is_full_paid",
+                        label: "Full Paid",
+                        colsSpan: 2,
+                        description: `Unselect the check if you wanted to apply for half paid leave. You will be granted ${FormValues.full_paid_days} full paid and ${FormValues.half_paid_days} half paid leaves.`,
+                        onFieldUpdate: (_, value) => { },
+                      },
+                    ]
                     : []),
                 ].filter(Boolean),
               },
