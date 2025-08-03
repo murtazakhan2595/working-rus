@@ -71,7 +71,6 @@ const ShiftRequest = () => {
   const fetchShiftRequests = async () => {
     setIsLoading(true);
     try {
-      debugger
       const filterData = {
         is_change_request: "true",
         shift_requested: "Employee",
@@ -80,7 +79,7 @@ const ShiftRequest = () => {
       if (hasTabAccess) {
         // HR view with tabs
         if (activeTab === "Request") {
-          filterData.status = filters.status || "Pending";
+          filterData.status = filters.status || "PENDING";
         } else if (activeTab === "Record") {
           filterData.status = filters.status || "APPROVED,REJECTED";
           filterData.is_change_request = "true,false";
