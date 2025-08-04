@@ -13,7 +13,6 @@ import { mapShiftScheduleData } from "app/utils/MappingObjects/mapShiftManagemen
 
 const saveShift = async (payload) => {
   try {
-    console.log("payload", payload);
     if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/shift/${payload.id}`,
@@ -243,7 +242,6 @@ export const getCustomShiftListEmployeeID = async (
       formattedStartDate,
       formattedEndDate
     );
-    console.log(ResponseList,'jbjhjhcdhvghgshgvhg')
     return ResponseList;
   } catch (error) {
     console.error("Error fetching custom shift list:", error);
@@ -450,7 +448,6 @@ export const saveCustomShift = async (
   try {
     if (!employee_id || !date || !start_time || !end_time || !user_id)
       return false;
-    debugger
 
     const baseDate = moment(date);
     if (!baseDate.isValid()) return false;
@@ -560,11 +557,6 @@ export const saveCustomShift = async (
       };
     } else {
       // Case: Create new single-day custom schedule
-      console.log(
-        "Creating new single-day custom schedule for date:",
-        formattedDate
-      );
-
       const daySchedule = {
         is_off: false,
         is_split: false,
@@ -598,19 +590,16 @@ export const saveCustomShift = async (
         assigned_by: assignedBy,
         approved_by: assignedBy,
         status: "Approved",
-        shift_requested: "Employee",
+        shift_requested: "HR",
         is_off_day: false,
         is_change_request: "false",
       };
     }
 
-    console.log("saveCustomShift payload:", payload);
-
     // Step 5: Save the schedule
     const response = await saveShiftSchedule(payload);
 
     if (response) {
-      console.log("Custom shift saved successfully");
       return response;
     } else {
       console.error("Failed to save custom shift");

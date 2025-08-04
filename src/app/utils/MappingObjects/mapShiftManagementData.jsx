@@ -80,6 +80,7 @@ export function mapCustomShiftData(data, date) {
 }
 
 export function mapDefaultShiftData(data) {
+  if (!data) return null;
   const { type, starttime, endtime, name, id } = data;
   const formattedDate = moment().format("YYYY-MM-DD");
   const active_shift = {
