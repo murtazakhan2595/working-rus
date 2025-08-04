@@ -7,6 +7,7 @@ import {
   mapActiveShiftData,
   mapCustomShiftListData,
   mapActiveShiftListData,
+  mapDefaultShiftData,
 } from "app/utils/MappingObjects/mapShiftManagementData";
 import { mapShiftScheduleData } from "app/utils/MappingObjects/mapShiftManagementData";
 
@@ -106,11 +107,10 @@ const getShiftSchedule = async (payload) => {
     filterData.draft = false;
   }
 
-  let URL = `/shift-schedules?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/shift-schedules?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -204,8 +204,13 @@ export const getCustomShiftByEmployeeID = async (
     if (response && response?.results?.[0]) {
       const schedule = response?.results?.[0];
       const customSchedule = schedule?.custom_schedule?.[formattedDate];
-      const ResponseData = mapCustomShiftData(customSchedule, formattedDate);
-      return ResponseData;
+      if (customSchedule) {
+        const ResponseData = mapCustomShiftData(customSchedule, formattedDate);
+        return ResponseData;
+      } else {
+        const ResponseData = mapDefaultShiftData(schedule?.shift_details);
+        return ResponseData;
+      }
     }
     return false;
   } catch (error) {
@@ -260,11 +265,10 @@ const getShiftChangeRequests = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "-id";
-  let URL = `/shift-change-requests?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/shift-change-requests?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -354,11 +358,10 @@ const getShiftSchedulesLogs = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "-id";
-  let URL = `/shift-schedules-logs?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/shift-schedules-logs?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -453,6 +456,7 @@ export const saveCustomShift = async (
   try {
     if (!employee_id || !date || !start_time || !end_time || !user_id)
       return false;
+          debugger
 
     const baseDate = moment(date);
     if (!baseDate.isValid()) return false;
@@ -465,7 +469,7 @@ export const saveCustomShift = async (
         employee: employee_id,
         end_date_gte: formattedDate,
         start_date_lte: formattedDate,
-        status: "Approved",
+        status: "APPROVED",
         is_change_request: "true,false",
       },
       ordering: "-created_at",
@@ -505,7 +509,6 @@ export const saveCustomShift = async (
 
     if (existingCustomSchedule && !existingCustomSchedule.is_org_based) {
       // Case: Update existing custom schedule - only modify the specific day
-      console.log("Updating existing custom schedule for date:", formattedDate);
 
       const existingCustomScheduleData = {
         ...existingCustomSchedule.custom_schedule,
@@ -555,8 +558,7 @@ export const saveCustomShift = async (
         total_weekly_hours: existingCustomSchedule.total_weekly_hours, // Keep existing
         assigned_by: assignedBy,
         approved_by: assignedBy,
-        status: "Approved",
-        shift_requested: "Employee",
+        shift_requested: "HR",
         is_off_day: Object.values(existingCustomScheduleData).some(
           (day) => day.is_off
         ),
