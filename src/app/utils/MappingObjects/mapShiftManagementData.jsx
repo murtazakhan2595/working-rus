@@ -30,7 +30,7 @@ export function mapCustomShiftData(data, date) {
     } = customSchedule;
     active_shift.is_weekly_off = is_off;
     active_shift.name = 'Custom Shift';
-    active_shift.is_split_shift= Boolean(is_split);
+    active_shift.is_split_shift = Boolean(is_split);
     if (is_split) {
       if (start_time_1 && end_time_1 && start_time_2 && end_time_2) {
         const first_start_time = renderTime(start_time_1, formattedDate);
@@ -188,40 +188,26 @@ export async function mapCustomShiftListData(data, start_date, end_date) {
     start: new Date(formattedStartDate),
     end: new Date(formattedEndDate),
   });
-  const customSchedules =
-    data?.filter(
-      (schedule) =>
-        schedule.custom_schedule &&
-        Object.keys(schedule.custom_schedule).length > 0
-    ) || [];
-
   const ResponseObject = {};
   await Promise.all(
     dateRange.map((date) => {
       const dateKey = moment(date).format("YYYY-MM-DD");
-      // Find the latest custom schedule for this date (due to ordering by -created_at)
-      let customShiftForDate = null;
-      for (const schedule of customSchedules) {
-        // Check if this date falls within the schedule's date range
-        const scheduleStart = moment(schedule.start_date);
-        const scheduleEnd = moment(schedule.end_date);
+      const selectedDate = new Date(moment(dateKey).startOf('day')); // the date you want to check
+      //   // Find the latest custom schedule for this date (due to ordering by -created_at)
+      const matchingSchedules = data.filter(schedule => {
+        const startDate = new Date(moment(schedule.start_date).startOf('day'));
+        const endDate = new Date(moment(schedule.end_date).startOf('day'));
 
-        if (moment(date).isBetween(scheduleStart, scheduleEnd, "day", "[]")) {
-          // Check if this specific date has a custom schedule entry
-          if (schedule.custom_schedule[dateKey]) {
-            customShiftForDate = schedule;
-            break; // Take the first one (latest due to ordering)
-          }
-        }
-      }
-      // Add to result - null if no custom shift found
-      if (customShiftForDate) {
+        return selectedDate >= startDate && selectedDate <= endDate;
+      });
+      if (matchingSchedules && matchingSchedules.length) {
+        const customShiftForDate = matchingSchedules[0];
         const ResponseData = mapCustomShiftData(customShiftForDate, dateKey);
         ResponseObject[dateKey] = ResponseData;
         return ResponseData;
       }
-      ResponseObject[dateKey] = customShiftForDate;
-      return customShiftForDate;
+      ResponseObject[dateKey] = null;
+      return null;
     })
   );
   return ResponseObject;
