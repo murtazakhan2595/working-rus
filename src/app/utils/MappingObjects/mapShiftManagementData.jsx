@@ -7,66 +7,76 @@ import { ShiftSchedule } from "../Types/ShiftManagement";
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapCustomShiftData(data, date) {
-  const {
-    is_off,
-    is_split,
-    end_time,
-    start_time,
-    start_time_1,
-    end_time_1,
-    start_time_2,
-    end_time_2,
-  } = data;
   const formattedDate = date ? moment(date).format("YYYY-MM-DD") : null;
   const active_shift = {
-    is_split_shift: Boolean(is_split),
+    is_split_shift: false,
     total_hours: 0,
     shifts: [],
-    is_weekly_off: is_off,
-    name: "Custom Shift",
+    is_weekly_off: false,
+    name: "",
     is_custom_shift: true,
   };
-  if (is_split) {
-    if (start_time_1 && end_time_1 && start_time_2 && end_time_2) {
-      const first_start_time = renderTime(start_time_1, formattedDate);
-      const first_end_time = renderTime(end_time_1, formattedDate);
-      const second_start_time = renderTime(start_time_2, formattedDate);
-      const second_end_time = renderTime(end_time_2, formattedDate);
+  const customSchedule = data?.custom_schedule?.[formattedDate];
+  if (customSchedule) {
+    const {
+      is_off,
+      is_split,
+      end_time,
+      start_time,
+      start_time_1,
+      end_time_1,
+      start_time_2,
+      end_time_2,
+    } = customSchedule;
+    active_shift.is_weekly_off = is_off;
+    active_shift.name = 'Custom Shift';
+    active_shift.is_split_shift= Boolean(is_split);
+    if (is_split) {
+      if (start_time_1 && end_time_1 && start_time_2 && end_time_2) {
+        const first_start_time = renderTime(start_time_1, formattedDate);
+        const first_end_time = renderTime(end_time_1, formattedDate);
+        const second_start_time = renderTime(start_time_2, formattedDate);
+        const second_end_time = renderTime(end_time_2, formattedDate);
+        active_shift.shifts = [
+          {
+            start_time: moment(first_start_time).format("hh:mm A"),
+            startTime: first_start_time,
+            endTime: first_end_time,
+            end_time: moment(first_end_time).format("hh:mm A"),
+          },
+          {
+            start_time: moment(second_start_time).format("hh:mm A"),
+            end_time: moment(second_end_time).format("hh:mm A"),
+            startTime: second_start_time,
+            endTime: second_start_time,
+          },
+        ];
+        active_shift.total_hours =
+          CalculateTotalWorkingHours(first_start_time, first_end_time) +
+          CalculateTotalWorkingHours(second_start_time, second_end_time);
+      }
+      return active_shift;
+    }
+
+    if (start_time && end_time) {
+      const startTime = renderTime(start_time, formattedDate);
+      const endTime = renderTime(end_time, formattedDate);
       active_shift.shifts = [
         {
-          start_time: moment(first_start_time).format("hh:mm A"),
-          startTime: first_start_time,
-          endTime: first_end_time,
-          end_time: moment(first_end_time).format("hh:mm A"),
-        },
-        {
-          start_time: moment(second_start_time).format("hh:mm A"),
-          end_time: moment(second_end_time).format("hh:mm A"),
-          startTime: second_start_time,
-          endTime: second_start_time,
+          start_time: moment(startTime).format("hh:mm A"),
+          end_time: moment(endTime).format("hh:mm A"),
+          startTime: startTime,
+          endTime: endTime,
         },
       ];
-      active_shift.total_hours =
-        CalculateTotalWorkingHours(first_start_time, first_end_time) +
-        CalculateTotalWorkingHours(second_start_time, second_end_time);
+      active_shift.total_hours = CalculateTotalWorkingHours(start_time, end_time);
     }
     return active_shift;
+  } else {
+    const shift_details = mapDefaultShiftData(data?.shift_details);
+    active_shift.name = 'Direct Shift';
+    return { ...active_shift, ...shift_details }
   }
-
-  if (start_time && end_time) {
-    const startTime = renderTime(start_time, formattedDate);
-    const endTime = renderTime(end_time, formattedDate);
-    active_shift.shifts = [
-      {
-        start_time: moment(startTime).format("hh:mm A"),
-        end_time: moment(endTime).format("hh:mm A"),
-        startTime: startTime,
-        endTime: endTime,
-      },
-    ];
-    active_shift.total_hours = CalculateTotalWorkingHours(start_time, end_time);
-  }
-  return active_shift;
 }
 
 export function mapDefaultShiftData(data) {
@@ -199,7 +209,7 @@ export async function mapCustomShiftListData(data, start_date, end_date) {
         if (moment(date).isBetween(scheduleStart, scheduleEnd, "day", "[]")) {
           // Check if this specific date has a custom schedule entry
           if (schedule.custom_schedule[dateKey]) {
-            customShiftForDate = schedule.custom_schedule[dateKey];
+            customShiftForDate = schedule;
             break; // Take the first one (latest due to ordering)
           }
         }

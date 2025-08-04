@@ -203,14 +203,8 @@ export const getCustomShiftByEmployeeID = async (
     });
     if (response && response?.results?.[0]) {
       const schedule = response?.results?.[0];
-      const customSchedule = schedule?.custom_schedule?.[formattedDate];
-      if (customSchedule) {
-        const ResponseData = mapCustomShiftData(customSchedule, formattedDate);
-        return ResponseData;
-      } else {
-        const ResponseData = mapDefaultShiftData(schedule?.shift_details);
-        return ResponseData;
-      }
+      const ResponseData = mapCustomShiftData(schedule, formattedDate);
+      return ResponseData;
     }
     return false;
   } catch (error) {
@@ -244,12 +238,12 @@ export const getCustomShiftListEmployeeID = async (
       },
       ordering: "-created_at", // Latest first for overlapping resolution
     });
-
     const ResponseList = await mapCustomShiftListData(
       scheduleResponse?.results || [],
       formattedStartDate,
       formattedEndDate
     );
+    console.log(ResponseList,'jbjhjhcdhvghgshgvhg')
     return ResponseList;
   } catch (error) {
     console.error("Error fetching custom shift list:", error);
@@ -456,7 +450,7 @@ export const saveCustomShift = async (
   try {
     if (!employee_id || !date || !start_time || !end_time || !user_id)
       return false;
-          debugger
+    debugger
 
     const baseDate = moment(date);
     if (!baseDate.isValid()) return false;
