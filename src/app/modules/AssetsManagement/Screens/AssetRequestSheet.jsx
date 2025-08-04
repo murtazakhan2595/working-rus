@@ -138,6 +138,7 @@ const AssetRequestSheet = ({
 
     try {
       const payload = {
+        id: isEdit ? editData.id : null,
         reason: values.reason,
         additional_notes: values.additional_notes,
         ...(mode === "request"

@@ -145,10 +145,7 @@ const ViewAssetRequest = ({
   const CustomContent = ({ currentItem }) => {
     const showButtons =
       !isMyRequest &&
-      currentItem?.asset_status === "Pending" &&
-      (userProfile.role === 2 ||
-        userProfile.role === 3 ||
-        userProfile.role === 1);
+      currentItem?.asset_status === "Pending";
 
     const handleStatusChange = async (status) => {
       try {

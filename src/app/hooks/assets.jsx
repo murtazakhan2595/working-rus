@@ -233,7 +233,7 @@ const getEmployeeAssets = async (payload) => {
    const pageNo = payload?.options?.page ?? "";
    const pageSize = payload?.options?.sizePerPage ?? "";
    const filterData = payload?.filterData ?? {};
-   const sortField = payload?.ordering; 
+   const sortField = payload?.ordering || "-id";
 
    let URL = `/asset_assignment?ordering=${sortField}&${
      pageNo ? `page=${pageNo}&` : ""
