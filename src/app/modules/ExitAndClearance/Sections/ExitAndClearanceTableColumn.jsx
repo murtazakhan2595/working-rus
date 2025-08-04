@@ -43,8 +43,8 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
     dataSort: true,
   },
   {
-    dataField: "exit_date",
-    text: "Exit date",
+    dataField: "final_working_day",
+    text: "Last Working Day",
     formatter: (cell) => renderDate(cell),
     dataSort: true,
     minWidth: "115px",
