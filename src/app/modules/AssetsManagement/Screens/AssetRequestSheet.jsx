@@ -20,12 +20,14 @@ import {
   getAssetList,
   requestAsset,
   getAssetCategories,
+  updateAsset,
 } from "app/hooks/assets";
 import { toast } from "react-toastify";
-import { SheetCardExtension } from "components/SheetCardExtension";
+import { SheetCardExtension, DetailCard } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { validateAssetRequestForm } from "app/utils/FormSchema/AssetsFormSchema";
-import { updateAsset } from "app/hooks/assets";
+import { StatusButtons, StatusList } from "components";
+import { handleRequest } from "app/hooks/general";
 
 const AssetRequestSheet = ({
   userProfile,
@@ -33,7 +35,7 @@ const AssetRequestSheet = ({
   reload,
   isOpen,
   setIsOpen,
-  mode = "request", // "request" or "assign" 
+  mode = "request", // "request" or "assign"
   departments = [],
   editData,
 }) => {
@@ -43,7 +45,9 @@ const AssetRequestSheet = ({
   const [availableAssets, setAvailableAssets] = useState([]);
   const [categories, setCategories] = useState([]);
   const [assetsLoading, setAssetsLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(isEdit ? editData?.category.id : "");
+  const [selectedCategory, setSelectedCategory] = useState(
+    isEdit ? editData?.category?.id || editData?.category_id : ""
+  );
   const [initialValues, setInitialValues] = useState({
     category_id: "",
     asset_name: "",
@@ -67,34 +71,36 @@ const AssetRequestSheet = ({
     const fetchData = async () => {
       setAssetsLoading(true);
       try {
-          const categoriesResponse = await getAssetCategories({
-            options: { page: 1, sizePerPage: 100 },
-            filterData: { is_active: true },
+        const categoriesResponse = await getAssetCategories({
+          options: { page: 1, sizePerPage: 100 },
+          filterData: { is_active: true },
+        });
+
+        if (categoriesResponse?.results) {
+          const formattedCategories = categoriesResponse.results.map(
+            (category) => ({
+              value: category.id,
+              label: category.name,
+              dynamic_fields: category.dynamic_fields,
+            })
+          );
+          setCategories(formattedCategories);
+        }
+
+        if (isEdit) {
+          console.log("Asset request edit data", editData);
+          setInitialValues({
+            employee: editData?.employee?.id || editData?.asset_employee_id,
+            assign_date:
+              editData?.asset_assigned_date ||
+              new Date().toISOString().split("T")[0],
+            return_date: editData?.asset_return_date || null,
+            reason: editData?.reason || "",
+            additional_notes: editData?.additional_notes || "",
+            category_id: editData?.category?.id || editData?.category_id || "",
+            asset_name: editData?.asset?.id || editData?.asset_name || "",
           });
-
-          if (categoriesResponse?.results) {
-            const formattedCategories = categoriesResponse.results.map(
-              (category) => ({
-                value: category.id,
-                label: category.name,
-                dynamic_fields: category.dynamic_fields,
-              })
-            );
-            setCategories(formattedCategories);
-          }
-
-          if (isEdit) {
-            console.log("Asset request edit data", editData);
-            setInitialValues({
-              employee: editData?.employee?.id,
-              assign_date: "",
-              return_date: "",
-              reason: editData?.reason,
-              additional_notes: editData?.additional_notes,
-              category_id: editData?.category.id,
-              asset_name: "",
-            });
-          }
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to load required data");
@@ -106,32 +112,35 @@ const AssetRequestSheet = ({
     if (isOpen) {
       fetchData();
     }
-  }, [isOpen, mode]);
+  }, [isOpen, mode, editData]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (mode === "assign") {
-        const assetsResponse = await getAssetList({
-          options: { page: 1, sizePerPage: 100 },
-          filterData: {
-            asset_status: "Unassigned",
-            asset_category: selectedCategory,
-          },
-        });
+      if (mode === "assign" && selectedCategory) {
+        try {
+          const assetsResponse = await getAssetList({
+            options: { page: 1, sizePerPage: 100 },
+            filterData: {
+              asset_status: "Unassigned",
+              asset_category: selectedCategory,
+            },
+          });
 
-        if (assetsResponse && assetsResponse.results) {
-          const formattedAssets = assetsResponse.results.map((asset) => ({
-            value: asset.id,
-            label: asset.asset_name,
-            category_id: asset.category_id,
-          }));
-          setAvailableAssets(formattedAssets);
+          if (assetsResponse && assetsResponse.results) {
+            const formattedAssets = assetsResponse.results.map((asset) => ({
+              value: asset.id,
+              label: asset.asset_name,
+              category_id: asset.category_id,
+            }));
+            setAvailableAssets(formattedAssets);
+          }
+        } catch (error) {
+          console.error("Error fetching assets:", error);
         }
-        
       }
-    }
-    fetchData()
-  },[selectedCategory, isEdit])
+    };
+    fetchData();
+  }, [selectedCategory, mode]);
 
   const handleFormSubmit = async (values) => {
     setLoading(true);
@@ -143,15 +152,16 @@ const AssetRequestSheet = ({
         additional_notes: values.additional_notes,
         ...(mode === "request"
           ? {
-              category_id: values.category_id, // NEW: Send category_id instead of asset_name
-              preferred_specifications: values.preferred_specifications || {}, // NEW: Send preferences
+              category_id: values.category_id,
+              preferred_specifications: values.preferred_specifications || {},
               asset_status: "Pending",
               asset_employee_id: userProfile.id,
               asset_request_status: "Requested",
             }
           : {
+              // Fixed assign mode payload structure
               asset_name: values.asset_name,
-              asset_status: "Accepted",
+              asset_status: isEdit ? editData?.asset_status : "Accepted",
               asset_employee_id:
                 typeof values.employee === "object"
                   ? values.employee.value
@@ -161,28 +171,46 @@ const AssetRequestSheet = ({
               ...(values.return_date && {
                 asset_return_date: values.return_date,
               }),
-              asset_request_status: isEdit? "Requested" : "Assigned",
+              asset_request_status: isEdit
+                ? editData?.asset_request_status
+                : "Assigned",
+              // Include category_id for consistency
+              category_id: values.category_id,
             }),
       };
 
-      // remove null or undefined values from payload
+      // Remove null or undefined values from payload
       Object.keys(payload).forEach(
-        (key) => (payload[key] === null || payload[key] === undefined) && delete payload[key]
+        (key) =>
+          (payload[key] === null || payload[key] === undefined) &&
+          delete payload[key]
       );
+
+      console.log("Submitting payload:", payload);
 
       const response = await requestAsset(payload);
       console.log("Asset request response:", response);
-      if (response && mode === "assign") {
-        const assetMangaementPayload = {
-          id: values.asset_name,
-          asset_status: "Assigned",
-        };
-        await updateAsset(assetMangaementPayload);
+
+      // Update asset status when assigning (only for new assignments)
+      if (response && mode === "assign" && !isEdit && values.asset_name) {
+        try {
+          const assetManagementPayload = {
+            id: values.asset_name,
+            asset_status: "Assigned",
+          };
+          await updateAsset(assetManagementPayload);
+        } catch (assetError) {
+          console.error("Error updating asset status:", assetError);
+          toast.warning("Request submitted but asset status update failed");
+        }
       }
+
       if (response) {
         toast.success(
           mode === "request"
             ? "Asset request submitted successfully"
+            : isEdit
+            ? "Asset request updated successfully"
             : "Asset assigned successfully"
         );
         setIsOpen(false);
@@ -191,6 +219,8 @@ const AssetRequestSheet = ({
         toast.error(
           mode === "request"
             ? "Failed to submit asset request"
+            : isEdit
+            ? "Failed to update asset request"
             : "Failed to assign asset"
         );
       }
@@ -202,6 +232,55 @@ const AssetRequestSheet = ({
     }
   };
 
+  // Fixed approve handler with better validation
+  const handleApproveRequest = async () => {
+    // Validation checks
+    if (!editData?.category?.id && !editData?.category_id) {
+      toast.error("Cannot approve: Please assign an asset category first");
+      return;
+    }
+
+    // For assign mode, check if specific asset is assigned
+    if (mode === "assign" && !editData?.asset?.id && !editData?.asset_name) {
+      toast.error(
+        "Cannot approve: Please assign a specific asset before approving this request"
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Step 2: Call the approval hierarchy API
+      const hierarchyId =
+        editData?.hierarchy_request || editData?.request || editData?.id;
+      console.log("Calling approval API with hierarchy ID:", hierarchyId);
+
+      const approvalResponse = await handleRequest(hierarchyId, true); // true = approve
+
+      if (approvalResponse) {
+        toast.success("Request approved successfully!");
+      } else {
+        toast.warning(
+          "Request status updated but approval hierarchy API failed"
+        );
+      }
+
+      setIsOpen(false);
+      reload();
+    } catch (error) {
+      console.error("Error in approval process:", error);
+      toast.error("Error approving request: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Show rejection reason modal
+  const handleCustomReject = () => {
+    setShowRejectReason(true);
+  };
+
+  // Fixed rejection handler
   const handleRejectWithReason = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
@@ -210,30 +289,49 @@ const AssetRequestSheet = ({
 
     setIsSubmittingRejection(true);
     try {
+      console.log("Starting rejection process for:", editData);
+
+      // Step 1: Update the request with rejection reason
       const updatedRequest = {
         id: editData.id,
         asset_status: "Rejected",
         rejection_reason: rejectionReason,
+        asset_request_status: editData?.asset_request_status || "",
+        asset_employee_id: editData?.asset_employee_id || "",
       };
 
+      console.log("Updating request with rejection:", updatedRequest);
       const response = await requestAsset(updatedRequest);
 
-      if (response) {
+      if (!response) {
+        toast.error("Failed to update request status");
         setIsSubmittingRejection(false);
-        setRejectionReason("");
-        setShowRejectReason(false);
-        toast.success("Asset request rejected successfully");
-
-        // Close the sheet and trigger reload
-        setIsOpen(false);
-        reload();
-      } else {
-        setIsSubmittingRejection(false);
-        toast.error("Error rejecting asset request");
+        return;
       }
+
+      // Step 2: Call the rejection hierarchy API
+      const hierarchyId =
+        editData?.hierarchy_request || editData?.request || editData?.id;
+      console.log("Calling rejection API with hierarchy ID:", hierarchyId);
+
+      const rejectionResponse = await handleRequest(hierarchyId, false); // false = reject
+
+      if (rejectionResponse) {
+        toast.success("Request rejected successfully!");
+      } else {
+        toast.warning(
+          "Request status updated but approval hierarchy API failed"
+        );
+      }
+
+      setShowRejectReason(false);
+      setRejectionReason("");
+      setIsOpen(false);
+      reload();
     } catch (error) {
       console.error("Error rejecting request:", error);
       toast.error("Error rejecting request: " + error.message);
+    } finally {
       setIsSubmittingRejection(false);
     }
   };
@@ -292,123 +390,161 @@ const AssetRequestSheet = ({
                 }
               >
                 <div className="flex items-center gap-4">
-                <div className="flex-1 space-y-2 mb-6">
-                <SelectInputComponent
-                  name="category_id"
-                  error={props.errors?.category_id}
-                  touch={props.touched?.category_id}
-                  value={props.values?.category_id}
-                  label="Asset Category"
-                  required={true}
-                  options={categories}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                    setSelectedCategory(value);
-                  }}
-                  placeholder={
-                    assetsLoading
-                      ? "Loading categories..."
-                      : "Select a category"
-                  }
-                  isLoading={assetsLoading}
-                  disabled={isEdit}
-                />
-                </div>
-                <div className="flex-1 space-y-2 mb-6">
-                {mode === "assign" && (
-                  <SelectInputComponent
-                    name="asset_name"
-                    error={props.errors?.asset_name}
-                    touch={props.touched?.asset_name}
-                    value={props.values?.asset_name}
-                    label="Asset Name"
-                    required={true}
-                    options={availableAssets}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    placeholder={
-                      assetsLoading ? "Loading assets..." : "Select an asset"
-                    }
-                    isLoading={assetsLoading}
-                  />
-                )}
-                </div>
+                  <div className="flex-1 space-y-2 mb-6">
+                    <SelectInputComponent
+                      name="category_id"
+                      error={props.errors?.category_id}
+                      touch={props.touched?.category_id}
+                      value={props.values?.category_id}
+                      label="Asset Category"
+                      required={true}
+                      options={categories}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                        setSelectedCategory(value);
+                      }}
+                      placeholder={
+                        assetsLoading
+                          ? "Loading categories..."
+                          : "Select a category"
+                      }
+                      isLoading={assetsLoading}
+                      disabled={isEdit}
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2 mb-6">
+                    {mode === "assign" && (
+                      <SelectInputComponent
+                        name="asset_name"
+                        error={props.errors?.asset_name}
+                        touch={props.touched?.asset_name}
+                        value={props.values?.asset_name}
+                        label="Asset Name"
+                        required={true}
+                        options={availableAssets}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                        placeholder={
+                          assetsLoading
+                            ? "Loading assets..."
+                            : "Select an asset"
+                        }
+                        isLoading={assetsLoading}
+                      />
+                    )}
+                  </div>
                 </div>
                 {/* Additional fields for assign mode */}
                 <div className="flex items-center gap-4">
-                {mode === "assign" && (
-                  <>
-                    <div className="flex-1 space-y-2 mb-6">
-                      <DateInput
-                        name="assign_date"
-                        error={props.errors?.assign_date}
-                        touch={props.touched?.assign_date}
-                        value={props.values.assign_date}
-                        label="Assign Date"
-                        required={true}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                        placeholder="Select assign date"
-                      />
-                      <DateInput
-                        name="return_date"
-                        error={props.errors?.return_date}
-                        touch={props.touched?.return_date}
-                        value={props.values.return_date}
-                        label="Return Date (if applicable)"
-                        required={false}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                        placeholder="Select return date"
-                      />
-                    </div>
-                  </>
-                )}
+                  {mode === "assign" && (
+                    <>
+                      <div className="flex-1 space-y-2 mb-6">
+                        <DateInput
+                          name="assign_date"
+                          error={props.errors?.assign_date}
+                          touch={props.touched?.assign_date}
+                          value={props.values.assign_date}
+                          label="Assign Date"
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                          placeholder="Select assign date"
+                        />
+                        <DateInput
+                          name="return_date"
+                          error={props.errors?.return_date}
+                          touch={props.touched?.return_date}
+                          value={props.values.return_date}
+                          label="Return Date (if applicable)"
+                          required={false}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                          placeholder="Select return date"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div className="flex-1 space-y-2 mb-6">
-                <TextAreaInput
-                  name="reason"
-                  error={props.errors?.reason}
-                  touch={props.touched?.reason}
-                  value={props.values?.reason}
-                  label={
-                    mode === "request"
-                      ? "Reason for Request"
-                      : "Reason for Assignment"
-                  }
-                  required={true}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                  maxRows={3}
-                  placeholder={
-                    mode === "request"
-                      ? "Explain why you need this asset"
-                      : "Explain why this asset is being assigned"
-                  }
-                />
+                  <TextAreaInput
+                    name="reason"
+                    error={props.errors?.reason}
+                    touch={props.touched?.reason}
+                    value={props.values?.reason}
+                    label={
+                      mode === "request"
+                        ? "Reason for Request"
+                        : "Reason for Assignment"
+                    }
+                    required={true}
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                    maxRows={3}
+                    placeholder={
+                      mode === "request"
+                        ? "Explain why you need this asset"
+                        : "Explain why this asset is being assigned"
+                    }
+                  />
                 </div>
                 <div className="flex-1 space-y-2 mb-6">
-                <TextAreaInput
-                  name="additional_notes"
-                  error={props.errors?.additional_notes}
-                  touch={props.touched?.additional_notes}
-                  value={props.values?.additional_notes}
-                  label="Additional Notes"
-                  required={false}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                  maxRows={3}
-                  placeholder="Any additional information (optional)"
-                />
+                  <TextAreaInput
+                    name="additional_notes"
+                    error={props.errors?.additional_notes}
+                    touch={props.touched?.additional_notes}
+                    value={props.values?.additional_notes}
+                    label="Additional Notes"
+                    required={false}
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                    maxRows={3}
+                    placeholder="Any additional information (optional)"
+                  />
                 </div>
-                
               </SheetCardExtension>
 
+              {/* Approval Details Section (only show in edit mode) */}
+              {isEdit &&
+                editData?.approval_details &&
+                editData.approval_details.length > 0 && (
+                  <DetailCard
+                    detailCardTitle="Approval Details"
+                    className="mt-4"
+                  >
+                    <StatusList
+                      status_list={editData.approval_details}
+                      className="my-3"
+                    />
+                  </DetailCard>
+                )}
+
+              {/* StatusButtons for approval hierarchy (only show in edit mode for pending requests) */}
+              {isEdit && (
+                <StatusButtons
+                  permissionKey={["MANAGE_ASSET_REQUEST"]}
+                  permissionLogic="OR"
+                  status={editData?.status || editData?.asset_status}
+                  current_approver={editData?.current_approver || []}
+                  request_id={
+                    editData?.hierarchy_request ||
+                    editData?.request ||
+                    editData?.id
+                  }
+                  // Custom handlers
+                  onApprove={handleApproveRequest}
+                  onReject={handleCustomReject}
+                  // Customize button text
+                  approveText="Approve Request"
+                  rejectText="Reject with Reason"
+                />
+              )}
+
+              {/* Regular Form Buttons for form submission */}
               <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
                 <Button
                   variant="outline"
@@ -419,19 +555,7 @@ const AssetRequestSheet = ({
                 >
                   Cancel
                 </Button>
-                {isEdit && (
-                  <Button
-                    variant="destructive"
-                    type="button"
-                    size="lg"
-                    onClick={() => setShowRejectReason(true)}
-                    disabled={loading || isSubmittingRejection}
-                  >
-                    {isSubmittingRejection
-                      ? "Rejecting..."
-                      : "Reject with Reason"}
-                  </Button>
-                )}
+
                 <Button
                   type="submit"
                   size="lg"
@@ -441,9 +565,13 @@ const AssetRequestSheet = ({
                   {loading
                     ? mode === "request"
                       ? "Submitting..."
+                      : isEdit
+                      ? "Updating..."
                       : "Assigning..."
                     : mode === "request"
                     ? "Submit Request"
+                    : isEdit
+                    ? "Update Request"
                     : "Assign Asset"}
                 </Button>
               </div>
@@ -451,6 +579,8 @@ const AssetRequestSheet = ({
           )}
         </Formik>
       </SheetComponent>
+
+      {/* Rejection Reason Dialog */}
       <RejectionReasonDialog
         open={showRejectReason}
         onOpenChange={setShowRejectReason}
@@ -462,6 +592,7 @@ const AssetRequestSheet = ({
     </div>
   );
 };
+
 const RejectionReasonDialog = ({
   open,
   onOpenChange,
@@ -523,6 +654,7 @@ const RejectionReasonDialog = ({
     </Dialog>
   );
 };
+
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
