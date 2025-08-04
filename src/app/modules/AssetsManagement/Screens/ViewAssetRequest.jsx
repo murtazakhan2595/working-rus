@@ -22,6 +22,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/@/components/ui/dialog";
+import { StatusButtons, StatusList } from "components";
+import { HasAccess } from "utils/PermissionUtils";
+import { handleRequest } from "app/hooks/general"; 
+import { DetailCard } from "components/SheetCardExtension";
+
 
 const baseUrl = initialState.baseUrl;
 
@@ -140,7 +145,7 @@ const ViewAssetRequest = ({
         formatter: (value) => (
           <span
             className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-              value === "Accepted"
+              value === "Accepted" || value === "Approved"
                 ? "bg-emerald-50 text-teal-700"
                 : value === "Rejected"
                 ? "bg-red-50 text-red-700"
@@ -197,7 +202,7 @@ const ViewAssetRequest = ({
     }
   };
 
-  // Handle asset assignment
+  // 🚀 UPDATED: Asset assignment handler - calls approval API first, then assigns asset
   const handleAssetAssignment = async () => {
     if (!selectedAssetId) {
       toast.error("Please select an asset to assign");
@@ -206,35 +211,57 @@ const ViewAssetRequest = ({
 
     setIsSubmittingStatus(true);
     try {
+      // 🚀 STEP 1: Call the approval API first
+      const approvalResponse = await handleRequest(
+        currentItem?.hierarchy_request ||
+          currentItem?.request ||
+          currentItem?.id,
+        true // true = approve
+      );
+
+      if (!approvalResponse) {
+        toast.error("Failed to approve request");
+        setIsSubmittingStatus(false);
+        return;
+      }
+
+      // 🚀 STEP 2: If approval succeeds, then assign the asset
       const updatedRequest = {
         id: currentItem.id,
         asset_status: "Accepted",
         asset_name: selectedAssetId,
         asset_assigned_by: userProfile.id,
         asset_assigned_date: moment().format("YYYY-MM-DD"),
+        asset_employee_id: currentItem?.asset_employee_id || currentItem?.employee?.id || "",
+        asset_request_status: currentItem?.asset_request_status,
       };
 
       console.log("Asset assignment payload:", updatedRequest);
       const response = await requestAsset(updatedRequest);
 
       if (response) {
-        toast.success("Asset assigned successfully");
+        toast.success("Request approved and asset assigned successfully!");
         setShowAssetSelection(false);
         setSelectedAssetId("");
         setIsOpen(false);
         reload();
       } else {
-        toast.error("Error assigning asset");
+        toast.warning("Request approved but failed to assign asset");
+        // Still close modal since approval worked
+        setShowAssetSelection(false);
+        setSelectedAssetId("");
+        setIsOpen(false);
+        reload();
       }
     } catch (error) {
-      console.error("Error assigning asset:", error);
-      toast.error("Error assigning asset: " + error.message);
+      console.error("Error in approval/assignment process:", error);
+      toast.error("Error processing request: " + error.message);
     } finally {
       setIsSubmittingStatus(false);
     }
   };
 
-  // Handle rejection with reason
+  // 🚀 UPDATED: Rejection handler - calls rejection API first, then saves reason
   const handleRejectWithReason = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
@@ -243,25 +270,48 @@ const ViewAssetRequest = ({
 
     setIsSubmittingStatus(true);
     try {
+      // 🚀 STEP 1: Call the rejection API first
+      const rejectionResponse = await handleRequest(
+        currentItem?.hierarchy_request ||
+          currentItem?.request ||
+          currentItem?.id,
+        false // false = reject
+      );
+
+      if (!rejectionResponse) {
+        toast.error("Failed to reject request");
+        setIsSubmittingStatus(false);
+        return;
+      }
+
+      // 🚀 STEP 2: If rejection succeeds, then save the reason
       const updatedRequest = {
         id: currentItem.id,
         asset_status: "Rejected",
         rejection_reason: rejectionReason,
+        asset_employee_id:
+          currentItem?.asset_employee_id || currentItem?.employee?.id || "",
+        asset_request_status: currentItem?.asset_request_status,
       };
 
       const response = await requestAsset(updatedRequest);
 
       if (response) {
-        toast.success("Asset request rejected successfully");
+        toast.success("Request rejected successfully!");
         setShowRejectReason(false);
         setRejectionReason("");
         setIsOpen(false);
         reload();
       } else {
-        toast.error("Error rejecting asset request");
+        toast.warning("Request rejected but failed to save reason");
+        // Still close modal since rejection worked
+        setShowRejectReason(false);
+        setRejectionReason("");
+        setIsOpen(false);
+        reload();
       }
     } catch (error) {
-      console.error("Error rejecting request:", error);
+      console.error("Error in rejection process:", error);
       toast.error("Error rejecting request: " + error.message);
     } finally {
       setIsSubmittingStatus(false);
@@ -303,6 +353,17 @@ const ViewAssetRequest = ({
       }
     };
 
+    // 🚀 NEW: Custom approve handler - shows asset assignment modal first
+    const handleCustomApprove = () => {
+      setShowAssetSelection(true);
+      fetchAvailableAssets(currentItem);
+    };
+
+    // 🚀 NEW: Custom reject handler - shows rejection reason modal first
+    const handleCustomReject = () => {
+      setShowRejectReason(true);
+    };
+
     // Prepare fields for DetailContent component
     const detailContentFields = [
       {
@@ -336,32 +397,36 @@ const ViewAssetRequest = ({
           )}
         </div>
 
+        {/* Approval Details Section */}
+        {console.log("currentItem", currentItem)}
+
         {/* Request Details */}
         <DetailContent currentItem={currentItem} fields={detailContentFields} />
+        {currentItem?.approval_details &&
+          currentItem.approval_details.length > 0 && (
+            <DetailCard detailCardTitle="Approval Details" className="mt-4">
+              <StatusList status_list={currentItem.approval_details} />
+            </DetailCard>
+          )}
 
-        {/* Action Buttons for HR/Admin */}
-        {showButtons && (
-          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
-            <Button
-              variant="outline"
-              type="button"
-              size="lg"
-              onClick={() => setShowRejectReason(true)}
-              disabled={isSubmittingStatus}
-            >
-              Reject with Reason
-            </Button>
-            <Button
-              type="button"
-              size="lg"
-              variant="default"
-              onClick={handleAcceptClick}
-              disabled={isSubmittingStatus}
-            >
-              Accept & Assign Asset
-            </Button>
-          </div>
-        )}
+        {/* 🚀 ENHANCED: StatusButtons with custom handlers */}
+        <StatusButtons
+          permissionKey={["MANAGE_ASSET_REQUEST"]}
+          permissionLogic="OR"
+          status={currentItem?.status || currentItem?.asset_status}
+          current_approver={currentItem?.current_approver || []}
+          request_id={
+            currentItem?.hierarchy_request ||
+            currentItem?.request ||
+            currentItem?.id
+          }
+          // 🚀 NEW: Custom handlers instead of setResponse
+          onApprove={handleCustomApprove} // Show asset assignment modal
+          onReject={handleCustomReject} // Show rejection reason modal
+          // 🚀 OPTIONAL: Customize button text
+          approveText="Approve & Assign Asset"
+          rejectText="Reject with Reason"
+        />
       </div>
     );
   };
@@ -612,7 +677,7 @@ const AssetSelectionDialog = ({
 
           {/* FIXED: Use DetailContent component for consistency */}
           {selectedAssetId && selectedAssetData && (
-            <div >
+            <div>
               <DetailContent
                 currentItem={selectedAssetData}
                 fields={[
