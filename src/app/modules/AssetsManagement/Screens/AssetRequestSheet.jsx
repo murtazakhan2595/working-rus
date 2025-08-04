@@ -165,7 +165,13 @@ const AssetRequestSheet = ({
             }),
       };
 
+      // remove null or undefined values from payload
+      Object.keys(payload).forEach(
+        (key) => (payload[key] === null || payload[key] === undefined) && delete payload[key]
+      );
+
       const response = await requestAsset(payload);
+      console.log("Asset request response:", response);
       if (response && mode === "assign") {
         const assetMangaementPayload = {
           id: values.asset_name,
