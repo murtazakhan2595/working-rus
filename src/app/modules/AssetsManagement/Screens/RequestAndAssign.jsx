@@ -251,7 +251,7 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
         <CardHeader>
         <CardTitle className="text-primary-1100">
           
-            {activeTab === "requests" ? "Requested By Employee" : "Assign By HR"}
+            {activeTab === "requests" ? "Requested By Employee" : "Direct Assignments"}
           
         </CardTitle>
         <CardDescription className="text-neutral-1100">

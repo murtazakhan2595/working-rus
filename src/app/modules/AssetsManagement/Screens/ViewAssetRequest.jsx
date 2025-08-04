@@ -11,8 +11,17 @@ import { EmployeeOverview } from "components";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { requestAsset } from "app/hooks/assets";
+import { requestAsset, getAssetList } from "app/hooks/assets";
 import { initialState } from "state/slices/UserSlice";
+import { SelectInputComponent, TextAreaInput } from "components/FormControl";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "src/@/components/ui/dialog";
 
 const baseUrl = initialState.baseUrl;
 
@@ -26,6 +35,18 @@ const ViewAssetRequest = ({
   onEdit = null,
 }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
+
+  // Asset selection state
+  const [showAssetSelection, setShowAssetSelection] = useState(false);
+  const [availableAssets, setAvailableAssets] = useState([]);
+  const [selectedAssetId, setSelectedAssetId] = useState("");
+  const [isLoadingAssets, setIsLoadingAssets] = useState(false);
+  const [isSubmittingStatus, setIsSubmittingStatus] = useState(false);
+
+  // Rejection dialog state
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+
   console.log("data", data);
 
   // Define the fields to display - using a function to get current item
@@ -141,41 +162,144 @@ const ViewAssetRequest = ({
       return true;
     });
 
+  // FIXED: Fetch available assets for assignment with proper data structure
+  const fetchAvailableAssets = async (currentItem) => {
+    if (!currentItem?.category_id && !currentItem?.category?.id) return;
+
+    setIsLoadingAssets(true);
+    try {
+      const categoryId = currentItem.category_id || currentItem.category?.id;
+      const assetsResponse = await getAssetList({
+        options: { page: 1, sizePerPage: 100 },
+        filterData: {
+          asset_status: "Unassigned",
+          asset_category: categoryId,
+        },
+      });
+      console.log("Available assets response:", assetsResponse);
+
+      if (assetsResponse && assetsResponse.results) {
+        // FIXED: Store the complete asset data, not just value/label
+        const formattedAssets = assetsResponse.results.map((asset) => ({
+          value: asset.id,
+          label: asset.asset_name,
+          category_id: asset.category_id,
+          // Store the complete asset data for details display
+          assetData: asset,
+        }));
+        setAvailableAssets(formattedAssets);
+      }
+    } catch (error) {
+      console.error("Error fetching available assets:", error);
+      toast.error("Failed to load available assets");
+    } finally {
+      setIsLoadingAssets(false);
+    }
+  };
+
+  // Handle asset assignment
+  const handleAssetAssignment = async () => {
+    if (!selectedAssetId) {
+      toast.error("Please select an asset to assign");
+      return;
+    }
+
+    setIsSubmittingStatus(true);
+    try {
+      const updatedRequest = {
+        id: currentItem.id,
+        asset_status: "Accepted",
+        asset_name: selectedAssetId,
+        asset_assigned_by: userProfile.id,
+        asset_assigned_date: moment().format("YYYY-MM-DD"),
+      };
+
+      console.log("Asset assignment payload:", updatedRequest);
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        toast.success("Asset assigned successfully");
+        setShowAssetSelection(false);
+        setSelectedAssetId("");
+        setIsOpen(false);
+        reload();
+      } else {
+        toast.error("Error assigning asset");
+      }
+    } catch (error) {
+      console.error("Error assigning asset:", error);
+      toast.error("Error assigning asset: " + error.message);
+    } finally {
+      setIsSubmittingStatus(false);
+    }
+  };
+
+  // Handle rejection with reason
+  const handleRejectWithReason = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    setIsSubmittingStatus(true);
+    try {
+      const updatedRequest = {
+        id: currentItem.id,
+        asset_status: "Rejected",
+        rejection_reason: rejectionReason,
+      };
+
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        toast.success("Asset request rejected successfully");
+        setShowRejectReason(false);
+        setRejectionReason("");
+        setIsOpen(false);
+        reload();
+      } else {
+        toast.error("Error rejecting asset request");
+      }
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      toast.error("Error rejecting request: " + error.message);
+    } finally {
+      setIsSubmittingStatus(false);
+    }
+  };
+
   // Custom content with employee overview and status
   const CustomContent = ({ currentItem }) => {
-    const showButtons =
-      !isMyRequest &&
-      currentItem?.asset_status === "Pending";
+    const showButtons = !isMyRequest && currentItem?.asset_status === "Pending";
 
-    const handleStatusChange = async (status) => {
+    // Handle accept button click
+    const handleAcceptClick = () => {
+      setShowAssetSelection(true);
+      fetchAvailableAssets(currentItem);
+    };
+
+    // Handle withdrawal for employee
+    const handleWithdrawal = async () => {
+      setIsSubmittingStatus(true);
       try {
-        let updatedRequest = {};
-        if (isMyRequest) {
-          updatedRequest = {
-            ...currentItem,
-            asset_status: status,
-          };
-        } else {
-          updatedRequest = {
-            ...currentItem,
-            asset_status: status,
-            asset_assigned_by: userProfile.id,
-            asset_assigned_date:
-              status === "Accepted" ? moment().format("YYYY-MM-DD") : null,
-          };
-        }
+        const updatedRequest = {
+          id: currentItem.id,
+          asset_status: "Withdrawal",
+        };
 
         const response = await requestAsset(updatedRequest);
         if (response) {
-          toast.success("Asset request updated successfully");
+          toast.success("Request withdrawn successfully");
           setIsOpen(false);
           reload();
         } else {
-          toast.error("Error updating asset request");
+          toast.error("Error withdrawing request");
         }
       } catch (error) {
-        console.error("Error updating request:", error);
-        toast.error("Error updating request: " + error.message);
+        console.error("Error withdrawing request:", error);
+        toast.error("Error withdrawing request: " + error.message);
+      } finally {
+        setIsSubmittingStatus(false);
       }
     };
 
@@ -204,9 +328,10 @@ const ViewAssetRequest = ({
           {isMyRequest && currentItem?.asset_status === "Pending" && (
             <Button
               variant="destructiveOutline"
-              onClick={() => handleStatusChange("Withdrawal")}
+              onClick={handleWithdrawal}
+              disabled={isSubmittingStatus}
             >
-              Withdraw Request
+              {isSubmittingStatus ? "Processing..." : "Withdraw Request"}
             </Button>
           )}
         </div>
@@ -221,13 +346,8 @@ const ViewAssetRequest = ({
               variant="outline"
               type="button"
               size="lg"
-              onClick={() => {
-                // Handle reject with reason - could open a dialog
-                const reason = prompt("Please provide a reason for rejection:");
-                if (reason) {
-                  handleStatusChange("Rejected");
-                }
-              }}
+              onClick={() => setShowRejectReason(true)}
+              disabled={isSubmittingStatus}
             >
               Reject with Reason
             </Button>
@@ -235,7 +355,8 @@ const ViewAssetRequest = ({
               type="button"
               size="lg"
               variant="default"
-              onClick={() => handleStatusChange("Accepted")}
+              onClick={handleAcceptClick}
+              disabled={isSubmittingStatus}
             >
               Accept & Assign Asset
             </Button>
@@ -316,18 +437,275 @@ const ViewAssetRequest = ({
   };
 
   return (
-    <ViewDetailSheetCardExtension
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      title="Asset Request Detail"
-      handlePrevious={handlePrevious}
-      handleNext={handleNext}
-      positionIndicator={getPositionIndicator()}
-    >
-      <div className="flex flex-col gap-4">
-        <CustomContent currentItem={currentItem} />
-      </div>
-    </ViewDetailSheetCardExtension>
+    <>
+      <ViewDetailSheetCardExtension
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        title="Asset Request Detail"
+        handlePrevious={handlePrevious}
+        handleNext={handleNext}
+        positionIndicator={getPositionIndicator()}
+      >
+        <div className="flex flex-col gap-4">
+          <CustomContent currentItem={currentItem} />
+        </div>
+      </ViewDetailSheetCardExtension>
+
+      {/* Asset Selection Dialog */}
+      <AssetSelectionDialog
+        open={showAssetSelection}
+        onOpenChange={setShowAssetSelection}
+        onSubmit={handleAssetAssignment}
+        isSubmitting={isSubmittingStatus}
+        assets={availableAssets}
+        selectedAssetId={selectedAssetId}
+        setSelectedAssetId={setSelectedAssetId}
+        isLoading={isLoadingAssets}
+        category={currentItem?.category?.name}
+      />
+
+      {/* Rejection Reason Dialog */}
+      <RejectionReasonDialog
+        open={showRejectReason}
+        onOpenChange={setShowRejectReason}
+        onSubmit={handleRejectWithReason}
+        isSubmitting={isSubmittingStatus}
+        reason={rejectionReason}
+        setReason={setRejectionReason}
+      />
+    </>
+  );
+};
+
+// FIXED: Asset Selection Dialog Component
+const AssetSelectionDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isSubmitting,
+  assets,
+  selectedAssetId,
+  setSelectedAssetId,
+  isLoading,
+  category,
+}) => {
+  const handleOpenChange = (newOpen) => {
+    if (!newOpen) {
+      setSelectedAssetId("");
+    }
+    onOpenChange(newOpen);
+  };
+
+  // FIXED: Get selected asset data properly
+  const selectedAssetData = assets.find(
+    (asset) => asset.value === selectedAssetId
+  )?.assetData;
+
+  // Create fields array for selected asset details using the same format as getFields
+  const getSelectedAssetFields = (assetData) => {
+    if (!assetData) return [];
+
+    const baseFields = [
+      {
+        key: "asset_name",
+        label: "Asset Name",
+        formatter: () => assetData.asset_name,
+      },
+      {
+        key: "id",
+        label: "Asset ID",
+        formatter: () => assetData.id,
+      },
+      {
+        key: "asset_purchase_price",
+        label: "Purchase Price",
+        formatter: () =>
+          assetData.asset_purchase_price
+            ? `${assetData.asset_purchase_price}`
+            : "Not specified",
+      },
+      {
+        key: "asset_initial_condition",
+        label: "Condition",
+        formatter: () => assetData.asset_initial_condition || "Not specified",
+      },
+      {
+        key: "asset_location_name",
+        label: "Location",
+        formatter: () => assetData.asset_location_name || "Not specified",
+      },
+      {
+        key: "asset_purchase_date",
+        label: "Purchase Date",
+        formatter: () =>
+          assetData.asset_purchase_date
+            ? moment(assetData.asset_purchase_date).format("MMM D, YYYY")
+            : "Not specified",
+      },
+      {
+        key: "asset_warranty_expiry",
+        label: "Warranty Expiry",
+        formatter: () =>
+          assetData.asset_warranty_expiry
+            ? moment(assetData.asset_warranty_expiry).format("MMM D, YYYY")
+            : "Not specified",
+      },
+      {
+        key: "asset_notes",
+        label: "Notes",
+        formatter: () => assetData.asset_notes || "No notes",
+      },
+    ];
+
+    // Add dynamic fields if they exist
+    const dynamicFields = [];
+    if (
+      assetData.dynamic_field_values &&
+      Object.keys(assetData.dynamic_field_values).length > 0
+    ) {
+      Object.entries(assetData.dynamic_field_values).forEach(([key, value]) => {
+        dynamicFields.push({
+          key: `dynamic_${key}`,
+          label: key,
+          formatter: () => value,
+        });
+      });
+    }
+
+    return [...baseFields, ...dynamicFields].filter((field) => {
+      // Filter out empty notes
+      if (field.key === "asset_notes" && !assetData.asset_notes) return false;
+      // Filter out empty warranty expiry
+      if (
+        field.key === "asset_warranty_expiry" &&
+        !assetData.asset_warranty_expiry
+      )
+        return false;
+      return true;
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Select Asset to Assign</DialogTitle>
+          <DialogDescription>
+            Choose an available {category} to assign to this request
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-1 py-4">
+          <SelectInputComponent
+            name="asset_selection"
+            error={false}
+            touch={false}
+            value={selectedAssetId}
+            label="Available Assets"
+            required={true}
+            options={assets}
+            onChange={(field, value) => {
+              setSelectedAssetId(value);
+            }}
+            placeholder={isLoading ? "Loading assets..." : "Select an asset"}
+            isLoading={isLoading}
+          />
+
+          {/* FIXED: Use DetailContent component for consistency */}
+          {selectedAssetId && selectedAssetData && (
+            <div >
+              <DetailContent
+                currentItem={selectedAssetData}
+                fields={[
+                  {
+                    field: getSelectedAssetFields(selectedAssetData),
+                    title: "Selected Asset Details",
+                  },
+                ]}
+              />
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            disabled={!selectedAssetId || isSubmitting}
+          >
+            {isSubmitting ? "Assigning..." : "Assign Asset"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Rejection Reason Dialog Component
+const RejectionReasonDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isSubmitting,
+  reason,
+  setReason,
+}) => {
+  const [touched, setTouched] = useState(false);
+
+  const handleOpenChange = (newOpen) => {
+    if (!newOpen) {
+      setReason("");
+      setTouched(false);
+    }
+    onOpenChange(newOpen);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Rejection Reason</DialogTitle>
+          <DialogDescription>
+            Please provide a reason for rejecting this request
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <TextAreaInput
+            name="rejection_reason"
+            error={touched && reason.trim() === ""}
+            touch={touched}
+            value={reason}
+            label={"Rejection Reason"}
+            required={true}
+            onChange={(field, value) => {
+              setReason(value);
+              setTouched(true);
+            }}
+            maxRows={3}
+            placeholder={"Please provide a reason for rejecting this request"}
+          />
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            disabled={reason.trim() === "" || isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
