@@ -79,9 +79,9 @@ const ShiftRequest = () => {
       if (hasTabAccess) {
         // HR view with tabs
         if (activeTab === "Request") {
-          filterData.status = filters.status || "Pending";
+          filterData.status = filters.status || "PENDING";
         } else if (activeTab === "Record") {
-          filterData.status = filters.status || "Approved,Rejected";
+          filterData.status = filters.status || "APPROVED,REJECTED";
           filterData.is_change_request = "true,false";
         }
       } else {
@@ -182,8 +182,8 @@ const ShiftRequest = () => {
                 {
                   type: "select",
                   options: [
-                    { label: "Approved", value: "Approved" },
-                    { label: "Rejected", value: "Rejected" },
+                    { label: "Approved", value: "APPROVED" },
+                    { label: "Rejected", value: "REJECTED" },
                   ],
                   name: "status",
                   placeholder: "Status",

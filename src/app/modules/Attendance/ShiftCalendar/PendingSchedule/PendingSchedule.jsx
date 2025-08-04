@@ -75,13 +75,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     try {
       const originalSchedule = approveState.data;
       setApproveState(null);
-      // Generate log for the new approved entry
-      await generateShiftScheduleLog({
-        scheduleData: originalSchedule,
-        logType: "Change Request",
-        userProfile,
-        status: "Approved",
-      });
+
 
       // Approve Schedule
       const newResponse = await handleRequest(originalSchedule.hierarchy_request, true);
@@ -89,7 +83,13 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
       if (newResponse) {
         toast.success("Schedule approved successfully!");
         setActiveSchedule(null);
-
+        // Generate log for the new approved entry
+        await generateShiftScheduleLog({
+          scheduleData: originalSchedule,
+          logType: "Shift Approved",
+          userProfile,
+          status: "Approved",
+        });
         // Reload the data
         if (typeof reload === "function") {
           reload();
@@ -115,13 +115,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     try {
       const originalSchedule = rejectState.data;
       setRejectState(null);
-      // No log generation when moving rejected schedules back to drafts
-      await generateShiftScheduleLog({
-        scheduleData: rejectState.data,
-        logType: "Change Request",
-        userProfile,
-        status: "Rejected",
-      });
+
       // Create a new approved record
 
       // Create new approved schedule
@@ -139,7 +133,13 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
         toast.success("Schedule rejected and moved back to drafts");
         setRejectReason("");
         setActiveSchedule(null); // Clear selection after rejection
-
+        // No log generation when moving rejected schedules back to drafts
+        await generateShiftScheduleLog({
+          scheduleData: rejectState.data,
+          logType: "Shift Rejected",
+          userProfile,
+          status: "Rejected",
+        });
         // Reload the data
         if (typeof reload === "function") {
           reload();
@@ -170,6 +170,24 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
     }
   };
 
+  const FinalPendingSchedule = React.useMemo(() => {
+    if (!userProfile?.role || !Array.isArray(userProfile.role)) return [];
+    if (!pendingSchedules?.results || !Array.isArray(pendingSchedules.results)) return [];
+
+    // Admin role check (assuming role 1 is admin)
+    if (userProfile.role.includes(1)) return pendingSchedules.results;
+
+    // Filter only if current_approver is an array
+    const ownRequest = pendingSchedules.results.filter(
+      (obj) =>
+        Array.isArray(obj.current_approver) &&
+        obj.current_approver.includes(userProfile.id)
+    );
+
+    return ownRequest;
+  }, [pendingSchedules, userProfile]);
+
+
   return (
     <div className="flex gap-2">
       <Card className="min-w-[40%]">
@@ -177,21 +195,23 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
           <CardTitle>
             <div className="flex justify-between">
               <p className="text-sm">All Members</p>
-              <p className="text-sm">{pendingSchedules?.count || 0}</p>
+              <p className="text-sm">{FinalPendingSchedule?.length || 0}</p>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="max-h-[700px] overflow-auto">
-          {pendingSchedules?.count > 0 &&
-            pendingSchedules?.results?.map((schedule, index) => (
-              <ListView
-                pendingShift={schedule}
-                key={index}
-                handleSelect={handleScheduleSelect}
-                active={activeSchedule}
-                getShiftName={getShiftName}
-              />
-            ))}
+          {FinalPendingSchedule &&
+            FinalPendingSchedule?.map((schedule, index) => {
+              return (
+                <ListView
+                  pendingShift={schedule}
+                  key={index}
+                  handleSelect={handleScheduleSelect}
+                  active={activeSchedule}
+                  getShiftName={getShiftName}
+                />
+              )
+            })}
           {(!pendingSchedules?.results ||
             pendingSchedules.results.length === 0) && (
               <div className="text-center py-4">No pending schedule found</div>
