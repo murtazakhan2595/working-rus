@@ -4,7 +4,13 @@ import { Button } from "components/ui/button";
 import { Header, UnauthorizedAccess } from "components";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
-import { Card, CardContent, CardDescription, CardTitle, CardHeader } from "components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+  CardHeader,
+} from "components/ui/card";
 import {
   Tabs,
   TabsList,
@@ -19,6 +25,10 @@ import { AssetRequestColumns } from "app/utils/Types/TableColumns";
 import { getEmployeeAssets } from "app/hooks/assets";
 import { HasAccess } from "utils/PermissionUtils";
 
+// Sub-tab styling to match Time Adjustments
+const innerTabClassName =
+  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
+
 const AssetRequests = ({ userProfile, departments, employees }) => {
   // Permission checks for asset request management features
   const canViewAssetRequests = HasAccess("VIEW_ASSETS_REQUEST");
@@ -26,15 +36,16 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
   const canAssignAssets = HasAccess("ASSIGN_ASSETS_TO_EMPLOYEE");
 
   const [activeTab, setActiveTab] = useState("requests"); // "requests" or "assignments"
+  const [activeSubTab, setActiveSubTab] = useState("Requests"); // "Requests" or "Records" for requests tab
 
   // Common state
   const [isLoading, setIsLoading] = useState(false);
   const [requestsData, setRequestsData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({ asset_status: "Pending" });
   const [openRequestDetailSheet, setOpenRequestDetailSheet] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("Pending");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [editRequest, setEditRequest] = useState(null);
 
@@ -52,24 +63,59 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
-  // Reset filter states when tab changes
+  // UPDATED: Reset filter states when tab changes
   useEffect(() => {
-    setFilterData({});
-    setSelectedStatus("");
+    if (activeTab === "requests") {
+      // Set default filters for requests tab
+      if (activeSubTab === "Requests") {
+        setFilterData({ asset_status: "Pending" });
+        setSelectedStatus("Pending");
+      }
+    } else {
+      // Reset filters for assignments tab
+      setFilterData({});
+      setSelectedStatus("");
+    }
     setSelectedDepartment("");
     setOptions({ page: 1, sizePerPage: 10 });
   }, [activeTab]);
+  useEffect(() => {
+    if (activeTab === "requests" && activeSubTab === "Requests") {
+      setFilterData({ asset_status: "Pending" });
+      setSelectedStatus("Pending");
+    }
+  }, []); // Run only on component mount
+
+  // Handle sub-tab changes and set appropriate filters
+  const handleSubTabChange = (subTab) => {
+    setActiveSubTab(subTab);
+    setOptions({ page: 1, sizePerPage: 10 });
+
+    if (subTab === "Requests") {
+      setFilterData({ asset_status: "Pending" });
+      setSelectedStatus("Pending");
+    } else if (subTab === "Records") {
+      setFilterData({ asset_status: "Accepted,Rejected,Withdrawal" });
+      setSelectedStatus("");
+    }
+  };
 
   const fetchRequestsData = async (isMounted = true) => {
     setIsLoading(true);
     try {
       if (isMounted) {
+        let requestStatus = "Requested";
+
+        // Determine request status based on active tab
+        if (activeTab === "assignments") {
+          requestStatus = "Assigned";
+        }
+
         const response = await getEmployeeAssets({
           options,
           filterData: {
             ...filterData,
-            asset_request_status:
-              activeTab === "requests" ? "Requested" : "Assigned",
+            asset_request_status: requestStatus,
           },
         });
 
@@ -107,8 +153,21 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
 
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
+      if (filterValue === "" || filterValue === null) {
+        if (filterName === "asset_status") {
+          // Handle status filter reset based on active sub-tab
+          if (activeTab === "requests") {
+            if (activeSubTab === "Requests") {
+              updatedFilters[filterName] = "Pending";
+            } else if (activeSubTab === "Records") {
+              updatedFilters[filterName] = "Accepted,Rejected,Withdrawal";
+            }
+          } else {
+            delete updatedFilters[filterName];
+          }
+        } else {
+          delete updatedFilters[filterName];
+        }
       } else {
         updatedFilters[filterName] = filterValue;
       }
@@ -122,14 +181,14 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
     onPageChange: onPageChange,
   };
 
-  // Load data based on active tab
+  // Load data based on active tab and sub-tab
   useEffect(() => {
     let isMounted = true;
     fetchRequestsData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [activeTab, options, filterData]);
+  }, [activeTab, activeSubTab, options, filterData]);
 
   // Action handlers for the dropdown menu
   const handleViewRequest = (row) => {
@@ -140,9 +199,12 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
 
   const handleEditRequest = (row) => {
     console.log("Edit asset request:", row);
-    
+
     // Allow edit for Pending and Rejected requests
-    if ((row.asset_status === "Pending" || row.asset_status === "Rejected") && row.asset_request_status === "Requested") {
+    if (
+      (row.asset_status === "Pending" || row.asset_status === "Rejected") &&
+      row.asset_request_status === "Requested"
+    ) {
       // Close the view sheet if it's open
       setOpenRequestDetailSheet(false);
       setSelectedRequest(null);
@@ -161,7 +223,7 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
   // Tab configuration
   const tabsData = [
     { value: "requests", label: "Requested By Employee" },
-    { value: "assignments", label: "Assign By HR" },
+    { value: "assignments", label: "Direct Assignments" },
   ];
 
   const enhancedRequestColumns = [
@@ -169,40 +231,87 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
       handleViewRequest,
       handleEditRequest,
       handleRejectRequest
-    ).filter((col) => col.dataField !== "id"), 
+    ).filter((col) => col.dataField !== "id"),
   ];
 
-  const filters = [
-    {
-      type: "search",
-      placeholder: "Employee Name or ID",
-      name: "emp_name",
-    },
-    {
-      type: "select-one",
-      option: [
-        { value: "Pending", label: "Pending" },
-        { value: "Rejected", label: "Rejected" },
-        { value: "Accepted", label: "Accepted" },
-      ],
-      name: "asset_status",
-      placeholder: "Status",
-      values: selectedStatus,
-    },
-    {
+  // Get filter options based on active tab and sub-tab
+  const getFilters = () => {
+    const baseFilters = [
+      {
+        type: "search",
+        placeholder: "Employee Name or ID",
+        name: "emp_name",
+      },
+    ];
+
+    if (activeTab === "requests") {
+      if (activeSubTab === "Records") {
+        // For Records sub-tab, show status filter
+        baseFilters.push({
+          type: "select-one",
+          option: [
+            { value: "Accepted", label: "Accepted" },
+            { value: "Rejected", label: "Rejected" },
+            { value: "Withdrawal", label: "Withdrawal" },
+          ],
+          name: "asset_status",
+          placeholder: "Status",
+          values: selectedStatus,
+        });
+      }
+      // For Requests sub-tab, we don't show status filter as it's fixed to "Pending"
+    } else {
+      // For assignments tab, show all statuses
+      baseFilters.push({
+        type: "select-one",
+        option: [
+          { value: "Pending", label: "Pending" },
+          { value: "Rejected", label: "Rejected" },
+          { value: "Accepted", label: "Accepted" },
+        ],
+        name: "asset_status",
+        placeholder: "Status",
+        values: selectedStatus,
+      });
+    }
+
+    // Add department filter
+    baseFilters.push({
       type: "select-two",
       option: departments || [],
       name: "department_name",
       placeholder: "Department",
       values: selectedDepartment,
-    },
-  ];
+    });
+
+    return baseFilters;
+  };
 
   const getActionButton = () => {
     if (activeTab === "assignments" && canAssignAssets) {
       return <Button onClick={handleAssignAsset}>Assign Asset</Button>;
     }
     return null;
+  };
+
+  // Get title and description based on active tab and sub-tab
+  const getTabContent = () => {
+    if (activeTab === "requests") {
+      return {
+        title:
+          activeSubTab === "Requests" ? "Asset Requests" : "Request Records",
+        description:
+          activeSubTab === "Requests"
+            ? "Here you can manage pending asset requests from employees."
+            : "Here you can view the history of processed asset requests.",
+      };
+    } else {
+      return {
+        title: "Direct Assignments",
+        description:
+          "Here you can manage direct asset assignments. Add, edit, or delete assignments as needed.",
+      };
+    }
   };
 
   // If user has no asset request management permissions at all
@@ -217,6 +326,8 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
       />
     );
   }
+
+  const tabContent = getTabContent();
 
   return (
     <div
@@ -244,67 +355,105 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          
         </div>
 
         <Card>
-        <CardHeader>
-        <CardTitle className="text-primary-1100">
-          
-            {activeTab === "requests" ? "Requested By Employee" : "Assign By HR"}
-          
-        </CardTitle>
-        <CardDescription className="text-neutral-1100">
-        {activeTab === "requests" ? "Here you can manage your requests. Add, edit, or delete requests as needed." : "Here you can manage your assignments. Add, edit, or delete assignments as needed."}
-        </CardDescription>
-        <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex justify-end mt-2 lg:mt-0 md:mt-0 xl:mt-0"
-          >
-            <FilterInput filters={filters} onChange={handleFilterChange} />
-          </div>
-        </CardHeader>
-          <CardContent>
-            <TabsContent value="requests">
-              {canViewAssetRequests ? (
-                <CustomTable
-                  columns={enhancedRequestColumns}
-                  data={isLoading ? [] : requestsData}
-                  pagination={true}
-                  dataTotalSize={totalCount}
-                  tableOptions={tableOptions}
-                  loading={isLoading}
-                />
-              ) : (
-                <UnauthorizedAccess
-                  title="Asset Requests Access Denied"
-                  featureName="asset requests"
-                  message="You don't have permission to view asset requests."
-                  size="md"
-                />
-              )}
-            </TabsContent>
+          <TabsContent value="requests">
+            {canViewAssetRequests ? (
+              <Tabs
+                className="w-full"
+                onValueChange={handleSubTabChange}
+                value={activeSubTab}
+              >
+                <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+                  <TabsList className="flex items-center justify-center ">
+                    {["Requests", "Records"].map((tab) => (
+                      <TabsTrigger
+                        key={tab}
+                        value={tab}
+                        className={innerTabClassName}
+                      >
+                        {tab}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
 
-            <TabsContent value="assignments">
-              {canViewAssetRequests ? (
-                <CustomTable
-                  columns={enhancedRequestColumns}
-                  data={isLoading ? [] : requestsData}
-                  pagination={true}
-                  dataTotalSize={totalCount}
-                  tableOptions={tableOptions}
-                  loading={isLoading}
-                />
-              ) : (
-                <UnauthorizedAccess
-                  title="Asset Assignments Access Denied"
-                  featureName="asset assignments"
-                  message="You don't have permission to view asset assignments."
-                  size="md"
-                />
-              )}
-            </TabsContent>
-          </CardContent>
+                <div className="flex flex-col gap-4 px-6">
+                  <CardTitle className="text-primary ">
+                    {tabContent.title}
+                  </CardTitle>
+                  <CardDescription className="text-neutral-1100">
+                    {tabContent.description}
+                  </CardDescription>
+                  <FilterInput
+                    filters={getFilters()}
+                    onChange={handleFilterChange}
+                    className="justify-end"
+                  />
+                  <CardContent className="px-0">
+                    <CustomTable
+                      columns={enhancedRequestColumns}
+                      data={isLoading ? [] : requestsData}
+                      pagination={true}
+                      dataTotalSize={totalCount}
+                      tableOptions={tableOptions}
+                      loading={isLoading}
+                    />
+                  </CardContent>
+                </div>
+              </Tabs>
+            ) : (
+              <UnauthorizedAccess
+                title="Asset Requests Access Denied"
+                featureName="asset requests"
+                message="You don't have permission to view asset requests."
+                size="md"
+              />
+            )}
+          </TabsContent>
+          <TabsContent value="assignments">
+            {canViewAssetRequests ? (
+              // REMOVE this div wrapper: <div className="flex flex-col gap-4 px-6">
+              <>
+                <CardHeader>
+                  <CardTitle className="text-primary-1100">
+                    {tabContent.title}
+                  </CardTitle>
+                  <CardDescription className="text-neutral-1100">
+                    {tabContent.description}
+                  </CardDescription>
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex justify-end mt-2 lg:mt-0 md:mt-0 xl:mt-0"
+                  >
+                    <FilterInput
+                      filters={getFilters()}
+                      onChange={handleFilterChange}
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CustomTable
+                    columns={enhancedRequestColumns}
+                    data={isLoading ? [] : requestsData}
+                    pagination={true}
+                    dataTotalSize={totalCount}
+                    tableOptions={tableOptions}
+                    loading={isLoading}
+                  />
+                </CardContent>
+              </>
+            ) : (
+              // REMOVE this closing div: </div>
+              <UnauthorizedAccess
+                title="Asset Assignments Access Denied"
+                featureName="asset assignments"
+                message="You don't have permission to view asset assignments."
+                size="md"
+              />
+            )}
+          </TabsContent>
         </Card>
       </Tabs>
 
@@ -345,7 +494,6 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
           onEdit={handleEditRequest}
         />
       )}
-
     </div>
   );
 };
