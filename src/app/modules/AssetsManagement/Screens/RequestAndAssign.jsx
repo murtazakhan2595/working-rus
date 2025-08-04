@@ -95,7 +95,7 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
       setFilterData({ asset_status: "Pending" });
       setSelectedStatus("Pending");
     } else if (subTab === "Records") {
-      setFilterData({ asset_status: "Accepted,Rejected,Withdrawal" });
+      setFilterData({ asset_status: ["Accepted", "Rejected", "Withdrawal"] });
       setSelectedStatus("");
     }
   };
