@@ -146,29 +146,27 @@ const LeaveRequest = ({ id, reloadData = () => { } }) => {
       // Ensure defaults
       FormValues.full_paid_days = 0;
       FormValues.half_paid_days = 0;
-      if (allowedHalfPaid > 0 || allowedHalfPaid > 0) {
-        if (values.is_full_paid) {
-          if (total_days > allowedFullPaid) {
-            const remainingDays = total_days - allowedFullPaid;
-            FormValues.full_paid_days = allowedFullPaid;
-            if (remainingDays > allowedHalfPaid) {
-              FormValues.half_paid_days = allowedHalfPaid;
-            } else
-              FormValues.half_paid_days = remainingDays;
-          } else {
-            // All leave within allowed full paid limit
-            FormValues.full_paid_days = total_days;
-          }
-        } else {
-          // Part of the leave will be half paid, rest full paid if total exceeds allowedHalfPaid
-          if (total_days > allowedHalfPaid) {
-            const remainingDays = total_days - allowedHalfPaid;
-            FormValues.full_paid_days = remainingDays;
+      if (values.is_full_paid) {
+        if (total_days > allowedFullPaid) {
+          const remainingDays = total_days - allowedFullPaid;
+          FormValues.full_paid_days = allowedFullPaid;
+          if (remainingDays > allowedHalfPaid) {
             FormValues.half_paid_days = allowedHalfPaid;
-          } else {
-            // All leave within allowed half paid limit
-            FormValues.half_paid_days = total_days;
-          }
+          } else
+            FormValues.half_paid_days = remainingDays;
+        } else {
+          // All leave within allowed full paid limit
+          FormValues.full_paid_days = total_days;
+        }
+      } else {
+        // Part of the leave will be half paid, rest full paid if total exceeds allowedHalfPaid
+        if (total_days > allowedHalfPaid) {
+          const remainingDays = total_days - allowedHalfPaid;
+          FormValues.full_paid_days = remainingDays;
+          FormValues.half_paid_days = allowedHalfPaid;
+        } else {
+          // All leave within allowed half paid limit
+          FormValues.half_paid_days = total_days;
         }
       }
     } else {
@@ -206,8 +204,6 @@ const LeaveRequest = ({ id, reloadData = () => { } }) => {
   const handleAddLeaveClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    //   const FormValues = mapTimeAdjustmentFromAttendance(attendance, today_shift);
-    //   setFormData(FormValues);
     setIsOpen(true);
   };
   const handleClose = () => {

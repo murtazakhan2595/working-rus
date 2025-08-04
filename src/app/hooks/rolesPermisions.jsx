@@ -8,7 +8,6 @@ import {
   mapUserRolePayloadData,
   mapUserRolePermissionsPayloadData,
   mapUserRoleData,
-  mapUserRolePermissionsData,
   mapRoleAssignmentHistoryLogsListData,
   mapEffectivePermissionsListData,
   mapUserPermissionsListData,
