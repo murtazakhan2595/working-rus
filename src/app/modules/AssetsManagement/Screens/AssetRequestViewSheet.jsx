@@ -32,6 +32,7 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog";
 import { TextAreaInput, SelectInputComponent } from "components/FormControl";
+import { StatusList } from "components";
 
 const AssetRequestViewSheet = ({
   request,
@@ -411,39 +412,15 @@ const AssetRequestViewSheet = ({
           </div>
         </DetailCard>
 
-        {/* Approval Status Section */}
-        <DetailCard detailCardTitle="Request Status 1">
-          <div className="flex items-center justify-between w-full gap-4">
-            <section className="flex relative flex-col max-w-[382px] mt-3">
-              <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
-              {approvalSteps.map((step, index) => (
-                <div
-                  key={index}
-                  className="z-0 flex items-center justify-between w-full gap-10"
-                >
-                  <div className="flex gap-4 self-stretch my-auto w-[194px]">
-                    <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
-                      <img
-                        loading="lazy"
-                        src={step.icon}
-                        alt=""
-                        className="object-contain self-stretch my-auto aspect-square w-[25px]"
-                      />
-                    </div>
-                    <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
-                      {step.text}
-                    </div>
-                  </div>
-                  {step.time && (
-                    <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
-                      {step.time}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </section>
-          </div>
-        </DetailCard>
+        {assetRequest?.approval_details &&
+        assetRequest.approval_details.length > 0 && (
+          <DetailCard detailCardTitle="Approval Details" className="mt-4">
+            <StatusList
+              status_list={assetRequest.approval_details}
+              className="my-3"
+            />
+          </DetailCard>
+        )}
 
         {assetRequest?.rejection_reason && (
           <div className="p-3 mt-4 text-sm border rounded-md bg-gray-50 text-gray-1100">
