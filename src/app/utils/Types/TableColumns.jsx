@@ -1000,14 +1000,17 @@ export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
         handleReject && handleReject(row);
       };
 
-      // Determine available actions based on status
+      // Determine available actions based on status only
       const isPending = row.asset_status === "Pending";
       const isRejected = row.asset_status === "Rejected";
 
-      // Show Edit for Pending and Rejected requests
-      // Show Reject for Pending requests only
-      // Always show View
-      const canEdit = isPending || isRejected;
+      const hasAnyApproval = row.approval_details?.some(
+        (approval) =>
+          approval.status === "APPROVED" || approval.status === "ACCEPTED"
+      );
+
+      const canEdit =
+        !hasAnyApproval && row.asset_request_status === "Requested";
       const canReject = isPending;
 
       return (
@@ -1020,6 +1023,10 @@ export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
             editText="Edit Request"
             deleteText="Reject Request"
             menuTooltip="Request Actions"
+            // ✅ UPDATED: Pass show/hide flags for better UX
+            showEdit={canEdit}
+            showDelete={canReject}
+            showView={true}
           />
         </div>
       );
