@@ -153,9 +153,9 @@ const AssetRequestViewSheet = ({
         ? moment(assetRequest?.asset_assigned_date).format("MMM D, YYYY")
         : "Not assigned yet",
     },
-    assetRequest?.asset_return_date && {
+    assetRequest?.asset_returned_date && {
       label: "Return Date",
-      value: moment(assetRequest?.asset_return_date).format("MMM D, YYYY"),
+      value: moment(assetRequest?.asset_returned_date).format("MMM D, YYYY"),
     },
     assetRequest?.additional_notes && {
       label: "Additional Notes",

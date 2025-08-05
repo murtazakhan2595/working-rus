@@ -123,7 +123,7 @@ const ViewAssetRequest = ({
           value ? moment(value).format("MMM D, YYYY") : "Not assigned yet",
       },
       {
-        key: "asset_return_date",
+        key: "asset_returned_date",
         label: "Return Date",
         formatter: (value) =>
           value ? moment(value).format("MMM D, YYYY") : "N/A",

@@ -94,7 +94,7 @@ const AssetRequestSheet = ({
             assign_date:
               editData?.asset_assigned_date ||
               new Date().toISOString().split("T")[0],
-            return_date: editData?.asset_return_date || null,
+            return_date: editData?.asset_returned_date || null,
             reason: editData?.reason || "",
             additional_notes: editData?.additional_notes || "",
             category_id: editData?.category?.id || editData?.category_id || "",
@@ -167,7 +167,7 @@ const AssetRequestSheet = ({
               asset_assigned_date: values.assign_date,
               asset_assigned_by: userProfile.id,
               ...(values.return_date && {
-                asset_return_date: values.return_date,
+                asset_returned_date: values.return_date,
               }),
               asset_request_status: isEdit
                 ? editData?.asset_request_status

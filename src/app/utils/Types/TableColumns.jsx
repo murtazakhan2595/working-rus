@@ -876,7 +876,7 @@ export const AssignedAssetsColumns = [
     },
   },
   {
-    dataField: "asset_return_date",
+    dataField: "asset_returned_date",
     text: "Return Date",
     formatter: (cell) => {
       return cell ? new Date(cell).toLocaleDateString() : "N/A";
@@ -1018,14 +1018,14 @@ export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
           <DropdownActionMenu
             onView={handleViewClick}
             onEdit={canEdit ? handleEditClick : null}
-            onDelete={canReject ? handleRejectClick : null}
+            // onDelete={canReject ? handleRejectClick : null}
             viewText="View Details"
             editText="Edit Request"
-            deleteText="Reject Request"
+            // deleteText="Reject Request"
             menuTooltip="Request Actions"
             // ✅ UPDATED: Pass show/hide flags for better UX
             showEdit={canEdit}
-            showDelete={canReject}
+            // showDelete={canReject}
             showView={true}
           />
         </div>
