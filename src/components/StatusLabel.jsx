@@ -65,6 +65,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("rejected")) return "error";
   else if (status.includes("acknowledge")) return "success";
   else if (status.includes("pending")) return "default";
+  else if (status.includes("interview")) return "info";
   else return "default";
 };
 
