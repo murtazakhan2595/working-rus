@@ -228,7 +228,6 @@ const ViewAssetRequest = ({
       // 🚀 STEP 2: If approval succeeds, then assign the asset
       const updatedRequest = {
         id: currentItem.id,
-        asset_status: "Accepted",
         asset_name: selectedAssetId,
         asset_assigned_by: userProfile.id,
         asset_assigned_date: moment().format("YYYY-MM-DD"),
@@ -287,7 +286,6 @@ const ViewAssetRequest = ({
       // 🚀 STEP 2: If rejection succeeds, then save the reason
       const updatedRequest = {
         id: currentItem.id,
-        asset_status: "Rejected",
         rejection_reason: rejectionReason,
         asset_employee_id:
           currentItem?.asset_employee_id || currentItem?.employee?.id || "",
@@ -353,10 +351,41 @@ const ViewAssetRequest = ({
       }
     };
 
-    // 🚀 NEW: Custom approve handler - shows asset assignment modal first
     const handleCustomApprove = () => {
-      setShowAssetSelection(true);
-      fetchAvailableAssets(currentItem);
+      // Check if asset is already assigned
+      if (currentItem?.asset?.id || currentItem?.asset_name) {
+        // Asset already assigned, just approve without showing selection dialog
+        handleDirectApproval();
+      } else {
+        // No asset assigned yet, show asset selection dialog
+        setShowAssetSelection(true);
+        fetchAvailableAssets(currentItem);
+      }
+    };
+    const handleDirectApproval = async () => {
+      setIsSubmittingStatus(true);
+      try {
+        // Just call the approval API without asset assignment
+        const approvalResponse = await handleRequest(
+          currentItem?.hierarchy_request ||
+            currentItem?.request ||
+            currentItem?.id,
+          true // true = approve
+        );
+
+        if (approvalResponse) {
+          toast.success("Request approved successfully!");
+          setIsOpen(false);
+          reload();
+        } else {
+          toast.error("Failed to approve request");
+        }
+      } catch (error) {
+        console.error("Error in approval process:", error);
+        toast.error("Error approving request: " + error.message);
+      } finally {
+        setIsSubmittingStatus(false);
+      }
     };
 
     // 🚀 NEW: Custom reject handler - shows rejection reason modal first
@@ -424,7 +453,11 @@ const ViewAssetRequest = ({
           onApprove={handleCustomApprove} // Show asset assignment modal
           onReject={handleCustomReject} // Show rejection reason modal
           // 🚀 OPTIONAL: Customize button text
-          approveText="Approve & Assign Asset"
+          approveText={
+            currentItem?.asset?.id || currentItem?.asset_name
+              ? "Approve Request" // Asset already assigned
+              : "Approve & Assign Asset" // No asset assigned yet
+          }
           rejectText="Reject with Reason"
         />
       </div>

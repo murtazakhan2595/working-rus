@@ -231,11 +231,13 @@ const AssetRequestViewSheet = ({
 
   const handleStatusChange = async (status) => {
     console.log("handle status change", status, assetRequest);
-
-    // NEW: Handle approval with asset assignment
     if (status === "Accepted" && !isMyRequest) {
-      setShowAssetSelection(true);
-      fetchAvailableAssets();
+      if (assetRequest?.asset?.id || assetRequest?.asset_name) {
+        handleDirectApproval();
+      } else {
+        setShowAssetSelection(true);
+        fetchAvailableAssets();
+      }
       return;
     }
 
@@ -249,12 +251,10 @@ const AssetRequestViewSheet = ({
       if (isMyRequest) {
         updatedRequest = {
           ...assetRequest,
-          asset_status: status,
         };
       } else {
         updatedRequest = {
           ...assetRequest,
-          asset_status: status,
           asset_assigned_by: userProfile.id,
           asset_assigned_date:
             status === "Accepted" ? moment().format("YYYY-MM-DD") : null,
@@ -262,6 +262,9 @@ const AssetRequestViewSheet = ({
       }
       if (status === "Rejected") {
         updatedRequest.rejection_reason = rejectionReason;
+      }
+      if (status === "Withdrawal" && isMyRequest) {
+        updatedRequest.asset_status = "Withdrawal"; // This is user action, not approval hierarchy
       }
       console.log("updatedRequest", updatedRequest);
 
@@ -301,8 +304,32 @@ const AssetRequestViewSheet = ({
       toast.error("Error updating request: " + error.message);
     }
   };
+  const handleDirectApproval = async () => {
+    setIsSubmittingRejection(true);
+    try {
+      const updatedRequest = {
+        ...assetRequest,
+        asset_assigned_by: userProfile.id,
+        asset_assigned_date: moment().format("YYYY-MM-DD"),
+      };
 
-  // NEW: Handle asset assignment
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        toast.success("Request approved successfully");
+        setIsOpen(false);
+        reload();
+      } else {
+        toast.error("Error approving request");
+      }
+    } catch (error) {
+      console.error("Error approving request:", error);
+      toast.error("Error approving request: " + error.message);
+    } finally {
+      setIsSubmittingRejection(false);
+    }
+  };
+
   const handleAssetAssignment = async () => {
     if (!selectedAssetId) {
       toast.error("Please select an asset to assign");
@@ -313,7 +340,6 @@ const AssetRequestViewSheet = ({
     try {
       const updatedRequest = {
         ...assetRequest,
-        asset_status: "Accepted",
         assigned_asset_id: selectedAssetId,
         asset_assigned_by: userProfile.id,
         asset_assigned_date: moment().format("YYYY-MM-DD"),
@@ -413,14 +439,14 @@ const AssetRequestViewSheet = ({
         </DetailCard>
 
         {assetRequest?.approval_details &&
-        assetRequest.approval_details.length > 0 && (
-          <DetailCard detailCardTitle="Approval Details" className="mt-4">
-            <StatusList
-              status_list={assetRequest.approval_details}
-              className="my-3"
-            />
-          </DetailCard>
-        )}
+          assetRequest.approval_details.length > 0 && (
+            <DetailCard detailCardTitle="Approval Details" className="mt-4">
+              <StatusList
+                status_list={assetRequest.approval_details}
+                className="my-3"
+              />
+            </DetailCard>
+          )}
 
         {assetRequest?.rejection_reason && (
           <div className="p-3 mt-4 text-sm border rounded-md bg-gray-50 text-gray-1100">
@@ -448,7 +474,12 @@ const AssetRequestViewSheet = ({
                 handleStatusChange("Accepted");
               }}
             >
-              Accept & Assign Asset
+              {/* 🚀 UPDATED: Dynamic button text based on asset assignment status */}
+              {
+                assetRequest?.asset?.id || assetRequest?.asset_name
+                  ? "Approve Request" // Asset already assigned
+                  : "Accept & Assign Asset" // No asset assigned yet
+              }
             </Button>
           </div>
         )}
@@ -494,7 +525,6 @@ const AssetRequestViewSheet = ({
   );
 };
 
-// NEW: Asset Selection Dialog Component
 const AssetSelectionDialog = ({
   open,
   onOpenChange,

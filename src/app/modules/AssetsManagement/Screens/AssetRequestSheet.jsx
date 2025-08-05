@@ -154,14 +154,12 @@ const AssetRequestSheet = ({
           ? {
               category_id: values.category_id,
               preferred_specifications: values.preferred_specifications || {},
-              asset_status: "Pending",
               asset_employee_id: userProfile.id,
               asset_request_status: "Requested",
             }
           : {
               // Fixed assign mode payload structure
               asset_name: values.asset_name,
-              asset_status: isEdit ? editData?.asset_status : "Accepted",
               asset_employee_id:
                 typeof values.employee === "object"
                   ? values.employee.value
