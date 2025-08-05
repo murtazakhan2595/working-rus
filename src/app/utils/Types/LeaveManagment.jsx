@@ -94,4 +94,12 @@ export const LeaveOffsetSetting = {
   genders: null,
 };
 
+export const SpecialLeaves = {
+  employee: null,
+  leave_type: null,
+  total_allotted_leave: null,
+  start_date: null,
+  end_date: null,
+}
+
 export { Leave, EmployeeLeaveTypesList };

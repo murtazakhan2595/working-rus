@@ -16,6 +16,7 @@ import {
   mapOffsetLeaveSettingListData,
   mapOffsetLeaveSettingData,
   mapOffsetLeavesData,
+  mapSpecialLeavePayloadData
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -424,6 +425,7 @@ export const saveUpdateLeave = async (payload, id) => {
   }
 };
 
+
 export const saveUpdateHoliday = async (payload, id) => {
   const ID = id || payload?.id;
   try {
@@ -790,5 +792,36 @@ export const uploadLeaveOpeningBalance = async (formData) => {
     }
     console.error("Error uploading employees data:", error);
     return error?.response?.data;
+  }
+};
+
+
+export const saveSpecialLeave = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapSpecialLeavePayloadData(payload);
+
+    const url = ID
+      ? `${baseUrl}/special-leaves/${ID}/` // Use id if updating
+      : `${baseUrl}/special-leaves/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: formDataHeader(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
   }
 };

@@ -3,6 +3,7 @@ import {
   PublicHoliday,
   Leave,
   LeaveOffsetSetting,
+  SpecialLeaves
 } from "app/utils/Types/LeaveManagment";
 import { calculateTotalCount } from "utils/renderValues";
 import { calculateTotal } from "utils/renderValues";
@@ -268,4 +269,23 @@ export async function mapOffsetLeavesData(data) {
   offsetLeaveData.tooltip_info = ResponseList.join("\n");
 
   return offsetLeaveData;
+}
+
+
+export function mapSpecialLeavePayloadData(data) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in SpecialLeaves) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key)) {
+      // Add the key and its value to the payload
+      if (data[key] !== null && data[key] !== undefined) {
+        if (key === "name") {
+          payload[key] = data[key].trim()
+        } else payload[key] = data[key]
+      }
+    }
+  }
+  return payload
 }
