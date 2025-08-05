@@ -26,6 +26,7 @@ import { StatusButtons, StatusList } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { handleRequest } from "app/hooks/general"; 
 import { DetailCard } from "components/SheetCardExtension";
+import { updateAsset } from "app/hooks/assets";
 
 
 const baseUrl = initialState.baseUrl;
@@ -202,7 +203,6 @@ const ViewAssetRequest = ({
     }
   };
 
-  // 🚀 UPDATED: Asset assignment handler - calls approval API first, then assigns asset
   const handleAssetAssignment = async () => {
     if (!selectedAssetId) {
       toast.error("Please select an asset to assign");
@@ -211,7 +211,7 @@ const ViewAssetRequest = ({
 
     setIsSubmittingStatus(true);
     try {
-      // 🚀 STEP 1: Call the approval API first
+      // STEP 1: Call the approval API first
       const approvalResponse = await handleRequest(
         currentItem?.hierarchy_request ||
           currentItem?.request ||
@@ -225,20 +225,35 @@ const ViewAssetRequest = ({
         return;
       }
 
-      // 🚀 STEP 2: If approval succeeds, then assign the asset
+      // STEP 2: If approval succeeds, then assign the asset
       const updatedRequest = {
         id: currentItem.id,
         asset_name: selectedAssetId,
         asset_assigned_by: userProfile.id,
         asset_assigned_date: moment().format("YYYY-MM-DD"),
-        asset_employee_id: currentItem?.asset_employee_id || currentItem?.employee?.id || "",
+        asset_employee_id:
+          currentItem?.asset_employee_id || currentItem?.employee?.id || "",
         asset_request_status: currentItem?.asset_request_status,
       };
 
-      console.log("Asset assignment payload:", updatedRequest);
       const response = await requestAsset(updatedRequest);
 
       if (response) {
+        // STEP 3: Update the asset status to "Assigned" in the main assets table
+        try {
+          const assetStatusUpdatePayload = {
+            id: selectedAssetId,
+            asset_status: "Assigned",
+          };
+          await updateAsset(assetStatusUpdatePayload);
+          console.log("Asset status updated to Assigned");
+        } catch (assetError) {
+          console.error("Error updating asset status:", assetError);
+          toast.warning(
+            "Request approved and asset assigned, but status update failed"
+          );
+        }
+
         toast.success("Request approved and asset assigned successfully!");
         setShowAssetSelection(false);
         setSelectedAssetId("");
@@ -260,7 +275,6 @@ const ViewAssetRequest = ({
     }
   };
 
-  // 🚀 UPDATED: Rejection handler - calls rejection API first, then saves reason
   const handleRejectWithReason = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
@@ -269,7 +283,7 @@ const ViewAssetRequest = ({
 
     setIsSubmittingStatus(true);
     try {
-      // 🚀 STEP 1: Call the rejection API first
+      // STEP 1: Call the rejection API first
       const rejectionResponse = await handleRequest(
         currentItem?.hierarchy_request ||
           currentItem?.request ||
@@ -283,7 +297,7 @@ const ViewAssetRequest = ({
         return;
       }
 
-      // 🚀 STEP 2: If rejection succeeds, then save the reason
+      // STEP 2: If rejection succeeds, then save the reason
       const updatedRequest = {
         id: currentItem.id,
         rejection_reason: rejectionReason,
@@ -295,6 +309,22 @@ const ViewAssetRequest = ({
       const response = await requestAsset(updatedRequest);
 
       if (response) {
+        // STEP 3: If asset was previously assigned, revert its status to "Unassigned"
+        if (currentItem?.asset?.id || currentItem?.asset_name) {
+          try {
+            const assetId = currentItem.asset?.id || currentItem.asset_name;
+            const assetStatusRevertPayload = {
+              id: assetId,
+              asset_status: "Unassigned",
+            };
+            await updateAsset(assetStatusRevertPayload);
+            console.log("Asset status reverted to Unassigned");
+          } catch (assetError) {
+            console.error("Error reverting asset status:", assetError);
+            toast.warning("Request rejected but failed to revert asset status");
+          }
+        }
+
         toast.success("Request rejected successfully!");
         setShowRejectReason(false);
         setRejectionReason("");
