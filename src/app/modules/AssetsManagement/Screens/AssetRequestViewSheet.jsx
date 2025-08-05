@@ -33,6 +33,7 @@ import {
 } from "src/@/components/ui/dialog";
 import { TextAreaInput, SelectInputComponent } from "components/FormControl";
 import { StatusList } from "components";
+import { updateAsset } from "app/hooks/assets";
 
 const AssetRequestViewSheet = ({
   request,
@@ -207,7 +208,7 @@ const AssetRequestViewSheet = ({
         options: { page: 1, sizePerPage: 100 },
         filterData: {
           category_id: assetRequest.category_id,
-          asset_status: "Available",
+          asset_status: "Unassigned",
         },
       });
 
@@ -316,6 +317,22 @@ const AssetRequestViewSheet = ({
       const response = await requestAsset(updatedRequest);
 
       if (response) {
+        // Update asset status to "Assigned" if asset is assigned
+        if (assetRequest?.asset?.id || assetRequest?.asset_name) {
+          try {
+            const assetId = assetRequest.asset?.id || assetRequest.asset_name;
+            const assetStatusUpdatePayload = {
+              id: assetId,
+              asset_status: "Assigned",
+            };
+            await updateAsset(assetStatusUpdatePayload);
+            console.log("Asset status updated to Assigned");
+          } catch (assetError) {
+            console.error("Error updating asset status:", assetError);
+            toast.warning("Request approved but asset status update failed");
+          }
+        }
+
         toast.success("Request approved successfully");
         setIsOpen(false);
         reload();
@@ -363,13 +380,71 @@ const AssetRequestViewSheet = ({
     }
   };
 
-  // Handle rejection submission
+  const handleRejectWithAssetReversion = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    setIsSubmittingRejection(true);
+    try {
+      // Step 1: Update request status and reason
+      const updatedRequest = {
+        ...assetRequest,
+        asset_status: "Rejected",
+        rejection_reason: rejectionReason,
+        asset_assigned_by: userProfile.id,
+      };
+
+      const cleanedPayload = (obj) => {
+        const cleaned = {};
+        for (const [key, value] of Object.entries(obj)) {
+          if (value !== null && value !== undefined && value !== "") {
+            cleaned[key] = value;
+          }
+        }
+        return cleaned;
+      };
+
+      const response = await requestAsset(cleanedPayload(updatedRequest));
+
+      if (response) {
+        // Step 2: Revert asset status if asset was assigned
+        if (assetRequest?.asset?.id || assetRequest?.asset_name) {
+          try {
+            const assetId = assetRequest.asset?.id || assetRequest.asset_name;
+            const assetStatusRevertPayload = {
+              id: assetId,
+              asset_status: "Unassigned",
+            };
+            await updateAsset(assetStatusRevertPayload);
+            console.log("Asset status reverted to Unassigned");
+          } catch (assetError) {
+            console.error("Error reverting asset status:", assetError);
+            toast.warning("Request rejected but failed to revert asset status");
+          }
+        }
+
+        toast.success("Asset request rejected successfully");
+        setIsSubmittingRejection(false);
+        setRejectionReason("");
+        setShowRejectReason(false);
+        setIsOpen(false);
+        reload();
+      }
+    } catch (error) {
+      console.error("Error updating request:", error);
+      toast.error("Error updating request: " + error.message);
+    } finally {
+      setIsSubmittingRejection(false);
+    }
+  };
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
       return;
     }
-    handleStatusChange("Rejected");
+    handleRejectWithAssetReversion(); // ✅ Use new function instead
   };
 
   return (
