@@ -30,9 +30,13 @@ const Attendance = ({ isTeamView = false }) => {
   const isAdminView = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
   const isBranchView = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
   const isDepartmentView = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
-  const isUpdateEmpAttendancePermitted = HasAccess(
-    "UPDATE_EMPLOYEE_ATTENDANCE"
-  );
+  const isDptOverviewPermitted = HasAccess("VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW");
+  const isTeamViewPermitted = HasAccess("VIEW_TEAM_ATTENDANCE");
+  const isTeamLeavePermitted = HasAccess("VIEW_TEAM_LEAVE_STATUS");
+  const isLeavePermitted = HasAccess("VIEW_LEAVE_STATUS");
+  const isTeamStatPermitted = HasAccess("VIEW_TEAM_WEEKLY_STATISTICS");
+  const isStatPermitted = HasAccess("VIEW_WEEKLY_STATISTICS");
+  const isUpdateEmpAttendancePermitted = HasAccess("UPDATE_EMPLOYEE_ATTENDANCE");
   const Branches = useSelector((state) => state.common.branches);
   const Departments = useSelector((state) => state.common.departments);
   const {
@@ -149,6 +153,10 @@ const Attendance = ({ isTeamView = false }) => {
     fetchData();
   }, []);
 
+  const AttendancePermitted = React.useMemo(() => (isAdminView || isBranchView || (isTeamView && isTeamViewPermitted)))
+  const LeaveStatusPermitted = React.useMemo(() => ((isTeamView && isTeamLeavePermitted) || isLeavePermitted))
+  const WeeklyStatPermitted = React.useMemo(() => ((isTeamView && isTeamStatPermitted) || isStatPermitted))
+  const DptOverviewPermitted = React.useMemo(() => (isDptOverviewPermitted))
   return (
     <>
       <div
@@ -157,14 +165,13 @@ const Attendance = ({ isTeamView = false }) => {
         )}`}
       >
         <div className="flex gap-4">
-          <LeaveStatusOverview />
-          <StatisticsChart weeklySummary={weeklySummary} />
-          <DepartmentOverview />
+          {LeaveStatusPermitted && <LeaveStatusOverview />}
+          {WeeklyStatPermitted && <StatisticsChart weeklySummary={weeklySummary} />}
+          {DptOverviewPermitted && <DepartmentOverview />}
         </div>
-        {(isAdminView || isBranchView) && (
+        {AttendancePermitted && (
           <>
             <StatsCards permittedViewFilterData={permittedViewFilterData} />
-
             <Card>
               <CardHeader className='flex flex-row flex-wrap gap-4 justify-between'>
                 <div>

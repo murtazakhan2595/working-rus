@@ -1,6 +1,6 @@
 import { StatusLabel } from "components";
 import { EmployeeOverview } from "components";
-import { getChangeRequestComparison } from "../Section/getEmployeeActiveShift";
+import { renderDate } from "utils/renderValues";
 import moment from "moment";
 import ShiftChangeRequestActions from "./ShiftChangeRequestActions";
 
@@ -31,7 +31,7 @@ export const EmployeeColumns = (reload) => [
         <div className="space-y-1">
           {displayItems.map((day, index) => (
             <div key={index} className="text-sm">
-              {moment(day.date).format("MMM DD")}
+              {renderDate(day.date,'--')}
             </div>
           ))}
           {hasMore && (

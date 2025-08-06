@@ -172,11 +172,13 @@ export function mapLeavePayloadData(data) {
   // Iterate over the keys in the Task object
   for (const key in Leave) {
     // Check if the key exists in the data object
-    if (data.hasOwnProperty(key) && data[key]) {
+    if (data.hasOwnProperty(key)) {
       // Add the key and its value to the payload
-      if (key === "attachment") {
-        if (data[key] instanceof File) formData.append(key, data[key]);
-      } else formData.append(key, data[key]);
+      if (data[key] !== null && data[key] !== undefined) {
+        if (key === "attachment") {
+          if (data[key] instanceof File) formData.append(key, data[key]);
+        } else formData.append(key, data[key]);
+      }
     }
   }
 

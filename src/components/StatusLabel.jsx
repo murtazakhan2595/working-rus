@@ -65,6 +65,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("rejected")) return "error";
   else if (status.includes("acknowledge")) return "success";
   else if (status.includes("pending")) return "default";
+  else if (status.includes("interview")) return "info";
   else return "default";
 };
 
@@ -222,12 +223,20 @@ export const StatusButtons = ({
   current_approver,
   request_id,
   setResponse = () => {},
+
+  // 🚀 NEW: Custom approval flow props
+  onApprove = null, // Custom approve handler - if provided, skips default API call
+  onReject = null, // Custom reject handler - if provided, skips default API call
+  approveText = "Approve", // Customizable button text
+  rejectText = "Reject", // Customizable button text
+  showApprove = true, // Allow hiding approve button
+  showReject = true, // Allow hiding reject button
 }) => {
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
 
-  // 🚀 NEW: Handle multiple permission keys
+  // Handle multiple permission keys
   const checkPermissions = () => {
     if (!permissionKey) return false;
 
@@ -257,11 +266,14 @@ export const StatusButtons = ({
   if (!current_approver && !user_role.includes(1)) return null;
 
   if (current_approver.includes(user_id) || user_role.includes(1)) {
-    const handleSubmit = async (status) => {
+    // 🚀 UPDATED: Default API-based approval flow
+    const handleDefaultSubmit = async (status) => {
       try {
         const response = await handleRequest(request_id, status === "Approved");
         if (response) {
           setResponse(true, status);
+        } else {
+          setResponse(false, status);
         }
       } catch (error) {
         console.error("Approving Request Error", error);
@@ -269,26 +281,45 @@ export const StatusButtons = ({
       }
     };
 
-    const handleClick = (event, status) => {
+    // 🚀 NEW: Enhanced click handlers
+    const handleApproveClick = (event) => {
       event.preventDefault();
       event.stopPropagation();
-      handleSubmit(status);
+
+      if (onApprove) {
+        // Use custom approve handler
+        onApprove();
+      } else {
+        // Use default API flow
+        handleDefaultSubmit("Approved");
+      }
+    };
+
+    const handleRejectClick = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (onReject) {
+        // Use custom reject handler
+        onReject();
+      } else {
+        // Use default API flow
+        handleDefaultSubmit("Rejected");
+      }
     };
 
     return (
       <div className="flex flex-wrap justify-end gap-2 my-5">
-        <Button
-          variant="success"
-          onClick={(event) => handleClick(event, "Approved")}
-        >
-          Approve
-        </Button>
-        <Button
-          variant="destructive"
-          onClick={(event) => handleClick(event, "Rejected")}
-        >
-          Reject
-        </Button>
+        {showApprove && (
+          <Button variant="success" onClick={handleApproveClick}>
+            {approveText}
+          </Button>
+        )}
+        {showReject && (
+          <Button variant="destructive" onClick={handleRejectClick}>
+            {rejectText}
+          </Button>
+        )}
       </div>
     );
   }
