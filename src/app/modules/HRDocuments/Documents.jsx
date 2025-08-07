@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { CardHeader, CardContent } from "components/ui/card";
-import { DocumentDetails } from "app/modules/HRDocuments/Screens";
-import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
-import { Header } from "components";
-import {
-  getDocumentList,
-  getEmployeeTransferStats,
-} from "app/hooks/hrDocuments";
+import { getDocumentList, } from "app/hooks/hrDocuments";
 import { HRDocumentsColumns } from "app/modules/HRDocuments/Sections";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
-  TabsContent,
 } from "src/@/components/ui/tabs";
-import { HRDocumentTargetAudience } from "data/Data";
 import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
-import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import Config from "constants/config";
-import { useNavigate, useParams } from "react-router-dom";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { PageLoader } from "components";
@@ -33,10 +22,9 @@ export default function Documents({ reload }) {
     count: 0,
   });
   const [activeTab, setActiveTab] = useState("all-documents");
-  
+
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
-  const [OpenDocumentID, setOpenDocumentID] = useState(false);
   const [filterData, setFilterData] = useState({ exclude_expired: true });
 
   const DocumentTabs = [
@@ -60,7 +48,7 @@ export default function Documents({ reload }) {
     },
   ];
 
-const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
+  const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -75,23 +63,26 @@ const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
     },
   };
 
-  const fetchData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getDocumentList({
-        options,
-        filterData,
-        ordering,
-      });
-      if (isMounted) {
-        setEmployeeTransferData(data);
+  const fetchData = useCallback(
+    async (isMounted) => {
+      setIsLoading(true);
+      try {
+        const data = await getDocumentList({
+          options,
+          filterData,
+          ordering,
+        });
+        if (isMounted) {
+          setEmployeeTransferData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
+    },
+    [ordering, filterData, options] // Dependencies
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -99,17 +90,19 @@ const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
     return () => {
       isMounted = false;
     };
-  }, [options, filterData, ordering]);
+  }, [fetchData]);
 
   useEffect(() => {
     let isMounted = true;
-    onPageChange("page", 1);
-    setOrdering("-id");
-    fetchData(true);
+    if (isMounted) {
+      onPageChange("page", 1);
+      setOrdering("-id");
+      fetchData(true);
+    }
     return () => {
       isMounted = false;
     };
-  }, [reload]);
+  }, [reload, fetchData]);
 
   useEffect(() => {
     setFilterData((prevFilter) => {
@@ -122,6 +115,7 @@ const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
         updatedFilter.exclude_expired = true;
       } else {
         delete updatedFilter.exclude_expired; // Remove the status key
+        updatedFilter.doc_status = 'Expired';
       }
       return updatedFilter;
     });
@@ -153,19 +147,13 @@ const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
         }}
         value={activeTab}
       >
-        {/* Responsive layout for tabs and filters */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
-          {/* Tabs with horizontal scroll but no vertical scroll */}
-          <div className="w-full sm:w-auto overflow-hidden mb-4">
-            <TabsList className="flex flex-nowrap w-full overflow-x-auto overflow-y-hidden sm:overflow-visible">
-              {DocumentTabs.map(({ value, label }) => (
-                <TabsTrigger key={value} value={value} variant="inner-tab">
-                  {label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-        </div>
+        <TabsList>
+          {DocumentTabs.map(({ value, label }) => (
+            <TabsTrigger key={value} value={value} variant="inner-tab">
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </Tabs>
 
       <CardHeader>
@@ -206,17 +194,6 @@ const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
           />
         )}
       </CardContent>
-      {OpenDocumentID && (
-        <DocumentDetails
-          documentID={OpenDocumentID}
-          isOpen={!!OpenDocumentID}
-          setIsOpen={() => {
-            setOpenDocumentID(null);
-          }}
-          DocumentList={employeeTransferData.results}
-          reloadData={fetchData}
-        />
-      )}
     </>
   );
 }

@@ -14,10 +14,7 @@ import { Badge } from "components/ui/badge";
 import { Check, CircleCheck, CircleDot, X } from "lucide-react";
 import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
-import { EmployeeName } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
-import { DesignationName } from "utils/getValuesFromTables";
-import { EmployeeInfo } from "utils/getValuesFromTables";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
@@ -53,19 +50,20 @@ export const getStatusVariant = (Status) => {
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
-  else if (status.includes("yes")) return "success";
   else if (status.includes("present")) return "success";
+  else if (status.includes("acknowledge")) return "success";
+  else if (status.includes("signed")) return "success";
   else if (status.includes("viewed")) return "warning";
   else if (status.includes("late")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
-  else if (status.includes("no")) return "error";
   else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("rejected")) return "error";
-  else if (status.includes("acknowledge")) return "success";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info";
+  else if (status.includes("no")) return "error";
+  else if (status.includes("yes")) return "success";
   else return "default";
 };
 
@@ -323,31 +321,6 @@ export const StatusButtons = ({
       </div>
     );
   }
-};
-export const StatusLabelAttendance = ({ status, value }) => {
-  if (!status) {
-    return "";
-  }
-
-  // Assign the appropriate class name based on the status
-  let className = "";
-  switch (status) {
-    case "Present":
-      className = "bg-[#E5FFF9] text-[#1D735E";
-      break;
-    case "Absent":
-      className = "bg-[#F0F0F3] text-[#7F838D";
-      break;
-    case "Late":
-      className = "bg-[#FAEFE1] text-[#B8761A]";
-      break;
-    case "Weekend ":
-      className = "label-warning-D5D912";
-      break;
-  }
-
-  // Render the badge with the appropriate label and style
-  return <Badge className={className}>{status}</Badge>;
 };
 
 export const StatusCircleLabel = ({ label, status }) => {
