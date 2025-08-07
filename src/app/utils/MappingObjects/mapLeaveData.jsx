@@ -289,3 +289,27 @@ export function mapSpecialLeavePayloadData(data) {
   }
   return payload
 }
+
+export function mapSpecialLeaveData(data) {
+  const responseDataData = Object.keys(SpecialLeaves).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    } else {
+      // Use default values from LeaveType type
+      acc[key] = LeaveType[key];
+    }
+    return acc;
+  }, {});
+
+  return responseDataData;
+}
+
+export async function mapSpecialLeavesListData(data) {
+  if (!data || data.length === 0) return [];
+  const ResponseList = await data?.map((dataObj) => {
+    const formattedData = mapSpecialLeaveData(dataObj);
+    return { ...formattedData };
+  });
+
+  return ResponseList;
+}

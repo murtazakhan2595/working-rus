@@ -1,11 +1,4 @@
 import React, { useState, useEffect, memo } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "components/ui/card";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 import { getEligibleLeaveTypeDurations } from "app/hooks/leaveTracker";
 import { TooltipText } from "components";
