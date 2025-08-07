@@ -26,6 +26,7 @@ import { StatusButtons, StatusList } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { handleRequest } from "app/hooks/general"; 
 import { DetailCard } from "components/SheetCardExtension";
+import { updateAsset } from "app/hooks/assets";
 
 
 const baseUrl = initialState.baseUrl;
@@ -122,7 +123,7 @@ const ViewAssetRequest = ({
           value ? moment(value).format("MMM D, YYYY") : "Not assigned yet",
       },
       {
-        key: "asset_return_date",
+        key: "asset_returned_date",
         label: "Return Date",
         formatter: (value) =>
           value ? moment(value).format("MMM D, YYYY") : "N/A",
@@ -202,7 +203,6 @@ const ViewAssetRequest = ({
     }
   };
 
-  // 🚀 UPDATED: Asset assignment handler - calls approval API first, then assigns asset
   const handleAssetAssignment = async () => {
     if (!selectedAssetId) {
       toast.error("Please select an asset to assign");
@@ -211,7 +211,7 @@ const ViewAssetRequest = ({
 
     setIsSubmittingStatus(true);
     try {
-      // 🚀 STEP 1: Call the approval API first
+      // STEP 1: Call the approval API first
       const approvalResponse = await handleRequest(
         currentItem?.hierarchy_request ||
           currentItem?.request ||
@@ -225,21 +225,35 @@ const ViewAssetRequest = ({
         return;
       }
 
-      // 🚀 STEP 2: If approval succeeds, then assign the asset
+      // STEP 2: If approval succeeds, then assign the asset
       const updatedRequest = {
         id: currentItem.id,
-        asset_status: "Accepted",
         asset_name: selectedAssetId,
         asset_assigned_by: userProfile.id,
         asset_assigned_date: moment().format("YYYY-MM-DD"),
-        asset_employee_id: currentItem?.asset_employee_id || currentItem?.employee?.id || "",
+        asset_employee_id:
+          currentItem?.asset_employee_id || currentItem?.employee?.id || "",
         asset_request_status: currentItem?.asset_request_status,
       };
 
-      console.log("Asset assignment payload:", updatedRequest);
       const response = await requestAsset(updatedRequest);
 
       if (response) {
+        // STEP 3: Update the asset status to "Assigned" in the main assets table
+        try {
+          const assetStatusUpdatePayload = {
+            id: selectedAssetId,
+            asset_status: "Assigned",
+          };
+          await updateAsset(assetStatusUpdatePayload);
+          console.log("Asset status updated to Assigned");
+        } catch (assetError) {
+          console.error("Error updating asset status:", assetError);
+          toast.warning(
+            "Request approved and asset assigned, but status update failed"
+          );
+        }
+
         toast.success("Request approved and asset assigned successfully!");
         setShowAssetSelection(false);
         setSelectedAssetId("");
@@ -261,7 +275,6 @@ const ViewAssetRequest = ({
     }
   };
 
-  // 🚀 UPDATED: Rejection handler - calls rejection API first, then saves reason
   const handleRejectWithReason = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
@@ -270,7 +283,7 @@ const ViewAssetRequest = ({
 
     setIsSubmittingStatus(true);
     try {
-      // 🚀 STEP 1: Call the rejection API first
+      // STEP 1: Call the rejection API first
       const rejectionResponse = await handleRequest(
         currentItem?.hierarchy_request ||
           currentItem?.request ||
@@ -284,10 +297,9 @@ const ViewAssetRequest = ({
         return;
       }
 
-      // 🚀 STEP 2: If rejection succeeds, then save the reason
+      // STEP 2: If rejection succeeds, then save the reason
       const updatedRequest = {
         id: currentItem.id,
-        asset_status: "Rejected",
         rejection_reason: rejectionReason,
         asset_employee_id:
           currentItem?.asset_employee_id || currentItem?.employee?.id || "",
@@ -297,6 +309,22 @@ const ViewAssetRequest = ({
       const response = await requestAsset(updatedRequest);
 
       if (response) {
+        // STEP 3: If asset was previously assigned, revert its status to "Unassigned"
+        if (currentItem?.asset?.id || currentItem?.asset_name) {
+          try {
+            const assetId = currentItem.asset?.id || currentItem.asset_name;
+            const assetStatusRevertPayload = {
+              id: assetId,
+              asset_status: "Unassigned",
+            };
+            await updateAsset(assetStatusRevertPayload);
+            console.log("Asset status reverted to Unassigned");
+          } catch (assetError) {
+            console.error("Error reverting asset status:", assetError);
+            toast.warning("Request rejected but failed to revert asset status");
+          }
+        }
+
         toast.success("Request rejected successfully!");
         setShowRejectReason(false);
         setRejectionReason("");
@@ -353,10 +381,41 @@ const ViewAssetRequest = ({
       }
     };
 
-    // 🚀 NEW: Custom approve handler - shows asset assignment modal first
     const handleCustomApprove = () => {
-      setShowAssetSelection(true);
-      fetchAvailableAssets(currentItem);
+      // Check if asset is already assigned
+      if (currentItem?.asset?.id || currentItem?.asset_name) {
+        // Asset already assigned, just approve without showing selection dialog
+        handleDirectApproval();
+      } else {
+        // No asset assigned yet, show asset selection dialog
+        setShowAssetSelection(true);
+        fetchAvailableAssets(currentItem);
+      }
+    };
+    const handleDirectApproval = async () => {
+      setIsSubmittingStatus(true);
+      try {
+        // Just call the approval API without asset assignment
+        const approvalResponse = await handleRequest(
+          currentItem?.hierarchy_request ||
+            currentItem?.request ||
+            currentItem?.id,
+          true // true = approve
+        );
+
+        if (approvalResponse) {
+          toast.success("Request approved successfully!");
+          setIsOpen(false);
+          reload();
+        } else {
+          toast.error("Failed to approve request");
+        }
+      } catch (error) {
+        console.error("Error in approval process:", error);
+        toast.error("Error approving request: " + error.message);
+      } finally {
+        setIsSubmittingStatus(false);
+      }
     };
 
     // 🚀 NEW: Custom reject handler - shows rejection reason modal first
@@ -424,7 +483,11 @@ const ViewAssetRequest = ({
           onApprove={handleCustomApprove} // Show asset assignment modal
           onReject={handleCustomReject} // Show rejection reason modal
           // 🚀 OPTIONAL: Customize button text
-          approveText="Approve & Assign Asset"
+          approveText={
+            currentItem?.asset?.id || currentItem?.asset_name
+              ? "Approve Request" // Asset already assigned
+              : "Approve & Assign Asset" // No asset assigned yet
+          }
           rejectText="Reject with Reason"
         />
       </div>

@@ -197,21 +197,31 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
     setOpenRequestDetailSheet(true);
   };
 
-  const handleEditRequest = (row) => {
-    console.log("Edit asset request:", row);
+ const handleEditRequest = (row) => {
+   console.log("Edit asset request:", row);
 
-    // Allow edit for Pending and Rejected requests
-    if (
-      (row.asset_status === "Pending" || row.asset_status === "Rejected") &&
-      row.asset_request_status === "Requested"
-    ) {
-      // Close the view sheet if it's open
-      setOpenRequestDetailSheet(false);
-      setSelectedRequest(null);
-      // Open the edit sheet
-      setEditRequest(row);
-    }
-  };
+   // ✅ Check if any approver has approved
+   const hasAnyApproval = row.approval_details?.some(
+     (approval) =>
+       approval.status === "APPROVED" || approval.status === "ACCEPTED"
+   );
+
+   if (hasAnyApproval) {
+     toast.info(
+       "Cannot edit request: Request has been approved by at least one approver"
+     );
+     return;
+   }
+
+   // ✅ Allow edit if no approvals yet and request is active
+   if (row.asset_request_status === "Requested") {
+     setOpenRequestDetailSheet(false);
+     setSelectedRequest(null);
+     setEditRequest(row);
+   } else {
+     toast.info("Request cannot be edited in current status");
+   }
+ };
 
   const handleRejectRequest = (row) => {
     console.log("Reject asset request:", row);

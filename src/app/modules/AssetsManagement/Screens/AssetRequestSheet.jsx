@@ -94,7 +94,7 @@ const AssetRequestSheet = ({
             assign_date:
               editData?.asset_assigned_date ||
               new Date().toISOString().split("T")[0],
-            return_date: editData?.asset_return_date || null,
+            return_date: editData?.asset_returned_date || null,
             reason: editData?.reason || "",
             additional_notes: editData?.additional_notes || "",
             category_id: editData?.category?.id || editData?.category_id || "",
@@ -154,14 +154,12 @@ const AssetRequestSheet = ({
           ? {
               category_id: values.category_id,
               preferred_specifications: values.preferred_specifications || {},
-              asset_status: "Pending",
               asset_employee_id: userProfile.id,
               asset_request_status: "Requested",
             }
           : {
               // Fixed assign mode payload structure
               asset_name: values.asset_name,
-              asset_status: isEdit ? editData?.asset_status : "Accepted",
               asset_employee_id:
                 typeof values.employee === "object"
                   ? values.employee.value
@@ -169,7 +167,7 @@ const AssetRequestSheet = ({
               asset_assigned_date: values.assign_date,
               asset_assigned_by: userProfile.id,
               ...(values.return_date && {
-                asset_return_date: values.return_date,
+                asset_returned_date: values.return_date,
               }),
               asset_request_status: isEdit
                 ? editData?.asset_request_status
@@ -232,55 +230,69 @@ const AssetRequestSheet = ({
     }
   };
 
-  // Fixed approve handler with better validation
-  const handleApproveRequest = async () => {
-    // Validation checks
-    if (!editData?.category?.id && !editData?.category_id) {
-      toast.error("Cannot approve: Please assign an asset category first");
-      return;
-    }
+ const handleApproveRequest = async () => {
+   // Validation checks
+   if (!editData?.category?.id && !editData?.category_id) {
+     toast.error("Cannot approve: Please assign an asset category first");
+     return;
+   }
 
-    // For assign mode, check if specific asset is assigned
-    if (mode === "assign" && !editData?.asset?.id && !editData?.asset_name) {
-      toast.error(
-        "Cannot approve: Please assign a specific asset before approving this request"
-      );
-      return;
-    }
+   // For assign mode, check if specific asset is assigned
+   if (mode === "assign" && !editData?.asset?.id && !editData?.asset_name) {
+     toast.error(
+       "Cannot approve: Please assign a specific asset before approving this request"
+     );
+     return;
+   }
 
-    setLoading(true);
-    try {
-      // Step 2: Call the approval hierarchy API
-      const hierarchyId =
-        editData?.hierarchy_request || editData?.request || editData?.id;
-      console.log("Calling approval API with hierarchy ID:", hierarchyId);
+   setLoading(true);
+   try {
+     // Step 1: Call the approval hierarchy API
+     const hierarchyId =
+       editData?.hierarchy_request || editData?.request || editData?.id;
+     console.log("Calling approval API with hierarchy ID:", hierarchyId);
 
-      const approvalResponse = await handleRequest(hierarchyId, true); // true = approve
+     const approvalResponse = await handleRequest(hierarchyId, true); // true = approve
 
-      if (approvalResponse) {
-        toast.success("Request approved successfully!");
-      } else {
-        toast.warning(
-          "Request status updated but approval hierarchy API failed"
-        );
-      }
+     if (approvalResponse) {
+       // Step 2: If asset is assigned, update its status to "Assigned"
+       if (editData?.asset?.id || editData?.asset_name) {
+         try {
+           const assetId = editData.asset?.id || editData.asset_name;
+           const assetStatusUpdatePayload = {
+             id: assetId,
+             asset_status: "Assigned",
+           };
+           await updateAsset(assetStatusUpdatePayload);
+           console.log("Asset status updated to Assigned");
+         } catch (assetError) {
+           console.error("Error updating asset status:", assetError);
+           toast.warning("Request approved but asset status update failed");
+         }
+       }
 
-      setIsOpen(false);
-      reload();
-    } catch (error) {
-      console.error("Error in approval process:", error);
-      toast.error("Error approving request: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+       toast.success("Request approved successfully!");
+     } else {
+       toast.warning(
+         "Request status updated but approval hierarchy API failed"
+       );
+     }
+
+     setIsOpen(false);
+     reload();
+   } catch (error) {
+     console.error("Error in approval process:", error);
+     toast.error("Error approving request: " + error.message);
+   } finally {
+     setLoading(false);
+   }
+ };
 
   // Show rejection reason modal
   const handleCustomReject = () => {
     setShowRejectReason(true);
   };
 
-  // Fixed rejection handler
   const handleRejectWithReason = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
@@ -289,9 +301,7 @@ const AssetRequestSheet = ({
 
     setIsSubmittingRejection(true);
     try {
-      console.log("Starting rejection process for:", editData);
-
-      // Step 1: Update the request with rejection reason
+      // Step 1: Update request with rejection reason
       const updatedRequest = {
         id: editData.id,
         asset_status: "Rejected",
@@ -300,23 +310,34 @@ const AssetRequestSheet = ({
         asset_employee_id: editData?.asset_employee_id || "",
       };
 
-      console.log("Updating request with rejection:", updatedRequest);
       const response = await requestAsset(updatedRequest);
-
       if (!response) {
         toast.error("Failed to update request status");
-        setIsSubmittingRejection(false);
         return;
       }
 
-      // Step 2: Call the rejection hierarchy API
+      // Step 2: Call rejection hierarchy API
       const hierarchyId =
         editData?.hierarchy_request || editData?.request || editData?.id;
-      console.log("Calling rejection API with hierarchy ID:", hierarchyId);
-
-      const rejectionResponse = await handleRequest(hierarchyId, false); // false = reject
+      const rejectionResponse = await handleRequest(hierarchyId, false);
 
       if (rejectionResponse) {
+        // ✅ ADD THIS: Step 3 - Revert asset status if asset was assigned
+        if (editData?.asset?.id || editData?.asset_name) {
+          try {
+            const assetId = editData.asset?.id || editData.asset_name;
+            const assetStatusRevertPayload = {
+              id: assetId,
+              asset_status: "Unassigned",
+            };
+            await updateAsset(assetStatusRevertPayload);
+            console.log("Asset status reverted to Unassigned");
+          } catch (assetError) {
+            console.error("Error reverting asset status:", assetError);
+            toast.warning("Request rejected but failed to revert asset status");
+          }
+        }
+
         toast.success("Request rejected successfully!");
       } else {
         toast.warning(

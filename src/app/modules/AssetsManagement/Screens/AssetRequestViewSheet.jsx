@@ -32,6 +32,8 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog";
 import { TextAreaInput, SelectInputComponent } from "components/FormControl";
+import { StatusList } from "components";
+import { updateAsset } from "app/hooks/assets";
 
 const AssetRequestViewSheet = ({
   request,
@@ -151,9 +153,9 @@ const AssetRequestViewSheet = ({
         ? moment(assetRequest?.asset_assigned_date).format("MMM D, YYYY")
         : "Not assigned yet",
     },
-    assetRequest?.asset_return_date && {
+    assetRequest?.asset_returned_date && {
       label: "Return Date",
-      value: moment(assetRequest?.asset_return_date).format("MMM D, YYYY"),
+      value: moment(assetRequest?.asset_returned_date).format("MMM D, YYYY"),
     },
     assetRequest?.additional_notes && {
       label: "Additional Notes",
@@ -206,7 +208,7 @@ const AssetRequestViewSheet = ({
         options: { page: 1, sizePerPage: 100 },
         filterData: {
           category_id: assetRequest.category_id,
-          asset_status: "Available",
+          asset_status: "Unassigned",
         },
       });
 
@@ -230,11 +232,13 @@ const AssetRequestViewSheet = ({
 
   const handleStatusChange = async (status) => {
     console.log("handle status change", status, assetRequest);
-
-    // NEW: Handle approval with asset assignment
     if (status === "Accepted" && !isMyRequest) {
-      setShowAssetSelection(true);
-      fetchAvailableAssets();
+      if (assetRequest?.asset?.id || assetRequest?.asset_name) {
+        handleDirectApproval();
+      } else {
+        setShowAssetSelection(true);
+        fetchAvailableAssets();
+      }
       return;
     }
 
@@ -248,12 +252,10 @@ const AssetRequestViewSheet = ({
       if (isMyRequest) {
         updatedRequest = {
           ...assetRequest,
-          asset_status: status,
         };
       } else {
         updatedRequest = {
           ...assetRequest,
-          asset_status: status,
           asset_assigned_by: userProfile.id,
           asset_assigned_date:
             status === "Accepted" ? moment().format("YYYY-MM-DD") : null,
@@ -261,6 +263,9 @@ const AssetRequestViewSheet = ({
       }
       if (status === "Rejected") {
         updatedRequest.rejection_reason = rejectionReason;
+      }
+      if (status === "Withdrawal" && isMyRequest) {
+        updatedRequest.asset_status = "Withdrawal"; // This is user action, not approval hierarchy
       }
       console.log("updatedRequest", updatedRequest);
 
@@ -300,8 +305,48 @@ const AssetRequestViewSheet = ({
       toast.error("Error updating request: " + error.message);
     }
   };
+  const handleDirectApproval = async () => {
+    setIsSubmittingRejection(true);
+    try {
+      const updatedRequest = {
+        ...assetRequest,
+        asset_assigned_by: userProfile.id,
+        asset_assigned_date: moment().format("YYYY-MM-DD"),
+      };
 
-  // NEW: Handle asset assignment
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        // Update asset status to "Assigned" if asset is assigned
+        if (assetRequest?.asset?.id || assetRequest?.asset_name) {
+          try {
+            const assetId = assetRequest.asset?.id || assetRequest.asset_name;
+            const assetStatusUpdatePayload = {
+              id: assetId,
+              asset_status: "Assigned",
+            };
+            await updateAsset(assetStatusUpdatePayload);
+            console.log("Asset status updated to Assigned");
+          } catch (assetError) {
+            console.error("Error updating asset status:", assetError);
+            toast.warning("Request approved but asset status update failed");
+          }
+        }
+
+        toast.success("Request approved successfully");
+        setIsOpen(false);
+        reload();
+      } else {
+        toast.error("Error approving request");
+      }
+    } catch (error) {
+      console.error("Error approving request:", error);
+      toast.error("Error approving request: " + error.message);
+    } finally {
+      setIsSubmittingRejection(false);
+    }
+  };
+
   const handleAssetAssignment = async () => {
     if (!selectedAssetId) {
       toast.error("Please select an asset to assign");
@@ -312,7 +357,6 @@ const AssetRequestViewSheet = ({
     try {
       const updatedRequest = {
         ...assetRequest,
-        asset_status: "Accepted",
         assigned_asset_id: selectedAssetId,
         asset_assigned_by: userProfile.id,
         asset_assigned_date: moment().format("YYYY-MM-DD"),
@@ -336,13 +380,71 @@ const AssetRequestViewSheet = ({
     }
   };
 
-  // Handle rejection submission
+  const handleRejectWithAssetReversion = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    setIsSubmittingRejection(true);
+    try {
+      // Step 1: Update request status and reason
+      const updatedRequest = {
+        ...assetRequest,
+        asset_status: "Rejected",
+        rejection_reason: rejectionReason,
+        asset_assigned_by: userProfile.id,
+      };
+
+      const cleanedPayload = (obj) => {
+        const cleaned = {};
+        for (const [key, value] of Object.entries(obj)) {
+          if (value !== null && value !== undefined && value !== "") {
+            cleaned[key] = value;
+          }
+        }
+        return cleaned;
+      };
+
+      const response = await requestAsset(cleanedPayload(updatedRequest));
+
+      if (response) {
+        // Step 2: Revert asset status if asset was assigned
+        if (assetRequest?.asset?.id || assetRequest?.asset_name) {
+          try {
+            const assetId = assetRequest.asset?.id || assetRequest.asset_name;
+            const assetStatusRevertPayload = {
+              id: assetId,
+              asset_status: "Unassigned",
+            };
+            await updateAsset(assetStatusRevertPayload);
+            console.log("Asset status reverted to Unassigned");
+          } catch (assetError) {
+            console.error("Error reverting asset status:", assetError);
+            toast.warning("Request rejected but failed to revert asset status");
+          }
+        }
+
+        toast.success("Asset request rejected successfully");
+        setIsSubmittingRejection(false);
+        setRejectionReason("");
+        setShowRejectReason(false);
+        setIsOpen(false);
+        reload();
+      }
+    } catch (error) {
+      console.error("Error updating request:", error);
+      toast.error("Error updating request: " + error.message);
+    } finally {
+      setIsSubmittingRejection(false);
+    }
+  };
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Rejection reason is required");
       return;
     }
-    handleStatusChange("Rejected");
+    handleRejectWithAssetReversion(); // ✅ Use new function instead
   };
 
   return (
@@ -411,39 +513,15 @@ const AssetRequestViewSheet = ({
           </div>
         </DetailCard>
 
-        {/* Approval Status Section */}
-        <DetailCard detailCardTitle="Request Status 1">
-          <div className="flex items-center justify-between w-full gap-4">
-            <section className="flex relative flex-col max-w-[382px] mt-3">
-              <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
-              {approvalSteps.map((step, index) => (
-                <div
-                  key={index}
-                  className="z-0 flex items-center justify-between w-full gap-10"
-                >
-                  <div className="flex gap-4 self-stretch my-auto w-[194px]">
-                    <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
-                      <img
-                        loading="lazy"
-                        src={step.icon}
-                        alt=""
-                        className="object-contain self-stretch my-auto aspect-square w-[25px]"
-                      />
-                    </div>
-                    <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
-                      {step.text}
-                    </div>
-                  </div>
-                  {step.time && (
-                    <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
-                      {step.time}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </section>
-          </div>
-        </DetailCard>
+        {assetRequest?.approval_details &&
+          assetRequest.approval_details.length > 0 && (
+            <DetailCard detailCardTitle="Approval Details" className="mt-4">
+              <StatusList
+                status_list={assetRequest.approval_details}
+                className="my-3"
+              />
+            </DetailCard>
+          )}
 
         {assetRequest?.rejection_reason && (
           <div className="p-3 mt-4 text-sm border rounded-md bg-gray-50 text-gray-1100">
@@ -471,7 +549,12 @@ const AssetRequestViewSheet = ({
                 handleStatusChange("Accepted");
               }}
             >
-              Accept & Assign Asset
+              {/* 🚀 UPDATED: Dynamic button text based on asset assignment status */}
+              {
+                assetRequest?.asset?.id || assetRequest?.asset_name
+                  ? "Approve Request" // Asset already assigned
+                  : "Accept & Assign Asset" // No asset assigned yet
+              }
             </Button>
           </div>
         )}
@@ -517,7 +600,6 @@ const AssetRequestViewSheet = ({
   );
 };
 
-// NEW: Asset Selection Dialog Component
 const AssetSelectionDialog = ({
   open,
   onOpenChange,
