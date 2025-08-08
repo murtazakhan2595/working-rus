@@ -29,17 +29,24 @@ import useEOSSettlement from "../../hooks/useEOSSettlement";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { AddUpdateTerminationReasons } from "./TerminationReasons";
-import { GetDispatchStateList } from "utils/Lists";
+import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
 
 const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   const isAdminView = HasAccess("VIEW_EXIT");
   const isBranchView = HasAccess("VIEW_BRANCH_EXIT");
   const isDepartmentView = HasAccess("VIEW_DPT_EXIT");
+  const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
   const {
     id: user_id,
     branch_id: user_branch,
     department_name: user_department,
-  } = GetDispatchStateList("user_details", "emp") || {}
+  } = GetDispatchStateList("user_details", "emp") || {};
+  const Employees = GetEmployeeFilteredList(
+    false,
+    isAdminView,
+    isBranchView,
+    isDepartmentView
+  );
   const Managers = GetDispatchStateList("reportingManagers", "emp") || []
   const Departments = GetDispatchStateList("departments", "common") || []
   const Branches = GetDispatchStateList("branches", "common") || []
@@ -48,8 +55,8 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [terminationReasonsReload, setTerminationReasonsReload] = useState(0);
   const [terminationReasons, setTerminationReasons] = useState(false);
+  const [openTerminationForm, setOpenTerminationForm] = useState(false);
   const [reloadData, setReloadData] = useState(false);
-  const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
 
   const { showEOSSettlement } = useEOSSettlement(
     { id: userProfile?.employeeId, status: userProfile?.status },
@@ -164,9 +171,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
             {manageExitRequestsPermitted &&
               (activeTab === "Exit Requests" ||
                 activeTab === "Exit Records") && (
-                <RequestTerminationCard
-                  closeModel={closeRequestTerminationCard}
-                />
+                <Button
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setOpenTerminationForm(true);
+                  }}
+                >
+                  Request Termination
+                </Button>
               )}
             {activeTab === "Resons of Termination" && (
               <Button
@@ -176,6 +188,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
               >
                 Add Termination Reason
               </Button>
+
             )}
           </>
         }
@@ -227,6 +240,18 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
             fetchData();
             setTerminationReasonsReload((prev) => prev + 1); // Trigger reload
           }}
+        />
+      )}
+      {openTerminationForm && (
+        <RequestTerminationCard
+          isOpen={openTerminationForm}
+          setIsOpen={setOpenTerminationForm}
+          reload={() => {
+            fetchData();
+            setTerminationReasonsReload((prev) => prev + 1); // Trigger reload
+          }}
+          Employees={Employees}
+
         />
       )}
       {showEOSSettlement && (
