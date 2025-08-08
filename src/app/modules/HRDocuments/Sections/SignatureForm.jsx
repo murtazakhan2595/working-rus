@@ -26,16 +26,17 @@ const FormSheetData = {
 const UploadDocumentForm = ({
   id = null,
   isOpen = true,
-  setIsOpen = () => {},
+  setIsOpen = () => { },
 }) => {
- const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     signature_file: null,
     signature_data: moment().format("YYYY-MM-DD"),
   });
 
   const handleSubmit = async (data) => {
     try {
-      const response = await addUpdateDocumentAssignment(data, id);
+
+      const response = await addUpdateDocumentAssignment({ ...data, status: 'SIGNED' }, id);
       // return
       if (response) {
         if (id) {
@@ -73,7 +74,7 @@ const UploadDocumentForm = ({
         submitButtonText: "Submit Signature",
         cancelButtonText: "Cancel",
         columns: 1,
-      //  renderUpdatedFormValues: setFormValues,
+        //  renderUpdatedFormValues: setFormValues,
         formFields: [
           {
             sheetCardExtension: false,

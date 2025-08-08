@@ -2,27 +2,30 @@ import React, { useState, useEffect, memo } from "react";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 import { getEligibleLeaveTypeDurations } from "app/hooks/leaveTracker";
 import { TooltipText } from "components";
-const AllocatedLeavesInfo = () => {
-  const [allottedLeaves, setAllottedLeaves] = useState([]);
+import { GetDispatchStateList } from "utils/Lists";
 
-  const fetchLeaveAllocated = async (isMounted) => {
-    try {
-      const response = await getEligibleLeaveTypeDurations({});
-      if (isMounted && response) {
-        setAllottedLeaves(response || []);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const AllocatedLeavesInfo = () => {
+  const [allottedLeaves, setAllottedLeaves] = useState([])
+  const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
 
   useEffect(() => {
+    const fetchLeaveAllocated = async (isMounted) => {
+      try {
+        const response = await getEligibleLeaveTypeDurations(true, user_id);
+        if (isMounted && response) {
+          setAllottedLeaves(response || []);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
     let isMounted = true;
     fetchLeaveAllocated(isMounted);
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [user_id]);
+  
   if (allottedLeaves.length === 0)
     return (
       <div className="text-neutral-800 text-sm text-center">
@@ -45,7 +48,7 @@ const AllocatedLeavesInfo = () => {
           const consumed_percentage = Math.round(
             (parseInt(consumed_count || 0, 10) /
               parseInt(allotted_count || 1, 10)) *
-              100
+            100
           );
 
           return (

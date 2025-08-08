@@ -18,6 +18,7 @@ import {
   mapOffsetLeavesData,
   mapSpecialLeavePayloadData,
   mapSpecialLeavesListData,
+  mapEmpSpecialLeaveType,
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -219,7 +220,7 @@ export const getOffsetLeaveInfo = async (employee_id) => {
     return [];
   }
 };
-export const getEligibleLeaveTypeDurations = async (isType = true) => {
+export const getEligibleLeaveTypeDurations = async (isType = true,employee_id) => {
   let URL = isType
     ? `/employee-leaves/eligible_leave_types/`
     : `/employee-leaves/eligible_leave_durations/`;
@@ -227,6 +228,7 @@ export const getEligibleLeaveTypeDurations = async (isType = true) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+
     if (response.status === 200) {
       const ResponseData = response.data;
       // const ResponseList = await mapLeaveTypeListData(ResponseData);
@@ -238,13 +240,16 @@ export const getEligibleLeaveTypeDurations = async (isType = true) => {
       )
         return [];
       const offsetLeave = await getOffsetLeaveInfo();
-      const sepcialLeave = await getEmpSpecialLeave();
+      const sepcialLeave = await getEmpSpecialLeave(employee_id);
+   debugger
       const OffsetLeaveType = ResponseList.find((obj) => obj.name === 'Offset Leaves');
-      const SepcialLeaveType = ResponseList.find((obj) => obj.name === 'Offset Leaves');
+      const SepcialLeaveType = ResponseList.find((obj) => obj.name === 'Special Leave');
       const OtherLeaveType = ResponseList.filter((obj) => obj.name !== 'Offset Leaves' && obj.name !== 'Special Leave');
       const FinalResponsList = [
         ...OtherLeaveType,
         { ...OffsetLeaveType, ...offsetLeave },
+        { ...SepcialLeaveType, ...sepcialLeave },
+
       ];
       return FinalResponsList;
     }
@@ -857,15 +862,15 @@ export const getEmpSpecialLeave = async (employee_id) => {
   try {
     const response = await getSpecialLeave({ filterData });
     if (response) {
-      const ResponseData = response.results;
+      const ResponseData = mapEmpSpecialLeaveType(response.results);
       return ResponseData;
     }
-    return [];
+    return {};
   } catch (error) {
     console.error("Error fetching asset list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return [];
+    return {};
   }
 };

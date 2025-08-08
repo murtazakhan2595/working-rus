@@ -90,7 +90,7 @@ export default function Documents({ reload }) {
     return () => {
       isMounted = false;
     };
-  }, [fetchData]);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -102,7 +102,7 @@ export default function Documents({ reload }) {
     return () => {
       isMounted = false;
     };
-  }, [reload, fetchData]);
+  }, [reload]);
 
   useEffect(() => {
     setFilterData((prevFilter) => {

@@ -313,3 +313,21 @@ export async function mapSpecialLeavesListData(data) {
 
   return ResponseList;
 }
+
+export async function mapEmpSpecialLeaveType(data = []) {
+  if (!data || data.length === 0) return {};
+  const LeaveData = {};
+  let allotted_count = 0;
+  let consumed_count = 0;
+  let balance_count = 0;
+  let expired_count = 0;
+  const ResponseList = data?.map((dataObj) => {
+    allotted_count = allotted_count + dataObj.total_allotted_leave || 0;
+    consumed_count = consumed_count + dataObj.consumed_count || 0;
+    balance_count = balance_count + dataObj.balance || 0;
+    return <div>{dataObj.leaves} leave alloted starting from {renderDate(dataObj.start_date)} till {renderDate(dataObj.end_date)}</div>;
+  });
+  LeaveData.tooltip_info = ResponseList;
+
+  return { ...LeaveData, allotted_count, balance_count };
+}

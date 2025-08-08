@@ -98,6 +98,8 @@ export const SpecialLeaves = {
   employee: null,
   leave_type: null,
   total_allotted_leave: null,
+  consumed_leave: null,
+  balance: null,
   start_date: null,
   end_date: null,
 }
