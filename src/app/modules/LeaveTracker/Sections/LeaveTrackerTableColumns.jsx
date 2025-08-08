@@ -22,6 +22,7 @@ export const LeaveRecordColumns = [
     dataField: "id",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
+    width:'110px',
   },
   {
     dataField: "id",

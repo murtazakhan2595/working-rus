@@ -12,7 +12,7 @@ import { getLeaveTypeListData, getLeaveListData } from "app/hooks/leaveTracker";
 import { getEmployeeList } from "app/hooks/general";
 import { getLabelByValue } from "utils/getValuesFromTables";
 import { LeaveRecordColumns } from "app/modules/LeaveTracker/Sections";
-import { exportRecordToExcel } from "utils/downloadUtils";
+import { AddSpecialLeave } from "./index";
 import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
@@ -22,12 +22,9 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
   const Branches = GetDispatchStateList("branches", "common") || [];
   const Employees = GetDispatchStateList("employees", "emp") || [];
   const { id: user_id } = GetDispatchStateList("user_details", "emp") || {};
-  const isViewLTPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
-  const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
-  const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
   const [filterData, setFilterData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [leaveTypesData, setLeaveTypesData] = useState([]);
+  const [openAddSpecialLeaveForm, setOpenSpecialLeaveForm] = useState(false);
   const [Leaves, setLeaves] = useState({});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
@@ -51,27 +48,6 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
       isMounted = false;
     };
   }, [isTeamView]);
-
-  const fetchLeaveTypeData = async (isMounted) => {
-    try {
-      setIsLoading(true);
-      const LeavesTypes = await getLeaveTypeListData();
-      if (LeavesTypes && isMounted) {
-        setLeaveTypesData(LeavesTypes.results || []);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    let isMounted = true;
-    fetchLeaveTypeData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const fetchData = async (isMounted) => {
     try {
@@ -112,12 +88,16 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
       return updatedFilters;
     });
   };
-
+  const handleClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpenSpecialLeaveForm(true)
+  }
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header />
+      <Header content={<Button onClick={handleClick}>Add Special Leave</Button>} />
       <Card>
         <CardHeader className="flex flex-row justify-between items-center gap-4">
           <div>
@@ -132,11 +112,10 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
           <FilterInput
             filters={[
               {
-                type: "select",
-                options: Employees,
-                name: "id",
-                placeholder: "Employee",
-              },
+                  type: "search",
+                  placeholder: "Search by ID and Name",
+                  name: "emp_search",
+                },
               {
                 type: "select",
                 options: Departments,
@@ -166,6 +145,15 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
           )}
         </CardContent>
       </Card>
+      {openAddSpecialLeaveForm && (
+        <AddSpecialLeave
+          isOpen={openAddSpecialLeaveForm}
+          setIsOpen={() => {
+            setOpenSpecialLeaveForm(false);
+          }}
+          // reloadData={()=>{}}
+        />
+      )}
     </div>
   );
 };
