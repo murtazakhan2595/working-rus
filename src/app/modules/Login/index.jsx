@@ -49,6 +49,7 @@ function Login() {
   }, [navigate]);
 
   const handleSubmit = async (e) => {
+    debugger
     e.preventDefault();
 
     // Check for internet connection
@@ -213,7 +214,7 @@ function Login() {
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Button type="submit" className="w-full">
+                    <Button onClick={handleSubmit} className="w-full">
                       {isLoading ? (
                         <span className="animate-pulse">Logging in...</span>
                       ) : (
