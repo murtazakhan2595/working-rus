@@ -54,6 +54,7 @@ import {
   EmployeeSalaryDetails,
   PayrollPayrunDetail,
 } from "app/modules/Payroll";
+import JobRotation from "app/modules/JobRotation";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import {
   Attendance,
@@ -100,6 +101,13 @@ export const SidebarRoutes = [
           component: <ViewEmployee profileView />,
           name: "MY_PROFILE",
         },
+
+           Config.EXIT && {
+          path: "/job-rotation",
+          component: <JobRotation />,
+          name: "EXIT",
+        },
+
         Config.MY_ATTENDANCE && {
           path: "/my-attendance",
           component: <MyAttendance />,
@@ -155,6 +163,9 @@ export const SidebarRoutes = [
           component: <EmployeeExit />,
           name: "EXIT",
         },
+        
+        
+
       ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
