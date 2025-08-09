@@ -27,6 +27,8 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "src/@/components/ui/tooltip";
+import Loader from "components/Loader";
+import { PageLoader } from "components";
 
 // Event Content Component with Tooltip
 const EventWithTooltip = ({ eventInfo }) => {
@@ -105,6 +107,7 @@ const EmployeeShiftCalendar = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filterData, setFilterData] = useState({})
   const [loading, setLoading] = useState(true);
+  const [loadingChangeRequests, setLoadingChangeRequests] = useState(true);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -162,13 +165,15 @@ const EmployeeShiftCalendar = () => {
 
   const fetchChangeRequests = async () => {
     try {
+      setLoadingChangeRequests(true);
       const response = await getShiftSchedule({
         filterData: {
           employee: employeeId,
           ordering: "-created_at",
           shift_requested: "Employee",
-          is_change_request: "true",
+          is_change_request: "true,false",
           status: selectedStatus,
+
         },
         options,
         ordering,
@@ -195,6 +200,8 @@ const EmployeeShiftCalendar = () => {
       }
     } catch (error) {
       console.error("Error fetching change requests:", error);
+    } finally {
+      setLoadingChangeRequests(false);
     }
   };
 
@@ -639,14 +646,18 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
                 height="100%"
                 eventDisplay="block"
                 dayMaxEvents={
-                  typeof window !== "undefined" && window.innerWidth < 768 ? 2 : 3
+                  typeof window !== "undefined" && window.innerWidth < 768
+                    ? 2
+                    : 3
                 }
                 moreLinkClick="popover"
                 // eventTextColor="#ffffff"
                 nowIndicator={true}
                 weekends={true}
                 aspectRatio={
-                  typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
+                  typeof window !== "undefined" && window.innerWidth < 768
+                    ? 0.8
+                    : 1.35
                 }
                 slotLabelFormat={{
                   hour: "2-digit",
@@ -658,8 +669,9 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
                   minute: "2-digit",
                   hour12: false,
                 }}
-                eventContent={(eventInfo) => <EventWithTooltip eventInfo={eventInfo} />}
-      
+                eventContent={(eventInfo) => (
+                  <EventWithTooltip eventInfo={eventInfo} />
+                )}
                 dayCellContent={(dayInfo) => {
                   return {
                     html: `<div class="text-sm sm:text-base">${dayInfo.dayNumberText}</div>`,
@@ -700,39 +712,40 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
         </CardContent>
       </Card>
       {/* Change Request Records */}
-     {isViewMyShiftChangeRequestsPermitted && <Card>
-        <CardHeader>
-          <CardTitle>My Shift Change Requests</CardTitle>
-          <div className="flex justify-end">
-            <FilterInput
-              filters={[
-                {
-                  type: "select-one",
-                  option: [
-                    { label: "Pending", value: "Pending" },
-                    { label: "Approved", value: "Approved" },
-                    { label: "Rejected", value: "Rejected" },
-                  ],
-                  name: "status",
-                  placeholder: "Status",
-                  values: selectedStatus,
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <CustomTable
-            columns={changeRequestColumns}
-            data={changeRequests?.results || []}
-            pagination={true}
-            dataTotalSize={changeRequests?.count || 0}
-            tableOptions={tableOptions}
-          />
-        </CardContent>
-      </Card>}
-
+      {isViewMyShiftChangeRequestsPermitted && (
+        <Card>
+          <CardHeader>
+            <CardTitle>My Shift Change Requests</CardTitle>
+            <div className="flex justify-end">
+              <FilterInput
+                filters={[
+                  {
+                    type: "select-one",
+                    option: [
+                      { label: "Pending", value: "PENDING" },
+                      { label: "Approved", value: "APPROVED" },
+                      { label: "Rejected", value: "REJECTED" },
+                    ],
+                    name: "status",
+                    placeholder: "Status",
+                    values: selectedStatus,
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
+            </div>
+          </CardHeader>
+          <CardContent>
+            {!loadingChangeRequests?<CustomTable
+              columns={changeRequestColumns}
+              data={changeRequests?.results || []}
+              pagination={true}
+              dataTotalSize={changeRequests?.count || 0}
+              tableOptions={tableOptions}
+            /> : <PageLoader />}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Reuse the same Shift Change Request Modal */}
       {isRequestModalOpen && employeeInfo && (
