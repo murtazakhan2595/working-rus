@@ -66,7 +66,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     let isMounted = true;
     if (isMounted)
       setPermittedViewFilterData(() => {
-        if (isTeamView) return { reporting_employees: [user_id] };
+        if (isTeamView) return { reporting_employee: [user_id] };
         else if (isAdminView) return {};
         else if (isBranchView) return { branch: user_branch };
         else if (isDepartmentView) return { department: user_department };
