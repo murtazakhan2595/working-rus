@@ -1,6 +1,5 @@
 import moment from "moment";
 import { renderTime } from "./DateTimeUtils";
-import { useSelector } from "react-redux";
 import { eachDayOfInterval } from "date-fns";
 
 export const formatNumber = (num) => {

@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getEmployeeExitStats } from "app/hooks/employeeExitAndClearance";
-import RequestTerminationCard from "./RequestTerminationCard";
 import {
   CircleCheckBig,
   CircleX,
@@ -23,7 +22,7 @@ import { Header } from "components";
 import Stats from "components/ui/Stats";
 import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
-import { TerminationReasons } from "app/modules/ExitAndClearance";
+import { TerminationReasons, RequestTerminationCard } from "app/modules/ExitAndClearance";
 import EOSSettlementList from "../SelfService/Exit/EOSSettlementList";
 import useEOSSettlement from "../../hooks/useEOSSettlement";
 import { HasAccess } from "utils/PermissionUtils";
@@ -42,7 +41,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     department_name: user_department,
   } = GetDispatchStateList("user_details", "emp") || {};
   const Employees = GetEmployeeFilteredList(
-    false,
+    isTeamView,
     isAdminView,
     isBranchView,
     isDepartmentView
@@ -77,14 +76,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     };
   }, [isTeamView, isAdminView, isBranchView, isDepartmentView, user_branch, user_department, user_id]);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (isMounted) => {
     try {
       const filter = { ...permittedViewFilterData };
       const response = await getEmployeeExitStats({
         filterData: filter,
       });
 
-      if (response) {
+      if (response && isMounted) {
         setExitStats(response);
       }
     } catch (e) {
@@ -100,10 +99,6 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     };
   }, [permittedViewFilterData, fetchData]);
 
-  const closeRequestTerminationCard = () => {
-    fetchData();
-    setReloadData(!reloadData);
-  };
 
   const statsData = React.useMemo(() => [
     { label: "Total Exits", value: ExitStats.Total, icon: FolderInput },
@@ -162,9 +157,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
 
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
+    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}    >
       <Header
         content={
           <>
@@ -237,7 +230,6 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
           isOpen={terminationReasons}
           setIsOpen={setTerminationReasons}
           reload={() => {
-            fetchData();
             setTerminationReasonsReload((prev) => prev + 1); // Trigger reload
           }}
         />
@@ -246,9 +238,9 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
         <RequestTerminationCard
           isOpen={openTerminationForm}
           setIsOpen={setOpenTerminationForm}
-          reload={() => {
-            fetchData();
-            setTerminationReasonsReload((prev) => prev + 1); // Trigger reload
+          reloadData={() => {
+            fetchData(true)
+            setReloadData(!reloadData)
           }}
           Employees={Employees}
 
