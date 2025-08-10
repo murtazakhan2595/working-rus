@@ -9,7 +9,6 @@ import {
   mapEmployeeSalaryPayloadData,
   mapFinalSettlementPayloadData,
 } from "app/utils/MappingObjects/mapPayrollData";
-import { toast } from "react-toastify";
 import { renderErrorMessages } from "utils/renderErrors";
 
 const baseUrl = initialState.baseUrl;
@@ -416,7 +415,6 @@ const saveEmployeePayroll = async (payload, id) => {
     }
     renderErrorMessages(error?.response?.data);
     // toast.error(`Unexpected response status: ${error?.response.status}`);
-
     return false;
   }
 };

@@ -17,7 +17,7 @@ import AttachmentUI from "components/ui/AttachmentUI";
  * @param {boolean} hideActions - A boolean to hide actions.
  * @returns {array} An array of column definitions.
  */
-export const ExitRequestColumns = (reloadData = () => { }) => [
+export const ExitRequestColumns = (reloadData = () => { },handleUploadClearanceReportClick=()=>{}) => [
   {
     dataField: "employee_id__first_name",
     text: "Employees",
@@ -88,6 +88,7 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
         data={row}
         reloadData={reloadData}
         DataList={data_list}
+        handleUploadClearanceReportClick={handleUploadClearanceReportClick}
       />
     ),
   },

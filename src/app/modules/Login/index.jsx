@@ -49,7 +49,6 @@ function Login() {
   }, [navigate]);
 
   const handleSubmit = async (e) => {
-    debugger
     e.preventDefault();
 
     // Check for internet connection
