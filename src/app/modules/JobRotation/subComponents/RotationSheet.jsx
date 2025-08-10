@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SheetUI, EmployeeDetailUI } from "components";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
@@ -6,14 +6,33 @@ import { SelectInputComponent } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
+import axios from "axios"
 
 export default function RotationSheetWrapper() {
+  useEffect(()=>{
+    res()
+  },[])
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
   );
+  const [managers, setmanagers] = useState([])
   const Designations = useSelector((state) => state.common.designations);
-
+  const baseUrlState = useSelector((state) => state.user.baseUrl)
+  const headers = () => ({
+    Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+    "Content-Type": "application/json",
+  });
+  const res = async () => {
+    try {
+      const api = await axios.get(`${baseUrlState}/emplistofmanager/`, {
+        headers: headers()
+       })
+       console.log(api.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
 
@@ -69,7 +88,7 @@ export default function RotationSheetWrapper() {
                   label: "Select New Branch",
                   options: Branches || [],
                   required: true,
-                  onChange: async (e)=>{
+                  onChange: async (e) => {
                     console.log(e.target.value)
                   }
                 },
