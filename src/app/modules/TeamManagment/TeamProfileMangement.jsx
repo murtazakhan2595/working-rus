@@ -17,7 +17,6 @@ export default function TeamProfileMangement() {
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({
-    // department_name: loggedInUserDetails.department_name,
     reporting_employees: loggedInUserDetails.id,
   });
   const [totalEmployee, setTotalEmployee] = useState(0);
@@ -99,12 +98,12 @@ export default function TeamProfileMangement() {
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
     ...(Object.keys(filterData).length === 0
       ? [
-          {
-            label: "Offboarded Employees",
-            value: totalOffboard,
-            icon: UserRoundCheck,
-          },
-        ]
+        {
+          label: "Offboarded Employees",
+          value: totalOffboard,
+          icon: UserRoundCheck,
+        },
+      ]
       : []),
   ];
 

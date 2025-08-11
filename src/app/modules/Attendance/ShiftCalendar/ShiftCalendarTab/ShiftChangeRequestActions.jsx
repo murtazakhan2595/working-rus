@@ -21,6 +21,8 @@ import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
 import { StatusButtons, StatusList } from "components";
 
 const ShiftChangeRequestActions = ({ data, reload }) => {
+
+  console.log("ShiftChangeRequestActions mounted", data);
   const [viewSheetOpen, setViewSheetOpen] = useState(false);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -31,31 +33,74 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
     setViewSheetOpen(true);
   };
 
-  // 🚀 NEW: Combined approval/rejection handler
-  const handleApprovalResponse = async (success, status) => {
-    if (!success) {
-      toast.error(`Failed to ${status.toLowerCase()} request`);
-      return;
-    }
+ const handleApprovalResponse = async (success, status) => {
+   if (!success) {
+     toast.error(`Failed to ${status.toLowerCase()} request`);
+     return;
+   }
 
-    // Show initial success message
-    toast.success(`Request ${status} Successfully!`);
+   // Show initial success message
+   toast.success(`Request ${status} Successfully!`);
 
-    // For rejection, we need to show the rejection reason modal first
-    if (status === "Rejected") {
-      setRejectModalOpen(true);
-      return; // Don't close the modal yet, let them enter rejection reason
-    }
+   // For rejection, we need to show the rejection reason modal first
+   if (status === "Rejected") {
+     setRejectModalOpen(true);
+     return; // Don't close the modal yet, let them enter rejection reason
+   }
 
-    // For approval, apply the business logic immediately
-    if (status === "Approved") {
-      await applyApprovalLogic();
-    }
+   // 🚀 NEW: Only apply approval logic if this is the FINAL approval
+   if (status === "Approved") {
+     const isThisFinalApproval = isFinalApproval();
 
-    // Close modal and reload
-    reload();
-    setViewSheetOpen(false);
-  };
+     console.log("Approval Debug Info:", {
+       currentLevel: data.current_level,
+       approvalLevels: data.approval_levels,
+       approvalDetails: data.approval_details,
+       isFinalApproval: isThisFinalApproval,
+     });
+
+     if (isThisFinalApproval) {
+       console.log("✅ Final approval - applying business logic");
+       await applyApprovalLogic();
+     } else {
+       console.log(
+         "⏳ Intermediate approval - business logic will run after final approval"
+       );
+     }
+   }
+
+   // Close modal and reload
+   reload();
+   setViewSheetOpen(false);
+ };
+
+ const isFinalApproval = () => {
+   // Method 1: Check if current level has is_final_approval flag
+   const currentApprovalLevel = data.approval_levels?.find(
+     (level) => level.level_number === data.current_level
+   );
+
+   if (currentApprovalLevel?.is_final_approval) {
+     return true;
+   }
+
+   // Method 2: Check if this is the highest level number
+   const maxLevel = Math.max(
+     ...(data.approval_levels?.map((level) => level.level_number) || [0])
+   );
+   if (data.current_level === maxLevel) {
+     return true;
+   }
+
+   // Method 3: Check if all approval levels are completed (fallback)
+   const allApproved = data.approval_details?.every(
+     (detail) =>
+       detail.status === "APPROVED" ||
+       detail.level_number === data.current_level
+   );
+
+   return allApproved;
+ };
 
   // 🚀 EXTRACTED: Approval business logic
   const applyApprovalLogic = async () => {
@@ -156,6 +201,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
         setIsOpen={setViewSheetOpen}
         width="700px"
       >
+      {console.log("ShiftChangeRequestActions mounted", data)}
         <div className="flex flex-col gap-4">
           {/* Employee Info */}
           <div className="mb-4">

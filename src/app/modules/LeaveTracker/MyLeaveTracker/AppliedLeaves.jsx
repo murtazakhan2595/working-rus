@@ -81,7 +81,7 @@ export default function AppliedLeaves({ reload, isDashboard = false }) {
 
   const fetchLeaveType = async (isMounted) => {
     try {
-      const response = await getEligibleLeaveTypeDurations({});
+      const response = await getEligibleLeaveTypeDurations(true, user_id);
       if (isMounted && response) {
         const dropdownOptions = await getDropdownList(
           response || [],
@@ -125,22 +125,22 @@ export default function AppliedLeaves({ reload, isDashboard = false }) {
           filters={[
             ...(!isDashboard
               ? [
-                  {
-                    type: "select",
-                    options: LeaveType,
-                    name: "leave_type",
-                    placeholder: "Leave Type",
-                  },
-                ]
+                {
+                  type: "select",
+                  options: LeaveType,
+                  name: "leave_type",
+                  placeholder: "Leave Type",
+                },
+              ]
               : []),
             ...(!isDashboard
               ? [
-                  {
-                    type: "date-range",
-                    name: "date_range",
-                    placeholder: "Start Date",
-                  },
-                ]
+                {
+                  type: "date-range",
+                  name: "date_range",
+                  placeholder: "Start Date",
+                },
+              ]
               : []),
             {
               type: "select",

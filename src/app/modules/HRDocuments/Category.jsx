@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TableCustom from "components/CustomTable";
-import { Card } from "components/ui/card";
+import { Card, CardContent, CardTitle, CardDescription, CardHeader } from "components/ui/card";
 import { getDocumentCategoryList } from "app/hooks/hrDocuments";
-import { CardContent } from "components/ui/card";
 import { PageLoader } from "components";
 import { DocCategoryColumns } from "app/modules/HRDocuments/Sections";
 import { FilterInput } from "components/FormControl";
@@ -52,20 +51,26 @@ const Category = ({ reload }) => {
   }, [ordering, options, reload]);
 
   return (
-    <div className="flex flex-col gap-4 justify-end">
-      {isLoading ? (
-        <PageLoader />
-      ) : (
-        <TableCustom
-          columns={DocCategoryColumns(fetchData)}
-          data={CategoryData?.results || []}
-          tableOptions={tableOptions}
-          dataTotalSize={CategoryData?.count || 0}
-          pagination={true}
-          className="organization-table"
-        />
-)}
-    </div>
+    <>
+      <CardHeader>
+        <CardTitle>Document Category</CardTitle>
+        <CardDescription>Here you can view and manage document categories.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            columns={DocCategoryColumns(fetchData)}
+            data={CategoryData?.results || []}
+            tableOptions={tableOptions}
+            dataTotalSize={CategoryData?.count || 0}
+            pagination={true}
+            className="organization-table"
+          />
+        )}
+      </CardContent>
+    </>
   );
 };
 

@@ -19,8 +19,9 @@ import { NumberInput } from "components/FormControl";
 import { GetDateDifference } from "utils/renderValues";
 import { TextAreaInput } from "components/FormControl";
 import { CoverFileUpload } from "components/FormControl";
+import { calculateTotal } from "utils/renderValues";
 
-const LeaveRequest = ({ id, reloadData = () => {} }) => {
+const LeaveRequest = ({ id, reloadData = () => { } }) => {
   const CalendarContent = useSelector((state) => state.common.calendar_content);
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
@@ -86,14 +87,16 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
       if (leaveTypeId) {
         const leaveType = await getLeaveTypeData(leaveTypeId);
         if (leaveType) {
+          const consumedFullPaidDays = calculateTotal(ApprovedLeaves, 'full_paid_days', 'leave_type', leaveTypeId)
+          const consumedHalfPaidDays = calculateTotal(ApprovedLeaves, 'half_paid_days', 'leave_type', leaveTypeId)
           setLeaveValidationInfo({
             allowedLeaves: leaveType.leave_count,
             allowedConsecutiveDays: leaveType.max_consecutive_days,
             noticeDays: leaveType.min_days_notice,
             probationAllowed: leaveType.probation_restriction,
             halfPaidAllowed: !leaveType.is_all_paid,
-            allowedHalfPaid: leaveType.half_paid_days,
-            allowedFullPaid: leaveType.full_paid_days,
+            allowedHalfPaid: Math.max(0, leaveType.half_paid_days - consumedFullPaidDays),
+            allowedFullPaid: Math.max(0, leaveType.full_paid_days - consumedHalfPaidDays),
             daysType: leaveType.day_count_type,
             attachmentRequired: leaveType.requires_attachment,
           });
@@ -149,9 +152,12 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
 
       if (values.is_full_paid) {
         if (total_days > allowedFullPaid) {
-          const remainingDays = total_days - allowedFullPaid;
           FormValues.full_paid_days = allowedFullPaid;
-          FormValues.half_paid_days = remainingDays;
+          const remainingDays = total_days - allowedFullPaid;
+          if (remainingDays > allowedHalfPaid)
+            FormValues.half_paid_days = allowedHalfPaid;
+          else
+            FormValues.half_paid_days = remainingDays;
         } else {
           // All leave within allowed full paid limit
           FormValues.full_paid_days = total_days;
@@ -159,9 +165,12 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
       } else {
         // Part of the leave will be half paid, rest full paid if total exceeds allowedHalfPaid
         if (total_days > allowedHalfPaid) {
-          const remainingDays = total_days - allowedHalfPaid;
-          FormValues.full_paid_days = remainingDays;
           FormValues.half_paid_days = allowedHalfPaid;
+          const remainingDays = total_days - allowedHalfPaid;
+          if (remainingDays > allowedFullPaid)
+            FormValues.full_paid_days = allowedFullPaid;
+          else
+            FormValues.full_paid_days = remainingDays;
         } else {
           // All leave within allowed half paid limit
           FormValues.half_paid_days = total_days;
@@ -203,6 +212,13 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
     //   setFormData(FormValues);
     setIsOpen(true);
   };
+  const handleClose = () => {
+    setIsOpen(false);
+    reloadData(true);
+    setFormValues(Leave)
+    setFormData(Leave)
+  }
+
   return (
     <>
       <Button size="sm" onClick={handleAddLeaveClick}>
@@ -211,10 +227,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
       {isOpen && (
         <SheetUI
           isOpen={isOpen}
-          setIsOpen={() => {
-            setIsOpen(false);
-            reloadData(true);
-          }}
+          setIsOpen={handleClose}
           variant="sheet"
           sheetConfig={FormSheetData}
           formConfig={{
@@ -322,15 +335,14 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
                   },
                   ...(LeaveValidationInfo.halfPaidAllowed
                     ? [
-                        {
-                          InputField: CheckBoxInput,
-                          name: "is_full_paid",
-                          label: "Full Paid",
-                          colsSpan: 2,
-                          description: `Unselect the check if you wanted to apply for half paid leave. You will be granted ${FormValues.full_paid_days} full paid and ${FormValues.half_paid_days} half paid leaves.`,
-                          onFieldUpdate: (_, value) => {},
-                        },
-                      ]
+                      {
+                        InputField: CheckBoxInput,
+                        name: "is_full_paid",
+                        label: "Full Paid",
+                        colsSpan: 2,
+                        description: `Unselect the check if you wanted to apply for half paid leave. You will be granted ${FormValues.full_paid_days} full paid and ${FormValues.half_paid_days} half paid leaves.`,
+                      },
+                    ]
                     : []),
                 ].filter(Boolean),
               },

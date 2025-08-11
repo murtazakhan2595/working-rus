@@ -1,6 +1,8 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { HandleLogout } from "./general";
+import { getCurrentRequestApprover, HandleLogout } from "./general";
+import { renderErrorMessages } from "utils/renderErrors";
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -219,35 +221,115 @@ const requestAsset= async (payload) => {
         return response.data;
       }
     }
-    return false;
   } catch (error) {
     console.error("Error updating asset request:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
   }
 };
 
-const getEmployeeAssets = async (payload) => {
-   const pageNo = payload?.options?.page ?? "";
-   const pageSize = payload?.options?.sizePerPage ?? "";
-   const filterData = payload?.filterData ?? {};
-   const sortField = payload?.ordering; 
+export async function mapAssetRequestData(data) {
+  const assetRequestDetails = { ...data };
 
-   let URL = `/asset_assignment?ordering=${sortField}&${
-     pageNo ? `page=${pageNo}&` : ""
-   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-     JSON.stringify(filterData)
-   )}`;
-   
+  // Only transform approval_details if it exists
+  if (
+    data.hasOwnProperty("approval_logs") ||
+    data.hasOwnProperty("approval_levels")
+  ) {
+    assetRequestDetails.approval_details = await mapApproverDetails(data);
+  }
+
+  // Normalize the request field name for consistency
+  if (data.hierarchy_request) {
+    assetRequestDetails.request = data.hierarchy_request;
+  }
+
+  return assetRequestDetails;
+}
+
+// ✅ UPDATED: getEmployeeAssets with mapping integration
+const getEmployeeAssets = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "-id";
+
+  let URL = `/asset_assignment?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+
     if (response.status === 200) {
-      return response.data;
+      // Check if response has results array (paginated) or is single object
+      if (response.data.results && Array.isArray(response.data.results)) {
+        // Process each result
+        const mappedResults = await Promise.all(
+          response.data.results.map(async (item) => {
+            // ✅ STEP 1: Map asset data (includes approval_details transformation)
+            const mappedItem = await mapAssetRequestData(item);
+
+            // ✅ STEP 2: Get current approver if hierarchy_request exists
+            if (mappedItem.hierarchy_request) {
+              try {
+                const currentapprover = await getCurrentRequestApprover(
+                  mappedItem.hierarchy_request
+                );
+
+                if (
+                  currentapprover &&
+                  Object.keys(currentapprover).length > 0
+                ) {
+                  return { ...mappedItem, ...currentapprover };
+                }
+              } catch (error) {
+                console.error(
+                  "Error getting current approver for asset:",
+                  error
+                );
+              }
+            }
+
+            return mappedItem;
+          })
+        );
+
+        return {
+          ...response.data,
+          results: mappedResults,
+        };
+      } else {
+        // Single object response
+        // ✅ STEP 1: Map single asset data
+        const ResponseData = await mapAssetRequestData(response.data);
+
+        // ✅ STEP 2: Get current approver if hierarchy_request exists
+        if (ResponseData.hierarchy_request) {
+          try {
+            const currentapprover = await getCurrentRequestApprover(
+              ResponseData.hierarchy_request
+            );
+
+            if (currentapprover && Object.keys(currentapprover).length > 0) {
+              return { ...ResponseData, ...currentapprover };
+            }
+          } catch (error) {
+            console.error("Error getting current approver for asset:", error);
+          }
+        }
+
+        return ResponseData;
+      }
     }
+
+    return false;
   } catch (error) {
     console.error("Error fetching employee assets:", error);
     if (error?.response?.status === 401) {
@@ -255,7 +337,7 @@ const getEmployeeAssets = async (payload) => {
     }
     return false;
   }
-}
+};
 const getAssetCategories = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";

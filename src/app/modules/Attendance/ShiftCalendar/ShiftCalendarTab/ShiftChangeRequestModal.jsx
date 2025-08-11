@@ -47,13 +47,9 @@ const ShiftChangeRequestModal = ({
 
   // Generate daily schedule with assigned shift info
   const generateDailyScheduleWithShifts = async (dateRange, employeeId) => {
-    console.log("Generating daily schedule for:", dateRange, employeeId);
-
     if (!dateRange || dateRange.split(",").length !== 2) return [];
-
     const [startDate, endDate] = dateRange.split(",");
     setFetchingShifts(true);
-
     try {
       // Fetch approved shift schedules for the date range
       const response = await getShiftSchedule({
@@ -61,14 +57,13 @@ const ShiftChangeRequestModal = ({
           employee: employeeId,
           end_date_gte: startDate,
           start_date_lte: endDate,
-          status: "Approved",
+          status: "APPROVED",
           is_change_request: "true,false",
         },
         ordering: "-id",
       });
 
       const shiftSchedules = response?.results || [];
-      console.log("Shift Schedules:", shiftSchedules);
 
       // If no shift schedules found, fetch direct org shift
       let directOrgShift = null;
@@ -77,16 +72,12 @@ const ShiftChangeRequestModal = ({
         const empData = await employeeData(employeeId);
 
         if (empData?.shift_assignment) {
-          console.log("Fetching direct org shift for employee:", empData);
           directOrgShift = await getShiftById(empData.shift_assignment);
-          console.log("Direct org shift:", directOrgShift);
 
           if (!directOrgShift) {
             toast.error("No shift assigned to this employee");
             throw new Error("No shift assigned to employee");
           }
-
-          console.log("Direct org shift:", directOrgShift);
         } else {
           toast.error("Employee has no shift assignment");
           throw new Error("Employee has no shift assignment");
@@ -279,7 +270,6 @@ const ShiftChangeRequestModal = ({
 
     // MINIMAL FIX: Add safety check
     if (!values.dailySchedule || !Array.isArray(values.dailySchedule)) {
-      console.log("dailySchedule is not available yet");
       return;
     }
 
@@ -627,7 +617,6 @@ const ShiftChangeRequestModal = ({
         requested_date_range: `${requestedStartDate},${requestedEndDate}`,
       };
 
-      console.log("Shift Change Request Payload:", payload);
       if (isEditEmployeeShiftPermitted) {
         await generateShiftScheduleLog({
           scheduleData: payload,
@@ -916,11 +905,11 @@ const ShiftChangeRequestModal = ({
                                                     (day, i) =>
                                                       i === index
                                                         ? {
-                                                            ...day,
-                                                            [name
-                                                              .split(".")
-                                                              .pop()]: value,
-                                                          }
+                                                          ...day,
+                                                          [name
+                                                            .split(".")
+                                                            .pop()]: value,
+                                                        }
                                                         : day
                                                   ),
                                               };
@@ -952,11 +941,11 @@ const ShiftChangeRequestModal = ({
                                                     (day, i) =>
                                                       i === index
                                                         ? {
-                                                            ...day,
-                                                            [name
-                                                              .split(".")
-                                                              .pop()]: value,
-                                                          }
+                                                          ...day,
+                                                          [name
+                                                            .split(".")
+                                                            .pop()]: value,
+                                                        }
                                                         : day
                                                   ),
                                               };
@@ -999,11 +988,11 @@ const ShiftChangeRequestModal = ({
                                                       (day, i) =>
                                                         i === index
                                                           ? {
-                                                              ...day,
-                                                              [name
-                                                                .split(".")
-                                                                .pop()]: value,
-                                                            }
+                                                            ...day,
+                                                            [name
+                                                              .split(".")
+                                                              .pop()]: value,
+                                                          }
                                                           : day
                                                     ),
                                                 };
@@ -1038,11 +1027,11 @@ const ShiftChangeRequestModal = ({
                                                       (day, i) =>
                                                         i === index
                                                           ? {
-                                                              ...day,
-                                                              [name
-                                                                .split(".")
-                                                                .pop()]: value,
-                                                            }
+                                                            ...day,
+                                                            [name
+                                                              .split(".")
+                                                              .pop()]: value,
+                                                          }
                                                           : day
                                                     ),
                                                 };
@@ -1082,11 +1071,11 @@ const ShiftChangeRequestModal = ({
                                                       (day, i) =>
                                                         i === index
                                                           ? {
-                                                              ...day,
-                                                              [name
-                                                                .split(".")
-                                                                .pop()]: value,
-                                                            }
+                                                            ...day,
+                                                            [name
+                                                              .split(".")
+                                                              .pop()]: value,
+                                                          }
                                                           : day
                                                     ),
                                                 };
@@ -1121,11 +1110,11 @@ const ShiftChangeRequestModal = ({
                                                       (day, i) =>
                                                         i === index
                                                           ? {
-                                                              ...day,
-                                                              [name
-                                                                .split(".")
-                                                                .pop()]: value,
-                                                            }
+                                                            ...day,
+                                                            [name
+                                                              .split(".")
+                                                              .pop()]: value,
+                                                          }
                                                           : day
                                                     ),
                                                 };
@@ -1152,11 +1141,11 @@ const ShiftChangeRequestModal = ({
                                           day.date
                                         ]
                                           ? `${props.values.totalHours.daily[
-                                              day.date
-                                            ].toFixed(1)} hours`
+                                            day.date
+                                          ].toFixed(1)} hours`
                                           : day.requestedIsOff
-                                          ? "OFF"
-                                          : "0 hours"}
+                                            ? "OFF"
+                                            : "0 hours"}
                                       </div>
                                     </>
                                   )}
@@ -1195,8 +1184,8 @@ const ShiftChangeRequestModal = ({
                       ? "Updating Shift..."
                       : "Submitting..."
                     : isEditEmployeeShiftPermitted
-                    ? "Update Shift"
-                    : "Submit Request"}
+                      ? "Update Shift"
+                      : "Submit Request"}
                 </Button>
               </div>
             </form>

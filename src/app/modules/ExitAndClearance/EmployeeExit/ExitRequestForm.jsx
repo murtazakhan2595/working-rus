@@ -21,7 +21,7 @@ import { ResignationReasons } from "data/Data";
 import { CoverFileUpload } from "components/FormControl";
 import { Card, CardContent, CardTitle } from "components/ui/card";
 
-export default function ExitRequestForm({ reload = () => {} }) {
+export default function ExitRequestForm({ reload = () => { } }) {
   const { id: user_id } = useSelector((state) => state.emp.user_details);
   const InitialValues = EmployeeExit;
   const handleSubmit = async (data, resetForm) => {
@@ -61,22 +61,7 @@ export default function ExitRequestForm({ reload = () => {} }) {
               initialValues: InitialValues,
               enableReinitialize: true,
               handleSubmit: handleSubmit,
-              validateFormSchema: (values) => {
-                // const error = validateUpdateAttendanceFormSchema(
-                //   values,
-                //   Boolean(ActiveShift.status && ActiveShift.is_split_shift)
-                // );
-                // if (values.date && !ActiveShift.status) {
-                //   if (!ActiveShift.shift_assigned) {
-                //     error.date = `No Shift was assigned to ${selectedEmployee.name} for this date. Kindly update the shift to record attendance`;
-                //   } else if (ActiveShift.isOffToday) {
-                //     error.date = `${selectedEmployee.name} is on ${
-                //       ActiveShift?.OffLabel?.toLowerCase() || ""
-                //     } for this date`;
-                //   }
-                // }
-                return {};
-              },
+              validateFormSchema: () => { },
               submitButtonText: "Submit",
               cancelButtonText: "Cancel",
               columns: 3,
@@ -112,9 +97,9 @@ export default function ExitRequestForm({ reload = () => {} }) {
                   InputFields: [
                     {
                       InputField: DateInput,
-                      name: "exit_date",
+                      name: "final_working_day",
                       required: true,
-                      label: "Exit Date",
+                      label: "Last Working Day",
                       minDate: new Date(),
                     },
                     {

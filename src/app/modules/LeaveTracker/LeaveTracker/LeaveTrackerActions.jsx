@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { ViewLeaveDetails } from "app/modules/LeaveTracker";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { useNavigate } from "react-router-dom";
-import { HasAccess } from "utils/PermissionUtils";
 
 const LeaveTrackerActions = ({
   data,
-  isHistoryView = false,
   reloadData = () => {},
   DataList = [],
 }) => {
