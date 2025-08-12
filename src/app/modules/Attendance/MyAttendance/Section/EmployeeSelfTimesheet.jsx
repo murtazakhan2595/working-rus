@@ -23,20 +23,19 @@ import {
   mapAttendanceCheckOutPayload,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
 
 export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
 }) {
-  const { id: user_id, biometric_id: user_biometric_id, employee_status } =
-    useSelector((state) => state.emp.user_details) || {};
-  const { today_shift } = useSelector(
-    (state) => state.attendance.attendance_details
-  );
+  const { id: user_id, biometric_id: user_biometric_id, employee_status } = useSelector((state) => state.emp.user_details) || {};
+
   const [payableHours, setPayableHours] = useState(0);
+  const [ShiftData, setShiftData] = useState({});
   const [attendance, setAttendance] = useState(null);
-  const updateTimer = () => {
-    const isSplitShit = today_shift?.is_split_shift;
+  const updateTimer = (ShiftData) => {
+    const isSplitShit = ShiftData?.is_split_shift;
     const checkInDate =
       isSplitShit && attendance?.second_checkin
         ? moment(attendance?.second_checkin)
@@ -58,20 +57,20 @@ export default function EmployeeSelfTimesheet({
   useEffect(() => {
     if (!OnBreak && attendance) {
       if (attendance?.checkin && !attendance.checkout) {
-        updateTimer(); // Initial update
+        updateTimer(ShiftData); // Initial update
         const interval = setInterval(updateTimer, 1000); // Update every second
         return () => clearInterval(interval); // Cleanup on unmount
       } else if (attendance?.second_checkin && !attendance.second_checkout) {
-        updateTimer(); // Initial update
+        updateTimer(ShiftData); // Initial update
         const interval = setInterval(updateTimer, 1000); // Update every second
         return () => clearInterval(interval); // Cleanup on unmount
       } else {
         setPayableHours(parseFloat(attendance?.payable_hours) || 0);
       }
     } else if (OnBreak) {
-      updateTimer();
+      updateTimer(ShiftData);
     }
-  }, [attendance, OnBreak, today_shift]);
+  }, [attendance, OnBreak, ShiftData]);
 
   useEffect(() => {
     let isMounted = true;
@@ -130,6 +129,26 @@ export default function EmployeeSelfTimesheet({
     };
   }, [user_id]);
 
+  useEffect(() => {
+    let isMounted = true;
+    const fetchShiftData = async (isMounted) => {
+      try {
+        const today_shift = await getActiveShiftData(user_id, moment());
+        if (isMounted) {
+          if (today_shift) {
+            setShiftData(today_shift);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+    if (user_id) fetchShiftData(isMounted, user_id);
+    return () => {
+      isMounted = false;
+    };
+  }, [user_id]);
+
   return (
     <Card className='h-full'>
       <CardHeader>
@@ -148,7 +167,7 @@ export default function EmployeeSelfTimesheet({
             </div>
           ) : (
             <div className="space-y-2">
-              {!today_shift?.isOffToday && (
+              {!ShiftData?.isOffToday && (
                 <>
                   {" "}
                   <DetailBox
@@ -171,10 +190,10 @@ export default function EmployeeSelfTimesheet({
                       label="Check-out Time"
                     />
                   )}
-                  {today_shift?.shift_assigned ? (
-                    !today_shift?.isOffToday && (
+                  {ShiftData?.shift_assigned ? (
+                    !ShiftData?.isOffToday && (
                       <DetailBox
-                        value={today_shift?.shifts.map(
+                        value={ShiftData?.shifts.map(
                           ({ start_time, end_time }) => (
                             <span>
                               {start_time} - {end_time}
@@ -195,9 +214,9 @@ export default function EmployeeSelfTimesheet({
                   {attendance?.status && (
                     <DetailBox
                       value={
-                        today_shift?.isOffToday ? (
+                        ShiftData?.isOffToday ? (
                           <StatusLabel variant="info">
-                            {today_shift?.OffLabel}
+                            {ShiftData?.OffLabel}
                           </StatusLabel>
                         ) : (
                           <StatusLabel status={attendance?.status}>
@@ -247,10 +266,10 @@ export default function EmployeeSelfTimesheet({
                   </div>
                 </div>
               </div>
-              {today_shift?.isOffToday && (
+              {ShiftData?.isOffToday && (
                 <div className="text-red-800 flex flex-wrap justify-center items-center">
                   <TriangleAlert size={14} /> You are on{" "}
-                  {today_shift?.OffLabel?.toLowerCase()} today
+                  {ShiftData?.OffLabel?.toLowerCase()} today
                 </div>
               )}
 
@@ -260,7 +279,7 @@ export default function EmployeeSelfTimesheet({
                     <RenderBreakButton
                       disable={disable}
                       attendance={attendance}
-                      Shift={today_shift}
+                      Shift={ShiftData}
                       OnBreak={OnBreak}
                       reloadData={fetchAttendanceData}
                     />
@@ -271,7 +290,7 @@ export default function EmployeeSelfTimesheet({
                     <RenderLogInButton
                       disable={disable}
                       attendance={attendance}
-                      Shift={today_shift}
+                      Shift={ShiftData}
                       OnBreak={OnBreak}
                       reloadData={fetchAttendanceData}
                     />

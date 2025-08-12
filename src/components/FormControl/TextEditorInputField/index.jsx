@@ -28,9 +28,9 @@ function TextEditorInputField({
   handleSubmitContent,
   content = "",
   upload,
-  setContent = () => {},
-  setAttachments = () => {},
-  removeAttachment = () => {},
+  setContent = () => { },
+  setAttachments = () => { },
+  removeAttachment = () => { },
   attachments = [],
   name = "editor",
   displayAttachments = false,
@@ -38,7 +38,7 @@ function TextEditorInputField({
   allowMentions = false, // New prop to control mention functionality
   editMode = false,
   replyToUser = null,
-  commentHeight="h-[300px]"
+  commentHeight = "h-[300px]"
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
@@ -351,51 +351,49 @@ function TextEditorInputField({
 
   const handlePaste = async (e) => {
     e.preventDefault();
-
     const clipboardData = e.clipboardData || window.Clipboard;
-    const items = clipboardData.items;
-    let TextAdded = "";
-
-    for (let item of items) {
-      const itemType = item.type;
-      if (itemType) {
-        if (itemType.startsWith("image/")) {
-          const file = item.getAsFile();
-          if (file && upload) {
-            const uploadedImage = await upload(file);
-            if (uploadedImage?.attachment) {
-              // execCommand("insertImage", uploadedImage.attachment);
-              handleFileChange(uploadedImage);
-            }
-          }
-        } else if (itemType.startsWith("text/html")) {
-            const html = clipboardData.getData("text/html");
-            execCommand("insertHTML", html);
-            return; // Avoid further processing
-          } else if (itemType.startsWith("text/plain")) {
-            const text = clipboardData.getData("text/plain");
-            if (text.startsWith("http")) {
-              execCommand(
-                "insertHTML",
-                `<a href="${text}" target="_blank" rel="noopener noreferrer">${text}</a>`
-              );
-            } else {
-              execCommand("insertText", text);
-            }
-            return; // Avoid fallback
-          }
+    const items = Array.from(clipboardData.items);
+    const ImageData = items.find(obj => obj.type.startsWith("image/"))
+    if (ImageData) {
+      const file = ImageData.getAsFile();
+      if (file && upload) {
+        const uploadedImage = await upload(file);
+        if (uploadedImage?.attachment) {
+          // execCommand("insertImage", uploadedImage.attachment);
+          handleFileChange(uploadedImage);
+        }
       }
+      return
+    }
+    const HtmlTextData = items.find(obj => obj.type.startsWith("text/html"))
+    if (HtmlTextData) {
+      const html = clipboardData.getData("text/html");
+      execCommand("insertHTML", html);
+      return; // Avoid further processing
+    }
+    const PlainTextData = items.find(obj => obj.type.startsWith("text/plain"))
+    if (PlainTextData) {
+      const text = clipboardData.getData("text/plain");
+      if (text.startsWith("http")) {
+        execCommand(
+          "insertHTML",
+          `<a href="${text}" target="_blank" rel="noopener noreferrer">${text}</a>`
+        );
+      } else {
+        execCommand("insertText", text);
+      }
+      return; // Avoid further processing
     }
   };
 
   // Filter users based on input when mentions are enabled
   const filteredUsers = allowMentions
     ? users.filter(
-        (user) =>
-          user.name.toLowerCase().includes(mentionFilter.toLowerCase()) ||
-          (user.username &&
-            user.username.toLowerCase().includes(mentionFilter.toLowerCase()))
-      )
+      (user) =>
+        user.name.toLowerCase().includes(mentionFilter.toLowerCase()) ||
+        (user.username &&
+          user.username.toLowerCase().includes(mentionFilter.toLowerCase()))
+    )
     : [];
 
   return (
@@ -465,7 +463,7 @@ function TextEditorInputField({
             />
           </label>
         </div>
-{/* 
+        {/* 
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments.map((file, index) => (
@@ -516,9 +514,8 @@ function TextEditorInputField({
                         src={user.profile_picture || ""}
                         fallbackText={user.name?.charAt(0)?.toUpperCase() || ""}
                         text={user.name || "Unknown User"}
-                        alt={`Avatar of ${
-                          user.first_name || user.name || "User"
-                        }`}
+                        alt={`Avatar of ${user.first_name || user.name || "User"
+                          }`}
                       />
                       <div>
                         <div className="font-medium">{user.name}</div>
@@ -571,9 +568,8 @@ function TextEditorButtons({ command, icon, handleCommand }) {
         handleCommand(command);
         setActive(!active);
       }}
-      className={`hover:bg-white hover:text-primary ${
-        active ? "text-primary" : ""
-      } p-1`}
+      className={`hover:bg-white hover:text-primary ${active ? "text-primary" : ""
+        } p-1`}
     >
       {icon}
     </Button>

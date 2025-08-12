@@ -7,12 +7,12 @@ import {
   mapActiveShiftData,
   mapCustomShiftListData,
   mapActiveShiftListData,
+  mapDefaultShiftData,
 } from "app/utils/MappingObjects/mapShiftManagementData";
 import { mapShiftScheduleData } from "app/utils/MappingObjects/mapShiftManagementData";
 
 const saveShift = async (payload) => {
   try {
-    console.log("payload", payload);
     if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/shift/${payload.id}`,
@@ -106,11 +106,10 @@ const getShiftSchedule = async (payload) => {
     filterData.draft = false;
   }
 
-  let URL = `/shift-schedules?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/shift-schedules?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -194,7 +193,7 @@ export const getCustomShiftByEmployeeID = async (
     const response = await getShiftSchedule({
       filterData: {
         employee: employee_id,
-        status: "Approved",
+        status: "APPROVED",
         end_date_gte: formattedDate,
         start_date_lte: formattedDate,
         is_change_request: "true,false",
@@ -203,8 +202,7 @@ export const getCustomShiftByEmployeeID = async (
     });
     if (response && response?.results?.[0]) {
       const schedule = response?.results?.[0];
-      const customSchedule = schedule?.custom_schedule?.[formattedDate];
-      const ResponseData = mapCustomShiftData(customSchedule, formattedDate);
+      const ResponseData = mapCustomShiftData(schedule, formattedDate);
       return ResponseData;
     }
     return false;
@@ -232,14 +230,13 @@ export const getCustomShiftListEmployeeID = async (
     const scheduleResponse = await getShiftSchedule({
       filterData: {
         employee: employee_id,
-        status: "Approved",
+        status: "APPROVED",
         end_date_gte: formattedStartDate, // Schedule ends on or after start date
         start_date_lte: formattedEndDate, // Schedule starts on or before end date
         is_change_request: "true,false", // Include both regular schedules and change requests
       },
       ordering: "-created_at", // Latest first for overlapping resolution
     });
-
     const ResponseList = await mapCustomShiftListData(
       scheduleResponse?.results || [],
       formattedStartDate,
@@ -260,11 +257,10 @@ const getShiftChangeRequests = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "-id";
-  let URL = `/shift-change-requests?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/shift-change-requests?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -354,11 +350,10 @@ const getShiftSchedulesLogs = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "-id";
-  let URL = `/shift-schedules-logs?ordering=${sortField}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/shift-schedules-logs?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -465,7 +460,7 @@ export const saveCustomShift = async (
         employee: employee_id,
         end_date_gte: formattedDate,
         start_date_lte: formattedDate,
-        status: "Approved",
+        status: "APPROVED",
         is_change_request: "true,false",
       },
       ordering: "-created_at",
@@ -505,7 +500,6 @@ export const saveCustomShift = async (
 
     if (existingCustomSchedule && !existingCustomSchedule.is_org_based) {
       // Case: Update existing custom schedule - only modify the specific day
-      console.log("Updating existing custom schedule for date:", formattedDate);
 
       const existingCustomScheduleData = {
         ...existingCustomSchedule.custom_schedule,
@@ -555,8 +549,7 @@ export const saveCustomShift = async (
         total_weekly_hours: existingCustomSchedule.total_weekly_hours, // Keep existing
         assigned_by: assignedBy,
         approved_by: assignedBy,
-        status: "Approved",
-        shift_requested: "Employee",
+        shift_requested: "HR",
         is_off_day: Object.values(existingCustomScheduleData).some(
           (day) => day.is_off
         ),
@@ -564,11 +557,6 @@ export const saveCustomShift = async (
       };
     } else {
       // Case: Create new single-day custom schedule
-      console.log(
-        "Creating new single-day custom schedule for date:",
-        formattedDate
-      );
-
       const daySchedule = {
         is_off: false,
         is_split: false,
@@ -602,19 +590,16 @@ export const saveCustomShift = async (
         assigned_by: assignedBy,
         approved_by: assignedBy,
         status: "Approved",
-        shift_requested: "Employee",
+        shift_requested: "HR",
         is_off_day: false,
         is_change_request: "false",
       };
     }
 
-    console.log("saveCustomShift payload:", payload);
-
     // Step 5: Save the schedule
     const response = await saveShiftSchedule(payload);
 
     if (response) {
-      console.log("Custom shift saved successfully");
       return response;
     } else {
       console.error("Failed to save custom shift");

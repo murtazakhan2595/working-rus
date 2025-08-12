@@ -79,7 +79,7 @@ function Login() {
 
         if (userProfileResponse.status === 200) {
           // Update the user profile in the Redux store
-          handleUpdateProfile(dispatch, userProfileResponse.data);
+          await handleUpdateProfile(dispatch, userProfileResponse.data);
 
           // Update the token in the Redux store
           dispatch(setToken(token));
@@ -198,9 +198,8 @@ function Login() {
                     <Button
                       type="button"
                       onClick={handlePasswordVisibility}
-                      className={`absolute top-7 right-0 bg-transparent${
-                        showPassword ? "text-gray-400" : ""
-                      }`}
+                      className={`absolute top-7 right-0 bg-transparent${showPassword ? "text-gray-400" : ""
+                        }`}
                     >
                       {showPassword ? (
                         <BiShow className="text-plum-800" />
@@ -214,7 +213,7 @@ function Login() {
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Button type="submit" className="w-full">
+                    <Button onClick={handleSubmit} className="w-full">
                       {isLoading ? (
                         <span className="animate-pulse">Logging in...</span>
                       ) : (

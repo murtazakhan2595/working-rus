@@ -1,6 +1,7 @@
 import moment from "moment";
 
 export function renderTime(time, date = moment()) {
+  if (!time) return null;
   // Ensure date is a valid moment object
   const baseDate = moment(date);
   if (!baseDate.isValid()) {
@@ -14,7 +15,7 @@ export function renderTime(time, date = moment()) {
     const timeFormats = ["hh:mm A", "HH:mm", "HH:mm:ss", "hh:mm:ss A", 'h:mm'];
     if (time.charAt(0) === '0' && time.charAt(1) === ':') time = '0' + time;
     const formattedTime = moment(time, timeFormats, true).format("HH:mm:ss");
-    
+
     const responseTime = moment(`${formattedDate}T${formattedTime}`)
       .utc()
       .toISOString();

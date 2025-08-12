@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { DocCategoryName } from "utils/getValuesFromTables";
 import { TableCustom } from "components";
 import {
@@ -15,7 +15,7 @@ import {
 } from "components";
 import { renderDate } from "utils/renderValues";
 import { TextInput } from "components/FormControl";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardTitle } from "components/ui/card";
 import { SelectInputComponent } from "components/FormControl";
 import { HRDocumentsStatus } from "data/Data";
@@ -48,40 +48,33 @@ const DocumentDetails = () => {
     },
     onRowClick: (row) => {
       setOpenDocumentID(row.id);
-      // navigate(`/documents/detail`, {
-      //   state: {
-      //     GOTO_URLS: `/documents/`,
-      //     id: row.id,
-      //   },
-      // });
     },
   };
 
-  const fetchDocumentAssigneeData = async (isMounted) => {
-    try {
-      const assigneeResponse = await getDocumentAssignmentList({
-        filterData: { document: id },
-        ordering,
-      });
-      if (isMounted && assigneeResponse) {
-        setDocumentAssignees(assigneeResponse?.results || []);
-        const acknowledgedDocument = calculateTotalCount(
-          assigneeResponse?.results,
-          "status",
-          "ACKNOWLEDGED"
-        );
-        const pendingDocument = calculateTotalCount(
-          assigneeResponse?.results,
-          "status",
-          "PENDING"
-        );
-        setPendingDocument(pendingDocument);
-        setAcknowledgedDocument(acknowledgedDocument);
+  const fetchDocumentAssigneeData = useCallback(
+    async (isMounted) => {
+      try {
+        const assigneeResponse = await getDocumentAssignmentList({
+          filterData: { document: id },
+          ordering,
+        });
+
+        if (isMounted && assigneeResponse) {
+          const results = assigneeResponse?.results || [];
+          setDocumentAssignees(results);
+
+          const acknowledged = calculateTotalCount(results, "status", "ACKNOWLEDGED");
+          const pending = calculateTotalCount(results, "status", "PENDING");
+
+          setAcknowledgedDocument(acknowledged);
+          setPendingDocument(pending);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    },
+    [id, ordering] // Dependencies
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -91,7 +84,7 @@ const DocumentDetails = () => {
     return () => {
       isMounted = false;
     };
-  }, [ordering]);
+  }, [fetchDocumentAssigneeData, id]);
 
   const fetchData = async (isMounted, documentId) => {
     try {
@@ -121,11 +114,11 @@ const DocumentDetails = () => {
     },
     ...(currentDocument?.expiration_date
       ? [
-          {
-            label: "Expiration Date",
-            value: renderDate(currentDocument?.expiration_date),
-          },
-        ]
+        {
+          label: "Expiration Date",
+          value: renderDate(currentDocument?.expiration_date),
+        },
+      ]
       : []),
     // ...(currentDocument?.target_audience
     //   ? [
@@ -139,10 +132,10 @@ const DocumentDetails = () => {
 
   // Filter employee based on search
   const FilterDocumentAssignees = React.useMemo(() => {
-    if (!DocumentAssignees) return [];
+    if (!DocumentAssignees || !Array.isArray(DocumentAssignees)) return [];
     const query = searchQuery.toLowerCase();
     return DocumentAssignees.filter(({ assigned_to_name, status }) => {
-      const matchesQuery = assigned_to_name.toLowerCase().includes(query);
+      const matchesQuery = assigned_to_name?.toLowerCase().includes(query);
       const matchesStatus = selectedAssigneeStatus
         ? status === selectedAssigneeStatus
         : true;
@@ -155,7 +148,7 @@ const DocumentDetails = () => {
       <div className="container p-4 mx-auto">
         <Header
           showBackButton={true}
-          navigationLink={GOTO_URLS||"/documents"}
+          navigationLink={GOTO_URLS || "/documents"}
           showTitle={false}
         />
         <div className="mb-5">

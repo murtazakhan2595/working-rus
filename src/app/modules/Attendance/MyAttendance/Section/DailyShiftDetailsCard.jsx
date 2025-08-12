@@ -53,18 +53,9 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
     const fetchData = async (isMounted) => {
       try {
         setIsLoading(true);
-        const yesterday_shift = await getActiveShiftData(
-          user_id,
-          moment().subtract(1, "day")
-        );
-        const tomorrow_shift = await getActiveShiftData(
-          user_id,
-          moment().add(1, "day")
-        );
-        const today_shift = await getActiveShiftData(
-          user_id,
-          moment()
-        );
+        const yesterday_shift = await getActiveShiftData(user_id, moment().subtract(1, "day"));
+        const tomorrow_shift = await getActiveShiftData(user_id, moment().add(1, "day"));
+        const today_shift = await getActiveShiftData(user_id, moment());
         if (isMounted) {
           setShiftDetails([
             {

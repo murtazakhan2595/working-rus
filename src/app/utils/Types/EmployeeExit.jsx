@@ -1,8 +1,8 @@
 export const EmployeeExit = {
   id: null,
   employee_id: null,
-  emp_name: null,
-  serial_number: null,
+  employee_id__first_name: null,
+  employee_id__serial_number: null,
   request: null,
   exit_date: null,
   exit_interview_date: null,

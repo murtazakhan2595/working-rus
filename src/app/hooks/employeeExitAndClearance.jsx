@@ -51,6 +51,7 @@ const getEmployeesResignations = async (payload) => {
       response: error.response?.data,
       status: error.response?.status,
     });
+    renderErrorMessages(error?.response?.data);
     return null;
   }
 };
@@ -80,6 +81,7 @@ export const getEmployeeExitStats = async (payload) => {
       response: error.response?.data,
       status: error.response?.status,
     });
+    renderErrorMessages(error?.response?.data);
     return null;
   }
 };
@@ -104,6 +106,7 @@ export const getEmployeeExitData = async (id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data);
     return {};
   }
 };
@@ -155,6 +158,7 @@ export const getExitDataByEmpId = async (employee_id, filter) => {
       HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
+    renderErrorMessages(error?.response?.data);
     return null;
   }
   return null;
@@ -190,6 +194,7 @@ const getTerminationReason = async (payload) => {
       HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
+    renderErrorMessages(error?.response?.data);
     return {
       count: 0,
       results: [],
@@ -220,6 +225,7 @@ const saveTerminationReason = async (payload, id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data);
     console.error("Error fetching Personal Info data :", error);
     return false;
   }
@@ -238,6 +244,7 @@ const deleteTerminationReason = async (id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data);
     console.error("Error fetching Personal Info data :", error);
     return false;
   }
@@ -258,6 +265,7 @@ const getTerminationReasonById = async (id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data);
     console.error("Error fetching Personal Info data :", error);
     return null;
   }

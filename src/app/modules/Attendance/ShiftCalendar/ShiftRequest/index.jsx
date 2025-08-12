@@ -1,43 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { TableCustom } from "components";
 import { useSelector } from "react-redux";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { getChangeRequestComparison } from "../ShiftCalendarTab/shiftScheduleUtils";
 import { toast } from "react-toastify";
 import { FilterInput } from "components/FormControl";
-import { getRoleList } from "app/hooks/general";
 import { EmployeeColumns } from "../ShiftCalendarTab/shiftChangeRequestColumns";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
-  TabsContent,
 } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 import { PageLoader } from "components";
+import { getEmployeeData } from "app/hooks/employee";
 
 const ShiftRequest = () => {
   const isManageTeamShiftsPermitted = HasAccess("MANAGE_TEAM_SHIFTS_REQUEST");
   const isManageOrganizationShiftsPermitted = HasAccess(
     "MANAGE_ORGANIZATION_SHIFTS_REQUEST"
   );
+  const UserRoles = useSelector((state) => state.roles_permissions.user_roles);
 
   // Determine user role with priority: HR > Manager
   const isHR = isManageOrganizationShiftsPermitted;
   const isManager =
     !isManageOrganizationShiftsPermitted && isManageTeamShiftsPermitted;
   const hasTabAccess = isHR; // Only HR gets tabs view
-  console.log("hasTabAccess", hasTabAccess);
-  console.log("isHR", isHR);
-  console.log("isManager", isManager);
-  console.log("isManageOrganizationShiftsPermitted", isManageOrganizationShiftsPermitted);
-  console.log("isManageTeamShiftsPermitted", isManageTeamShiftsPermitted);
 
   const [isLoading, setIsLoading] = useState(true);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [roles, setRoles] = useState([]);
   const [activeTab, setActiveTab] = useState("Request");
   const [shiftRequests, setShiftRequests] = useState({
     results: [],
@@ -64,21 +58,6 @@ const ShiftRequest = () => {
     },
   };
 
-  const fetchRoles = async (isMounted) => {
-    const response = await getRoleList();
-    if (isMounted && response) {
-      setRoles(response.results || []);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchRoles(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   useEffect(() => {
     if (hasTabAccess) {
       setOptions((prev) => ({ ...prev, page: 1 }));
@@ -99,12 +78,11 @@ const ShiftRequest = () => {
       };
 
       if (hasTabAccess) {
-        console.log("Fetching shift requests for HR view with tabs");
         // HR view with tabs
         if (activeTab === "Request") {
-          filterData.status = filters.status || "Pending";
+          filterData.status = filters.status || "PENDING";
         } else if (activeTab === "Record") {
-          filterData.status = filters.status || "Approved,Rejected";
+          filterData.status = filters.status || "APPROVED,REJECTED";
           filterData.is_change_request = "true,false";
         }
       } else {
@@ -124,7 +102,6 @@ const ShiftRequest = () => {
       if (filters.search) {
         filterData.search = filters.search;
       }
-      console.log("filterDatasdfsdfsdf", filterData);
       const response = await getShiftSchedule({
         filterData,
         ordering: ordering,
@@ -136,9 +113,18 @@ const ShiftRequest = () => {
         const enhancedResults = await Promise.all(
           response.results.map(async (request) => {
             const comparisonData = await getChangeRequestComparison(request);
-            const employeeData = employees.find(
+            let employeeData;
+            employeeData = employees.find(
               (emp) => emp.id === request.employee
             );
+            if(!employeeData){
+              console.log("HERE IS THE BUG", request);
+              const empData =await  getEmployeeData(request.employee)
+              if(empData){
+                employeeData = empData
+              }
+
+            }
             return {
               ...request,
               employee: employeeData,
@@ -170,43 +156,60 @@ const ShiftRequest = () => {
 
   const ShiftRequestTabs = ["Request", "Record"].filter(Boolean);
 
-  const FiltersSection = (
-    <div className="">
-      <FilterInput
-        filters={[
-          ...(activeTab === "Record"
-            ? [
+
+  return (
+
+    <Card>
+      <Tabs
+        defaultValue="Request"
+        className="w-full"
+        onValueChange={(tab) => {
+          setActiveTab(tab);
+        }}
+        value={activeTab}
+      >
+        <TabsList>
+          {ShiftRequestTabs.map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              variant='inner-tab'
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      <CardHeader>
+        <CardTitle>Shift Request</CardTitle>
+        <CardDescription>Here you can manage, view all the shift requests by employees.</CardDescription>
+      </CardHeader>
+      < CardContent >
+        <FilterInput
+          filters={[
+            ...(activeTab === "Record"
+              ? [
                 {
-                  type: "select-one",
-                  option: [
-                    { label: "Approved", value: "Approved" },
-                    { label: "Rejected", value: "Rejected" },
+                  type: "select",
+                  options: [
+                    { label: "Approved", value: "APPROVED" },
+                    { label: "Rejected", value: "REJECTED" },
                   ],
                   name: "status",
                   placeholder: "Status",
-                  values: filters.status,
                 },
               ]
-            : []),
-          {
-            type: "select-two",
-            option: roles.map((role) => ({
-              label: role.name,
-              value: role.name,
-            })),
-            name: "user_role",
-            placeholder: "Requestor Role",
-            values: filters.user_role,
-          },
-        ]}
-        onChange={handleFilterChange}
-      />
-    </div>
-  );
-
-  const TableSection = (
-    <Card>
-      <CardContent>
+              : []),
+            {
+              type: "select",
+              options: UserRoles,
+              name: "user_role",
+              placeholder: "Requestor Role",
+            },
+          ]}
+          onChange={handleFilterChange}
+          className='justify-end mb-4'
+        />
         {isLoading ? (
           <PageLoader />
         ) : (
@@ -219,51 +222,8 @@ const ShiftRequest = () => {
           />
         )}
       </CardContent>
-    </Card>
-  );
 
-  return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
-      {hasTabAccess ? (
-        // HR View with Tabs
-        <Tabs
-          defaultValue="Request"
-          className="w-full"
-          onValueChange={(tab) => {
-            setActiveTab(tab);
-          }}
-          value={activeTab}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
-            <div className="w-full sm:w-auto overflow-hidden mb-4">
-              <TabsList className="flex flex-nowrap w-full overflow-x-auto overflow-y-hidden sm:overflow-visible">
-                {ShiftRequestTabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab}
-                    value={tab}
-                    className="shadow-none border-transparent border-b data-[state=active]:border-plum-1100 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium whitespace-nowrap px-2 sm:w-28 flex-1 sm:flex-initial text-sm sm:text-base"
-                  >
-                    {tab}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-            {FiltersSection}
-          </div>
-          {TableSection}
-        </Tabs>
-      ) : (
-        // Manager View without Tabs
-        <>
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
-            {FiltersSection}
-          </div>
-          {TableSection}
-        </>
-      )}
-    </div>
+    </Card>
   );
 };
 

@@ -1,28 +1,23 @@
 import { toast } from "react-toastify";
 
 export function renderErrorMessages(errorObj) {
-  const errorElements = [];
+  let errorMessages = "";
 
   for (const key in errorObj) {
-    if (key === 'detail') {
-      errorElements.push(
-        <div key="detail">
-          {errorObj[key]}
-        </div>
-      );
-    } else if (Array.isArray(errorObj[key])) {
-      const messages = errorObj[key].map((msg, index) => (
-        <div key={`${key}-${index}`}>
-          <strong>{key}:</strong> {msg}
-        </div>
-      ));
-      errorElements.push(...messages);
+    if (Array.isArray(errorObj[key])) {
+      const messages = errorObj[key].map((msg) => `${msg}`).join("\n");
+      errorMessages += `${messages}\n\n`;
+    } else {
+      errorMessages += `${errorObj[key]}\n\n`;
     }
+
   }
 
-  toast.error(<div>{errorElements}</div>, {
-    autoClose: 3000,
-    closeOnClick: true,
-    closeButton: true,
+  const finalMessage = errorMessages.trim(); // removes the last new line
+
+  toast.error(`${finalMessage}`, {
+    autoClose: 3000,      // Closes automatically after 3 seconds
+    closeOnClick: true,   // Optional
+    closeButton: true     // Optional
   });
 }

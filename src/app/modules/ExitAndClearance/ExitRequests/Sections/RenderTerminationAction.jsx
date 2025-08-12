@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { ExitDetailsCard } from "app/modules/ExitAndClearance";
+import { ExitDetailsCard,RequestTerminationCard ,} from "app/modules/ExitAndClearance";
 
 
 const RenderTerminationAction = ({
   data,
-  reloadData = () => {},
+  reloadData = () => { },
+  handleUploadClearanceReportClick = () => { },
   DataList = [],
 }) => {
   const [view, setView] = useState(null);
-  const [ViewHistoryDetails, setViewHistoryDetails] = useState(null);
   const handleView = () => {
     setView(true);
   };
@@ -33,6 +33,7 @@ const RenderTerminationAction = ({
           DataList={DataList}
           currentId={data?.id}
           isResignation={false}
+          handleUploadClearanceReportClick={handleUploadClearanceReportClick}
         />
       )}
     </>

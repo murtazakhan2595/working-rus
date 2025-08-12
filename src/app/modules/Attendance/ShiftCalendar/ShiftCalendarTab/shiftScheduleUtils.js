@@ -7,27 +7,42 @@ import { parseShiftTime } from "../Section/getEmployeeActiveShift";
 export const filterOverlappingSchedules = (schedules) => {
   if (!schedules || schedules.length === 0) return [];
 
-  const filteredSchedules = [];
+  // Sort schedules by created_at (newest first) to prioritize newer schedules
+  const sortedSchedules = [...schedules].sort((a, b) => 
+    moment(b.created_at).diff(moment(a.created_at))
+  );
 
-  schedules.forEach((schedule) => {
+  const filteredSchedules = [];
+  const processedDates = new Set(); // Track dates that have been processed
+
+  sortedSchedules.forEach((schedule) => {
     const scheduleStart = moment(schedule.start_date);
     const scheduleEnd = moment(schedule.end_date);
+    
+    // Check if this schedule has any dates that haven't been processed yet
+    let hasUnprocessedDates = false;
+    let currentDate = scheduleStart.clone();
+    
+    while (currentDate.isSameOrBefore(scheduleEnd)) {
+      const dateKey = currentDate.format('YYYY-MM-DD');
+      if (!processedDates.has(dateKey)) {
+        hasUnprocessedDates = true;
+        break;
+      }
+      currentDate.add(1, 'day');
+    }
 
-    // Check if this schedule overlaps with any already added schedule
-    const hasOverlap = filteredSchedules.some((existing) => {
-      const existingStart = moment(existing.start_date);
-      const existingEnd = moment(existing.end_date);
-
-      // Check if dates overlap
-      return (
-        scheduleStart.isSameOrBefore(existingEnd) &&
-        scheduleEnd.isSameOrAfter(existingStart)
-      );
-    });
-
-    // Only add if no overlap (since we're going newest first)
-    if (!hasOverlap) {
+    // Only add if there are unprocessed dates
+    if (hasUnprocessedDates) {
       filteredSchedules.push(schedule);
+      
+      // Mark all dates in this schedule as processed
+      currentDate = scheduleStart.clone();
+      while (currentDate.isSameOrBefore(scheduleEnd)) {
+        const dateKey = currentDate.format('YYYY-MM-DD');
+        processedDates.add(dateKey);
+        currentDate.add(1, 'day');
+      }
     }
   });
 
@@ -233,7 +248,7 @@ export const fetchEmployeeShiftData = async (employeeId) => {
     // Fetch approved scheduled shifts
     const empScheduleShift = await getShiftSchedule({
       filterData: {
-        status: "Approved",
+        status: "APPROVED",
         employee: employeeId,
         is_change_request: "true,false", 
       },
