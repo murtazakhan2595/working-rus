@@ -25,7 +25,11 @@ export default function AddUpdateLeaveBalance({
   data: directData = null,
   edit = {}, // new pattern from NavigationSheetComponent
 }) {
+  console.log("AddUpdateLeaveBalance - edit:", edit);
+  console.log("AddUpdateLeaveBalance - directData:", directData);
   const data = edit?.data || directData;
+
+  console.log("AddUpdateLeaveBalance - data:", data);
   const [isLoading, setIsLoading] = useState(false);
   const [employeeData, setEmployeeData] = useState(null);
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
@@ -45,10 +49,11 @@ export default function AddUpdateLeaveBalance({
       leaves_consumed: "",
       remaining_leaves: "",
       remarks: "",
+      balance_id: null, // Store the actual leave balance ID for updates
     },
   ]);
 
-  const isEditMode = Boolean(data);
+  const isEditMode = Boolean(data && data.leave_balances);
 
   const employees = useSelector((state) => state.emp.employees) || [];
   const Branches = useSelector((state) => state.common.branches);
@@ -65,33 +70,89 @@ export default function AddUpdateLeaveBalance({
   // Initialize form data
   useEffect(() => {
     if (data) {
-      const consumed = data.consumed || 0;
-      const alloted = data.total_allotted || 0;
+      console.log("Initializing form with data:", data);
 
-      setFormValues({
-        employee: data.employee || "",
-        employee_department: "",
-        employee_designation: "",
-      });
+      if (data.leave_balances && Array.isArray(data.leave_balances)) {
+        // NEW STRUCTURE: Multiple leave balances
+        console.log("Using new structure with leave_balances array");
 
-      setLeaveEntries([
-        {
-          id: 1,
-          leave_type: data.leave_type || "",
-          total_alloted: alloted,
-          leaves_consumed: consumed,
-          remaining_leaves: alloted - consumed,
-          remarks: data.remarks || "",
-        },
-      ]);
+        // Find employee by name since we only have the name string
+        const employee = employees.find(
+          (emp) => emp.label === data.employee || emp.name === data.employee
+        );
 
-      if (data.employee) {
-        const employee = employees.find((emp) => emp.id === data.employee);
-        if (employee) {
-          setEmployeeData(employee);
+        console.log("Found employee:", employee);
+        console.log("Available LeaveTypeOptions:", LeaveTypeOptions);
+
+        setFormValues({
+          employee: employee?.value || data.employee,
+          employee_department: employee?.department_name || "",
+          employee_designation: employee?.department_position || "",
+        });
+
+        // Convert leave_balances array to leaveEntries format
+        const entries = data.leave_balances.map((balance, index) => {
+          // Find the leave type ID from the name
+          const leaveTypeOption = LeaveTypeOptions.find(
+            (option) =>
+              option.type_name === balance.leave_type ||
+              option.label === balance.leave_type
+          );
+
+          console.log(
+            `Looking for leave type: "${balance.leave_type}", found option:`,
+            leaveTypeOption
+          );
+
+          return {
+            id: index + 1,
+            leave_type: leaveTypeOption?.value || balance.leave_type, // Use ID if found, fallback to name
+            total_alloted: balance.total_allotted || 0,
+            leaves_consumed: balance.consumed || 0,
+            remaining_leaves:
+              balance.remaining || balance.total_allotted - balance.consumed,
+            remarks: balance.remarks || "",
+            balance_id: balance.id, // Store the actual balance ID for updates
+          };
+        });
+
+        console.log("Converted entries:", entries);
+        setLeaveEntries(entries);
+        setEmployeeData(employee);
+      } else {
+        // OLD STRUCTURE: Single leave balance (fallback)
+        console.log("Using old single balance structure");
+        const consumed = data.consumed || 0;
+        const alloted = data.total_allotted || 0;
+
+        setFormValues({
+          employee: data.employee || "",
+          employee_department: "",
+          employee_designation: "",
+        });
+
+        setLeaveEntries([
+          {
+            id: 1,
+            leave_type: data.leave_type || "",
+            total_alloted: alloted,
+            leaves_consumed: consumed,
+            remaining_leaves: alloted - consumed,
+            remarks: data.remarks || "",
+            balance_id: data.id,
+          },
+        ]);
+
+        if (data.employee) {
+          const employee = employees.find((emp) => emp.id === data.employee);
+          if (employee) {
+            setEmployeeData(employee);
+          }
         }
       }
     } else {
+      // No data - new entry
+      console.log("No data - initializing for new entry");
       setFormValues({
         employee: "",
         employee_department: "",
@@ -106,11 +167,12 @@ export default function AddUpdateLeaveBalance({
           leaves_consumed: "",
           remaining_leaves: "",
           remarks: "",
+          balance_id: null,
         },
       ]);
       setEmployeeData(null);
     }
-  }, [data, employees]);
+  }, [data, employees, LeaveTypeOptions]); // Add LeaveTypeOptions to dependencies
 
   // Fetch leave types
   useEffect(() => {
@@ -120,9 +182,10 @@ export default function AddUpdateLeaveBalance({
         if (response?.results) {
           setLeaveTypeOptions(
             response.results.map((type) => ({
-              value: type.id,
-              label: type.name,
+              value: type.id, // Use ID as value (for API)
+              label: type.name, // Use name as label (for display)
               leave_count: type.leave_count,
+              type_name: type.name, // Store name separately for reference
               ...type,
             }))
           );
@@ -155,6 +218,7 @@ export default function AddUpdateLeaveBalance({
         leaves_consumed: "",
         remaining_leaves: "",
         remarks: "",
+        balance_id: null,
       },
     ]);
   };
@@ -211,20 +275,32 @@ export default function AddUpdateLeaveBalance({
         return;
       }
 
-      // Use current formValues.employee instead of values.employee
-      const payloads = leaveEntries.map((entry) => ({
-        id: isEditMode ? data.id : undefined,
-        employee: formValues.employee, // Use our state value
-        leave_type: entry.leave_type,
-        total_allotted: Number(entry.total_alloted),
-        consumed: Number(entry.leaves_consumed),
-        remarks: entry.remarks || "",
-      }));
-
-      console.log("Saving Leave Balances with payloads:", payloads);
+      console.log("Submitting with entries:", leaveEntries);
+      console.log("Employee ID:", formValues.employee);
 
       const responses = [];
-      for (const payload of payloads) {
+
+      for (const entry of leaveEntries) {
+        const payload = {
+          employee: formValues.employee,
+          leave_type: entry.leave_type, // This should now be the ID
+          total_allotted: Number(entry.total_alloted),
+          consumed: Number(entry.leaves_consumed),
+          remarks: entry.remarks || "",
+        };
+
+        // If editing and has balance_id, include it for update
+        if (isEditMode && entry.balance_id) {
+          payload.id = entry.balance_id;
+        }
+
+        console.log("Saving payload:", payload);
+        console.log(
+          "Leave type value being sent:",
+          entry.leave_type,
+          typeof entry.leave_type
+        );
+
         const response = await saveLeaveOpeningBalance(payload);
         responses.push(response);
 
@@ -269,7 +345,7 @@ export default function AddUpdateLeaveBalance({
 
     if (isEditMode) {
       const displayValues = {
-        employee_name: employeeData?.label || "N/A",
+        employee_name: employeeData?.label || data?.employee || "N/A",
         department_name: employeeData?.department_name || "N/A",
         department_position: employeeData?.department_position || "N/A",
       };
@@ -281,7 +357,6 @@ export default function AddUpdateLeaveBalance({
         disabled: true,
         colsSpan: 2,
         value: displayValues.employee_name,
-        // Override the onChange to do nothing
         onFieldUpdate: () => {},
       });
     } else {
@@ -294,7 +369,7 @@ export default function AddUpdateLeaveBalance({
         placeholder: "Search and select an employee",
         colsSpan: 2,
         searchable: true,
-        value: formValues.employee, // Use our state value
+        value: formValues.employee,
         onFieldUpdate: (field, value) => {
           const selectedEmp = employees.find((emp) => emp.value === value);
           console.log("Selected Employee:", selectedEmp);
@@ -322,7 +397,7 @@ export default function AddUpdateLeaveBalance({
       disabled: true,
       colsSpan: 1,
       value: formValues.employee_department,
-      onFieldUpdate: () => {}, // Do nothing
+      onFieldUpdate: () => {},
     });
 
     fields.push({
@@ -333,11 +408,11 @@ export default function AddUpdateLeaveBalance({
       options: Designations,
       colsSpan: 1,
       value: formValues.employee_designation,
-      onFieldUpdate: () => {}, // Do nothing
+      onFieldUpdate: () => {},
     });
 
     return fields;
-  }, [isEditMode, employeeData, employees, formValues]);
+  }, [isEditMode, employeeData, employees, formValues, data]);
 
   // Generate leave entry fields
   const generateLeaveEntryFields = () => {
@@ -346,7 +421,7 @@ export default function AddUpdateLeaveBalance({
       sheetCardTitle: (
         <div className="flex justify-between items-center">
           <span>Leave Type {index + 1}</span>
-          {leaveEntries.length > 1 && (
+          {leaveEntries.length > 1 && !isEditMode && (
             <Button
               type="button"
               variant="ghost"
@@ -368,19 +443,22 @@ export default function AddUpdateLeaveBalance({
           options: LeaveTypeOptions,
           placeholder: "Select leave type",
           value: entry.leave_type,
+          disabled: isEditMode, // Disable in edit mode
           onFieldUpdate: (field, value) => {
-            const selectedType = LeaveTypeOptions.find(
-              (type) => type.value === value
-            );
-            if (selectedType) {
-              const alloted = selectedType.leave_count || 0;
-              updateLeaveEntry(entry.id, "leave_type", value);
-              updateLeaveEntry(entry.id, "total_alloted", alloted);
+            if (!isEditMode) {
+              const selectedType = LeaveTypeOptions.find(
+                (type) => type.value === value
+              );
+              if (selectedType) {
+                const alloted = selectedType.leave_count || 0;
+                updateLeaveEntry(entry.id, "leave_type", value);
+                updateLeaveEntry(entry.id, "total_alloted", alloted);
 
-              // Recalculate remaining
-              const consumed = entry.leaves_consumed || 0;
-              const remaining = Math.max(0, alloted - consumed);
-              updateLeaveEntry(entry.id, "remaining_leaves", remaining);
+                // Recalculate remaining
+                const consumed = entry.leaves_consumed || 0;
+                const remaining = Math.max(0, alloted - consumed);
+                updateLeaveEntry(entry.id, "remaining_leaves", remaining);
+              }
             }
           },
         },
@@ -390,9 +468,11 @@ export default function AddUpdateLeaveBalance({
           required: true,
           label: "Total Allotted",
           disabled: true,
-          placeholder: "Select leave type first",
+          placeholder: isEditMode
+            ? "System assigned"
+            : "Select leave type first",
           value: entry.total_alloted,
-          onFieldUpdate: () => {}, // Do nothing - it's disabled
+          onFieldUpdate: () => {},
         },
         {
           InputField: NumberInput,
@@ -406,7 +486,7 @@ export default function AddUpdateLeaveBalance({
             const consumed = Number(value) || 0;
             const totalAlloted = Number(entry.total_alloted) || 0;
 
-            if (consumed > totalAlloted) {
+            if (consumed > totalAlloted && totalAlloted > 0) {
               toast.error(
                 `Leaves consumed cannot exceed total allotted (${totalAlloted})`
               );
@@ -423,7 +503,7 @@ export default function AddUpdateLeaveBalance({
           disabled: true,
           placeholder: "Auto-calculated",
           value: entry.remaining_leaves,
-          onFieldUpdate: () => {}, // Do nothing - it's auto-calculated
+          onFieldUpdate: () => {},
         },
         {
           InputField: TextAreaInput,
@@ -441,23 +521,25 @@ export default function AddUpdateLeaveBalance({
       ],
     }));
 
-    // Add button
-    sections.push({
-      sheetCardExtension: false,
-      customComponent: () => (
-        <div className="flex justify-center py-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addLeaveEntry}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add Another Leave Type
-          </Button>
-        </div>
-      ),
-    });
+    // Add button - only show in create mode
+    if (!isEditMode) {
+      sections.push({
+        sheetCardExtension: false,
+        customComponent: () => (
+          <div className="flex justify-center py-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addLeaveEntry}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Another Leave Type
+            </Button>
+          </div>
+        ),
+      });
+    }
 
     return sections;
   };
@@ -467,14 +549,17 @@ export default function AddUpdateLeaveBalance({
     const values = { ...formValues };
 
     leaveEntries.forEach((entry) => {
-      values[`leave_entry_${entry.id}_leave_type`] = entry.leave_type;
-      values[`leave_entry_${entry.id}_total_alloted`] = entry.total_alloted;
-      values[`leave_entry_${entry.id}_leaves_consumed`] = entry.leaves_consumed;
+      values[`leave_entry_${entry.id}_leave_type`] = entry.leave_type || "";
+      values[`leave_entry_${entry.id}_total_alloted`] =
+        entry.total_alloted || "";
+      values[`leave_entry_${entry.id}_leaves_consumed`] =
+        entry.leaves_consumed || "";
       values[`leave_entry_${entry.id}_remaining_leaves`] =
-        entry.remaining_leaves;
-      values[`leave_entry_${entry.id}_remarks`] = entry.remarks;
+        entry.remaining_leaves || "";
+      values[`leave_entry_${entry.id}_remarks`] = entry.remarks || "";
     });
 
+    console.log("getFakeInitialValues result:", values);
     return values;
   };
 
@@ -497,7 +582,7 @@ export default function AddUpdateLeaveBalance({
             sheetConfig={FormSheetData}
             formConfig={{
               initialValues: getFakeInitialValues(),
-              enableReinitialize: false, // We don't want Formik to manage state
+              enableReinitialize: false, // Keep it false since we're managing state separately
               handleSubmit: handleSubmit,
               validateFormSchema: customValidation,
               submitButtonText: isEditMode ? "Update" : "Submit",
