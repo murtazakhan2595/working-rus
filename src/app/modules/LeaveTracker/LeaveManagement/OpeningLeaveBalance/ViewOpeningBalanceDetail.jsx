@@ -106,9 +106,8 @@ const ViewOpeningBalanceDetail = ({
       apiEndpoint={`/leave-openingbalance/${currentId}/`}
       reloadData={reloadData}
       fetchCurrentItemDetails={fetchData}
-      deleteItemName="Leave Opening Balance"
       editTooltip="Edit Leave Opening Balance"
-      deleteTooltip="Delete Leave Opening Balance"
+      allowDelete={false}
     >
       <div className="space-y-6">
         {/* Employee Overview */}
