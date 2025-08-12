@@ -21,6 +21,7 @@ import { SelectInputComponent, } from "components/FormControl/InputSelect";
 import { GetDateRange } from "utils/renderValues";
 import DateRangeInput from "./DateRangeInput";
 import DateRangeFilter from "./DateRangeFilter";
+import { GetDispatchStateList } from "utils/Lists";
 
 const FilterInput = ({
   filters,
@@ -28,6 +29,9 @@ const FilterInput = ({
   className = "",
   filterValues = {},
 }) => {
+  const Departments = GetDispatchStateList("departments", "common") || []
+  // const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
+  const Branches = GetDispatchStateList("branches", "common") || []
   const classNamesStyle = "";
   const DefaultWidth = "w-56";
   const DefaultHeight = "h-[38px]";
@@ -157,12 +161,20 @@ const FilterInput = ({
                 />
               );
             case "select":
+              const SearchOptions =
+                !options ? [] :
+                  Array.isArray(options) ? options :
+                    typeof options === 'string' ?
+                      options.toLowerCase() === 'departments' ? Departments || [] :
+                        options.toLowerCase() === 'branches' ? Branches || [] :
+                          // options.toLowerCase() === 'managers' ? Managers || [] :
+                            [] : [];
               return (
                 <RenderSelectInputField
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
-                  options={options}
+                  options={SearchOptions || []}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
