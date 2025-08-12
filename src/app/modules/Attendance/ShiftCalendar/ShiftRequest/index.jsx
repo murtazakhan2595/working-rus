@@ -14,6 +14,7 @@ import {
 } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 import { PageLoader } from "components";
+import { getEmployeeData } from "app/hooks/employee";
 
 const ShiftRequest = () => {
   const isManageTeamShiftsPermitted = HasAccess("MANAGE_TEAM_SHIFTS_REQUEST");
@@ -112,9 +113,18 @@ const ShiftRequest = () => {
         const enhancedResults = await Promise.all(
           response.results.map(async (request) => {
             const comparisonData = await getChangeRequestComparison(request);
-            const employeeData = employees.find(
+            let employeeData;
+            employeeData = employees.find(
               (emp) => emp.id === request.employee
             );
+            if(!employeeData){
+              console.log("HERE IS THE BUG", request);
+              const empData =await  getEmployeeData(request.employee)
+              if(empData){
+                employeeData = empData
+              }
+
+            }
             return {
               ...request,
               employee: employeeData,
