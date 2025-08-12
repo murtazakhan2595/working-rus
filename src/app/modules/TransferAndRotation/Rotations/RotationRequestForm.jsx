@@ -1,16 +1,13 @@
-import {
-    saveUpdateUserRole,
-    getUserRoleList,
-    saveUpdateUserRolePermission,
-    getUserRoleData,
-} from "app/hooks/rolesPermisions";
-import { UserRole } from "app/utils/Types/RolesPermission";
+import { saveJobRotation, getJobRotationReasons, getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
+import { JobRotation } from "app/utils/Types/TransferAndRotation";
 import {
     TextAreaInput,
     TextInput,
     SelectInputComponent,
-    CheckBoxInputTree,
-    RadioGroupInput
+    RadioGroupInput,
+    NumberInput,
+    DateInput,
+    TextInputDropdown,
 } from "components/FormControl";
 import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
 import AlertDialogue from "components/ui/AlertDialogue";
@@ -18,11 +15,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
-import { CardContent } from "components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { DateInput } from "components/FormControl";
-import { NumberInput } from "components/FormControl";
 
 const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdminView, isBranchView, isDepartmentView }) => {
     const Employees = GetEmployeeFilteredList(
@@ -38,33 +30,32 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
     const [selectedEmployee, setSelectedEmployee] = useState({});
     const [confirmSave, setConfirmSave] = useState(false);
     const [formValues, setFormValues] = useState(null);
-    const [UserRoles, setUserRoles] = useState(null);
+    const [JobRotationList, setJobRotationList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+    const [formData, setFormData] = useState(JobRotation);
+    const [RotationReasons, setRotationReasons] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
-        title: isEditMode ? "Edit Role" : "Add New Role",
+        title: isEditMode ? "Edit Job Rotation" : "Add New Job Rotation",
         description: null,
         footer: null,
     };
     // Initialize form data with role values if in edit mode
-    const [formData, setFormData] = useState(UserRole);
 
-    const fetchUserRolesData = async (isMounted) => {
+    const fetchRotationData = async (isMounted) => {
         try {
             setIsLoading(true);
             // Add organizationId to filter if available
-
-            const response = await getUserRoleList();
-
-            if (isMounted) {
-                setUserRoles(
-                    response.results?.map((item) => {
-                        return { name: item.name, id: item.id };
-                    })
-                );
+            const rotationResonsResponse = await getJobRotationReasons();
+            if (rotationResonsResponse && isMounted) {
+                setRotationReasons(rotationResonsResponse.results);
+            }
+            const response = await getJobRotationRequests();
+            if (response && isMounted) {
+                setJobRotationList(response.results);
             }
         } catch (error) {
             console.error("Error fetching roles:", error);
@@ -75,7 +66,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
 
     useEffect(() => {
         let isMounted = true;
-        fetchUserRolesData(isMounted);
+        fetchRotationData(isMounted);
         return () => {
             isMounted = false;
         };
@@ -84,7 +75,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
     const fetchData = async (isMounted, id) => {
         try {
             setIsLoading(true);
-            const response = await getUserRoleData(id);
+            const response = await getJobRotationById(id);
             if (isMounted) {
                 setFormData(response);
             }
@@ -110,27 +101,15 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            // Save role
-            const response = await saveUpdateUserRole(values, id);
+            const payload = { ...values, created_by: "manager" };
+            const response = await saveJobRotation(payload, id);
             if (response) {
-                if (response.id) {
-                    await saveUpdateUserRolePermission(
-                        {
-                            ...formValues,
-                            role: response.id,
-                            id: formData.role_permission_id,
-                        },
-                        formData.role_permission_id
-                    );
+                return {
+                    status: true,
+                    messageType: "SUCCESS",
+                    title: `Rotation Request Submitted`,
+                    description: `Rotation request for ${selectedEmployee?.name} is submitted successfully`,
                 }
-                // Ensure table is reloaded
-                toast.success(
-                    `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
-                    {
-                        position: toast.POSITION.TOP_RIGHT,
-                    }
-                );
-                handleClose();
             }
         } catch (error) {
             // Show error message
@@ -156,7 +135,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
                 validateFormSchema: (values) => {
-                    const errors = validateUserRoleFormSchema(values);
+                    const errors = {};
                     return errors;
                 },
                 submitButtonText: "Submit",
@@ -203,7 +182,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 name: "branch",
                                 disabled: true,
                                 label: "Current Branch",
-                                options: Departments,
+                                options: Branches,
                                 value: selectedEmployee.branch_id,
                             },
                             {
@@ -238,7 +217,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                             },
                             {
                                 InputField: SelectInputComponent,
-                                name: "designation",
+                                name: "new_designation",
                                 label: "New Designation",
                                 options: Designations,
                             },
@@ -246,11 +225,11 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 InputField: SelectInputComponent,
                                 name: "new_branch",
                                 label: "New Branch",
-                                options: Departments,
+                                options: Branches,
                             },
                             {
                                 InputField: SelectInputComponent,
-                                name: "reporting_manager",
+                                name: "new_reporting_manager",
                                 label: "New Reporting Manager",
                                 placeholder: "Reporting Manager",
                                 options: Managers,
@@ -259,12 +238,14 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 InputField: DateInput,
                                 label: 'Effective Date',
                                 name: 'effective_date',
+                                required: true,
                             },
                             {
                                 InputField: RadioGroupInput,
                                 label: 'Rotation Type',
                                 name: 'rotation_type',
                                 colsSpan: 2,
+                                required: true,
                                 options: [{ value: "temporary", label: "Temporary" }, { value: "permanent", label: "Permanent" },]
                             },
                             {
@@ -277,12 +258,14 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 InputField: NumberInput,
                                 label: 'Rotation Cap Time',
                                 name: 'rotation_cap_time',
+                                required: true,
                             },
                             {
-                                InputField: TextInput,
-                                name: "name",
+                                InputField: TextInputDropdown,
+                                name: "custom_reason",
                                 required: true,
-                                label: "Role Name",
+                                label: "Reason",
+                                options: RotationReasons,
                             },
                             {
                                 InputField: TextAreaInput,

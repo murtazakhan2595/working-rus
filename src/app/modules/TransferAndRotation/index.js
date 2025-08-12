@@ -1,5 +1,5 @@
 import TransferAndRotation from './TransferAndRotation';
-import { Rotations, RotationRequestForm } from './Rotations';
+import { Rotations, RotationRequestForm ,RotationAction,JobRotationDetails} from './Rotations';
 import {
     EmployeeTransfer,
     EmployeeInternalTranfer,
@@ -19,4 +19,6 @@ export {
     JobRotationCalendar,
     RotationRequestForm,
     TransferForm,
+    RotationAction,
+    JobRotationDetails,
 };

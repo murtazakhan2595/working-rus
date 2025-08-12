@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FilterInput } from "components/FormControl";
-import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
+import { saveJobRotation, getJobRotationReasons, getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
+import { JobRotationColumns } from "app/modules/TransferAndRotation/Sections";
 import {
   Tabs,
   TabsList,
@@ -13,16 +13,23 @@ import {
   CardDescription,
 } from "components/ui/card";
 import { TableCustom, PageLoader } from "components";
-import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
-
-const Rotations = ({ reload, permittedViewFilterData }) => {
-  const [loading, setLoading] = useState(true);
+import { HasAccess } from "utils/PermissionUtils";
+import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
+import {FilterInput} from 'components/FormControl'
+const Rotations = ({ reload }) => {
+  const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
+  const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
+  const isDepartmentView = HasAccess("VIEW_DPT_LEAVE_REQUEST");
+  const {
+    id: user_id,
+    branch_id: user_branch,
+    department_name: user_department,
+  } = GetDispatchStateList("user_details", "emp") || {};
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Requests");
-  const [ExitRequestList, setExitRequestList] = useState(null);
-  const [filterData, setFilterData] = useState({
-    request_status: "PENDING",
-    exit_category: "TERMINATION",
-  });
+  const [JobRotationList, setJobRotationList] = useState(null);
+  const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
+  const [filterData, setFilterData] = useState({ request_status: "PENDING", });
 
   const [ordering, setOrdering] = useState("-id");
 
@@ -46,20 +53,33 @@ const Rotations = ({ reload, permittedViewFilterData }) => {
     },
   };
 
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setPermittedViewFilterData(() => {
+        if (isAdminView) return {};
+        else if (isBranchView) return { branch: user_branch };
+        else if (isDepartmentView) return { department: user_department };
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdminView, isBranchView, isDepartmentView]);
+
   const fetchData = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const filter = { ...filterData, ...permittedViewFilterData, request_status: "PENDING" };
-      const response = await getEmployeesResignations({
+      const response = await getJobRotationRequests({
         filterData: filter,
         options,
         ordering,
       });
-      setExitRequestList(response);
+      setJobRotationList(response);
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -131,7 +151,78 @@ const Rotations = ({ reload, permittedViewFilterData }) => {
           employees.
         </CardDescription>
       </CardHeader>
-      
+      <CardContent>
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              name: "employee",
+              placeholder: "Employee ID/Name",
+            },
+            ...(isAdminView || isBranchView
+              ? [
+                {
+                  type: "select",
+                  options: 'Departments',
+                  name: "department",
+                  placeholder: "Department",
+                },
+              ]
+              : []),
+            // ...(isAdminView || !isBranchView
+            //   ? [
+            //     {
+            //       type: "select",
+            //       options: Branches,
+            //       name: "branch",
+            //       placeholder: "Branch",
+            //     },
+            //   ]
+            //   : []),
+            // {
+            //   type: "select",
+            //   options: leaveTypesData || [],
+            //   name: "leave_type",
+            //   placeholder: "Leave Type",
+            // },
+            // {
+            //   type: "date-range",
+            //   name: "date_range",
+            //   placeholder: "Leave Period",
+            // },
+            // ...(activeTab === "Records"
+            //   ? [
+            //     {
+            //       type: "select",
+            //       options: [
+            //         ...GlobalStatusOptions(false),
+            //         {
+            //           label: "Cancelled",
+            //           value: "cancelled_by_employee",
+            //         },
+            //       ],
+            //       name: "status",
+            //       placeholder: "Status",
+            //     },
+            //   ]
+            //   : []),
+          ]}
+          onChange={handleFilterChange}
+          className="justify-end mb-4"
+        />
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            data={JobRotationList.results}
+            columns={JobRotationColumns}
+            pagination={true}
+            dataTotalSize={JobRotationList.count || 0}
+            tableOptions={tableOptions}
+          />
+        )}
+      </CardContent>
+
     </Tabs>
   );
 };
