@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CardTitle, CardHeader } from "components/ui/card";
 import { Card, CardContent } from "components/ui/card";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import { PageLoader, TableCustom } from "components";
+import { PageLoader, TableCustom,StatusList } from "components";
 import { GetJobRotation } from "app/hooks/Rotation";
 import { useSelector } from "react-redux";
 
@@ -96,15 +96,64 @@ const RotationForm = () => {
       text: "Rotation End Date",
       dataField: "rotation_expiry_date",
     },
-    {
-      text: "Status",
-      dataField: "status",
-      formatter: (cell) => {
-        let color =
-          cell === "approved" ? "green" : cell === "pending" ? "orange" : "red";
-        return <span style={{ color }}>{cell}</span>;
-      },
-    },
+  {
+  text: "Status",
+  dataField: "status",
+  formatter: (cell) => {
+    const getStatusStyle = (status) => {
+      const baseStyle = {
+        padding: "6px 12px",
+        borderRadius: "6px",
+        fontSize: "12px",
+        fontWeight: "600",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px",
+        display: "inline-block",
+        minWidth: "70px",
+        textAlign: "center",
+        border: "1px solid",
+        transition: "all 0.2s ease"
+      };
+
+      switch (status?.toLowerCase()) {
+        case "approved":
+          return {
+            ...baseStyle,
+            backgroundColor: "#DCFCE7",
+            color: "#166534",
+            borderColor: "#BBF7D0"
+          };
+        case "pending":
+          return {
+            ...baseStyle,
+            backgroundColor: "#FEF3C7",
+            color: "#92400E",
+            borderColor: "#FDE68A"
+          };
+        case "rejected":
+          return {
+            ...baseStyle,
+            backgroundColor: "#FEE2E2",
+            color: "#991B1B",
+            borderColor: "#FECACA"
+          };
+        default:
+          return {
+            ...baseStyle,
+            backgroundColor: "#F3F4F6",
+            color: "#4B5563",
+            borderColor: "#D1D5DB"
+          };
+      }
+    };
+
+    return (
+      <span style={getStatusStyle(cell)}>
+        {cell || 'Unknown'}
+      </span>
+    );
+  }
+},
     {
       text: "Actions",
       dataField: "actions",

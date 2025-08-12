@@ -24,7 +24,6 @@ export default function MyJobRotationPage() {
             className="btn"
             onClick={() => setRequestRotation(true)}
           >
-            Request Rotation
           </button>
         )}
         <SheetComp isOpen={requestRotation} onClose={() => setRequestRotation(false)} />
