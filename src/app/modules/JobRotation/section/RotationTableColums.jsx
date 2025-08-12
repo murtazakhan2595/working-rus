@@ -9,19 +9,19 @@ export const JobRotationColumns = [
   },
   {
     text: "Current Department",
-    dataField: "current_department",
+    dataField: "old_department",
   },
   {
     text: "Requested Department",
-    dataField: "requested_department",
+    dataField: "new_department",
   },
   {
     text: "Rotation Start Date",
-    dataField: "start_date",
+    dataField: "rotation_cap_time",
   },
   {
     text: "Rotation End Date",
-    dataField: "end_date",
+    dataField: "rotation_expiry_date",
   },
   {
     text: "Status",
@@ -42,8 +42,6 @@ export const JobRotationColumns = [
     formatter: (cell, row) => (
       <>
         <button >View</button>
-        <button >Approve</button>
-        <button >Reject</button>
       </>
     ),
   },
