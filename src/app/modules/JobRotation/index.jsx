@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { SheetComp, FormComp } from "./subComponents";
+import { SheetComp, FormComp } from "../TransferAndRotation/subComponents";
 import { HasAccess } from "utils/PermissionUtils";
 import { UnauthorizedAccess } from "components";
 
