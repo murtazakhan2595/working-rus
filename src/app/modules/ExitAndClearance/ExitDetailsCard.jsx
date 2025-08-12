@@ -1,18 +1,12 @@
 import { toast } from "react-toastify";
-import React, { useState, useRef } from "react";
-import {
-  RenderResignationAction,
-  RenderTerminationAction,
-} from "app/modules/ExitAndClearance/ExitRequests";
+import React, { useState } from "react";
 import { FormatID } from "utils/getValuesFromTables";
 import {
-  saveEmployeeExitDetail,
   getEmployeeExitData,
 } from "app/hooks/employeeExitAndClearance";
-import { useSelector } from "react-redux";
 import {
-  UploadClearanceReport,
   ClearanceSheet,
+  UploadExitInterviewDetails,
 } from "app/modules/ExitAndClearance";
 import { Button } from "components/ui/button";
 // import { CoverFileUpload } from "components/FormControl";
@@ -27,8 +21,8 @@ import {
 } from "components";
 import { handleRequest } from "app/hooks/general";
 import { renderDate } from "utils/renderValues";
-import { HasAccess } from "utils/PermissionUtils";
 import AttachmentUI from "components/ui/AttachmentUI";
+import { EmployeeName } from "utils/getValuesFromTables";
 
 export const ExitDetails = (isResignation) => [
   {
@@ -46,11 +40,16 @@ export const ExitDetails = (isResignation) => [
             <StatusLabel status={data.status}>
               {data?.status?.toLowerCase()}
             </StatusLabel>
-            {data?.status?.toLowerCase() === "approved" && (
+            {data?.clearance_status?.toLowerCase() === "exit_interview" ? (
+              <StatusLabel variant='info'>
+                Exit Interview
+              </StatusLabel>
+            ) :
               <StatusLabel status={data.clearance_status}>
                 Clearance {data?.clearance_status?.toLowerCase()}
               </StatusLabel>
-            )}
+            }
+
           </div>
         </div>
       );
@@ -118,9 +117,8 @@ export const ExitDetails = (isResignation) => [
           cell ? (
             <AttachmentUI
               attachment={cell}
-              name={`${data.emp_name || data.serial_number} ${
-                isResignation ? "Resignation" : "Termination"
-              } Letter`}
+              name={`${data.employee_id__first_name || data.employee_id__serial_number} ${isResignation ? "Resignation" : "Termination"
+                } Letter`}
               viewOnly={true}
             />
           ) : (
@@ -138,7 +136,7 @@ export const ExitDetails = (isResignation) => [
           cell ? (
             <AttachmentUI
               attachment={cell}
-              name={`${data.emp_name || data.serial_number} Clearance Report`}
+              name={`${data.employee_id__first_name || data.employee_id__serial_number} Clearance Report`}
               viewOnly={true}
             />
           ) : (
@@ -153,6 +151,7 @@ export const ExitDetails = (isResignation) => [
       {
         key: "exit_interviewer_name",
         label: "Interviewer Name",
+        formatter: (cell) => <EmployeeName value={parseInt(cell)} />
       },
       {
         key: "exit_interview_date",
@@ -180,33 +179,17 @@ const ExitDetailsCard = ({
   currentId,
   isResignation = true,
   DataList = [],
-  reloadData = () => {},
+  reloadData = () => { },
   isOpen,
-  setIsOpen = () => {},
+  setIsOpen = () => { },
+  handleUploadClearanceReportClick = () => { },
 }) => {
-  const managePermitted = HasAccess("MANAGE_EXIT_REQUESTS");
-  const { id: user_id, role: user_role } = useSelector(
-    (state) => state.user.userProfile
-  );
   const [forceLoad, setForceLoad] = useState(false);
   const [openClearanceForm, setOpenClearanceForm] = useState(false);
-  const [openUploadClearanceRportForm, setOpenUploadClearanceReportForm] =
-    useState(false);
+  const [openexitInterviewForm, setOpenexitInterviewForm] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
-
-  const handleSubmit = async (
-    status,
-    {
-      employee,
-      id,
-      rejection_reason,
-      request,
-      requested_checkout,
-      requested_checkin,
-      is_second_shift,
-      attendance_date,
-    }
-  ) => {
+  const [exitData, setExitData] = useState(null);
+  const handleSubmit = async (status, { request, }) => {
     try {
       const response = await handleRequest(request, status === "Approved");
       // return
@@ -229,7 +212,13 @@ const ExitDetailsCard = ({
       if (status === "INITIATED") {
         setOpenClearanceForm(data.employee_id);
       } else if (status === "COMPLETED") {
-        setOpenUploadClearanceReportForm(true);
+        handleUploadClearanceReportClick(true);
+        setIsOpen(false)
+        reloadData(true)
+      }
+      else if (status === "EXIT_INTERVIEW") {
+        setOpenexitInterviewForm(true);
+        setExitData(data)
       }
     },
     [setOpenClearanceForm, handleSubmit, setCurrentItemId]
@@ -278,6 +267,18 @@ const ExitDetailsCard = ({
                   Complete Clearance
                 </Button>
               );
+            if (
+              data.clearance_status &&
+              data.clearance_status.toLowerCase() === "completed"
+            )
+              return (
+                <Button
+                  variant="outline"
+                  onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
+                >
+                  Exit Interview
+                </Button>
+              );
           }
           return (
             <StatusButtons
@@ -293,35 +294,10 @@ const ExitDetailsCard = ({
               }}
             ></StatusButtons>
           );
-          if (!managePermitted) return null;
-          if (!data || !data.status || data.status?.toLowerCase() !== "pending")
-            return null;
-          if (!data.current_approver) return null;
-          if (data.current_approver.includes(user_id) || user_role.includes(1))
-            return (
-              <div className="">
-                <Button
-                  variant="success"
-                  onClick={(event) => handleClick(event, "Approved", data)}
-                >
-                  Approve
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={(event) => handleClick(event, "Rejected", data)}
-                >
-                  Reject
-                </Button>
-              </div>
-            );
-          return null;
         },
       },
     ],
     [
-      managePermitted,
-      user_id,
-      user_role,
       handleClick,
       isResignation,
       forceLoad,
@@ -359,14 +335,16 @@ const ExitDetailsCard = ({
           exit_id={currentItemId}
         />
       )}
-      {openUploadClearanceRportForm && (
-        <UploadClearanceReport
-          isOpen={openUploadClearanceRportForm}
+      {openexitInterviewForm && (
+        <UploadExitInterviewDetails
+          isOpen={openexitInterviewForm}
           setIsOpen={() => {
-            setOpenUploadClearanceReportForm(false);
+            setOpenexitInterviewForm(false);
             setForceLoad(!forceLoad);
+            setExitData(null);
           }}
           exit_id={currentItemId}
+          exitData={exitData}
         />
       )}
     </>

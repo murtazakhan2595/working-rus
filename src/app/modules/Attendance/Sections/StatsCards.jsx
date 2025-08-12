@@ -89,8 +89,13 @@ export function StatsCards({ permittedViewFilterData }) {
     const attendanceStats = async (isMounted) => {
       setLoading(true);
       try {
+        const filters = {
+          branch_id: permittedViewFilterData.branch,
+          department: permittedViewFilterData.department,
+          reporting_employees: permittedViewFilterData.reporting_employees
+        }
         const response = await getAttendanceStats({
-          filterData: permittedViewFilterData,
+          filterData: filters,
         });
         if (response && isMounted) {
           setCardStats({

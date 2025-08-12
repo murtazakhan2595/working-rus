@@ -65,7 +65,7 @@ export const DetailBox = ({
       </div>
       <div
         className={cn(
-          "flex-1 shrink leading-5 basis-0 text-neutral-1200 capitalize",
+          "flex-1 shrink leading-5 basis-0 text-neutral-1200",
           valueClassName
         )}
       >

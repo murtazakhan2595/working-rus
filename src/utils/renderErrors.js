@@ -1,16 +1,14 @@
 import { toast } from "react-toastify";
 
 export function renderErrorMessages(errorObj) {
-  debugger
   let errorMessages = "";
 
   for (const key in errorObj) {
-    if (key === 'detail') {
-      errorMessages += `${errorObj[key]}\n\n`;
-    }
     if (Array.isArray(errorObj[key])) {
       const messages = errorObj[key].map((msg) => `${msg}`).join("\n");
       errorMessages += `${messages}\n\n`;
+    } else {
+      errorMessages += `${errorObj[key]}\n\n`;
     }
 
   }

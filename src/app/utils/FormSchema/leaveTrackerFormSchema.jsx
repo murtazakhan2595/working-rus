@@ -63,12 +63,10 @@ const validateLeaveRequestFormSchema = (
 
     if (noticeDays && start_date) {
       const daysDifference = GetDateDifference(
-        start_date,
         moment().format("YYYY-MM-DD"),
-        "days",
+        start_date,
         "calendar_days"
       );
-
       if (daysDifference < noticeDays) {
         errors.start_date = `This leave type requires a notice of at least ${noticeDays} days`;
       }

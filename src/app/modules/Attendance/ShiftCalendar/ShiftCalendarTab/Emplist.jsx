@@ -20,6 +20,7 @@ const ShiftStatusOptions = [
 
 const Emplist = () => {
   const Departments = useSelector((state) => state.common.departments);
+  const userProfile = useSelector((state) => state.user.userProfile);
   const isViewShiftChangeRequestsPermitted = HasAccess("VIEW_SHIFT_CHANGE_REQUESTS")
   const [isLoading, setIsLoading] = useState(false);
   const [activeMember, setActiveMember] = useState(null);
@@ -52,7 +53,8 @@ const Emplist = () => {
       try {
         setIsLoading(true);
         setActiveMember(null);
-        const response = await getEmployeeList({ filterData });
+        const filters = { ...filterData, ...(userProfile.role.includes(1) ? {} : { reporting_employee: userProfile.id }) }
+        const response = await getEmployeeList({ filterData: filters });
         if (response) {
           if (filterData.shift_status) {
             if (filterData.shift_status === 'assigned') {
@@ -76,7 +78,7 @@ const Emplist = () => {
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, [filterData, userProfile]);
 
 
   const handleFilterChange = (filterName, filterValue) => {
@@ -90,7 +92,6 @@ const Emplist = () => {
       return updatedFilters;
     });
   };
-
   return (
     <div>
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2 mb-4">

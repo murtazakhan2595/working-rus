@@ -4,6 +4,8 @@ import { TerminationReasons } from "./TerminationReasons";
 import UploadClearanceReport from "./UploadClearanceReport";
 import ClearanceSheet from "./ClearanceSheet";
 import ExitDetailsCard from "./ExitDetailsCard";
+import RequestTerminationCard from "./RequestTerminationCard";
+import UploadExitInterviewDetails from "./UploadExitInterviewDetails";
 export {
   ExitAndClearance,
   EmployeeExit,
@@ -11,4 +13,6 @@ export {
   UploadClearanceReport,
   ClearanceSheet,
   ExitDetailsCard,
+  UploadExitInterviewDetails,
+  RequestTerminationCard
 };

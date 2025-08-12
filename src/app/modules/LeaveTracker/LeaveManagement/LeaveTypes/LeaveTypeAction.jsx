@@ -75,15 +75,14 @@ const LeaveTypeAction = ({ data, reload, leaveTypeList = [] }) => {
     }
   };
 
-  const ShowEdit = data.name !== "Offset Leaves";
-  const DeleteRecord = data.name !== "Offset Leaves";
-
+  const HideAction = data.name === "Offset Leaves" || data.name === 'Special Leave';
+  if (HideAction) return null
   return (
     <>
       <DropdownActionMenu
         onView={handleView}
-        onEdit={ShowEdit ? handleEdit : null}
-        onDelete={DeleteRecord ? handleDelete : null}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
         viewText="View Leave Type"
         editText="Edit Leave Type"
         deleteText="Delete Leave Type"

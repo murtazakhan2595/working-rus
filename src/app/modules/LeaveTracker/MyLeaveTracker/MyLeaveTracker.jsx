@@ -47,36 +47,6 @@ const MyLeaveTracker = ({ userProfile }) => {
             )
           }
         />
-
-        {/* Leave Statistics - Only show if user can view applied leaves
-        {canViewLeavesApplied && (
-          <div className="p-6">
-            <section className="flex flex-wrap gap-4 items-center">
-              {LeaveTrackerStats.map((item, index) => (
-                <React.Fragment key={item.title}>
-                  <div className="flex-1 shrink min-w-[240px]">
-                    <div className="pb-2">
-                      <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
-                        {item.title}
-                      </h2>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold leading-tight text-fuchsia-700">
-                        {item.value}
-                      </p>
-                    </div>
-                  </div>
-                  {index < LeaveTrackerStats.length - 1 && (
-                    <div className="relative">
-                      <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </section>
-          </div>
-        )} */}
-
         {/* Consumed Leaves Section - Only show if user can view consumed leaves */}
         {canViewConsumedLeaves && (
           <Card className="w-full overflow-hidden">

@@ -22,6 +22,7 @@ export const LeaveRecordColumns = [
     dataField: "id",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
+    width:'110px',
   },
   {
     dataField: "id",
@@ -58,7 +59,7 @@ export const LeaveRecordColumns = [
 
 export const LeaveAplicationColumns = (
   isHistoryView = false,
-  realoadData = () => {}
+  reloadData = () => {}
 ) => [
   {
     dataField: "employee",
@@ -114,7 +115,7 @@ export const LeaveAplicationColumns = (
       <LeaveTrackerActions
         data={row}
         isHistoryView={isHistoryView}
-        realoadData={realoadData}
+        reloadData={reloadData}
         DataList={dataList}
       />
     ),

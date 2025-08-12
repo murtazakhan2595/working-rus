@@ -14,6 +14,7 @@ import {
 } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 import { PageLoader } from "components";
+import { getEmployeeData } from "app/hooks/employee";
 
 const ShiftRequest = () => {
   const isManageTeamShiftsPermitted = HasAccess("MANAGE_TEAM_SHIFTS_REQUEST");
@@ -79,9 +80,9 @@ const ShiftRequest = () => {
       if (hasTabAccess) {
         // HR view with tabs
         if (activeTab === "Request") {
-          filterData.status = filters.status || "Pending";
+          filterData.status = filters.status || "PENDING";
         } else if (activeTab === "Record") {
-          filterData.status = filters.status || "Approved,Rejected";
+          filterData.status = filters.status || "APPROVED,REJECTED";
           filterData.is_change_request = "true,false";
         }
       } else {
@@ -112,9 +113,18 @@ const ShiftRequest = () => {
         const enhancedResults = await Promise.all(
           response.results.map(async (request) => {
             const comparisonData = await getChangeRequestComparison(request);
-            const employeeData = employees.find(
+            let employeeData;
+            employeeData = employees.find(
               (emp) => emp.id === request.employee
             );
+            if(!employeeData){
+              console.log("HERE IS THE BUG", request);
+              const empData =await  getEmployeeData(request.employee)
+              if(empData){
+                employeeData = empData
+              }
+
+            }
             return {
               ...request,
               employee: employeeData,
@@ -182,8 +192,8 @@ const ShiftRequest = () => {
                 {
                   type: "select",
                   options: [
-                    { label: "Approved", value: "Approved" },
-                    { label: "Rejected", value: "Rejected" },
+                    { label: "Approved", value: "APPROVED" },
+                    { label: "Rejected", value: "REJECTED" },
                   ],
                   name: "status",
                   placeholder: "Status",

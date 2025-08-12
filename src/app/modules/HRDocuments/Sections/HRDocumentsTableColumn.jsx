@@ -13,55 +13,53 @@ import DueDateUI from "components/ui/DueDateUI";
  */
 export const HRDocumentsColumns = (
   showAction = false,
-  reloadData = () => {}
+  reloadData = () => { }
 ) => [
-  {
-    dataField: "name",
-    text: "Name",
-    // maxWidth: "200px",
-    dataSort: true,
-  },
-  {
-    dataField: "category",
-    text: "Category",
-    formatter: (cell, row) => <DocCategoryName value={cell} />,
-    dataSort: true,
-    minWidth: "110px",
-  },
-  {
-    dataField: "expiration_date",
-    text: "Expiration Date",
-    formatter: (cell, row) => renderDate(cell),
-    dataSort: true,
-    minWidth: "110px",
-  },
-  ...(!showAction
-    ? [
+    {
+      dataField: "name",
+      text: "Name",
+      // maxWidth: "200px",
+      dataSort: true,
+    },
+    {
+      dataField: "category",
+      text: "Category",
+      formatter: (cell, row) => <DocCategoryName value={cell} />,
+      dataSort: true,
+      minWidth: "110px",
+    },
+    {
+      dataField: "expiration_date",
+      text: "Expiration Date",
+      formatter: (cell, row) => renderDate(cell),
+      dataSort: true,
+      minWidth: "110px",
+    },
+    ...(!showAction
+      ? [
         {
           dataField: "doc_status",
           text: "Status",
-          formatter: (cell, row) => (
-            <StatusLabel status={cell}>
-              {cell?.charAt(0) + cell?.slice(1).toLowerCase()}
-            </StatusLabel>
+          formatter: (cell) => (
+            <StatusLabel status={cell}>{cell.toLowerCase()}</StatusLabel>
           ),
           dataSort: true,
           minWidth: "110px",
         },
       ]
-    : []),
-  // Action column with dropdown menu
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => (
-      <DocumentActions document={row} showAction={showAction} reloadData={reloadData} />
-    ),
-    width: "100px",
-    headerAlign: "right",
-    align: "right",
-  },
-];
+      : []),
+    // Action column with dropdown menu
+    {
+      dataField: "",
+      text: "Actions",
+      formatter: (cell, row) => (
+        <DocumentActions document={row} showAction={showAction} reloadData={reloadData} />
+      ),
+      width: "100px",
+      headerAlign: "right",
+      align: "right",
+    },
+  ];
 
 /**
  * HRDocumentAssigneesColumns
@@ -108,10 +106,8 @@ export const HRDocumentAssigneesColumns = [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell, row) => (
-      <StatusLabel status={cell}>
-        {cell?.charAt(0) + cell?.slice(1).toLowerCase()}
-      </StatusLabel>
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell.toLowerCase()}</StatusLabel>
     ),
     dataSort: true,
     minWidth: "110px",

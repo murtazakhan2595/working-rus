@@ -17,7 +17,7 @@ import AttachmentUI from "components/ui/AttachmentUI";
  * @param {boolean} hideActions - A boolean to hide actions.
  * @returns {array} An array of column definitions.
  */
-export const ExitRequestColumns = (reloadData = () => { }) => [
+export const ExitRequestColumns = (reloadData = () => { },handleUploadClearanceReportClick=()=>{}) => [
   {
     dataField: "employee_id__first_name",
     text: "Employees",
@@ -43,8 +43,8 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
     dataSort: true,
   },
   {
-    dataField: "exit_date",
-    text: "Exit date",
+    dataField: "final_working_day",
+    text: "Last Working Day",
     formatter: (cell) => renderDate(cell),
     dataSort: true,
     minWidth: "115px",
@@ -66,13 +66,18 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
   {
     dataField: "clearance_status",
     text: "Clearance Status",
-    formatter: (cell, row) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => {
+      const status = cell ? cell.toLowerCase().replace('_', ' ') : null;
+      if (status)
+        return <StatusLabel status={status}>{status}</StatusLabel>;
+      return '--';
+    },
     dataSort: true,
   },
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell, row) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell, row) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
     dataSort: true,
   },
   {
@@ -83,6 +88,7 @@ export const ExitRequestColumns = (reloadData = () => { }) => [
         data={row}
         reloadData={reloadData}
         DataList={data_list}
+        handleUploadClearanceReportClick={handleUploadClearanceReportClick}
       />
     ),
   },

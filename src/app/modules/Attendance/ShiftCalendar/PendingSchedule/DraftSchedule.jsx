@@ -342,16 +342,16 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName, isDraft = 
             className={`
             px-3 py-1.5 rounded-full text-xs font-medium
             ${
-              pendingShift.status === "Pending"
+              pendingShift?.status.toLowerCase() === "pending"
                 ? "bg-[#FEF3C7] text-[#92400E]"
-                : pendingShift.status === "Rejected"
+                : pendingShift?.status.toLowerCase() === "rejected"
                 ? "bg-[#FEE2E2] text-[#991B1B]"
                 : "bg-[#F3F4F6] text-[#1F2937]"
             }
           `}
           >
-            {console.log("Draft Schedule Status", pendingShift.status, pendingShift.draft)}
-            {pendingShift.draft && pendingShift.status === "Pending" ? "Pending Draft" : pendingShift.status}
+            {console.log("Draft Schedule Status", pendingShift?.status.toLowerCase(), pendingShift.draft)}
+            {pendingShift.draft && pendingShift?.status.toLowerCase() === "pending" ? "Pending Draft" : pendingShift?.status.toLowerCase()}
           </span>
         </div>
       </div>
