@@ -7,7 +7,9 @@ import { DateInput } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
 import { PostJobRotation } from "app/hooks/Rotation";
+import {saveJobRotation} from "app/hooks/transferAndRotation";
 import {toast} from "react-toastify";
+import {JobRotationColumns} from "app/modules/TransferAndRotation/Sections/TableColumns";
 import axios from "axios";
 
 export default function RotationSheetWrapper() {
@@ -23,7 +25,7 @@ export default function RotationSheetWrapper() {
     try {
       const payload = { ...values, employee: user_id ,"created_by": "manager"};
       console.log(payload)
-      PostJobRotation(payload);
+      saveJobRotation(payload);
       setIsSheetOpen(false);
       toast.success("Job rotation request submitted successfully!");
     } catch (error) {

@@ -58,8 +58,6 @@ import {
   EmployeeSalaryDetails,
   PayrollPayrunDetail,
 } from "app/modules/Payroll";
-// import JobRotation from "app/modules/JobRotation";
-import { TransferAndRotations } from "app/modules/TransferAndRotation";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import {
   Attendance,
@@ -109,7 +107,7 @@ export const SidebarRoutes = [
 
            Config.EXIT && {
           path: "/job-rotation",
-          component: <TransferAndRotations />,
+          component: <TransferAndRotation />,
           name: "EXIT",
         },
 
