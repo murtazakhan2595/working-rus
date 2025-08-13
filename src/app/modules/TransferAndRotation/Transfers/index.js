@@ -1,12 +1,11 @@
 import EmployeeTransfer from "./EmployeeTransfer";
-import EmployeeInternalTranfer from "./InternalTransfer";
-import EmployeeExternalTranfer from "./ExternalTransfer";
 import MyTransfers from "./MyTransfers";
-import { TransferForm } from './Sections';
+import TransferDetails from "./TransferDetails";
+import { TransferForm, TransferActions } from './Sections';
 export {
   EmployeeTransfer,
-  EmployeeInternalTranfer,
-  EmployeeExternalTranfer,
   MyTransfers,
-  TransferForm
+  TransferForm,
+  TransferActions,
+  TransferDetails
 };

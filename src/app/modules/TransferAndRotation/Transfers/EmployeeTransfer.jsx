@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
-import { InternalTransferColumns, } from "app/modules/TransferAndRotation/Transfers/Sections";
+import { TransferColumns } from "app/modules/TransferAndRotation/Sections";
 import {
   getEmployeeTransferList,
   getEmployeeTransferStats,
@@ -85,7 +85,7 @@ export default function EmployeeTransfer() {
     setIsLoading(true);
     try {
       const data = await getEmployeeTransferStats({
-        filterData: { transfer_type: filterData.transfer_type },
+        filterData: { status: activeTab === 'Requests' ? 'PENDING' : 'APPROVED,REJECTED' },
       });
       if (isMounted) {
         setEmployeeTransferStat(data);
@@ -188,6 +188,7 @@ export default function EmployeeTransfer() {
       return updatedFilters;
     });
   };
+  if (!viewEmployeeTransferPermitted) return null;
 
   return (
     <Tabs
@@ -212,71 +213,67 @@ export default function EmployeeTransfer() {
           ))}
         </TabsList>
       </div>
-      {viewEmployeeTransferPermitted && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Employee Transfers</CardTitle>
-            <CardDescription>Here you can view and manage the employee transfer requests</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FilterInput
-              filters={[
-                {
-                  type: "search",
-                  placeholder: "Search by ID and Name",
-                  name: "employee_name_or_id",
-                },
-                {
-                  type: "select",
-                  options: Departments,
-                  name: "old_department",
-                  placeholder: "Department",
-                },
-                {
-                  type: "select",
-                  options: Designations,
-                  name: "designation",
-                  placeholder: "Designation",
-                },
-                {
-                  type: "select",
-                  options: Branches,
-                  name: "old_branch",
-                  placeholder: "Branch",
-                },
-                {
-                  type: 'select',
-                  options: [{ label: 'Internal Transfer', value: 'INTERNAL' }, { label: 'External Transfer', value: 'ExTERNAL' }],
-                  name: 'transfer_type',
-                  placeholder: 'Transfer Type',
-                }
-              ]}
-              filterValues={filterData}
-              className={'justify-end mb-4'}
-              onChange={handleFilterChange}
-            />
-            <Button
-              variant="outline"
-              onClick={handleResetFilters}
-              className="shrink-0"
-            >
-              Reset Filters
-            </Button>
-            {isLoading ? (
-              <PageLoader />
-            ) : (
-              <TableCustom
-                data={employeeTransferData.results}
-                columns={InternalTransferColumns}
-                pagination={true}
-                dataTotalSize={employeeTransferData.count || 0}
-                tableOptions={tableOptions}
-              />
-            )}
+      <CardHeader>
+        <CardTitle>Employee Transfers</CardTitle>
+        <CardDescription>Here you can view and manage the employee transfer requests</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search by ID and Name",
+              name: "employee_name_or_id",
+            },
+            {
+              type: "select",
+              options: Departments,
+              name: "old_department",
+              placeholder: "Department",
+            },
+            {
+              type: "select",
+              options: Designations,
+              name: "designation",
+              placeholder: "Designation",
+            },
+            {
+              type: "select",
+              options: Branches,
+              name: "old_branch",
+              placeholder: "Branch",
+            },
+            {
+              type: 'select',
+              options: [{ label: 'Internal Transfer', value: 'INTERNAL' }, { label: 'External Transfer', value: 'ExTERNAL' }],
+              name: 'transfer_type',
+              placeholder: 'Transfer Type',
+            }
+          ]}
+          filterValues={filterData}
+          className={'justify-end mb-4'}
+          onChange={handleFilterChange}
+        />
+        {/* <Button
+          variant="outline"
+          onClick={handleResetFilters}
+          className="shrink-0"
+        >
+          Reset Filters
+        </Button> */}
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            data={employeeTransferData.results}
+            columns={TransferColumns(fetchData)}
+            pagination={true}
+            dataTotalSize={employeeTransferData.count || 0}
+            tableOptions={tableOptions}
+          />
+        )}
 
-          </CardContent>
-        </Card>
-      )}
+      </CardContent>
     </Tabs>
   );
 }

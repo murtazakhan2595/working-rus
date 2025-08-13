@@ -1,15 +1,19 @@
 import { EmployeeTransfer, JobRotation } from "app/utils/Types/TransferAndRotation";
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
-export function mapEmployeeTransferData(data) {
-  const employeeTransferDetails = Object.keys(EmployeeTransfer).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
-    }
-    return acc;
-  }, {});
+export async function mapEmployeeTransferData(data, fetchApprovalDetails = true) {
+  const RecordDetails = {};
 
-  return employeeTransferDetails;
+  for (const key of Object.keys(EmployeeTransfer)) {
+    if (key === "approval_details" && fetchApprovalDetails) {
+      RecordDetails[key] = await mapApproverDetails(data);
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
+        RecordDetails[key] = data[key];
+    }
+  }
+
+  return RecordDetails;
 }
 
 export function mapEmployeeTransferPayloadData(data) {

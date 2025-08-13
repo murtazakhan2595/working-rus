@@ -39,8 +39,8 @@ const TransferAndRotation = ({ }) => {
   const Branches = GetDispatchStateList("branches", "common") || []
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
   const [OpenRotationForm, setOpenRotationForm] = useState(false);
-  const [activeTab, setActiveTab] = useState("Rotations");
-  const [ExitStats, setExitStats] = useState(0);
+  const [activeTab, setActiveTab] = useState("Transfers");
+  const [TransferStats, setTransferStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
 
 
@@ -70,7 +70,7 @@ const TransferAndRotation = ({ }) => {
         });
 
         if (response) {
-          setExitStats(response);
+          setTransferStats(response);
         }
       } catch (e) {
         console.error(e);
@@ -85,14 +85,14 @@ const TransferAndRotation = ({ }) => {
 
 
 
-  const statsData = React.useMemo(() => [
-    { label: "Total Exits", value: ExitStats.Total, icon: FolderInput },
-    { label: "Pending", value: ExitStats.Pending, icon: Loader },
-    { label: "Accepted", value: ExitStats.Approved, icon: CircleCheckBig },
-    { label: "Rejected", value: ExitStats.Rejected, icon: CircleX },
-    { label: "Clearance Completed", value: ExitStats.Clearance, icon: FileCheck2 },
-    { label: "Exit Interview", value: ExitStats.Exit, icon: LogOut },
-  ], [ExitStats]);
+  const TransferStatsData = React.useMemo(() => [
+    { label: "Total Exits", value: TransferStats.Total, icon: FolderInput },
+    { label: "Pending", value: TransferStats.Pending, icon: Loader },
+    { label: "Accepted", value: TransferStats.Approved, icon: CircleCheckBig },
+    { label: "Rejected", value: TransferStats.Rejected, icon: CircleX },
+    { label: "Clearance Completed", value: TransferStats.Clearance, icon: FileCheck2 },
+    { label: "Exit Interview", value: TransferStats.Exit, icon: LogOut },
+  ], [TransferStats]);
 
   const handleRequestClick = (event) => {
     event.preventDefault();
@@ -104,8 +104,6 @@ const TransferAndRotation = ({ }) => {
       setOpenTransferForm(true);
     else if (triggeredResquest === 'rotations')
       setOpenRotationForm(true);
-
-    console.log(event.target)
   }
 
   return (
@@ -118,11 +116,7 @@ const TransferAndRotation = ({ }) => {
             {activeTab === "Transfers" && (
               <Button
                 title='transfer'
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setOpenTransferForm(true);
-                }}
+                onClick={handleRequestClick}
               >
                 Request Transfer
               </Button>
@@ -138,7 +132,7 @@ const TransferAndRotation = ({ }) => {
           </>
         }
       />
-      <Stats stats={statsData} />
+      {activeTab === "Transfers" && <Stats stats={TransferStatsData} />}
       <Tabs
         defaultValue="Transfers"
         className="w-full"
@@ -172,7 +166,8 @@ const TransferAndRotation = ({ }) => {
             setOpenTransferForm(false);
             //fetchData(true);
           }}
-        // transfer_type={activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"}
+          // transfer_type={activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"}
+          initiator={'MANAGER'}
         />
       )}
       {OpenRotationForm && (

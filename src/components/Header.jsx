@@ -78,7 +78,7 @@ const pathNames = () => {
     "job-application-form": "Job Application Form",
     "job-description": "Job Description",
     "my-attendance": "Attendance History",
-    "employee-tranfer": "Employee Transfer",
+    "tranfer-rotations": "Transfers & Rotations",
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",

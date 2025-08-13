@@ -13,6 +13,9 @@ export const EmployeeTransfer = {
   old_branch: null,
   reporting_manager: null,
   hr_manager: null,
+  initiated_by: null,
+  approval_details: null,
+  created_at:null,
 };
 
 export const JobRotation = {
@@ -35,7 +38,7 @@ export const JobRotation = {
   old_designation: null,
   old_branch: null,
   old_reporting_manager: null,
-  approval_details:null,
+  approval_details: null,
 }
 
 
