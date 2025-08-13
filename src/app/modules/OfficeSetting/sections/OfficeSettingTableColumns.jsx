@@ -8,6 +8,8 @@ import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import ClearanceChecklistAction from "../Screens/ClearanceChecklist/ClearanceChecklistAction";
+import { DepartmentName } from "utils/getValuesFromTables";
 
 //
 export const BranchColumn = (reload) => [
@@ -191,5 +193,144 @@ export const GraceTimeColumn = (reload) => [
       <GraceTimeAction reloadData={reload} data={row} DataList={data_list} />
     ),
     width: "80px",
+  },
+];
+
+export const ClearanceChecklistColumn = (reloadData) => [
+  {
+    dataField: "id",
+    text: "Id",
+    sort: true,
+    formatter: (cell, row) => <FormatID value={cell} prefix={"CC-"} />,
+    headerStyle: {
+      width: "80px",
+      minWidth: "80px",
+    },
+  },
+  {
+    dataField: "name",
+    text: "Checklist Name",
+    sort: true,
+    formatter: (cell) => <span className="font-medium">{cell}</span>,
+    headerStyle: {
+      minWidth: "180px",
+    },
+  },
+  {
+    dataField: "department",
+    text: "Department",
+    sort: true,
+    formatter: (cell) => <DepartmentName value={cell} />,
+    headerStyle: {
+      minWidth: "130px",
+    },
+  },
+  {
+    dataField: "clearance_types",
+    text: "Clearance Types",
+    sort: false,
+    formatter: (cell) => {
+      if (!cell || cell.length === 0) {
+        return "--";
+      }
+
+      const clearanceTypeLabels = {
+        job_rotation: "Job Rotation",
+        leave_clearance: "Leave Clearance",
+        special_leave: "Special Leave",
+        internal_transfer: "Internal Transfer",
+        external_transfer: "External Transfer",
+        resignation: "Resignation",
+        termination: "Termination",
+      };
+
+      // Show first 2 types and "+X more" if there are more
+      const displayTypes = cell.slice(0, 2);
+      const remainingCount = cell.length - 2;
+
+      return (
+        <div className="flex flex-wrap gap-1">
+          {displayTypes.map((type, index) => (
+            <StatusLabel key={index} variant={"info"} className="text-xs">
+              {clearanceTypeLabels[type] || type}
+            </StatusLabel>
+          ))}
+          {remainingCount > 0 && (
+            <StatusLabel variant={"outline"} className="text-xs">
+              +{remainingCount} more
+            </StatusLabel>
+          )}
+        </div>
+      );
+    },
+    headerStyle: {
+      minWidth: "200px",
+    },
+  },
+  {
+    dataField: "assignment_scope",
+    text: "Assignment Scope",
+    sort: true,
+    formatter: (cell) => {
+      const scopeLabels = {
+        direct: "Direct Reporting",
+        indirect: "Indirect Reporting",
+      };
+
+      return (
+        <StatusLabel variant={"secondary"} className="text-xs">
+          {scopeLabels[cell] || cell}
+        </StatusLabel>
+      );
+    },
+    headerStyle: {
+      minWidth: "140px",
+    },
+  },
+  {
+    dataField: "created_by",
+    text: "Created By",
+    sort: true,
+    headerStyle: {
+      minWidth: "120px",
+    },
+  },
+  {
+    dataField: "created_date",
+    text: "Created Date",
+    sort: true,
+    formatter: (cell) => {
+      if (!cell) return "--";
+      return new Date(cell).toLocaleDateString();
+    },
+    headerStyle: {
+      minWidth: "120px",
+    },
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    sort: true,
+    formatter: (cell) => (
+      <StatusLabel variant={cell === "active" ? "success" : "destructive"}>
+        {cell === "active" ? "Active" : "Inactive"}
+      </StatusLabel>
+    ),
+    headerStyle: {
+      width: "100px",
+      minWidth: "100px",
+    },
+  },
+  {
+    dataField: "actions",
+    text: "Actions",
+    sort: false,
+    formatter: (cell, row) => (
+      <ClearanceChecklistAction data={row} reloadData={reloadData} />
+    ),
+    headerStyle: {
+      width: "80px",
+      minWidth: "80px",
+    },
   },
 ];

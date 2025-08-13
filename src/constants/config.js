@@ -96,6 +96,7 @@ const Config = {
   ROLE_PERMISSIONS: true,
   APPROVAL_HIERARCHY: true,
   LEAVE_SETUP: true,
+  CLEARANCE_AND_HANDOVER: true,
 };
 
 export const URLS = [

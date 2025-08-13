@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { saveJobRotation, getJobRotationReasons, getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
-import { JobRotationColumns } from "app/modules/TransferAndRotation/Sections";
 import {
   Tabs,
   TabsList,
@@ -15,7 +14,10 @@ import {
 import { TableCustom, PageLoader } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
+
+
 import {FilterInput} from 'components/FormControl'
+import { JobRotationColumns } from "../Sections/TableColumns";
 const Rotations = ({ reload }) => {
   const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
   const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
