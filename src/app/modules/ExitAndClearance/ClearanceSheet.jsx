@@ -110,10 +110,7 @@ const ClearanceSheet = ({
       const response = await saveFinalSettlement(values, values.id);
       if (response) {
         // Then update employee payroll to mark EOS applicable
-        await saveEmployeePayroll(
-          { is_eos_applicable: true },
-          employee_payroll.id
-        );
+        await saveEmployeePayroll({ is_eos_applicable: true }, employee_payroll.id);
         // Update status and close the form
         if (exit_id)
           await saveEmployeeExitDetail(

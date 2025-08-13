@@ -1,17 +1,10 @@
 import { toast } from "react-toastify";
-import React, { useState, useRef } from "react";
-import {
-  RenderResignationAction,
-  RenderTerminationAction,
-} from "app/modules/ExitAndClearance/ExitRequests";
+import React, { useState } from "react";
 import { FormatID } from "utils/getValuesFromTables";
 import {
-  saveEmployeeExitDetail,
   getEmployeeExitData,
 } from "app/hooks/employeeExitAndClearance";
-import { useSelector } from "react-redux";
 import {
-  UploadClearanceReport,
   ClearanceSheet,
   UploadExitInterviewDetails,
 } from "app/modules/ExitAndClearance";
@@ -28,9 +21,7 @@ import {
 } from "components";
 import { handleRequest } from "app/hooks/general";
 import { renderDate } from "utils/renderValues";
-import { HasAccess } from "utils/PermissionUtils";
 import AttachmentUI from "components/ui/AttachmentUI";
-import { dataListItemPropDefs } from "@radix-ui/themes/dist/cjs/components/data-list.props";
 import { EmployeeName } from "utils/getValuesFromTables";
 
 export const ExitDetails = (isResignation) => [
@@ -191,10 +182,10 @@ const ExitDetailsCard = ({
   reloadData = () => { },
   isOpen,
   setIsOpen = () => { },
+  handleUploadClearanceReportClick = () => { },
 }) => {
   const [forceLoad, setForceLoad] = useState(false);
   const [openClearanceForm, setOpenClearanceForm] = useState(false);
-  const [openUploadClearanceRportForm, setOpenUploadClearanceReportForm] = useState(false);
   const [openexitInterviewForm, setOpenexitInterviewForm] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [exitData, setExitData] = useState(null);
@@ -221,7 +212,9 @@ const ExitDetailsCard = ({
       if (status === "INITIATED") {
         setOpenClearanceForm(data.employee_id);
       } else if (status === "COMPLETED") {
-        setOpenUploadClearanceReportForm(true);
+        handleUploadClearanceReportClick(true);
+        setIsOpen(false)
+        reloadData(true)
       }
       else if (status === "EXIT_INTERVIEW") {
         setOpenexitInterviewForm(true);
@@ -339,16 +332,6 @@ const ExitDetailsCard = ({
             setForceLoad(!forceLoad);
           }}
           employee_id={openClearanceForm}
-          exit_id={currentItemId}
-        />
-      )}
-      {openUploadClearanceRportForm && (
-        <UploadClearanceReport
-          isOpen={openUploadClearanceRportForm}
-          setIsOpen={() => {
-            setOpenUploadClearanceReportForm(false);
-            setForceLoad(!forceLoad);
-          }}
           exit_id={currentItemId}
         />
       )}

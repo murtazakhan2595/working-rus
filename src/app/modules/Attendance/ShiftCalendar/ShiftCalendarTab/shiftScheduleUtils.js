@@ -60,9 +60,10 @@ export const getChangeRequestComparison = async (
       employee: changeRequest.employee,
       end_date_gte: changeRequest.start_date,
       start_date_lte: changeRequest.end_date,
-      status: "Approved",
+      status: "APPROVED",
       is_change_request: "true,false",
     },
+    ordering: "-created_at",
   });
 
   // Manually filter out the current request to avoid self-comparison
