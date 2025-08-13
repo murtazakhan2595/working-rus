@@ -163,7 +163,6 @@ const AddUpdateOffsetLeave = ({
                 {
                   InputField: SelectMultiInputComponent,
                   name: "nationalities",
-                  required: true,
                   label: "Nationalities",
                   options: countriesList,
                   SelectAllOption: true,
@@ -171,7 +170,6 @@ const AddUpdateOffsetLeave = ({
                 {
                   InputField: SelectMultiInputComponent,
                   name: "branches",
-                  required: true,
                   label: "Branches",
                   options: Branches,
                   SelectAllOption: true,
@@ -180,7 +178,6 @@ const AddUpdateOffsetLeave = ({
                 {
                   InputField: SelectMultiInputComponent,
                   name: "departments",
-                  required: true,
                   label: "Departments",
                   options: Departments,
                   SelectAllOption: true,
