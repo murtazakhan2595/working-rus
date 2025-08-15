@@ -19,10 +19,10 @@ import { renderDate } from "utils/renderValues";
 
 export const LeaveRecordColumns = [
   {
-    dataField: "employee_username",
+    dataField: "id",
     text: "ID",
-    formatter: (cell) => cell || "N/A",
-    width: "110px",
+    formatter: (cell) => <EmployeeID value={cell} />,
+    width:'110px',
   },
   {
     dataField: "id",
