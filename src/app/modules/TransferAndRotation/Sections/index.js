@@ -1,3 +1,5 @@
 import { JobRotationColumns } from './TableColumns';
 
-export { JobRotationColumns };
+export {
+    JobRotationColumns,
+}
