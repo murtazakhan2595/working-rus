@@ -102,7 +102,7 @@ export const ExitDetails = (isResignation) => [
         // formatter: (cell) => renderDate(cell),
       },
       {
-        key: "exit_date",
+        key: "final_working_day",
         label: "Exit date",
         formatter: (cell) => renderDate(cell, "--"),
       },
