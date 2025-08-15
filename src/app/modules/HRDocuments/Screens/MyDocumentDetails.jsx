@@ -9,7 +9,7 @@ import {
 } from "app/hooks/hrDocuments";
 import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
-import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
+import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapTransferRotationData";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 import { ViewDetailSheetCardExtension, StatusLabel } from "components";

@@ -28,6 +28,7 @@ import {
   SelectInputComponent,
 } from "components/FormControl/InputSelect";
 import ImageInput from "components/FormControl/UploadFiles/ImageInput";
+import TextInputDropdown from "components/FormControl/InputSelect/TextInputDropdown";
 import EmailInput from "components/FormControl/EmailInput";
 import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
@@ -236,4 +237,5 @@ export {
   InputSignature,
   MonthInput,
   SwitchInput,
+  TextInputDropdown,
 };

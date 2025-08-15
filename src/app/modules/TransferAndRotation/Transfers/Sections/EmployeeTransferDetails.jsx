@@ -1,6 +1,6 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
+import { EmployeeTransferStatusView ,TransferForm} from "app/modules/TransferAndRotation/Transfers/Sections";
 import {
   DepartmentName,
   EmployeeName,
@@ -22,7 +22,6 @@ import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapTransferRotationData";
 import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
-import { TransferForm } from "app/modules/EmployeeTransfer/Sections";
 import { DetailBox } from "components/SheetCardExtension";
 import {
   ViewDetailSheetCardExtension,
