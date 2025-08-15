@@ -212,7 +212,7 @@ const ExitDetailsCard = ({
       if (status === "INITIATED") {
         setOpenClearanceForm(data.employee_id);
       } else if (status === "COMPLETED") {
-        handleUploadClearanceReportClick(true);
+        handleUploadClearanceReportClick(data.id);
         setIsOpen(false)
         reloadData(true)
       }
