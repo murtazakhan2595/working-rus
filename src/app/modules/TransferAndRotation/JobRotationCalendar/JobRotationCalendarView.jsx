@@ -13,11 +13,11 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "src/@/components/ui/tooltip";
-import JobRotationDetails from "./JobRotationDetails";
 import { BranchName } from "utils/getValuesFromTables";
 import { useSelector } from "react-redux";
 import { getDesignationName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
+import { JobRotationDetails } from "../Rotations";
 
 // Status transformation function
 const transformJobRotationStatus = (rotation) => {
@@ -133,7 +133,7 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
   const Employees = useSelector((state) => state.emp.employees);
   const Designations = useSelector((state) => state.common.designations);
 
-  console.log("Employees in Calendar View:", Employees);
+  console.log("JobRotationCalendarView:", Employees);
 
   const getBranchLabel = (branches, value, fallBackText = "N/A") => {
     const branch = branches.find((option) => option.value === parseInt(value));
@@ -179,6 +179,12 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
 
   const handleEventClick = (clickInfo) => {
     const rotation = clickInfo.event.extendedProps.rotation;
+    // Add these debug logs
+    console.log("Clicked event:", clickInfo.event.title);
+    console.log("Event ID:", clickInfo.event.id);
+    console.log("Rotation object:", rotation);
+    console.log("Rotation ID:", rotation.id);
+    console.log("All job rotations:", jobRotations?.results);
     setSelectedRotation(rotation.id);
     setIsDetailSheetOpen(true);
   };
@@ -292,14 +298,18 @@ const JobRotationCalendarView = ({ jobRotations, loading, reload }) => {
 
       {/* Job Rotation Detail Sheet */}
       {selectedRotation && (
-        <JobRotationDetails
-          isOpen={isDetailSheetOpen}
-          setIsOpen={setIsDetailSheetOpen}
-          currentId={selectedRotation}
-          DataList={jobRotations?.results || []}
-          reloadData={reload}
-          transformStatus={transformJobRotationStatus} // Pass the transform function
-        />
+        <>
+          {" "}
+          {console.log("Selected Rotation ID:", selectedRotation)}
+          {console.log("DataList passed:", jobRotations?.results)}
+          <JobRotationDetails
+            isOpen={isDetailSheetOpen}
+            setIsOpen={setIsDetailSheetOpen}
+            currentId={selectedRotation}
+            reloadData={reload}
+            DataList={jobRotations?.results || []}
+          />
+        </>
       )}
     </div>
   );

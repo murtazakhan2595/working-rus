@@ -4,15 +4,18 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewHolidayDetail } from "app/modules/LeaveTracker";
 import { toast } from "react-toastify";
-import { deleteRecord } from "app/hooks/general";
+// import { deleteRecord } from "app/hooks/general";
 import AddUpdateLeaveBalance from "./AddUpdateLeaveBalance";
 import ViewOpeningBalanceDetail from "./ViewOpeningBalanceDetail";
 
-const OpeningBalanceAction = ({ data, reloadData = () => {}, DataList = [] }) => {
+const OpeningBalanceAction = ({
+  data,
+  reloadData = () => {},
+  DataList = [],
+}) => {
   console.log("OpeningBalanceAction Data", data);
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
-  const [deleteDurationState, setDeleteDurationState] = useState(null);
 
   // Handle opening the view dialog
   const handleView = () => {
@@ -24,56 +27,45 @@ const OpeningBalanceAction = ({ data, reloadData = () => {}, DataList = [] }) =>
     setEdit(true);
   };
 
-  // Handle delete
-  const handleDelete = () => {
-    setDeleteDurationState({
-      open: true,
-      data: data,
-    });
+  // Transform DataList to ensure consistent id field
+  const transformedDataList = DataList.map((item) => ({
+    ...item,
+    id: item.id || item.serial_number, // Use existing id or serial_number
+  }));
+
+  // Transform current data item too
+  const transformedData = {
+    ...data,
+    id: data.id || data.serial_number, // Ensure current item also has id
   };
 
-  const confirmDelete = async () => {
-    try {
-      await deleteRecord(`/leave-openingbalance/${data.id}`, `${data.name} Leave Opening Balance`);
-      setDeleteDurationState(null);
-      // Ensure table is reloaded by calling reload function
-      reloadData(true);
-    } catch (error) {
-      console.error("ERROR", error);
-    }
-  };
+  // Use the item's id (which could be serial_number) for currentId
+  const currentId = transformedData.id;
+
+  console.log("OpeningBalanceAction - currentId:", currentId);
+  console.log(
+    "OpeningBalanceAction - transformedDataList:",
+    transformedDataList
+  );
 
   return (
     <>
       <DropdownActionMenu
         onView={handleView}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        // onDelete={handleDelete}
         viewText="View Leave Opening Balance"
         editText="Edit Leave Opening Balance"
         deleteText="Delete Leave Opening Balance"
         menuTooltip="Leave Opening Balance Actions"
       />
-
-      {deleteDurationState?.open && (
-        <AlertDialogue
-          title="Confirm Delete?"
-          description={`This action can't be undone. All information associated with this leave opening balance will be lost.`}
-          isOpen={deleteDurationState.open}
-          setIsOpen={(isOpen) =>
-            setDeleteDurationState((prev) => ({ ...prev, open: isOpen }))
-          }
-          handleContinue={confirmDelete}
-        />
-      )}
-
       {/* Edit Duration Sheet */}
       {edit && (
         <AddUpdateLeaveBalance
           isOpen={edit}
           setIsOpen={setEdit}
-          id={data.id}
-          data={data}
+          id={currentId}
+          data={transformedData}
           reload={reloadData}
         />
       )}
@@ -82,9 +74,9 @@ const OpeningBalanceAction = ({ data, reloadData = () => {}, DataList = [] }) =>
         <ViewOpeningBalanceDetail
           isOpen={view}
           setIsOpen={setView}
-          currentId={data.id}
+          currentId={currentId}
           reloadData={reloadData}
-          DataList={DataList}
+          DataList={transformedDataList}
         />
       )}
     </>

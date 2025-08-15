@@ -24,6 +24,7 @@ import { Button } from "components/ui/button";
 import { GetDispatchStateList } from "utils/Lists";
 import { Rotations, EmployeeTransfer } from 'app/modules/TransferAndRotation';
 import { TransferForm, RotationRequestForm } from "app/modules/TransferAndRotation";
+import { JobRotationCalendar } from ".";
 
 const TransferAndRotation = ({ }) => {
   const isAdminView = HasAccess("VIEW_EXIT");
@@ -122,10 +123,7 @@ const TransferAndRotation = ({ }) => {
               </Button>
             )}
             {activeTab === "Rotations" && (
-              <Button
-                title='rotations'
-                onClick={handleRequestClick}
-              >
+              <Button title="rotations" onClick={handleRequestClick}>
                 Request Rotation
               </Button>
             )}
@@ -142,13 +140,11 @@ const TransferAndRotation = ({ }) => {
         value={activeTab}
       >
         <TabsList>
-          {["Transfers", "Rotations"].map(
-            (tab) => (
-              <TabsTrigger key={tab} value={tab}>
-                {tab}
-              </TabsTrigger>
-            )
-          )}
+          {["Transfers", "Rotations", "Job Rotation Calendar"].map((tab) => (
+            <TabsTrigger key={tab} value={tab}>
+              {tab}
+            </TabsTrigger>
+          ))}
         </TabsList>
         <Card>
           <TabsContent value="Rotations">
@@ -156,6 +152,9 @@ const TransferAndRotation = ({ }) => {
           </TabsContent>
           <TabsContent value="Transfers">
             <EmployeeTransfer />
+          </TabsContent>
+          <TabsContent value="Job Rotation Calendar">
+            <JobRotationCalendar />
           </TabsContent>
         </Card>
       </Tabs>

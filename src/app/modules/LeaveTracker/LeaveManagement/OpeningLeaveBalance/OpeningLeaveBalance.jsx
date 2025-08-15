@@ -13,7 +13,10 @@ import { countriesList } from "data/Data";
 import { OpeningLeaveBalanceColumn } from "app/modules/LeaveTracker/Sections";
 import { getHolidaysListData } from "app/hooks/leaveTracker";
 import { CardHeader } from "components/ui/card";
-import { getLeaveOpeningBalance } from "app/hooks/leaveTracker";
+import {
+  getLeaveOpeningBalance,
+  getOpeningBalanceSummary,
+} from "app/hooks/leaveTracker";
 
 export default function OpeningLeaveBalance({ reload = false }) {
   const Branches = GetDispatchStateList("branches", "common") || [];
@@ -22,7 +25,7 @@ export default function OpeningLeaveBalance({ reload = false }) {
   // const [PublicHodidays, setPublicHodidays] = useState({});
   const [openiningBalance, setOpeningBalance] = useState({});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [ordering, setOrdering] = useState("-id");
+  const [ordering, setOrdering] = useState("serial_number");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -38,7 +41,7 @@ export default function OpeningLeaveBalance({ reload = false }) {
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
-    const response = await getLeaveOpeningBalance({
+    const response = await getOpeningBalanceSummary({
       filterData,
       options,
       ordering,
@@ -60,7 +63,7 @@ export default function OpeningLeaveBalance({ reload = false }) {
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      setOrdering("-id");
+      setOrdering("serial_number");
       onPageChange("page", 1);
       setFilterData({});
       fetchData(true);
@@ -96,7 +99,6 @@ export default function OpeningLeaveBalance({ reload = false }) {
         <ImportOpeningBalance reloadData={fetchData} />
       </CardHeader>
       <CardContent>
-    
         {isloading ? (
           <PageLoader />
         ) : (

@@ -39,12 +39,17 @@ import {
 import { OfficeSettingPermissionWrapper } from "../components/PermissionWrapper";
 import { OFFICE_SETTING_PERMISSIONS } from "../permissions/constants";
 
+import ClearanceChecklist from "./ClearanceChecklist";
+import AddClearanceChecklist from "./ClearanceChecklist/AddClearanceChecklist";
+
 const OfficeSetting = () => {
   const [edit, setEdit] = useState(false);
   const [editData, setEditData] = useState(null);
   const [activeTab, setActiveTab] = useState("offices");
   const [loading, setLoading] = useState(true);
   const [reloadSettingData, setReloadSettingData] = useState({});
+
+
 
   // Get user details from Redux store
   const userDetails = useSelector((state) => state.emp?.user_details);
@@ -58,6 +63,8 @@ const OfficeSetting = () => {
 
   // The permissions are already strings (permission codes), not objects
   const userPermissions = userPermissionsRaw.filter(Boolean); // Remove any undefined/null values
+
+  console.log("User Permissions:", userPermissions);
 
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
 
@@ -221,6 +228,11 @@ const OfficeSetting = () => {
       label: "Grace Time",
       permission: OFFICE_SETTING_PERMISSIONS.GRACE_TIME.VIEW,
     },
+    {
+      value: "clearance-checklist",
+      label: "Clearance & Handover Setup",
+      permission: OFFICE_SETTING_PERMISSIONS.CLEARANCE_AND_HANDOVER,
+    },
   ];
 
   // Filter tabs based on permissions
@@ -318,6 +330,23 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
+              ) : activeTab === "clearance-checklist" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={
+                    OFFICE_SETTING_PERMISSIONS.CLEARANCE_AND_HANDOVER
+                  }
+                >
+                  <AddClearanceChecklist
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          "clearance-checklist": !prev["clearance-checklist"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
               ) : (
                 <OfficeSettingPermissionWrapper
                   permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}
@@ -346,10 +375,7 @@ const OfficeSetting = () => {
             <div className="w-full mb-6">
               <TabsList>
                 {availableTabs?.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                  >
+                  <TabsTrigger key={tab.value} value={tab.value}>
                     {tab.label}
                   </TabsTrigger>
                 ))}
@@ -465,6 +491,11 @@ const OfficeSetting = () => {
               </TabsContent>
               <TabsContent value="onboarding">
                 <OnboardingChecklist reload={reloadSettingData["onboarding"]} />
+              </TabsContent>
+              <TabsContent value="clearance-checklist">
+                <ClearanceChecklist
+                  reload={reloadSettingData["clearance-checklist"]}
+                />
               </TabsContent>
             </div>
           </Tabs>
