@@ -206,7 +206,7 @@ const AddUpdateApprovalHierarchy = ({
                     "Hierarchy Name already exists. Please choose a different name";
                 if (values.request_type && HierarchyRequestTypeExist)
                   errors.request_type =
-                    "Manager approval hierarchy for this request type is not configured. Please contact your administrator";
+                    "Manager approval hierarchy for this request type is not configured. Please contact your administrator.";
                 return errors;
               },
               submitButtonText: "Submit",
