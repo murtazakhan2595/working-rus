@@ -11,7 +11,7 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Terminated");
   const [ExitRecordList, setExitRecordList] = useState(null);
-  const [openTerminationForm, setOpenTerminationForm] = useState(false);
+  const [openUploadClearanceReportForm, setOpenUploadClearanceReportForm] = useState(false);
   const [filterData, setFilterData] = useState({
     request_status: "APPROVED,REJECTED",
     exit_category: "TERMINATION",
@@ -48,8 +48,8 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
         options,
         ordering,
       });
-      if(isMounted)
-      setExitRecordList(response);
+      if (isMounted)
+        setExitRecordList(response);
     } catch (e) {
       console.error(e);
     } finally {
@@ -94,9 +94,8 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
   };
 
   const handleUploadClearanceReportClick = async (exit_id) => {
-    debugger
     if (exit_id) {
-      setOpenTerminationForm(exit_id)
+      setOpenUploadClearanceReportForm(exit_id)
     }
   };
   return (
@@ -142,13 +141,14 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
           />
 
         )}
-        {openTerminationForm && (
+        {openUploadClearanceReportForm && (
           <UploadClearanceReport
-            isOpen={Boolean(openTerminationForm)}
+            isOpen={Boolean(openUploadClearanceReportForm)}
             setIsOpen={() => {
-              setOpenTerminationForm(null);
+              setOpenUploadClearanceReportForm(null);
+              fetchData(true);
             }}
-            exit_id={openTerminationForm}
+            exit_id={openUploadClearanceReportForm}
           />
         )}
       </CardContent>

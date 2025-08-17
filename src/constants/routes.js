@@ -104,6 +104,13 @@ export const SidebarRoutes = [
           component: <ViewEmployee profileView />,
           name: "MY_PROFILE",
         },
+
+           Config.EXIT && {
+          path: "/job-rotation",
+          component: <TransferAndRotation />,
+          name: "EXIT",
+        },
+
         Config.MY_ATTENDANCE && {
           path: "/my-attendance",
           component: <MyAttendance />,
@@ -159,6 +166,9 @@ export const SidebarRoutes = [
           component: <EmployeeExit />,
           name: "EXIT",
         },
+        
+        
+
       ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
