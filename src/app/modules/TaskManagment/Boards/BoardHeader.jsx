@@ -21,17 +21,18 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 const BoardHeader = ({
-  setFilterData = () => {},
+  setFilterData = () => { },
   filterData,
   activeView = "grid",
-  setActiveView = () => {},
+  setActiveView = () => { },
   projectData = {},
-  fetchData = () => {},
+  fetchData = () => { },
 }) => {
   const navigate = useNavigate();
   const { projectId, viewStyle } = useParams();
   const [isDelete, setIsDelete] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
+
   const TaskLabelList = getLabelDropdownList(
     useSelector((state) => state.task_managment.task_labels),
     "name",
@@ -60,6 +61,7 @@ const BoardHeader = ({
         delete updatedFilters[filterName];
       }
       // Update the filter data
+      window.localStorage.setItem("project-filters", JSON.stringify(updatedFilters));
       setFilterData(updatedFilters);
       return;
     }
@@ -83,6 +85,7 @@ const BoardHeader = ({
         delete updatedFilters[filterName];
       }
     }
+    window.localStorage.setItem("project-filters", JSON.stringify(updatedFilters));
     // Update the filter data
     setFilterData(updatedFilters);
     return;
