@@ -16,6 +16,7 @@ import {
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { assignmentScopeOptions } from "data/Data";
 
 const AddClearanceChecklistForm = ({
   id = false,
@@ -26,14 +27,15 @@ const AddClearanceChecklistForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
+  const [showDesignationInput, setShowDesignationInput] = useState(false);
   const [FormData, setFormData] = useState({
     name: "",
     department: [],
     clearance_types: [],
     assignment_scope: "",
     e_signature_required: false,
-    attached_document: null,
     status: "ACTIVE",
+    designation:"",
   });
   const [NameExist, setNameExist] = useState(false);
   const [ClearanceChecklistList, setClearanceChecklistList] = useState([]);
@@ -41,12 +43,9 @@ const AddClearanceChecklistForm = ({
 
   const isEditMode = Boolean(id);
   const Departments = useSelector((state) => state.common.departments);
+  const Designations = useSelector((state) => state.common.designations);
 
-  // Assignment Scope options
-  const assignmentScopeOptions = [
-    { value: "DIRECT", label: "Direct Reporting" },
-    { value: "INDIRECT", label: "Indirect Reporting" },
-  ];
+
 
   const FormSheetData = {
     triggerText: `${isEditMode ? "Edit" : "Add"} Clearance Checklist`,
@@ -122,6 +121,10 @@ const AddClearanceChecklistForm = ({
     setShowFileUpload(FormData.e_signature_required);
   }, [FormData.e_signature_required]);
 
+  useEffect(() => {
+    setShowDesignationInput(FormData.assignment_scope === "DESIGNATION");
+  }, [FormData.assignment_scope]);
+
   const handleClose = () => {
     setIsOpen(false);
     reloadData(true);
@@ -187,12 +190,10 @@ const AddClearanceChecklistForm = ({
       errors.assignment_scope = "Assignment scope is required";
     }
 
-    // File validation when e_signature_required is true
-    if (values.e_signature_required && !values.attached_document) {
-      errors.attached_document =
-        "Attached document is required when e-signature is enabled";
+    if (values.assignment_scope === "DESIGNATION" && !values.designation) {
+      errors.designation = "Designation is required when assignment scope is DESIGNATION";
     }
-
+      
     return errors;
   };
 
@@ -253,7 +254,22 @@ const AddClearanceChecklistForm = ({
                 required: true,
                 options: assignmentScopeOptions,
                 placeholder: "Select assignment scope",
+                onFieldUpdate: (_, value) => {
+                  setShowDesignationInput(value);
+                },
               },
+              // Conditionally add designation input select
+              ...(showDesignationInput
+                ? [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "designation",
+                      label: "Clearance Designation",
+                      required: true,
+                      options: Designations,
+                    },
+                  ]
+                : []),
             ],
           },
           {
@@ -270,22 +286,6 @@ const AddClearanceChecklistForm = ({
                   setShowFileUpload(value);
                 },
               },
-              // Conditionally add file upload field
-              ...(showFileUpload
-                ? [
-                    {
-                      InputField: CoverFileUpload,
-                      name: "attached_document",
-                      required: true,
-                      label: "Attached Document",
-                      variant: "AttachmentFileUpload",
-                      allowUpdate: true,
-                      multiple: false,
-                      field_description:
-                        "Upload document required for this checklist item",
-                    },
-                  ]
-                : []),
             ],
           },
         ],

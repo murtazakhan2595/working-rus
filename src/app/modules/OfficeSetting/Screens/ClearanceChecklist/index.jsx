@@ -14,6 +14,7 @@ import {
   getClearanceChecklistList,
   getClearanceTypeList,
 } from "app/hooks/officeSetting";
+import { assignmentScopeOptions } from "data/Data";
 
 const ClearanceChecklist = ({ reload }) => {
   const Departments = useSelector((state) => state.common.departments);
@@ -28,14 +29,6 @@ const ClearanceChecklist = ({ reload }) => {
   const [selectedAssignmentScope, setSelectedAssignmentScope] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [clearanceTypeOptions,setClearanceTypeOptions] = useState([]);
-
-
-
-  // Assignment Scope options
-  const assignmentScopeOptions = [
-    { value: "direct", label: "Direct Reporting" },
-    { value: "indirect", label: "Indirect Reporting" },
-  ];
 
   // Status options
   const statusOptions = [
@@ -59,8 +52,12 @@ const ClearanceChecklist = ({ reload }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
+      const filters = { ...filterData };
+      if(filters?.department){
+        filters.department = [filters.department];
+      }
       const response = await getClearanceChecklistList({
-        filterData,
+        filterData: filters,
         options,
         ordering,
       });
@@ -164,7 +161,7 @@ const ClearanceChecklist = ({ reload }) => {
                 {
                   type: "select-two",
                   placeholder: "Clearance Type",
-                  name: "clearance_type",
+                  name: "clearance_types",
                   option: clearanceTypeOptions,
                   values: selectedClearanceType,
                 },
