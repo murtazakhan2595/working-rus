@@ -55,7 +55,7 @@ export const JobRotationColumns = [
     {
         dataField: "created_at",
         text: "Requested Time",
-        formatter: (cell, row) => renderDate(cell, '--', 'date-time'),
+        formatter: (cell, row) => renderDate(cell, '--'),
         dataSort: true,
         minWidth: "110px",
     },
