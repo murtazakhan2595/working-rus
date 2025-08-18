@@ -415,6 +415,44 @@ export const getClearanceChecklistData = async (id) => {
   }
 };
 
+export function mapClearanceChecklistPayloadData(data) {
+  // Check if file is present
+  const hasFile =
+    data.attached_document && data.attached_document instanceof File;
+
+  if (hasFile) {
+    // Use FormData for file uploads
+    const payload = new FormData();
+
+    // Add all fields to FormData
+    for (const key in data) {
+      if (
+        data.hasOwnProperty(key) &&
+        data[key] !== null &&
+        data[key] !== undefined
+      ) {
+        if (key === "department" || key === "clearance_types") {
+          // Handle arrays properly
+          if (Array.isArray(data[key])) {
+            data[key].forEach((item) => {
+              payload.append(key, item);
+            });
+          }
+        } else {
+          payload.append(key, data[key]);
+        }
+      }
+    }
+
+    return { payload, isFormData: true };
+  } else {
+    // Use regular JSON for non-file submissions
+    const payload = { ...data };
+    delete payload.attached_document; // Remove null file field
+    return { payload, isFormData: false };
+  }
+}
+
 export const saveUpdateClearanceChecklist = async (payload, id) => {
   try {
     const url = id
@@ -424,11 +462,15 @@ export const saveUpdateClearanceChecklist = async (payload, id) => {
     const method = id ? "PATCH" : "POST";
     const expectedStatus = id ? 200 : 201;
 
+    // Use mapping function to handle file vs non-file
+    const { payload: finalPayload, isFormData } =
+      mapClearanceChecklistPayloadData(payload);
+
     const response = await axios({
       method,
       url,
-      data: payload,
-      headers: headers(),
+      data: finalPayload,
+      headers: isFormData ? formDataHeader() : headers(), // Dynamic headers
     });
 
     if (response.status === expectedStatus) {

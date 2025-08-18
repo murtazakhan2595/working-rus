@@ -11,6 +11,7 @@ import {
   SelectInputComponent,
   SelectMultiInputComponent,
   SwitchInput,
+  CoverFileUpload,
 } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -24,13 +25,14 @@ const AddClearanceChecklistForm = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [showFileUpload, setShowFileUpload] = useState(false);
   const [FormData, setFormData] = useState({
     name: "",
     department: [],
     clearance_types: [],
     assignment_scope: "",
-    attached_document_required: true,
     e_signature_required: false,
+    attached_document: null,
     status: "ACTIVE",
   });
   const [NameExist, setNameExist] = useState(false);
@@ -115,6 +117,11 @@ const AddClearanceChecklistForm = ({
     };
   }, [id]);
 
+  // Sync file upload visibility with form data
+  useEffect(() => {
+    setShowFileUpload(FormData.e_signature_required);
+  }, [FormData.e_signature_required]);
+
   const handleClose = () => {
     setIsOpen(false);
     reloadData(true);
@@ -168,8 +175,8 @@ const AddClearanceChecklistForm = ({
       errors.name = "Name already exists. Please choose a different name";
     }
 
-    if (!values.department) {
-      errors.department = "Department is required";
+    if (!values.department || values.department.length === 0) {
+      errors.department = "At least one department is required";
     }
 
     if (!values.clearance_types || values.clearance_types.length === 0) {
@@ -178,6 +185,12 @@ const AddClearanceChecklistForm = ({
 
     if (!values.assignment_scope) {
       errors.assignment_scope = "Assignment scope is required";
+    }
+
+    // File validation when e_signature_required is true
+    if (values.e_signature_required && !values.attached_document) {
+      errors.attached_document =
+        "Attached document is required when e-signature is enabled";
     }
 
     return errors;
@@ -249,18 +262,30 @@ const AddClearanceChecklistForm = ({
             InputFields: [
               {
                 InputField: SwitchInput,
-                name: "attached_document_required",
-                label: "Attached Document Required",
-                field_description:
-                  "Whether this checklist item requires an attached document",
-              },
-              {
-                InputField: SwitchInput,
                 name: "e_signature_required",
                 label: "E-Signature Required from Employee",
                 field_description:
                   "Whether employee e-signature is required for this checklist item",
+                onFieldUpdate: (_, value) => {
+                  setShowFileUpload(value);
+                },
               },
+              // Conditionally add file upload field
+              ...(showFileUpload
+                ? [
+                    {
+                      InputField: CoverFileUpload,
+                      name: "attached_document",
+                      required: true,
+                      label: "Attached Document",
+                      variant: "AttachmentFileUpload",
+                      allowUpdate: true,
+                      multiple: false,
+                      field_description:
+                        "Upload document required for this checklist item",
+                    },
+                  ]
+                : []),
             ],
           },
         ],

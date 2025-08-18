@@ -10,7 +10,10 @@ import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { useSelector } from "react-redux";
-import { getClearanceChecklistList } from "app/hooks/officeSetting";
+import {
+  getClearanceChecklistList,
+  getClearanceTypeList,
+} from "app/hooks/officeSetting";
 
 const ClearanceChecklist = ({ reload }) => {
   const Departments = useSelector((state) => state.common.departments);
@@ -24,17 +27,9 @@ const ClearanceChecklist = ({ reload }) => {
   const [selectedClearanceType, setSelectedClearanceType] = useState("");
   const [selectedAssignmentScope, setSelectedAssignmentScope] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [clearanceTypeOptions,setClearanceTypeOptions] = useState([]);
 
-  // Clearance Types options
-  const clearanceTypeOptions = [
-    { value: "job_rotation", label: "Job Rotation" },
-    { value: "leave_clearance", label: "Leave Clearance" },
-    { value: "special_leave", label: "Special Leave" },
-    { value: "internal_transfer", label: "Internal Transfer" },
-    { value: "external_transfer", label: "External Transfer" },
-    { value: "resignation", label: "Resignation" },
-    { value: "termination", label: "Termination" },
-  ];
+
 
   // Assignment Scope options
   const assignmentScopeOptions = [
@@ -72,7 +67,6 @@ const ClearanceChecklist = ({ reload }) => {
 
       if (isMounted && response) {
         setClearanceChecklistList(response);
-        setFilteredData(response.results || []);
       }
     } catch (error) {
       console.error(error);
@@ -99,6 +93,28 @@ const ClearanceChecklist = ({ reload }) => {
     };
   }, [reload]);
 
+  useEffect(()=>{
+    let isMounted = true;
+    const fetchClearanceTypes = async () => {
+      try {
+        const response = await getClearanceTypeList();
+        if (isMounted && response) {
+          console.log(response)
+          setClearanceTypeOptions(response.results.map((item) => ({
+            value: item.id,
+            label: item.name,
+          })));
+        }
+      } catch (error) {
+        console.error("Error fetching clearance types:", error);
+      }
+    };
+    fetchClearanceTypes();
+    return () => {
+      isMounted = false;
+    };
+  },[])
+
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
 
@@ -118,6 +134,8 @@ const ClearanceChecklist = ({ reload }) => {
       return updatedFilters;
     });
   };
+
+  console.log("INFO", ClearanceChecklistList)
 
   return (
     <div className="flex flex-col justify-end gap-4 w-full">
@@ -175,8 +193,12 @@ const ClearanceChecklist = ({ reload }) => {
             <PageLoader />
           ) : (
             <TableCustom
-              columns={ClearanceChecklistColumn(fetchData)}
-              data={filteredData}
+              columns={ClearanceChecklistColumn(
+                fetchData,
+                Departments,
+                clearanceTypeOptions
+              )}
+              data={ClearanceChecklistList?.results || []}
               tableOptions={tableOptions}
               dataTotalSize={ClearanceChecklistList?.count || 0}
               pagination={true}

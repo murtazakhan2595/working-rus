@@ -10,6 +10,7 @@ import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 import ClearanceChecklistAction from "../Screens/ClearanceChecklist/ClearanceChecklistAction";
 import { DepartmentName } from "utils/getValuesFromTables";
+import { MultiStatusLabel } from "components";
 
 //
 export const BranchColumn = (reload) => [
@@ -196,33 +197,47 @@ export const GraceTimeColumn = (reload) => [
   },
 ];
 
-export const ClearanceChecklistColumn = (reloadData) => [
+export const ClearanceChecklistColumn = (
+  reloadData,
+  departments = [],
+  clearanceTypes = []
+) => [
   {
     dataField: "id",
     text: "Id",
     sort: true,
     formatter: (cell, row) => <FormatID value={cell} prefix={"CC-"} />,
-    headerStyle: {
-      width: "80px",
-      minWidth: "80px",
-    },
   },
   {
     dataField: "name",
     text: "Checklist Name",
     sort: true,
     formatter: (cell) => <span className="font-medium">{cell}</span>,
-    headerStyle: {
-      minWidth: "180px",
-    },
   },
   {
     dataField: "department",
-    text: "Department",
-    sort: true,
-    formatter: (cell) => <DepartmentName value={cell} />,
-    headerStyle: {
-      minWidth: "130px",
+    text: "Departments",
+    sort: false,
+    formatter: (cell) => {
+      if (!cell || cell.length === 0) {
+        return "--";
+      }
+      const departmentNames = cell
+        .map((deptId) => {
+          const dept = departments.find(
+            (d) => d.value === deptId || d.id === deptId
+          );
+          return dept.label || dept.name;
+        })
+        .filter(Boolean); // Remove any null/undefined values
+      return (
+        <MultiStatusLabel
+          statusList={departmentNames}
+          variant="info"
+          fallBackText="All Departments"
+          displayCount={2} // Show first 2 departments, then +X more
+        />
+      );
     },
   },
   {
@@ -233,38 +248,22 @@ export const ClearanceChecklistColumn = (reloadData) => [
       if (!cell || cell.length === 0) {
         return "--";
       }
-
-      const clearanceTypeLabels = {
-        job_rotation: "Job Rotation",
-        leave_clearance: "Leave Clearance",
-        special_leave: "Special Leave",
-        internal_transfer: "Internal Transfer",
-        external_transfer: "External Transfer",
-        resignation: "Resignation",
-        termination: "Termination",
-      };
-
-      // Show first 2 types and "+X more" if there are more
-      const displayTypes = cell.slice(0, 2);
-      const remainingCount = cell.length - 2;
-
+      const clearanceTypeNames = cell
+        ?.map((typeId) => {
+          const type = clearanceTypes.find(
+            (t) => t?.value === typeId || t?.id === typeId
+          );
+          return type?.label || type?.name;
+        })
+        ?.filter(Boolean);
       return (
-        <div className="flex flex-wrap gap-1">
-          {displayTypes.map((type, index) => (
-            <StatusLabel key={index} variant={"info"} className="text-xs">
-              {clearanceTypeLabels[type] || type}
-            </StatusLabel>
-          ))}
-          {remainingCount > 0 && (
-            <StatusLabel variant={"outline"} className="text-xs">
-              +{remainingCount} more
-            </StatusLabel>
-          )}
-        </div>
+        <MultiStatusLabel
+          statusList={clearanceTypeNames}
+          variant="info"
+          fallBackText="All Clearance Types"
+          displayCount={2} // Show first 2 types, then +X more
+        />
       );
-    },
-    headerStyle: {
-      minWidth: "200px",
     },
   },
   {
@@ -272,28 +271,16 @@ export const ClearanceChecklistColumn = (reloadData) => [
     text: "Assignment Scope",
     sort: true,
     formatter: (cell) => {
-      const scopeLabels = {
-        direct: "Direct Reporting",
-        indirect: "Indirect Reporting",
-      };
-
-      return (
-        <StatusLabel variant={"secondary"} className="text-xs">
-          {scopeLabels[cell] || cell}
-        </StatusLabel>
-      );
-    },
-    headerStyle: {
-      minWidth: "140px",
+      return <div>{cell}</div>;
     },
   },
   {
     dataField: "created_by",
     text: "Created By",
-    sort: true,
-    headerStyle: {
-      minWidth: "120px",
+    formatter: (cell) => {
+      return <div>{cell}</div>;
     },
+    sort: true,
   },
   {
     dataField: "created_date",
@@ -303,23 +290,16 @@ export const ClearanceChecklistColumn = (reloadData) => [
       if (!cell) return "--";
       return new Date(cell).toLocaleDateString();
     },
-    headerStyle: {
-      minWidth: "120px",
-    },
   },
   {
     dataField: "status",
     text: "Status",
     sort: true,
     formatter: (cell) => (
-      <StatusLabel variant={cell === "active" ? "success" : "destructive"}>
-        {cell === "active" ? "Active" : "Inactive"}
+      <StatusLabel variant={cell === "ACTIVE" ? "success" : "destructive"}>
+        {cell === "ACTIVE" ? "Active" : "Inactive"}
       </StatusLabel>
     ),
-    headerStyle: {
-      width: "100px",
-      minWidth: "100px",
-    },
   },
   {
     dataField: "actions",
@@ -328,9 +308,5 @@ export const ClearanceChecklistColumn = (reloadData) => [
     formatter: (cell, row) => (
       <ClearanceChecklistAction data={row} reloadData={reloadData} />
     ),
-    headerStyle: {
-      width: "80px",
-      minWidth: "80px",
-    },
   },
 ];
