@@ -37,6 +37,7 @@ const SubModuleList = [
   "EMPLOYEE_CREATION",
   "HR_DOCUMENTS",
   "EMPLOYEE_TRANSFER",
+  "CLEARANCE_AND_HANDOVER",
 
   // Sub module of Attendance
   "EMPLOYEES_ATTENDANCE",

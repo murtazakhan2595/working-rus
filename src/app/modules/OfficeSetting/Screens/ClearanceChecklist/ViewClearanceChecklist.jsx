@@ -159,17 +159,6 @@ const ViewClearanceChecklist = ({
           ),
         },
         {
-          key: "attached_document",
-          label: "Attached Document",
-          formatter: (cell) => {
-            if (!cell) {
-              return <div variant="outline">No Document</div>;
-            }
-
-            return <AttachmentUI attachment={cell} viewOnly={true} />;
-          },
-        },
-        {
           key: "status",
           label: "Status",
           formatter: (cell) => (
