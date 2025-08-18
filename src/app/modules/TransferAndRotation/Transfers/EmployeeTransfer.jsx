@@ -30,20 +30,13 @@ const InternalTabs = ["Requests", "Records"];
 export default function EmployeeTransfer() {
 
   const viewEmployeeTransferPermitted = HasAccess("VIEW_EMPLOYEE_TRANSFER");
-  const userRole = useSelector((state) => state.user.userProfile.role);
-  const userID = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeTransferData, setEmployeeTransferData] = useState({
     results: [],
     count: 0,
   });
-  const [employeeTransferStat, setEmployeeTransferStat] = useState({});
-  const [OpenTransferForm, setOpenTransferForm] = useState(false);
   const [activeTab, setActiveTab] = useState("Requests");
-  const [activeInternalTab, setActiveInternalTab] = useState("Requests");
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [selectedDepartment, setSelectedDepartment] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const Branches = useSelector((state) => state.common.branches);
@@ -66,9 +59,10 @@ export default function EmployeeTransfer() {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
+      const filters = { ...filterData, status_transfer: activeTab === 'Requests' ? 'PENDING' : 'APPROVED,REJECTED' }
       const data = await getEmployeeTransferList({
         options,
-        filterData,
+        filterData: filters,
         ordering,
       });
       if (isMounted) {
@@ -81,21 +75,6 @@ export default function EmployeeTransfer() {
     }
   };
 
-  const fetchStatData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getEmployeeTransferStats({
-        filterData: { status: activeTab === 'Requests' ? 'PENDING' : 'APPROVED,REJECTED' },
-      });
-      if (isMounted) {
-        setEmployeeTransferStat(data);
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -103,50 +82,8 @@ export default function EmployeeTransfer() {
     return () => {
       isMounted = false;
     };
-  }, [options, filterData, ordering]);
+  }, [options, filterData, ordering, activeTab]);
 
-  useEffect(() => {
-    let isMounted = true;
-    fetchStatData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [filterData.transfer_type]);
-
-  const statsData = [
-    {
-      label: "Total",
-      value: employeeTransferStat.total_transfers || 0,
-      icon: UsersRound,
-    },
-    {
-      label: "Approved",
-      value: employeeTransferStat.approved_transfers || 0,
-      icon: Contact,
-    },
-    {
-      label: "Rejected",
-      value: employeeTransferStat.rejected_transfers || 0,
-      icon: UserRoundCheck,
-    },
-    {
-      label: "Pending",
-      value: employeeTransferStat.pending_transfers || 0,
-      icon: UserRoundCheck,
-    },
-  ];
-  useEffect(() => {
-    setFilterData((prevFilter) => ({
-      ...prevFilter,
-      ...(activeTab === "Requests"
-        ? { status_transfer: "PENDING,ACCEPTED BY MANAGER" }
-        : {}),
-      ...(activeTab === "Records"
-        ? { status_transfer: "REJECTED,REJECTED BY MANAGER" }
-        : {}),
-    }));
-    resetUserFilters();
-  }, [activeTab, activeInternalTab]);
 
   const resetUserFilters = () => {
     setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));

@@ -127,6 +127,11 @@ const TransferDetails = ({
             footerField: "created_at",
             field: [
                 {
+                    key: "transfer_type",
+                    label: "Transfer Type",
+                    formatter: (cell) => <span className="capitalize-text">{cell.toLowerCase()}</span>
+                },
+                {
                     key: "new_branch",
                     label: "New Branch",
                     formatter: (cell) => <BranchName value={cell} />
@@ -152,7 +157,7 @@ const TransferDetails = ({
                 },
                 {
                     key: "notes",
-                    label: "Reason",
+                    label: "Notes",
                 },
             ],
         },

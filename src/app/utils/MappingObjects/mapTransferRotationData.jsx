@@ -1,5 +1,6 @@
 import { EmployeeTransfer, JobRotation } from "app/utils/Types/TransferAndRotation";
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
+import { calculateTotalCount } from "utils/renderValues";
 
 export async function mapEmployeeTransferData(data, fetchApprovalDetails = true) {
   const RecordDetails = {};
@@ -72,4 +73,27 @@ export async function mapRotationData(data, fetchApprovalDetails = true) {
   }
 
   return Details;
+}
+
+
+export async function mapTransferStatsData(data) {
+  if (!data || data.length === 0)
+    return { Pending: 0, Approved: 0, Rejected: 0, Total: 0 };
+  const Pending = calculateTotalCount(data, "status", "PENDING");
+  const Total = data.length || 0;
+  const Approved = calculateTotalCount(data, "status", "APPROVED");
+  const Rejected = calculateTotalCount(data, "status", "REJECTED");
+
+  return { Pending, Approved, Rejected, Total };
+}
+
+export async function mapRotationStatsData(data) {
+  if (!data || data.length === 0)
+    return { Pending: 0, Approved: 0, Rejected: 0, Total: 0 };
+  const Pending = calculateTotalCount(data, "status", "PENDING");
+  const Total = data.length || 0;
+  const Approved = calculateTotalCount(data, "status", "APPROVED");
+  const Rejected = calculateTotalCount(data, "status", "REJECTED");
+
+  return { Pending, Approved, Rejected, Total };
 }

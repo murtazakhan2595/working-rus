@@ -7,9 +7,34 @@ import {
   mapRotationData,
   mapEmployeeTransferData,
   mapEmployeeTransferPayloadData,
+  mapTransferStatsData,
+  mapRotationStatsData,
 } from "app/utils/MappingObjects/mapTransferRotationData";
 
 
+export const getJobRotationRecords = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/rotationemp/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation requests:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
 export const getJobRotationRequests = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -222,19 +247,29 @@ export const getEmployeeTransferList = async (payload) => {
 };
 
 export const getEmployeeTransferStats = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const ordering = payload?.ordering ?? "-id";
-  const pageSize = payload?.options?.sizePerPage ?? "";
-  const filterData = payload?.filterData ?? {};
-  const URL = `/employee-transfer/stats/?search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
   try {
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      return response.data;
+    const response = await getEmployeeTransferList(payload);
+    if (response) {
+      const ResponseData = response.results;
+      const StatData = mapTransferStatsData(ResponseData);
+      return StatData;
+    } else return {};
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return {};
+};
+
+export const getRotationStats = async (payload) => {
+  try {
+    const response = await getJobRotationRequests(payload);
+    if (response) {
+      const ResponseData = response.results;
+      const StatData = mapRotationStatsData(ResponseData);
+      return StatData;
     } else return {};
   } catch (error) {
     if (error?.response?.status === 401) {

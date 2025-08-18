@@ -5,13 +5,14 @@ import {
   TransferForm,
   EmployeeTransferDetails,
 } from "app/modules/TransferAndRotation/Transfers/Sections";
-import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
+import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
-import { getEmployeeTransferList } from "app/hooks/employeeTransfer";
+import { getEmployeeTransferList, getEmployeeTransferStats } from "app/hooks/transferAndRotation";
 import Stats from "components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
+import { TransferColumns } from "app/modules/TransferAndRotation/Sections";
 
 export default function MyTransfers() {
   const userRole = useSelector((state) => state.user.userProfile.role);
@@ -21,14 +22,12 @@ export default function MyTransfers() {
     count: 0,
   });
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
-  const [activeExternalTab, setActiveExternalTab] = useState("Internal");
-  const [activeInternalTab, setActiveInternalTab] = useState("Requests");
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({ employee_id: userId });
+  const [statsData, setStatsData] = useState({});
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -45,6 +44,28 @@ export default function MyTransfers() {
       setOpenTransferDetailID(row.id);
     },
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStatData = async () => {
+      try {
+        const filter = { employee_id: userId };
+        const response = await getEmployeeTransferStats({
+          filterData: filter,
+        });
+
+        if (response) {
+          setStatsData(response);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    if (userId) fetchStatData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
 
   const fetchData = async (isMounted) => {
     try {
@@ -69,11 +90,13 @@ export default function MyTransfers() {
     };
   }, [options, filterData, ordering]);
 
-  const statsData = [
-    { label: "Total", value: 0, icon: UsersRound },
-    { label: "Approved", value: 0, icon: Contact },
-    { label: "Rejected", value: 0, icon: UserRoundCheck },
-  ];
+
+  const TransferStatsData = React.useMemo(() => [
+    { label: "Total Tranfers", value: statsData.Total, icon: FolderInput },
+    { label: "Pending", value: statsData.Pending, icon: Loader },
+    { label: "Approved", value: statsData.Approved, icon: CircleCheckBig },
+    { label: "Rejected", value: statsData.Rejected, icon: CircleX },
+  ], [statsData]);
 
   return (
     <div
@@ -91,12 +114,12 @@ export default function MyTransfers() {
           </Button>
         }
       />
-      <Stats stats={statsData} />
+      <Stats stats={TransferStatsData} />
       <Card>
         <CardContent>
           <TableCustom
             data={MyTransferData.results}
-            columns={MyTransfersColumns}
+            columns={TransferColumns(fetchData)}
             pagination={true}
             dataTotalSize={MyTransferData.count || 0}
             tableOptions={tableOptions}

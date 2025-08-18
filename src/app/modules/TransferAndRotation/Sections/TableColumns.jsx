@@ -26,6 +26,19 @@ export const JobRotationColumns = [
         // dataSort: true,
     },
     {
+        dataField: "initiated_by",
+        text: "Requestor",
+        formatter: (cell) => (
+            <EmployeeOverview
+                id={cell}
+                showId={true}
+                showPosition={true}
+                showDepartment={true}
+            />
+        ),
+        minWidth: "120px",
+    },
+    {
         dataField: "old_branch",
         text: "Current Branch",
         formatter: (cell, row) => <BranchName value={cell} />,
@@ -129,6 +142,40 @@ export const TransferColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <TransferActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+    },
+];
+
+/**
+ * JobRotationColumns
+ *
+ * Returns an array of column definitions for the JobRotationColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const JobRotationRecordsColumns = [
+    {
+        dataField: "employee_id",
+        text: "Employee",
+        formatter: (cell) => (
+            <EmployeeOverview
+                id={cell}
+                showId={true}
+                showPosition={true}
+                showDepartment={true}
+            />
+        ),
+        minWidth: "120px",
+    },
+    {
+        dataField: "number_of_rotations",
+        text: "No of Rotation",
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <RotationAction DataList={dataList} data={row} RecordView={true}/>
         ),
     },
 ];

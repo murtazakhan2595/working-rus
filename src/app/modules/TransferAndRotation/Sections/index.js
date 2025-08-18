@@ -1,2 +1,2 @@
-import { JobRotationColumns, TransferColumns } from './TableColumns';
-export { JobRotationColumns, TransferColumns };
+import { JobRotationColumns, TransferColumns, JobRotationRecordsColumns } from './TableColumns';
+export { JobRotationColumns, TransferColumns, JobRotationRecordsColumns };

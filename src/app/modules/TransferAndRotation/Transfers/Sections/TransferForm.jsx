@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "components/FormControl";
 import { SheetUI, EmployeeDetailUI } from "components";
-import {  getEmployeeTransferData,  addUpdateEmpTransferDetails,} from "app/hooks/transferAndRotation";
+import { getEmployeeTransferData, addUpdateEmpTransferDetails, } from "app/hooks/transferAndRotation";
 import { useSelector } from "react-redux";
 
 const FormSheetData = {
@@ -78,7 +78,7 @@ const TransferForm = ({
 
   const handleSubmit = async (data) => {
     try {
-      const payload = { ...data, initiated_by: initiator };
+      const payload = { ...data, initiated_by: isEmployee ? 'EMPLOYEE' : 'MANAGER' };
       const response = await addUpdateEmpTransferDetails(payload, id);
       // return
       if (response) {
@@ -124,6 +124,7 @@ const TransferForm = ({
               InputField: SelectInputComponent,
               name: "employee_id",
               required: true,
+              disabled: isEmployee,
               label: "Employee",
               onFieldUpdate: async (_, value) => {
                 const employee = value
