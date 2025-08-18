@@ -71,12 +71,6 @@ const MyAssetsPage = ({ userProfile }) => {
     setOpenAssetViewSheet(true);
   };
 
-  const handleEditAsset = (row) => {
-    // Add your edit logic here
-    console.log("Edit asset request:", row);
-    // You can open an edit modal or navigate to edit page
-    toast.info("Edit functionality will be implemented here");
-  };
 
   const handleWithdrawAsset = (row) => {
     // Add your withdraw logic here
@@ -132,7 +126,24 @@ const MyAssetsPage = ({ userProfile }) => {
               data={assets}
               columns={MyAssetRequestColumns(
                 handleViewAsset,
-                handleEditAsset,
+                // (row) => {
+                //   // Check if any approver has approved
+                //   const hasAnyApproval = row.approval_details?.some(
+                //     (approval) =>
+                //       approval.status === "APPROVED" ||
+                //       approval.status === "ACCEPTED"
+                //   );
+
+                //   if (hasAnyApproval) {
+                //     return null; // Don't show edit if approved
+                //   }
+
+                //   if (row.asset_request_status !== "Requested") {
+                //     return null; // Don't show edit for non-requested status
+                //   }
+
+                //   return handleEditAsset(row);
+                // },
                 handleWithdrawAsset
               )}
               pagination={true}

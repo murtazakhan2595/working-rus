@@ -59,7 +59,7 @@ import { saveEmpoyeeDocBulk } from "app/hooks/employee";
 import { useSelector } from "react-redux";
 import { ReligionList } from "data/Data";
 
-const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
+const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const Managers = useSelector((state) => state.emp.reportingManagers);
@@ -179,7 +179,7 @@ const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
   const saveCustomShiftSchedule = async (employeeId, shiftData) => {
     try {
       const [startDate, endDate] = shiftData.dateRange.split(",");
-
+      debugger
       // Build custom_schedule object
       const customSchedule = {};
       shiftData.dailySchedule.forEach((day) => {
@@ -216,8 +216,8 @@ const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
         custom_schedule: customSchedule,
         total_weekly_hours: shiftData.totalHours.weekly.toString(),
         assigned_by: userProfile?.employee_id || userProfile?.id,
-        status: "Approved", // Direct approval for employee creation
         is_off_day: shiftData.dailySchedule.some((day) => day.isOff),
+        shift_requested: "HR",
       };
 
       const response = await saveShiftSchedule(payload);
@@ -247,7 +247,7 @@ const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
         await saveEmpoyeeDocBulk(checklistData);
 
         // Save custom shift schedule if configured
-        if (customShiftData && !id) {
+        if (customShiftData && employeeId) {
           await saveCustomShiftSchedule(employeeId, customShiftData);
         }
         dispatch(fetchEmployees());
@@ -294,7 +294,7 @@ const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
       if (
         error.response &&
         error.response.data.username[0] ===
-          "A user with that username already exists."
+        "A user with that username already exists."
       ) {
         toast.error("A user with that username already exists.", {
           position: toast.POSITION.TOP_RIGHT,
@@ -538,7 +538,7 @@ const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
                   label: "Probation Date Range",
                   value:
                     FormValues.probation_start_date ||
-                    FormValues.probation_end_date
+                      FormValues.probation_end_date
                       ? `${FormValues.probation_start_date},${FormValues.probation_end_date}`
                       : null,
                   minDate: FormValues.joining_date,
@@ -614,54 +614,53 @@ const EmployeeForm = ({ id, setIsOpen = () => {}, SalarySetupAllowed }) => {
             },
             ...(Config.SHIFT_CALENDAR
               ? [
-                  {
-                    sheetCardExtension: true,
-                    sheetCardTitle: `Shift Details`,
-                    InputFields: [
-                      {
-                        InputField: SelectInputComponent,
-                        name: "shift_assignment",
-                        options: shiftList,
-                        required: false,
-                        label: "Shift",
-                      },
-                      {
-                        InputField: AddCustomShift,
-                        customShiftData: customShiftData,
-                        setCustomShiftData: setCustomShiftData,
-                        colsSpan: 2,
-                      },
-                    ],
-                  },
-                ]
+                {
+                  sheetCardExtension: true,
+                  sheetCardTitle: `Shift Details`,
+                  InputFields: [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "shift_assignment",
+                      options: shiftList,
+                      required: false,
+                      label: "Shift",
+                    },
+                    {
+                      InputField: AddCustomShift,
+                      customShiftData: customShiftData,
+                      setCustomShiftData: setCustomShiftData,
+                      colsSpan: 2,
+                    },
+                  ],
+                },
+              ]
               : []),
             ...(SalarySetupAllowed
               ? [
-                  {
-                    sheetCardExtension: true,
-                    sheetCardTitle: `Salary Details`,
-                    InputFields: [
-                      {
-                        InputField: SelectInputComponent,
-                        name: "salary_type",
-                        options: SalaryTypeOptions,
-                        required: true,
-                        label: "Salary Type",
-                      },
-                      {
-                        InputField: NumberInput,
-                        name: "salary",
-                        options: shiftList,
-                        required: true,
-                        label: `Employee ${
-                          FormValues.salary_type === "hourly"
-                            ? "Hourly"
-                            : "Monthly"
+                {
+                  sheetCardExtension: true,
+                  sheetCardTitle: `Salary Details`,
+                  InputFields: [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "salary_type",
+                      options: SalaryTypeOptions,
+                      required: true,
+                      label: "Salary Type",
+                    },
+                    {
+                      InputField: NumberInput,
+                      name: "salary",
+                      options: shiftList,
+                      required: true,
+                      label: `Employee ${FormValues.salary_type === "hourly"
+                          ? "Hourly"
+                          : "Monthly"
                         } Salary`,
-                      },
-                    ],
-                  },
-                ]
+                    },
+                  ],
+                },
+              ]
               : []),
             {
               sheetCardExtension: true,

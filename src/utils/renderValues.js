@@ -127,12 +127,12 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date") {
     variant === "month-day"
       ? "MMM D"
       : variant === "month"
-      ? "MMMM YYYY"
-      : variant === "date-time"
-      ? "MMM DD, YYYY hh:mm A"
-      : variant === "time"
-      ? "hh:mm A"
-      : "MMM DD, YYYY";
+        ? "MMMM YYYY"
+        : variant === "date-time"
+          ? "MMM DD, YYYY hh:mm A"
+          : variant === "time"
+            ? "hh:mm A"
+            : "MMM DD, YYYY";
   return moment(date).format(format);
 }
 
@@ -223,14 +223,33 @@ export const calculateAverage = (
 };
 
 
-export const calculateTotal = (data, label) => {
-  if (!Array.isArray(data)) return 0;
-  const total = data.reduce((total, item) => {
+export const calculateTotal = (data, label, filterLabel, filterValue) => {
+  // Validate array
+  if (!Array.isArray(data) || !label) return 0;
+
+  // Filter data if filterLabel is provided
+  const finalData = filterLabel
+    ? data.filter(obj => {
+      if (!obj || typeof obj !== "object") return false;
+      // Apply filtering logic
+      if (filterValue !== undefined && filterValue !== null) {
+        return obj.hasOwnProperty(filterLabel) && obj[filterLabel] === filterValue;
+      }
+      return obj.hasOwnProperty(filterLabel) && Boolean(obj[filterLabel]);
+    })
+    : data;
+
+  // Calculate total
+  const total = finalData.reduce((acc, item) => {
+    if (!item || typeof item !== "object" || !item.hasOwnProperty(label)) return acc;
+
     const value = parseFloat(item[label]);
-    return total + (isNaN(value) ? 0 : value);
+    return acc + (isNaN(value) ? 0 : value);
   }, 0);
-  return parseFloat(parseFloat(total).toFixed(2));
+
+  return parseFloat(total.toFixed(2));
 };
+
 
 export const calculateTotalCount = (data, label, value) => {
   if (!Array.isArray(data)) return 0;

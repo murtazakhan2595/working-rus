@@ -98,10 +98,10 @@ export async function mapApproverDetails({
             );
           })
         );
-
+        const assignment_type = level.assignment_type.replace('_', ' ').toLowerCase();
         levelDetail.info = (
           <>
-            {approverInfos} - {level?.designation_name}
+            {approverInfos} - {level?.designation_name || assignment_type}
           </>
         );
       } else {

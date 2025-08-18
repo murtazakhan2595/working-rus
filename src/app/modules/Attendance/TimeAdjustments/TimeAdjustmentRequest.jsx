@@ -19,6 +19,7 @@ import { Timer } from "lucide-react";
 import { Button } from "components/ui/button";
 import { TextAreaInput } from "components/FormControl";
 import moment from "moment";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
 
 const FormSheetData = {
   triggerText: null,
@@ -29,9 +30,6 @@ const FormSheetData = {
 };
 
 const TimeAdjustmentRequest = ({ id, attendance }) => {
-  const { today_shift } = useSelector(
-    (state) => state.attendance.attendance_details
-  );
   const { id: employee_id } = useSelector((state) => state.user.userProfile);
   const [formData, setFormData] = useState(TimeAdjustment);
   const [isOpen, setIsOpen] = useState(false);
@@ -106,9 +104,10 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
       console.error(error);
     }
   };
-  const handleAdjustTimeClick = (event) => {
+  const handleAdjustTimeClick = async (event) => {
     event.preventDefault();
     event.stopPropagation();
+    const today_shift = await getActiveShiftData(employee_id, moment());
     const FormValues = mapTimeAdjustmentFromAttendance(attendance, today_shift);
     setFormData(FormValues);
     setIsOpen(true);

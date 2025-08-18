@@ -87,15 +87,13 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   // If value is falsy, return fallback
   if (!value) {
     if (debug)
-      console.log("DepartmentName: Returning fallback for empty value");
-    return fallBackText;
+      return fallBackText;
   }
 
   // Handle case where value is already a string (like "CEO")
   if (typeof value === "string" && isNaN(parseInt(value))) {
     if (debug)
-      console.log(`DepartmentName: Returning string value directly: ${value}`);
-    return value;
+      return value;
   }
 
   // Try to find department by ID
@@ -104,11 +102,8 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   // Check if departments array exists and has items
   if (!departments || !Array.isArray(departments) || departments.length === 0) {
     if (debug)
-      console.warn(
-        `DepartmentName: No departments available in redux store for ID: ${value}`
-      );
-    // If departments are not available, return the fallback with ID
-    return `${fallBackText}`;
+      // If departments are not available, return the fallback with ID
+      return `${fallBackText}`;
   }
 
   // Try to find by both value and id properties
@@ -116,17 +111,9 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
     (option) => option.value === parsedValue || option.id === parsedValue
   );
 
-  if (debug) {
-    console.log(
-      `DepartmentName: value=${value}, parsed=${parsedValue}, found=${
-        department?.label || department?.name || "not found"
-      }, departments count: ${departments.length}`
-    );
-  }
-
   // Return department label if found, otherwise original value or fallback
   if (department) {
-    return department.label || department.name;
+    return department.label?.trim() || department.name?.trim();
   }
 
   // If not found and we want to show a meaningful fallback
@@ -144,7 +131,7 @@ export function DocCategoryName({ value, fallBackText = "N/A" }) {
 export function BranchName({ value, fallBackText = "N/A" }) {
   const branches = useSelector((state) => state.common.branches);
   const branch = branches.find((option) => option.value === parseInt(value));
-  return branch ? branch.label : value ?? fallBackText;
+  return branch ? branch.label?.trim() : value ?? fallBackText;
 }
 function ProjectName({ value }) {
   const projects = useSelector((state) => state.common.projects);
