@@ -55,7 +55,7 @@ function App() {
         return;
       }
     } catch (error) {
-      // debugger
+       debugger
       console.error("Error fetching data:", error);
       const pathname = location.pathname;
       const errorResponse = error.response;
