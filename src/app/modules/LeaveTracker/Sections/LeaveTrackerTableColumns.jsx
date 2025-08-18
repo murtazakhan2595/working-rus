@@ -395,7 +395,7 @@ export const PublicHolidaydsColumn = (reload, data) => [
 ];
 export const OpeningLeaveBalanceColumn = (reload, data) => [
   {
-    dataField: "employee_username",
+    dataField: "serial_number",
     text: "Employee ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },

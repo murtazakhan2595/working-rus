@@ -60,8 +60,11 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Leave", value: "LEAVE_APPLICATION" }]
     : []),
   ...(Config.MY_CLAIMS ? [{ label: "Claims", value: "MY_CLAIMS" }] : []),
+  ...(Config.EMPLOYEE_TRANSFER
+    ? [{ label: "Transfer Request by Manager", value: "EMPLOYEE_TRANSFER_MANAGER" }]
+    : []),
   ...(Config.MY_TRANSFERS
-    ? [{ label: "Transfer", value: "MY_TRANSFERS" }]
+    ? [{ label: "Transfer Request by Employee", value: "EMPLOYEE_TRANSFER_EMPLOYEE" }]
     : []),
   ...(Config.MY_ASSETS ? [{ label: "Assets", value: "MY_ASSETS" }] : []),
   ...(Config.EXIT_CLEARANCE

@@ -7,14 +7,14 @@ import {
 } from "app/modules/TransferAndRotation/Transfers/Sections";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
-import { getEmployeeTransferList, getEmployeeTransferStats } from "app/hooks/transferAndRotation";
+import { getJobRotationRequests, getEmployeeTransferStats } from "app/hooks/transferAndRotation";
 import Stats from "components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
-import { TransferColumns } from "app/modules/TransferAndRotation/Sections";
+import { JobRotationColumns } from "app/modules/TransferAndRotation/Sections";
 
-export default function MyTransfers() {
+export default function MyJobRotations() {
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userId = useSelector((state) => state.user.userProfile.id);
   const [MyTransferData, setMyTransferData] = useState({
@@ -26,7 +26,7 @@ export default function MyTransfers() {
   const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState({ employee_id: userId });
+  const [filterData, setFilterData] = useState({ employee: userId });
   const [statsData, setStatsData] = useState({});
 
   const onPageChange = (name, value) => {
@@ -49,7 +49,7 @@ export default function MyTransfers() {
     let isMounted = true;
     const fetchStatData = async () => {
       try {
-        const filter = { employee_id: userId };
+        const filter = { employee: userId };
         const response = await getEmployeeTransferStats({
           filterData: filter,
         });
@@ -69,7 +69,7 @@ export default function MyTransfers() {
 
   const fetchData = async (isMounted) => {
     try {
-      const data = await getEmployeeTransferList({
+      const data = await getJobRotationRequests({
         options,
         filterData,
         ordering,
@@ -119,7 +119,7 @@ export default function MyTransfers() {
         <CardContent>
           <TableCustom
             data={MyTransferData.results}
-            columns={TransferColumns(fetchData)}
+            columns={JobRotationColumns}
             pagination={true}
             dataTotalSize={MyTransferData.count || 0}
             tableOptions={tableOptions}
