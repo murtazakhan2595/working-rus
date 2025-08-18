@@ -34,7 +34,6 @@ export const ClearanceChecklist = {
   department: "",
   clearance_types: [],
   assignment_scope: "",
-  attached_document_required: true,
   e_signature_required: false,
   status: "active",
   created_by: "",
