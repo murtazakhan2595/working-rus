@@ -16,6 +16,7 @@ import {
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { assignmentScopeOptions } from "data/Data";
 
 const AddClearanceChecklistForm = ({
   id = false,
@@ -44,12 +45,7 @@ const AddClearanceChecklistForm = ({
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
 
-  // Assignment Scope options
-  const assignmentScopeOptions = [
-    { value: "DIRECT", label: "Direct Reporting" },
-    { value: "INDIRECT", label: "Indirect Reporting" },
-    { value: "DESIGNATION", label: "By Designation" },
-  ];
+
 
   const FormSheetData = {
     triggerText: `${isEditMode ? "Edit" : "Add"} Clearance Checklist`,

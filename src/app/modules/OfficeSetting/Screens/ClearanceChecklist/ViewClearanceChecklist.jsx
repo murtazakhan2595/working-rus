@@ -170,7 +170,7 @@ const ViewClearanceChecklist = ({
           ),
         },
         {
-          key: "created_by",
+          key: "created_by_name",
           label: "Created By",
         },
         {

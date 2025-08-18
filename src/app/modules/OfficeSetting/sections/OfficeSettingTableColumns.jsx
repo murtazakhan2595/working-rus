@@ -275,7 +275,7 @@ export const ClearanceChecklistColumn = (
     },
   },
   {
-    dataField: "created_by",
+    dataField: "created_by_name",
     text: "Created By",
     formatter: (cell) => {
       return <div>{cell}</div>;
