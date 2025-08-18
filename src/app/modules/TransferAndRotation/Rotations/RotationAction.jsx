@@ -13,7 +13,13 @@ const RotationAction = ({
     const [view, setView] = useState(null);
     const navigate = useNavigate();
     const handleView = () => {
-        if (RecordView) navigate('/user-job-rotations');
+        console.log(data)
+        if (RecordView)
+            navigate(`/user-job-rotations`, {
+                state: {
+                    user_Id: data?.employee_id,
+                },
+            });
         else setView(true);
     };
 

@@ -27,7 +27,9 @@ import Employee from "app/modules/Employees/Employee.jsx";
 import {
   TransferAndRotation,
   JobRotationCalendar,
+  MyJobRotations,
   MyTransfers,
+  UserJobRotations
 } from "app/modules/TransferAndRotation";
 import {
   HRDocuments,
@@ -159,6 +161,12 @@ export const SidebarRoutes = [
         component: <EmployeeExit />,
         name: "EXIT",
       },
+      Config.MY_JOB_ROTATIONS && {
+        path: "/job-rotation",
+        component: <TransferAndRotation />,
+        name: "MY_JOB_ROTATIONS",
+      },
+
     ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
@@ -215,7 +223,7 @@ export const SidebarRoutes = [
       },
       Config.VIEW_JOB_ROTATION && {
         path: "/user-job-rotations",
-        component: <JobRotationCalendar />,
+        component: <UserJobRotations />,
         name: "VIEW_JOB_ROTATION",
       },
       Config.EMPLOYEE_CREATION && {

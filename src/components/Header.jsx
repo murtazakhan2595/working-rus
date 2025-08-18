@@ -79,6 +79,7 @@ const pathNames = () => {
     "job-description": "Job Description",
     "my-attendance": "Attendance History",
     "tranfer-rotations": "Transfers & Rotations",
+    "user-job-rotations": "Job Rotations",
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",

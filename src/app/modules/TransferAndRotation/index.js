@@ -1,5 +1,5 @@
 import TransferAndRotation from './TransferAndRotation';
-import { Rotations, RotationRequestForm ,RotationAction,JobRotationDetails} from './Rotations';
+import { Rotations, RotationRequestForm, RotationAction, JobRotationDetails, MyJobRotations,UserJobRotations } from './Rotations';
 import {
     EmployeeTransfer,
     MyTransfers,
@@ -21,4 +21,6 @@ export {
     JobRotationDetails,
     TransferActions,
     TransferDetails,
+    MyJobRotations,
+    UserJobRotations,
 };

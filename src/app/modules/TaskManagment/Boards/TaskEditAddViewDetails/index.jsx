@@ -75,7 +75,6 @@ const TaskEditAddViewDetails = ({
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.userProfile.id);
   const Projects = useSelector((state) => state.common.projects);
-  console.log(Projects, "stateproject");
   const currentTaskId = subtaskId ? subtaskId : taskId;
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);

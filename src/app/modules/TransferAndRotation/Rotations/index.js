@@ -4,4 +4,15 @@ import RotationAction from './RotationAction';
 import JobRotationDetails from './JobRotationDetails';
 import RotationRecords from './RotationRecords';
 import RotationRequests from './RotationRequests';
-export { Rotations, RotationRequestForm, RotationAction, JobRotationDetails, RotationRequests, RotationRecords };
+import MyJobRotations from './MyJobRotations';
+import UserJobRotations from './UserJobRotations';
+export {
+    Rotations,
+    RotationRequestForm,
+    RotationAction,
+    JobRotationDetails,
+    RotationRequests,
+    RotationRecords,
+    MyJobRotations,
+    UserJobRotations
+};
