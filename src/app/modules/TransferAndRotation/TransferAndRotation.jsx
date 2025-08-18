@@ -1,15 +1,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getEmployeeExitStats } from "app/hooks/employeeExitAndClearance";
-import {
-  CircleCheckBig,
-  CircleX,
-  FolderInput,
-  FileCheck2,
-  LogOut,
-  Loader,
-} from "lucide-react";
+import { getEmployeeTransferStats, getRotationStats } from "app/hooks/transferAndRotation";
+import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Card } from "components/ui/card";
 import {
   Tabs,
@@ -24,25 +17,42 @@ import { Button } from "components/ui/button";
 import { GetDispatchStateList } from "utils/Lists";
 import { Rotations, EmployeeTransfer } from 'app/modules/TransferAndRotation';
 import { TransferForm, RotationRequestForm } from "app/modules/TransferAndRotation";
+import { JobRotationCalendar } from ".";
 
 const TransferAndRotation = ({ }) => {
-  const isAdminView = HasAccess("VIEW_EXIT");
+  // permissions for tranfer
+  const isAdminView = HasAccess("VIEW_EMPLOYEE_TRANSFER");
   const isBranchView = HasAccess("VIEW_BRANCH_EXIT");
   const isDepartmentView = HasAccess("VIEW_DPT_EXIT");
+  // permissions for rotation
+  const isRAdminView = HasAccess("VIEW_JOB_ROTATION");
+  const isRBranchView = HasAccess("VIEW_BRN_JOB_ROTATION");
+  const isRDepartmentView = HasAccess("VIEW_DPT_JOB_ROTATION");
   const {
     id: user_id,
     branch_id: user_branch,
     department_name: user_department,
   } = GetDispatchStateList("user_details", "emp") || {}
-  const Managers = GetDispatchStateList("reportingManagers", "emp") || []
-  const Departments = GetDispatchStateList("departments", "common") || []
-  const Branches = GetDispatchStateList("branches", "common") || []
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
   const [OpenRotationForm, setOpenRotationForm] = useState(false);
-  const [activeTab, setActiveTab] = useState("Rotations");
-  const [ExitStats, setExitStats] = useState(0);
+  const [activeTab, setActiveTab] = useState("Transfers");
+  const [TransferStats, setTransferStats] = useState({});
+  const [RotationStats, setRotationStats] = useState({});
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
+  const [permittedRotationViewFilterData, setPermittedRotationViewFilterData] = useState(null);
 
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setPermittedRotationViewFilterData(() => {
+        if (isRAdminView) return {};
+        else if (isRBranchView) return { branch: user_branch };
+        else if (isRDepartmentView) return { department: user_department };
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isRAdminView, isRBranchView, isRDepartmentView, user_branch, user_department, user_id]);
 
 
   useEffect(() => {
@@ -65,12 +75,12 @@ const TransferAndRotation = ({ }) => {
     const fetchData = async () => {
       try {
         const filter = { ...permittedViewFilterData };
-        const response = await getEmployeeExitStats({
+        const response = await getEmployeeTransferStats({
           filterData: filter,
         });
 
         if (response) {
-          setExitStats(response);
+          setTransferStats(response);
         }
       } catch (e) {
         console.error(e);
@@ -83,16 +93,42 @@ const TransferAndRotation = ({ }) => {
   }, [permittedViewFilterData]);
 
 
+  useEffect(() => {
+    let isMounted = true;
+    const fetchData = async () => {
+      try {
+        const filter = { ...permittedRotationViewFilterData };
+        const response = await getRotationStats({
+          filterData: filter,
+        });
+
+        if (response) {
+          setRotationStats(response);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    if (permittedRotationViewFilterData) fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [permittedRotationViewFilterData]);
 
 
-  const statsData = React.useMemo(() => [
-    { label: "Total Exits", value: ExitStats.Total, icon: FolderInput },
-    { label: "Pending", value: ExitStats.Pending, icon: Loader },
-    { label: "Accepted", value: ExitStats.Approved, icon: CircleCheckBig },
-    { label: "Rejected", value: ExitStats.Rejected, icon: CircleX },
-    { label: "Clearance Completed", value: ExitStats.Clearance, icon: FileCheck2 },
-    { label: "Exit Interview", value: ExitStats.Exit, icon: LogOut },
-  ], [ExitStats]);
+  const TransferStatsData = React.useMemo(() => [
+    { label: "Total Tranfers", value: TransferStats.Total, icon: FolderInput },
+    { label: "Pending", value: TransferStats.Pending, icon: Loader },
+    { label: "Approved", value: TransferStats.Approved, icon: CircleCheckBig },
+    { label: "Rejected", value: TransferStats.Rejected, icon: CircleX },
+  ], [TransferStats]);
+
+  const RotationStatsData = React.useMemo(() => [
+    { label: "Total Rotations", value: RotationStats.Total, icon: FolderInput },
+    { label: "Pending", value: RotationStats.Pending, icon: Loader },
+    { label: "Approved", value: RotationStats.Approved, icon: CircleCheckBig },
+    { label: "Rejected", value: RotationStats.Rejected, icon: CircleX },
+  ], [RotationStats]);
 
   const handleRequestClick = (event) => {
     event.preventDefault();
@@ -104,8 +140,6 @@ const TransferAndRotation = ({ }) => {
       setOpenTransferForm(true);
     else if (triggeredResquest === 'rotations')
       setOpenRotationForm(true);
-
-    console.log(event.target)
   }
 
   return (
@@ -118,27 +152,21 @@ const TransferAndRotation = ({ }) => {
             {activeTab === "Transfers" && (
               <Button
                 title='transfer'
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setOpenTransferForm(true);
-                }}
+                onClick={handleRequestClick}
               >
                 Request Transfer
               </Button>
             )}
             {activeTab === "Rotations" && (
-              <Button
-                title='rotations'
-                onClick={handleRequestClick}
-              >
+              <Button title="rotations" onClick={handleRequestClick}>
                 Request Rotation
               </Button>
             )}
           </>
         }
       />
-      <Stats stats={statsData} />
+      {activeTab === "Transfers" && <Stats stats={TransferStatsData} />}
+      {activeTab === "Rotations" && <Stats stats={RotationStatsData} />}
       <Tabs
         defaultValue="Transfers"
         className="w-full"
@@ -148,20 +176,21 @@ const TransferAndRotation = ({ }) => {
         value={activeTab}
       >
         <TabsList>
-          {["Transfers", "Rotations"].map(
-            (tab) => (
-              <TabsTrigger key={tab} value={tab}>
-                {tab}
-              </TabsTrigger>
-            )
-          )}
+          {["Transfers", "Rotations", "Job Rotation Calendar"].map((tab) => (
+            <TabsTrigger key={tab} value={tab}>
+              {tab}
+            </TabsTrigger>
+          ))}
         </TabsList>
         <Card>
           <TabsContent value="Rotations">
-            <Rotations />
+            <Rotations permittedViewFilterData={permittedRotationViewFilterData} />
           </TabsContent>
           <TabsContent value="Transfers">
             <EmployeeTransfer />
+          </TabsContent>
+          <TabsContent value="Job Rotation Calendar">
+            <JobRotationCalendar />
           </TabsContent>
         </Card>
       </Tabs>
@@ -172,7 +201,7 @@ const TransferAndRotation = ({ }) => {
             setOpenTransferForm(false);
             //fetchData(true);
           }}
-        // transfer_type={activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"}
+          initiator={'MANAGER'}
         />
       )}
       {OpenRotationForm && (
@@ -182,9 +211,9 @@ const TransferAndRotation = ({ }) => {
             setOpenRotationForm(false);
             //fetchData(true);
           }}
-          isAdminView={isAdminView}
-          isBranchView={isBranchView}
-          isDepartmentView={isDepartmentView}
+          isAdminView={isRAdminView}
+          isBranchView={isRBranchView}
+          isDepartmentView={isRDepartmentView}
         />
       )}
     </div>

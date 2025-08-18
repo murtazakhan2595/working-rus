@@ -45,7 +45,6 @@ const JobRotationCalendar = () => {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header />
 
       {/* Filters */}
       <JobRotationFilters

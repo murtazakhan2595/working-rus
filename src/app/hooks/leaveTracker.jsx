@@ -116,10 +116,11 @@ export const getLeaveDurations = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-durations?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/leave-durations?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -158,10 +159,11 @@ export const getLeaveTypeListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-types?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -220,7 +222,10 @@ export const getOffsetLeaveInfo = async (employee_id) => {
     return [];
   }
 };
-export const getEligibleLeaveTypeDurations = async (isType = true,employee_id) => {
+export const getEligibleLeaveTypeDurations = async (
+  isType = true,
+  employee_id
+) => {
   let URL = isType
     ? `/employee-leaves/eligible_leave_types/`
     : `/employee-leaves/eligible_leave_durations/`;
@@ -241,15 +246,20 @@ export const getEligibleLeaveTypeDurations = async (isType = true,employee_id) =
         return [];
       const offsetLeave = await getOffsetLeaveInfo();
       const sepcialLeave = await getEmpSpecialLeave(employee_id);
-   debugger
-      const OffsetLeaveType = ResponseList.find((obj) => obj.name === 'Offset Leaves');
-      const SepcialLeaveType = ResponseList.find((obj) => obj.name === 'Special Leave');
-      const OtherLeaveType = ResponseList.filter((obj) => obj.name !== 'Offset Leaves' && obj.name !== 'Special Leave');
+      debugger;
+      const OffsetLeaveType = ResponseList.find(
+        (obj) => obj.name === "Offset Leaves"
+      );
+      const SepcialLeaveType = ResponseList.find(
+        (obj) => obj.name === "Special Leave"
+      );
+      const OtherLeaveType = ResponseList.filter(
+        (obj) => obj.name !== "Offset Leaves" && obj.name !== "Special Leave"
+      );
       const FinalResponsList = [
         ...OtherLeaveType,
         { ...OffsetLeaveType, ...offsetLeave },
         { ...SepcialLeaveType, ...sepcialLeave },
-
       ];
       return FinalResponsList;
     }
@@ -319,10 +329,11 @@ export const getLeaveListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/employee-leaves?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/employee-leaves?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -376,10 +387,11 @@ export const getHolidaysListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/holidays?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/holidays?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -428,7 +440,6 @@ export const saveUpdateLeave = async (payload, id) => {
     return false;
   }
 };
-
 
 export const saveUpdateHoliday = async (payload, id) => {
   const ID = id || payload?.id;
@@ -539,10 +550,11 @@ export const getLeaveTypes = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-types?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -633,10 +645,11 @@ export const getLeaveOffsetSettingListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-offset-settings?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/leave-offset-settings?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -719,10 +732,11 @@ export const getLeaveOpeningBalance = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-openingbalance?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/leave-openingbalance?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -737,7 +751,59 @@ export const getLeaveOpeningBalance = async (payload) => {
     }
     return [];
   }
-}
+};
+
+export const getOpeningBalanceSummary = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  // const sortField = payload?.ordering || "serial_number";
+  let URL = `/leave-balance/all-summary/?${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching opening balance summary:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const getOpeningBalanceSummaryByEmpSerialNumber = async (
+  serialNumber
+) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/leave-balance/summary/${serialNumber}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error(
+      "Error fetching opening balance summary by employee serial number:",
+      error
+    );
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
 
 export const getLeaveOpeningBalanceById = async (id) => {
   try {
@@ -754,7 +820,27 @@ export const getLeaveOpeningBalanceById = async (id) => {
     }
     return {};
   }
-}
+};
+
+export const getLeaveOpeningBalanceSummary = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/leave-balance/summary/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting leave opening balance summary by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
 
 export const getLeaveOpeningBalanceTemplate = async () => {
   try {
@@ -796,7 +882,6 @@ export const uploadLeaveOpeningBalance = async (formData) => {
   }
 };
 
-
 export const saveSpecialLeave = async (payload, id) => {
   const ID = id || payload?.id;
   try {
@@ -827,16 +912,16 @@ export const saveSpecialLeave = async (payload, id) => {
   }
 };
 
-
 export const getSpecialLeave = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/special-leaves?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  let URL = `/special-leaves?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -857,7 +942,6 @@ export const getSpecialLeave = async (payload) => {
 };
 
 export const getEmpSpecialLeave = async (employee_id) => {
-
   const filterData = { employee: employee_id };
   try {
     const response = await getSpecialLeave({ filterData });

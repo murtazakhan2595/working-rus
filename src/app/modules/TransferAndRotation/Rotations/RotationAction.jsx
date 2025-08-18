@@ -6,15 +6,20 @@ import { HasAccess } from "utils/PermissionUtils";
 
 const RotationAction = ({
     data,
-    isHistoryView = false,
+    RecordView = false,
     reloadData = () => { },
     DataList = [],
 }) => {
     const [view, setView] = useState(null);
     const navigate = useNavigate();
-    const [ViewHistoryDetails, setViewHistoryDetails] = useState(null);
     const handleView = () => {
-        if (isHistoryView) setViewHistoryDetails(true);
+        console.log(data)
+        if (RecordView)
+            navigate(`/user-job-rotations`, {
+                state: {
+                    user_Id: data?.employee_id,
+                },
+            });
         else setView(true);
     };
 
