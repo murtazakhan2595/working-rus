@@ -105,7 +105,7 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
         filters={[
           {
             type: "search",
-            name: "employee_id",
+            name: "employee",
             placeholder: "Employee ID/Name",
           },
           ...(isAdminView || isBranchView
