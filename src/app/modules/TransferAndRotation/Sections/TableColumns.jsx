@@ -10,7 +10,7 @@ import { RotationAction, TransferActions } from 'app/modules/TransferAndRotation
  *
  * @returns {array} An array of column definitions.
  */
-export const JobRotationColumns = [
+export const JobRotationColumns = (reloadData) => [
     {
         dataField: "employee",
         text: "Employee",
@@ -55,7 +55,7 @@ export const JobRotationColumns = [
     {
         dataField: "created_at",
         text: "Requested Time",
-        formatter: (cell, row) => renderDate(cell, '--', 'date-time'),
+        formatter: (cell, row) => renderDate(cell, '--'),
         dataSort: true,
         minWidth: "110px",
     },
@@ -147,9 +147,9 @@ export const TransferColumns = (reloadData) => [
 ];
 
 /**
- * JobRotationColumns
+ * JobRotationRecordsColumns
  *
- * Returns an array of column definitions for the JobRotationColumns table.
+ * Returns an array of column definitions for the JobRotationRecordsColumns table.
  *
  * @returns {array} An array of column definitions.
  */
@@ -175,7 +175,7 @@ export const JobRotationRecordsColumns = [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <RotationAction DataList={dataList} data={row} RecordView={true}/>
+            <RotationAction DataList={dataList} data={row} RecordView={true} />
         ),
     },
 ];

@@ -158,6 +158,7 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       )}
     </CardContent>
   );
+
 };
 
 export default RotationRequests;
