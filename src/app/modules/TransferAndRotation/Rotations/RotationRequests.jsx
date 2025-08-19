@@ -14,14 +14,14 @@ import {
 } from "components/ui/card";
 import { TableCustom, PageLoader } from "components";
 import { HasAccess } from "utils/PermissionUtils";
-import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
+import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
 import { JobRotationColumns } from "../Sections/TableColumns";
 
 const RotationRequests = ({ reload, permittedViewFilterData }) => {
-  
-   const Designations = GetDispatchStateList("designations", "common") || [];
-     const Departments = GetDispatchStateList("departments", "common") || [];  
+  const Designations = GetDispatchStateList("designations", "common") || [];
+  const Departments = GetDispatchStateList("departments", "common") || [];
+
   const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
   const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
 
@@ -35,6 +35,7 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
     page: 1,
     sizePerPage: 10,
   });
+
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -42,6 +43,7 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -72,7 +74,6 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
     }
   };
 
-
   useEffect(() => {
     let isMounted = true;
     if (permittedViewFilterData) fetchData(isMounted);
@@ -102,6 +103,15 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       return updatedFilters;
     });
   };
+
+
+  const safeDepartments = (Departments || []).filter(
+    (d) => d && typeof d.label === "string"
+  );
+  const safeDesignations = (Designations || []).filter(
+    (d) => d && typeof d.label === "string"
+  );
+
   return (
     <CardContent>
       <FilterInput
@@ -115,72 +125,22 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
             ? [
                 {
                   type: "select",
-                  options: Departments,
-                  name: "department",
-                  placeholder: "Department",
-                },
-              ]
-            : []),
-
-          ...(isAdminView || isBranchView
-            ? [
-                {
-                  type: "select",
-                  options: Departments,
+                  options: safeDepartments,
                   name: "department",
                   placeholder: "Requested Department",
                 },
               ]
             : []),
-
           ...(isAdminView || isBranchView
             ? [
                 {
                   type: "select",
-                  options: Designations,
+                  options: safeDesignations,
                   name: "department_position",
                   placeholder: "Requested Designation",
                 },
               ]
             : []),
-
-          // ...(isAdminView || !isBranchView
-          //   ? [
-          //     {
-          //       type: "select",
-          //       options: Branches,
-          //       name: "branch",
-          //       placeholder: "Branch",
-          //     },
-          //   ]
-          //   : []),
-          // {
-          //   type: "select",
-          //   options: leaveTypesData || [],
-          //   name: "leave_type",
-          //   placeholder: "Leave Type",
-          // },
-          // {
-          //   type: "date-range",
-          //   name: "date_range",
-          //   placeholder: "Leave Period",
-          // },
-          // ...(activeTab === "Records"
-          //   ? [
-          //     {
-          //       type: "select",
-          //       options: [
-          //         ...GlobalStatusOptions(false),
-          //         {
-          //           label: "Cancelled",
-          //           value: "cancelled_by_employee",
-          //         },
-          //       ],
-          //       name: "status",
-          //       placeholder: "Status",
-          //     },
-          //   ]
-          //   : []),
         ]}
         onChange={handleFilterChange}
         className="justify-end mb-4"
@@ -189,10 +149,10 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
         <PageLoader />
       ) : (
         <TableCustom
-          data={JobRotationList.results}
+          data={JobRotationList?.results || []}
           columns={JobRotationColumns}
           pagination={true}
-          dataTotalSize={JobRotationList.count || 0}
+          dataTotalSize={JobRotationList?.count || 0}
           tableOptions={tableOptions}
         />
       )}
