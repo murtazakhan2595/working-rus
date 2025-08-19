@@ -11,10 +11,12 @@ import {
   SelectInputComponent,
   SelectMultiInputComponent,
   SwitchInput,
+  CoverFileUpload,
 } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { assignmentScopeOptions } from "data/Data";
 
 const AddClearanceChecklistForm = ({
   id = false,
@@ -24,14 +26,16 @@ const AddClearanceChecklistForm = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [showFileUpload, setShowFileUpload] = useState(false);
+  const [showDesignationInput, setShowDesignationInput] = useState(false);
   const [FormData, setFormData] = useState({
     name: "",
     department: [],
     clearance_types: [],
     assignment_scope: "",
-    attached_document_required: true,
     e_signature_required: false,
     status: "ACTIVE",
+    designation:"",
   });
   const [NameExist, setNameExist] = useState(false);
   const [ClearanceChecklistList, setClearanceChecklistList] = useState([]);
@@ -39,12 +43,9 @@ const AddClearanceChecklistForm = ({
 
   const isEditMode = Boolean(id);
   const Departments = useSelector((state) => state.common.departments);
+  const Designations = useSelector((state) => state.common.designations);
 
-  // Assignment Scope options
-  const assignmentScopeOptions = [
-    { value: "DIRECT", label: "Direct Reporting" },
-    { value: "INDIRECT", label: "Indirect Reporting" },
-  ];
+
 
   const FormSheetData = {
     triggerText: `${isEditMode ? "Edit" : "Add"} Clearance Checklist`,
@@ -115,6 +116,15 @@ const AddClearanceChecklistForm = ({
     };
   }, [id]);
 
+  // Sync file upload visibility with form data
+  useEffect(() => {
+    setShowFileUpload(FormData.e_signature_required);
+  }, [FormData.e_signature_required]);
+
+  useEffect(() => {
+    setShowDesignationInput(FormData.assignment_scope === "DESIGNATION");
+  }, [FormData.assignment_scope]);
+
   const handleClose = () => {
     setIsOpen(false);
     reloadData(true);
@@ -168,8 +178,8 @@ const AddClearanceChecklistForm = ({
       errors.name = "Name already exists. Please choose a different name";
     }
 
-    if (!values.department) {
-      errors.department = "Department is required";
+    if (!values.department || values.department.length === 0) {
+      errors.department = "At least one department is required";
     }
 
     if (!values.clearance_types || values.clearance_types.length === 0) {
@@ -180,6 +190,10 @@ const AddClearanceChecklistForm = ({
       errors.assignment_scope = "Assignment scope is required";
     }
 
+    if (values.assignment_scope === "DESIGNATION" && !values.designation) {
+      errors.designation = "Designation is required when assignment scope is DESIGNATION";
+    }
+      
     return errors;
   };
 
@@ -240,7 +254,22 @@ const AddClearanceChecklistForm = ({
                 required: true,
                 options: assignmentScopeOptions,
                 placeholder: "Select assignment scope",
+                onFieldUpdate: (_, value) => {
+                  setShowDesignationInput(value);
+                },
               },
+              // Conditionally add designation input select
+              ...(showDesignationInput
+                ? [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "designation",
+                      label: "Clearance Designation",
+                      required: true,
+                      options: Designations,
+                    },
+                  ]
+                : []),
             ],
           },
           {
@@ -249,17 +278,13 @@ const AddClearanceChecklistForm = ({
             InputFields: [
               {
                 InputField: SwitchInput,
-                name: "attached_document_required",
-                label: "Attached Document Required",
-                field_description:
-                  "Whether this checklist item requires an attached document",
-              },
-              {
-                InputField: SwitchInput,
                 name: "e_signature_required",
                 label: "E-Signature Required from Employee",
                 field_description:
                   "Whether employee e-signature is required for this checklist item",
+                onFieldUpdate: (_, value) => {
+                  setShowFileUpload(value);
+                },
               },
             ],
           },

@@ -415,6 +415,8 @@ export const getClearanceChecklistData = async (id) => {
   }
 };
 
+
+
 export const saveUpdateClearanceChecklist = async (payload, id) => {
   try {
     const url = id

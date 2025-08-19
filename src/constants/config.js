@@ -36,6 +36,7 @@ const Config = {
   HR_DOCUMENTS: true,
   EMPLOYEE_TRANSFER: true,
   VIEW_JOB_ROTATION: true,
+  CLEARANCE_AND_HANDOVER: true,
 
   //-------------ATTENDANCE-----------
   ATTENDANCE: true,
@@ -97,7 +98,7 @@ const Config = {
   ROLE_PERMISSIONS: true,
   APPROVAL_HIERARCHY: true,
   LEAVE_SETUP: true,
-  CLEARANCE_AND_HANDOVER: true,
+  CLEARANCE_CHECKLIST: true,
 };
 
 export const URLS = [

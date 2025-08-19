@@ -403,6 +403,13 @@ export const TaskStatus = [
     backgroundColor: lightenColor("#B00D1B", 85),
   },
 ];
+
+// Assignment Scope options
+export const assignmentScopeOptions = [
+  { value: "DIRECT", label: "Direct Reporting" },
+  { value: "INDIRECT", label: "Indirect Reporting" },
+  { value: "DESIGNATION", label: "By Designation" },
+];
 export const PriorityListIcons = [
   {
     value: 3,

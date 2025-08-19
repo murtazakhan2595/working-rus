@@ -34,8 +34,7 @@ const ClearanceChecklistAction = ({ data, reloadData, DataList = [] }) => {
 
   const confirmDelete = async () => {
     try {
-      // TODO: Replace with actual API call
-      // await deleteRecord(`/clearance-checklist/${data?.id}/`, data?.name);
+      await deleteRecord(`/clearance-checklists/${data?.id}/`, data?.name);
 
       console.log("Deleting clearance checklist:", data?.name);
 

@@ -231,7 +231,7 @@ const OfficeSetting = () => {
     {
       value: "clearance-checklist",
       label: "Clearance & Handover Setup",
-      permission: OFFICE_SETTING_PERMISSIONS.CLEARANCE_AND_HANDOVER,
+      permission: OFFICE_SETTING_PERMISSIONS.CLEARANCE_CHECKLIST,
     },
   ];
 
@@ -333,7 +333,7 @@ const OfficeSetting = () => {
               ) : activeTab === "clearance-checklist" ? (
                 <OfficeSettingPermissionWrapper
                   permissions={
-                    OFFICE_SETTING_PERMISSIONS.CLEARANCE_AND_HANDOVER
+                    OFFICE_SETTING_PERMISSIONS.CLEARANCE_CHECKLIST
                   }
                 >
                   <AddClearanceChecklist
