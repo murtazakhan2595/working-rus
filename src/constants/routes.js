@@ -163,8 +163,8 @@ export const SidebarRoutes = [
           name: "EXIT",
         },
         Config.MY_JOB_ROTATIONS && {
-          path: "/job-rotation",
-          component: <TransferAndRotation />,
+          path: "/my-job-rotations",
+          component: <MyJobRotations />,
           name: "MY_JOB_ROTATIONS",
         },
       ].filter(Boolean) // Filter out undefined routes

@@ -158,7 +158,7 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
             ) : (
                 <TableCustom
                     data={JobRotationList.results}
-                    columns={JobRotationColumns}
+                    columns={JobRotationList(fetchData)}
                     pagination={true}
                     dataTotalSize={JobRotationList.count || 0}
                     tableOptions={tableOptions}
