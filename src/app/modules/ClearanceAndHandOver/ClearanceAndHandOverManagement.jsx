@@ -8,7 +8,6 @@ import {
 } from "src/@/components/ui/tabs";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
-import ClearanceChecklistModal from "./Sections/ClearanceChecklistModal";
 import ClearanceRequests from "./Sections/ClearanceRequests";
 // import { getClearanceRequests } from "app/hooks/clearanceHooks"; // You'll need to create this
 
@@ -19,8 +18,6 @@ export default function ClearanceAndHandover() {
   const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [selectedClearance, setSelectedClearance] = useState(null);
-  const [showChecklistModal, setShowChecklistModal] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -30,7 +27,7 @@ export default function ClearanceAndHandover() {
 
       if (activeTab === "clearance-requests") {
         // const response = await getClearanceRequests(payload);
-        // Mock data for now
+        // Mock data for now - this will be replaced with real API call
         const response = {
           results: [
             {
@@ -53,8 +50,48 @@ export default function ClearanceAndHandover() {
               clearance_start_date: "2024-08-18",
               status: "In Process",
             },
+            {
+              id: 3,
+              employee_name: "Mike Johnson",
+              employee_id: "EMP003",
+              department: "Finance Department",
+              designation: "Financial Analyst",
+              clearance_type: "External Transfer",
+              clearance_start_date: "2024-08-15",
+              status: "Completed",
+            },
+            {
+              id: 4,
+              employee_name: "Sarah Wilson",
+              employee_id: "EMP004",
+              department: "Marketing Department",
+              designation: "Marketing Manager",
+              clearance_type: "Job Rotation",
+              clearance_start_date: "2024-08-22",
+              status: "Pending",
+            },
+            {
+              id: 5,
+              employee_name: "David Brown",
+              employee_id: "EMP005",
+              department: "Operations Department",
+              designation: "Operations Lead",
+              clearance_type: "Resignation",
+              clearance_start_date: "2024-08-16",
+              status: "Rejected",
+            },
+            {
+              id: 6,
+              employee_name: "Emily Davis",
+              employee_id: "EMP006",
+              department: "IT Department",
+              designation: "Senior Developer",
+              clearance_type: "Special Leave",
+              clearance_start_date: "2024-08-19",
+              status: "In Process",
+            },
           ],
-          count: 2,
+          count: 6,
         };
 
         if (response) {
@@ -83,11 +120,6 @@ export default function ClearanceAndHandover() {
     setOptions((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleViewChecklist = (clearanceRequest) => {
-    setSelectedClearance(clearanceRequest);
-    setShowChecklistModal(true);
-  };
-
   const tabsData = [
     {
       value: "clearance-requests",
@@ -100,7 +132,6 @@ export default function ClearanceAndHandover() {
           loading={loading}
           data={data}
           reload={fetchData}
-          onViewChecklist={handleViewChecklist}
           filterData={filterData}
           setFilterData={setFilterData}
         />
@@ -122,16 +153,16 @@ export default function ClearanceAndHandover() {
   return (
     <div className="flex flex-col gap-4">
       <Header
-        content={
-          <>
-            {activeTab === "clearance-requests" && (
-              <div className="flex gap-2">
-                <Button variant="outline">Export Clearance Data</Button>
-                <Button>Generate Report</Button>
-              </div>
-            )}
-          </>
-        }
+        // content={
+        //   <>
+        //     {activeTab === "clearance-requests" && (
+        //       <div className="flex gap-2">
+        //         <Button variant="outline">Export Clearance Data</Button>
+        //         <Button>Generate Report</Button>
+        //       </div>
+        //     )}
+        //   </>
+        // }
       />
 
       <Tabs
@@ -157,15 +188,6 @@ export default function ClearanceAndHandover() {
           ))}
         </Card>
       </Tabs>
-{/* 
-      {showChecklistModal && selectedClearance && (
-        <ClearanceChecklistModal
-          isOpen={showChecklistModal}
-          setIsOpen={setShowChecklistModal}
-          clearanceRequest={selectedClearance}
-          reload={fetchData}
-        />
-      )} */}
     </div>
   );
 }
