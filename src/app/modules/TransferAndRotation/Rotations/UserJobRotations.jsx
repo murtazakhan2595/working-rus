@@ -28,7 +28,7 @@ export default function UserJobRotations() {
     const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
     const Departments = useSelector((state) => state.common.departments);
     const [ordering, setOrdering] = useState("-id");
-    const [filterData, setFilterData] = useState({ employee: user_Id });
+    const [filterData, setFilterData] = useState({ employee_id: user_Id });
     const [statsData, setStatsData] = useState({});
 
     const onPageChange = (name, value) => {
