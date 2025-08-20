@@ -115,7 +115,6 @@ const TransferDetails = ({
                                 "manager",
                             ]}
                             ViewVariant={"vertical"}
-                            className
                         />
                     ),
                 },
