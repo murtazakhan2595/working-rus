@@ -1,5 +1,6 @@
 import { saveJobRotation, getJobRotationReasons, getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
 import { JobRotation } from "app/utils/Types/TransferAndRotation";
+import { getEmployeeTenure } from "app/hooks/general";
 import {
     TextAreaInput,
     TextInput,
@@ -98,20 +99,37 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
     useEffect(() => {
         if (isEmployee) {
             setSelectedEmployee(UserDetails);
-            setFormData((prev) => {
-                return { ...prev, employee: UserDetails.id };
-            });
+
+            const fetchBranchTenure = async () => {
+                try {
+                    const branch_tenure = await getBranchTenure(UserDetails.id, UserDetails.branch_id);
+                    setFormData((prev) => ({
+                        ...prev,
+                        employee: UserDetails.id,
+                        branch_tenure: branch_tenure,
+                    }));
+                } catch (error) {
+                    console.error("Failed to fetch branch tenure:", error);
+                }
+            };
+
+            fetchBranchTenure();
         }
-    }, [isEmployee]);
+    }, [isEmployee, UserDetails]);
+
 
     const handleClose = () => {
         setIsOpen(false);
     };
 
-    const getBranchTenure = (employee_id, handleChange) => {
-        try { 
-
+    const getBranchTenure = async (employee_id, branch_id) => {
+        try {
+            const response = await getEmployeeTenure(employee_id);
+            const branchTenure = response.find(obj => obj.branch_id === branch_id);
+            console.log(response, UserDetails, branchTenure)
+            return `${branchTenure?.months || 0} months`;
         } catch (error) { console.log(error); }
+        return '0 months';
     }
 
     const handleSubmit = async (values) => {
@@ -177,7 +195,8 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                         ? Employees.find((obj) => obj.value === value)
                                         : {};
                                     setSelectedEmployee(employee);
-                                    await getBranchTenure(value, handleChange);
+                                    const branch_tenure = await getBranchTenure(employee.id, employee.branch_id);
+                                    handleChange('branch_tenure', branch_tenure)
                                 },
                             },
                             {
@@ -218,8 +237,6 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 name: "branch_tenure",
                                 disabled: true,
                                 label: "Branch Tenure",
-                                placeholder: "Reporting Manager",
-                                value: selectedEmployee.branch_tenure,
                             },
 
                         ],

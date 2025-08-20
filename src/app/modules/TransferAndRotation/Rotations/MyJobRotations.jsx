@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { RotationRequestForm } from "app/modules/TransferAndRotation";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
@@ -22,7 +22,7 @@ export default function MyJobRotations() {
   const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState({ employee: userId });
+  const [filterData, setFilterData] = useState({ employee_id: userId });
   const [statsData, setStatsData] = useState({});
 
   const onPageChange = (name, value) => {
@@ -45,7 +45,7 @@ export default function MyJobRotations() {
     let isMounted = true;
     const fetchStatData = async () => {
       try {
-        const filter = { employee: userId };
+        const filter = { employee_id: userId };
         const response = await getRotationStats({
           filterData: filter,
         });
@@ -113,6 +113,10 @@ export default function MyJobRotations() {
       />
       <Stats stats={TransferStatsData} />
       <Card>
+        <CardHeader>
+          <CardTitle>My Job Rotations</CardTitle>
+          <CardDescription></CardDescription>
+        </CardHeader>
         <CardContent>
           <TableCustom
             data={MyTransferData.results}

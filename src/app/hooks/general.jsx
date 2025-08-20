@@ -939,7 +939,7 @@ export const uploadRecord = async (formData, URL) => {
 };
 
 
-const getEmployeeTenure = async (employee_id) => {
+export const getEmployeeTenure = async (employee_id) => {
  const filterData = {employee_id:employee_id};
   try {
     const URL = `/employee-tenure/?search=${encodeURIComponent(
