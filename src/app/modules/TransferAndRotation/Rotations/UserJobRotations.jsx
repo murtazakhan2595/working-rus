@@ -1,34 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import {
-    MyTransfersColumns,
-    TransferForm,
-    EmployeeTransferDetails,
-} from "app/modules/TransferAndRotation/Transfers/Sections";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
 import { getJobRotationRequests, getRotationStats } from "app/hooks/transferAndRotation";
-import Stats from "components/ui/Stats";
 import TableCustom from "components/CustomTable";
-import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
-import { JobRotationColumns } from "app/modules/TransferAndRotation/Sections";
+import { UserJobRotationColumns } from "app/modules/TransferAndRotation/Sections";
 import { EmployeeOverview } from "components";
 import { useLocation } from "react-router-dom";
 
 export default function UserJobRotations() {
     const location = useLocation();
     const { user_Id } = location.state || {};
-    const [MyTransferData, setMyTransferData] = useState({
-        results: [],
-        count: 0,
-    });
-    const [OpenTransferForm, setOpenTransferForm] = useState(false);
+    const [MyTransferData, setMyTransferData] = useState({ results: [], count: 0, });
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-    const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
-    const Departments = useSelector((state) => state.common.departments);
     const [ordering, setOrdering] = useState("-id");
-    const [filterData, setFilterData] = useState({ employee_id: user_Id });
+    const [filterData, setFilterData] = useState({ employee: user_Id });
     const [statsData, setStatsData] = useState({});
 
     const onPageChange = (name, value) => {
@@ -41,9 +27,6 @@ export default function UserJobRotations() {
         onPageChange: onPageChange,
         onSortChange: (sortName) => {
             setOrdering(sortName);
-        },
-        onRowClick: (row) => {
-            setOpenTransferDetailID(row.id);
         },
     };
 
@@ -138,35 +121,13 @@ export default function UserJobRotations() {
                 <CardContent>
                     <TableCustom
                         data={MyTransferData.results}
-                        columns={JobRotationColumns}
+                        columns={UserJobRotationColumns(fetchData)}
                         pagination={true}
                         dataTotalSize={MyTransferData.count || 0}
                         tableOptions={tableOptions}
                     />
                 </CardContent>
             </Card>
-            {OpenTransferDetailID && (
-                <EmployeeTransferDetails
-                    transferID={OpenTransferDetailID}
-                    isOpen={!!OpenTransferDetailID}
-                    setIsOpen={() => {
-                        setOpenTransferDetailID(null);
-                    }}
-                    TransferList={MyTransferData.results}
-                    reloadData={fetchData}
-                    readOnlyMode={true}
-                />
-            )}
-            {OpenTransferForm && (
-                <TransferForm
-                    isOpen={OpenTransferForm}
-                    setIsOpen={() => {
-                        setOpenTransferForm(false);
-                        fetchData(true);
-                    }}
-                    isEmployee={true}
-                />
-            )}
         </div>
     );
 }
