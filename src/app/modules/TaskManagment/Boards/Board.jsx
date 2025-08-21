@@ -29,11 +29,17 @@ const Board = () => {
   const activeView = localStorage.getItem("boardActiveView") || "grid";
   const [projectData, setProjectData] = useState({});
   const [openSuccessMessage, setOpenSuccessMessage] = useState(false);
-  const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] =
-    useState(false);
+  const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] = useState(false);
+
+  const previousFilters = React.useMemo(() => {
+    const stored = window.localStorage.getItem("project-filters");
+    return stored ? JSON.parse(stored) : null;
+  }, []);
+
   const [filterData, setFilterData] = useState({
     is_subtask: [false],
     is_archive: [false],
+    ...previousFilters,
   });
   const [showAddNewListModel, setShowAddNewListModel] = useState(false);
 

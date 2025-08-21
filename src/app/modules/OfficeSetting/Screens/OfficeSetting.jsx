@@ -13,6 +13,8 @@ import {
   Branches,
   GraceTime,
   Designations,
+  EvaluationType,
+  AddEvaluationType
 } from "app/modules/OfficeSetting/Screens";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
@@ -233,6 +235,11 @@ const OfficeSetting = () => {
       label: "Clearance & Handover Setup",
       permission: OFFICE_SETTING_PERMISSIONS.CLEARANCE_CHECKLIST,
     },
+    {
+      value: "evaluation-type",
+      label: "Evaluation Type",
+      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    },
   ];
 
   // Filter tabs based on permissions
@@ -347,7 +354,7 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
-              ) : (
+              ) : activeTab === "onboarding" ? (
                 <OfficeSettingPermissionWrapper
                   permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}
                 >
@@ -362,7 +369,22 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
-              )
+              ) : activeTab === "evaluation-type" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE}
+                >
+                  <AddEvaluationType
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          onboarding: !prev["evaluation-type"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
+              ) : null
             }
           />
           <Tabs
@@ -488,6 +510,9 @@ const OfficeSetting = () => {
               </TabsContent>
               <TabsContent value="grace-time">
                 <GraceTime reload={reloadSettingData["grace-time"]} />
+              </TabsContent>
+              <TabsContent value="evaluation-type">
+                <EvaluationType reload={reloadSettingData["evaluation-type"]} />
               </TabsContent>
               <TabsContent value="onboarding">
                 <OnboardingChecklist reload={reloadSettingData["onboarding"]} />
