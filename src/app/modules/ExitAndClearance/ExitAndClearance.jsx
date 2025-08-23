@@ -49,7 +49,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   const Managers = GetDispatchStateList("reportingManagers", "emp") || []
   const Departments = GetDispatchStateList("departments", "common") || []
   const Branches = GetDispatchStateList("branches", "common") || []
-  const [activeTab, setActiveTab] = useState("Exit Requests");
+  const [activeTab, setActiveTab] = useState("Resons of Termination");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [terminationReasonsReload, setTerminationReasonsReload] = useState(0);
@@ -154,6 +154,12 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     return [...baseFilters, ...departmentFilter, ...branchFilter, ...managerFilter];
   }, [isAdminView, isBranchView]); // dependencies
 
+  const ExitPermitted = React.useMemo(() => {
+    if (isAdminView || isBranchView || isDepartmentView) {
+      setActiveTab("Exit Requests")
+      return true;
+    }
+  }, [isAdminView, isBranchView, isDepartmentView]); // dependencies
 
 
   return (
@@ -186,9 +192,9 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
           </>
         }
       />
-      <Stats stats={statsData} />
+      {ExitPermitted && <Stats stats={statsData} />}
       <Tabs
-        defaultValue="Exit Requests"
+        defaultValue={ExitPermitted ? "Exit Requests" : 'Resons of Termination'}
         className="w-full"
         onValueChange={(tab) => {
           setActiveTab(tab);
@@ -196,7 +202,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
         value={activeTab}
       >
         <TabsList>
-          {["Exit Requests", "Exit Records", "Resons of Termination"].map(
+          {[...(ExitPermitted ? ["Exit Requests"] : []), ...(ExitPermitted ? ["Exit Records"] : []), "Resons of Termination"].map(
             (tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}

@@ -45,6 +45,7 @@ export default function TableCustom({
     sizePerPage: tableOptions?.sizePerPage ?? 10,
   };
 
+
   // Function to toggle row expansion
   const toggleRowExpansion = (rowId) => {
     setExpandedRowId((prevRowId) => (prevRowId === rowId ? null : rowId));

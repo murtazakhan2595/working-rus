@@ -24,7 +24,13 @@ import ViewEmployee from "app/modules/Employees/Screens/View/";
 import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
-import { EmployeeTransfer, MyTransfers } from "app/modules/EmployeeTransfer";
+import {
+  TransferAndRotation,
+  JobRotationCalendar,
+  MyJobRotations,
+  MyTransfers,
+  UserJobRotations
+} from "app/modules/TransferAndRotation";
 import {
   HRDocuments,
   MyDocuments,
@@ -54,7 +60,6 @@ import {
   EmployeeSalaryDetails,
   PayrollPayrunDetail,
 } from "app/modules/Payroll";
-import JobRotation from "app/modules/JobRotation";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import {
   Attendance,
@@ -87,6 +92,7 @@ import {
   MyShiftCalendar,
   ShiftCalendarHistoryLogs,
 } from "app/modules/Attendance/ShiftCalendar";
+import { ClearanceAndHandover } from "app/modules/ClearanceAndHandOver";
 
 export const SidebarRoutes = [
   {
@@ -101,13 +107,6 @@ export const SidebarRoutes = [
           component: <ViewEmployee profileView />,
           name: "MY_PROFILE",
         },
-
-           Config.EXIT && {
-          path: "/job-rotation",
-          component: <JobRotation />,
-          name: "EXIT",
-        },
-
         Config.MY_ATTENDANCE && {
           path: "/my-attendance",
           component: <MyAttendance />,
@@ -163,9 +162,11 @@ export const SidebarRoutes = [
           component: <EmployeeExit />,
           name: "EXIT",
         },
-        
-        
-
+        Config.MY_JOB_ROTATIONS && {
+          path: "/my-job-rotations",
+          component: <MyJobRotations />,
+          name: "MY_JOB_ROTATIONS",
+        },
       ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
@@ -211,11 +212,20 @@ export const SidebarRoutes = [
         },
 
         Config.EMPLOYEE_TRANSFER && {
-          path: "/employee-tranfer",
-          component: <EmployeeTransfer />,
+          path: "/tranfer-rotations",
+          component: <TransferAndRotation />,
           name: "EMPLOYEE_TRANSFER",
         },
-
+        Config.VIEW_JOB_ROTATION && {
+          path: "/job-rotation-calendar",
+          component: <JobRotationCalendar />,
+          name: "VIEW_JOB_ROTATION",
+        },
+        Config.VIEW_JOB_ROTATION && {
+          path: "/user-job-rotations",
+          component: <UserJobRotations />,
+          name: "VIEW_JOB_ROTATION",
+        },
         Config.EMPLOYEE_CREATION && {
           path: "/create-employee",
           component: <CreateUpdateEmployee />,
@@ -235,6 +245,11 @@ export const SidebarRoutes = [
           path: "/user/:id",
           component: <ViewEmployee profileView={false} />,
           name: "VIEW_EMPLOYEES",
+        },
+        Config.CLEARANCE_AND_HANDOVER && {
+          path: "/clearance-requests",
+          component: <ClearanceAndHandover />,
+          name: "CLEARANCE_AND_HANDOVER",
         },
         Config.EXIT_CLEARANCE && {
           path: "/exit-clearance",
@@ -518,6 +533,8 @@ export const SidebarRoutes = [
   },
 ];
 
+console.log("SidebarRoutes", SidebarRoutes);
+
 const RemainingSidebarRoutes = [
   Config.PAYROLL && {
     path: "/payslip-eos/:id",
@@ -557,11 +574,11 @@ const RemainingSidebarRoutes = [
   },
 
   Config.SELF_SERVICE_HUB &&
-    Config.EMPLOYEE_OFFBOARDING && {
-      path: "/self-service/exit/eos-settlement/:id",
-      component: <EOSSettlementDetails />,
-      name: "EOS Settlement Details",
-    },
+  Config.EMPLOYEE_OFFBOARDING && {
+    path: "/self-service/exit/eos-settlement/:id",
+    component: <EOSSettlementDetails />,
+    name: "EOS Settlement Details",
+  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [

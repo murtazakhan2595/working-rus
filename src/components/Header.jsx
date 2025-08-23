@@ -78,7 +78,8 @@ const pathNames = () => {
     "job-application-form": "Job Application Form",
     "job-description": "Job Description",
     "my-attendance": "Attendance History",
-    "employee-tranfer": "Employee Transfer",
+    "tranfer-rotations": "Transfers & Rotations",
+    "job-rotations": "Job Rotations",
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",
@@ -95,6 +96,7 @@ const pathNames = () => {
     "time-adjustments": "Time Ajustments",
     "employee-leave-count": "Employee Leave Count",
     "organizational-tree": "Organizational Chart",
+    "job-rotation-calendar": "Job Rotation Calendar",
   };
 };
 

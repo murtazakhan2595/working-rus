@@ -59,8 +59,11 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Leave", value: "LEAVE_APPLICATION" }]
     : []),
   ...(Config.MY_CLAIMS ? [{ label: "Claims", value: "MY_CLAIMS" }] : []),
+  ...(Config.EMPLOYEE_TRANSFER
+    ? [{ label: "Transfer Request by Manager", value: "EMPLOYEE_TRANSFER_MANAGER" }]
+    : []),
   ...(Config.MY_TRANSFERS
-    ? [{ label: "Transfer", value: "MY_TRANSFERS" }]
+    ? [{ label: "Transfer Request by Employee", value: "EMPLOYEE_TRANSFER_EMPLOYEE" }]
     : []),
   ...(Config.MY_ASSETS ? [{ label: "Assets", value: "MY_ASSETS" }] : []),
   ...(Config.EXIT_CLEARANCE
@@ -82,7 +85,10 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Manager Shift Schedule", value: "SHIFT_SCHEDULE_MANAGER" }]
     : []),
   ...(Config.EMPLOYEE_TRANSFER
-    ? [{ label: "Job Rotation", value: "JOB_ROTATION" }]
+    ? [{ label: "Job Rotation By Manager", value: "JOB_ROTATION_MANAGER" }]
+    : []),
+  ...(Config.EMPLOYEE_TRANSFER
+    ? [{ label: "Job Rotation By Employee", value: "JOB_ROTATION_EMPLOYEE" }]
     : []),
 ];
 
@@ -395,6 +401,13 @@ export const TaskStatus = [
     color: "#B00D1B",
     backgroundColor: lightenColor("#B00D1B", 85),
   },
+];
+
+// Assignment Scope options
+export const assignmentScopeOptions = [
+  { value: "DIRECT", label: "Direct Reporting" },
+  { value: "INDIRECT", label: "Indirect Reporting" },
+  { value: "DESIGNATION", label: "By Designation" },
 ];
 export const PriorityListIcons = [
   {

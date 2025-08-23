@@ -26,3 +26,16 @@ export const GraceTime = {
   created_at: null,
   branches: null,
 };
+
+
+export const ClearanceChecklist = {
+  id: "",
+  name: "",
+  department: "",
+  clearance_types: [],
+  assignment_scope: "",
+  e_signature_required: false,
+  status: "active",
+  created_by: "",
+  created_date: "",
+};

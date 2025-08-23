@@ -42,6 +42,7 @@ const Board = () => {
   const [filterData, setFilterData] = useState({
     is_subtask: [false],
     is_archive: [false],
+    ...previousFilters,
   });
   const [showAddNewListModel, setShowAddNewListModel] = useState(false);
 

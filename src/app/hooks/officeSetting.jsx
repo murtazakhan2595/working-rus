@@ -370,6 +370,105 @@ export const saveUpdateGraceTime = async (payload, id) => {
   }
 };
 
+
+export const getClearanceChecklistList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/clearance-checklists/?${
+    ordering ? `ordering=${ordering}&` : ""
+  }${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting clearance checklist list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getClearanceChecklistData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/clearance-checklists/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting clearance checklist by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+
+
+export const saveUpdateClearanceChecklist = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/clearance-checklists/${id}/`
+      : `${baseUrl}/clearance-checklists/`;
+
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({
+      method,
+      url,
+      data: payload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateClearanceChecklist:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getClearanceTypeList = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/clearance-types/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting clearance types:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
 export {
   saveOrganization,
   deleteOrganization,

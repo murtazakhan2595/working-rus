@@ -2,7 +2,7 @@ import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Formik } from "formik";
-import { EmployeeTransfer } from "app/utils/Types/EmployeeTransfer";
+import { EmployeeTransfer } from "app/utils/Types/TransferAndRotation";
 import { validationEmpTranferFormSchema } from "app/utils/FormSchema/employeeTransferFromSchema";
 import { countriesList } from "data/Data";
 import {

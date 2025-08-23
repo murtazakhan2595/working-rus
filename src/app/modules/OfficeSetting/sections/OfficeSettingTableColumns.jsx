@@ -8,6 +8,9 @@ import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import ClearanceChecklistAction from "../Screens/ClearanceChecklist/ClearanceChecklistAction";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { MultiStatusLabel } from "components";
 
 //
 export const BranchColumn = (reload) => [
@@ -191,5 +194,119 @@ export const GraceTimeColumn = (reload) => [
       <GraceTimeAction reloadData={reload} data={row} DataList={data_list} />
     ),
     width: "80px",
+  },
+];
+
+export const ClearanceChecklistColumn = (
+  reloadData,
+  departments = [],
+  clearanceTypes = []
+) => [
+  {
+    dataField: "id",
+    text: "Id",
+    sort: true,
+    formatter: (cell, row) => <FormatID value={cell} prefix={"CC-"} />,
+  },
+  {
+    dataField: "name",
+    text: "Checklist Name",
+    sort: true,
+    formatter: (cell) => <span className="font-medium">{cell}</span>,
+  },
+  {
+    dataField: "department",
+    text: "Departments",
+    sort: false,
+    formatter: (cell) => {
+      if (!cell || cell.length === 0) {
+        return "--";
+      }
+      const departmentNames = cell
+        .map((deptId) => {
+          const dept = departments.find(
+            (d) => d.value === deptId || d.id === deptId
+          );
+          return dept.label || dept.name;
+        })
+        .filter(Boolean); // Remove any null/undefined values
+      return (
+        <MultiStatusLabel
+          statusList={departmentNames}
+          variant="info"
+          fallBackText="All Departments"
+          displayCount={2} // Show first 2 departments, then +X more
+        />
+      );
+    },
+  },
+  {
+    dataField: "clearance_types",
+    text: "Clearance Types",
+    sort: false,
+    formatter: (cell) => {
+      if (!cell || cell.length === 0) {
+        return "--";
+      }
+      const clearanceTypeNames = cell
+        ?.map((typeId) => {
+          const type = clearanceTypes.find(
+            (t) => t?.value === typeId || t?.id === typeId
+          );
+          return type?.label || type?.name;
+        })
+        ?.filter(Boolean);
+      return (
+        <MultiStatusLabel
+          statusList={clearanceTypeNames}
+          variant="info"
+          fallBackText="All Clearance Types"
+          displayCount={2} // Show first 2 types, then +X more
+        />
+      );
+    },
+  },
+  {
+    dataField: "assignment_scope",
+    text: "Assignment Scope",
+    sort: true,
+    formatter: (cell) => {
+      return <div>{cell}</div>;
+    },
+  },
+  {
+    dataField: "created_by_name",
+    text: "Created By",
+    formatter: (cell) => {
+      return <div>{cell}</div>;
+    },
+    sort: true,
+  },
+  {
+    dataField: "created_date",
+    text: "Created Date",
+    sort: true,
+    formatter: (cell) => {
+      if (!cell) return "--";
+      return new Date(cell).toLocaleDateString();
+    },
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    sort: true,
+    formatter: (cell) => (
+      <StatusLabel variant={cell === "ACTIVE" ? "success" : "destructive"}>
+        {cell === "ACTIVE" ? "Active" : "Inactive"}
+      </StatusLabel>
+    ),
+  },
+  {
+    dataField: "actions",
+    text: "Actions",
+    sort: false,
+    formatter: (cell, row) => (
+      <ClearanceChecklistAction data={row} reloadData={reloadData} />
+    ),
   },
 ];

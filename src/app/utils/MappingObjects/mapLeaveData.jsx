@@ -325,7 +325,7 @@ export async function mapEmpSpecialLeaveType(data = []) {
     allotted_count = allotted_count + dataObj.total_allotted_leave || 0;
     consumed_count = consumed_count + dataObj.consumed_count || 0;
     balance_count = balance_count + dataObj.balance || 0;
-    return <div>{dataObj.leaves} leave alloted starting from {renderDate(dataObj.start_date)} till {renderDate(dataObj.end_date)}</div>;
+    return <div>{dataObj.total_allotted_leave} leave alloted starting from {renderDate(dataObj.start_date)} till {renderDate(dataObj.end_date)}</div>;
   });
   LeaveData.tooltip_info = ResponseList;
 

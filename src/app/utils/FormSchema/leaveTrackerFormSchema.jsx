@@ -268,9 +268,105 @@ const validateLeaveBalanceFormSchema = (values) => {
 
   return errors;
 };
+const validateMultiLeaveBalanceFormSchema = (values) => {
+  const errors = {};
+
+  // Employee validation
+  if (!values.employee && !values.employee_display) {
+    errors.employee = "Employee selection is required";
+  }
+
+  // Extract leave entry field names from values
+  const leaveEntryFields = Object.keys(values).filter(
+    (key) => key.startsWith("leave_entry_") && key.includes("_leave_type")
+  );
+
+  // Track selected leave types to check for duplicates
+  const selectedLeaveTypes = [];
+  let hasValidLeaveEntry = false;
+
+  leaveEntryFields.forEach((leaveTypeField) => {
+    const entryId = leaveTypeField.match(/leave_entry_(\d+)_leave_type/)?.[1];
+    if (!entryId) return;
+
+    const leaveType = values[`leave_entry_${entryId}_leave_type`];
+    const totalAlloted = values[`leave_entry_${entryId}_total_alloted`];
+    const leavesConsumed = values[`leave_entry_${entryId}_leaves_consumed`];
+    const remainingLeaves = values[`leave_entry_${entryId}_remaining_leaves`];
+
+    // Check if this entry has any data (to determine if validation is needed)
+    const hasAnyData = leaveType || totalAlloted || leavesConsumed;
+
+    if (hasAnyData) {
+      hasValidLeaveEntry = true;
+
+      // Leave Type validation
+      if (!leaveType) {
+        errors[`leave_entry_${entryId}_leave_type`] = "Leave type is required";
+      } else {
+        // Check for duplicates
+        if (selectedLeaveTypes.includes(leaveType)) {
+          errors[`leave_entry_${entryId}_leave_type`] =
+            "This leave type is already selected";
+        } else {
+          selectedLeaveTypes.push(leaveType);
+        }
+      }
+
+      // Total Allotted validation
+      if (!totalAlloted) {
+        errors[`leave_entry_${entryId}_total_alloted`] =
+          "Total allotted is required";
+      } else if (isNaN(totalAlloted)) {
+        errors[`leave_entry_${entryId}_total_alloted`] =
+          "Total allotted must be a number";
+      } else if (Number(totalAlloted) <= 0) {
+        errors[`leave_entry_${entryId}_total_alloted`] =
+          "Total allotted must be greater than 0";
+      }
+
+      // Leaves Consumed validation
+      if (leavesConsumed === undefined || leavesConsumed === "") {
+        errors[`leave_entry_${entryId}_leaves_consumed`] =
+          "Leaves consumed is required";
+      } else if (isNaN(leavesConsumed)) {
+        errors[`leave_entry_${entryId}_leaves_consumed`] =
+          "Leaves consumed must be a number";
+      } else {
+        const consumed = Number(leavesConsumed);
+        const totalAllottedNum = Number(totalAlloted) || 0;
+
+        if (consumed < 0) {
+          errors[`leave_entry_${entryId}_leaves_consumed`] =
+            "Leaves consumed cannot be negative";
+        } else if (consumed > totalAllottedNum) {
+          errors[
+            `leave_entry_${entryId}_leaves_consumed`
+          ] = `Leaves consumed (${consumed}) cannot exceed total allotted (${totalAllottedNum})`;
+        }
+      }
+
+      // Remaining Leaves validation (auto-calculated, but ensure it's not negative)
+      if (remainingLeaves !== undefined && Number(remainingLeaves) < 0) {
+        errors[`leave_entry_${entryId}_remaining_leaves`] =
+          "Remaining leaves cannot be negative";
+      }
+    }
+  });
+
+  // Ensure at least one valid leave entry exists
+  if (!hasValidLeaveEntry) {
+    errors.general = "At least one leave entry is required";
+  }
+
+  return errors;
+};
+
+// Keep your existing schemas and export the new one
 export {
   validateLeaveRequestFormSchema,
   validateLeaveDurationFormSchema,
   validateLeaveTypeFormSchema,
   validateLeaveBalanceFormSchema,
+  validateMultiLeaveBalanceFormSchema, // New multi-entry validation
 };
