@@ -182,7 +182,7 @@ export const getAllLabels = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/TaskLabel`;
+  const URL = `/TaskLabel?project_id=${payload}`;
   // /?ordering=-name&${
   //   pageNo ? `page=${pageNo}&` : ""
   // }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(

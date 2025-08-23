@@ -48,7 +48,7 @@ const Board = () => {
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
-    dispatch(fetchTaskLabels(project));
+    dispatch(fetchTaskLabels(projectId));
     
     return () => {
       isMounted = false;
