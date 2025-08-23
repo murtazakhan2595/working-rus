@@ -1071,6 +1071,7 @@ export const addTaskLabel = async (payload, id) => {
     const formData = new FormData();
     formData.append("name", payload?.name);
     formData.append("color", payload?.color);
+    formData.append("project_id",payload?.project_id)
     console.log(payload)
     const url = id
       ? `${baseUrl}/TaskLabel/${id}` // Use id if updating

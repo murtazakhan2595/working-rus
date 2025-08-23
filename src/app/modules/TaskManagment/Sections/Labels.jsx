@@ -87,6 +87,7 @@ export const AddNewLabel = React.memo(
           {
             name: newLabelTitle,
             color: selectedColor,
+            project_id : window.location.pathname.split('/')[3],
             id: labelId,
           },
           labelId
