@@ -5,6 +5,8 @@ import Designations from "./Designations";
 import ShiftActions from "./WorkingHours/ShiftActions";
 import Shift from "./WorkingHours/Shift";
 import AddShiftForm from "./WorkingHours/Shift";
+import EvaluationType from "./EvaluationType";
+import AddEvaluationType from "./EvaluationType/AddEvaluationType";
 
 export {
   Departments,
@@ -14,4 +16,6 @@ export {
   ShiftActions,
   Shift,
   AddShiftForm,
+  EvaluationType,
+  AddEvaluationType
 };

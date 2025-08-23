@@ -188,7 +188,7 @@ export const JobRotationRecordsColumns = [
  *
  * @returns {array} An array of column definitions.
  */
-export const UserJobRotationColumns = [
+export const UserJobRotationColumns = (realoadData) => [
     {
         dataField: "initiated_by",
         text: "Requestor",
