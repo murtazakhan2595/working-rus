@@ -13,13 +13,16 @@ import {
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import ActionAlert from "components/ui/ActionAlert";
-import { useSelector } from "react-redux";
+import { useSelector , useDispatch} from "react-redux";
 import Err404 from "app/modules/Error/Err404";
 import { AddNewListModel } from "./Sections";
+import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
+
 
 const Board = () => {
   const { projectId, taskId, boardId } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch()
   // const { activeView } = location.state || {};
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
@@ -29,8 +32,13 @@ const Board = () => {
   const activeView = localStorage.getItem("boardActiveView") || "grid";
   const [projectData, setProjectData] = useState({});
   const [openSuccessMessage, setOpenSuccessMessage] = useState(false);
-  const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] =
-    useState(false);
+  const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] = useState(false);
+
+  const previousFilters = React.useMemo(() => {
+    const stored = window.localStorage.getItem("project-filters");
+    return stored ? JSON.parse(stored) : null;
+  }, []);
+
   const [filterData, setFilterData] = useState({
     is_subtask: [false],
     is_archive: [false],
@@ -40,6 +48,8 @@ const Board = () => {
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
+    dispatch(fetchTaskLabels(project));
+    
     return () => {
       isMounted = false;
     };
