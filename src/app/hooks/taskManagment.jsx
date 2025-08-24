@@ -1072,10 +1072,9 @@ export const addTaskLabel = async (payload, id) => {
     formData.append("name", payload?.name);
     formData.append("color", payload?.color);
     formData.append("project_id",payload?.project_id)
-    console.log(payload)
     const url = id
       ? `${baseUrl}/TaskLabel/${id}` // Use id if updating
-      : `${baseUrl}/TaskLabel`; // No id means create new
+      : `${baseUrl}/TaskLabel?project_id=${payload?.project_id}`; // No id means create new
 
     const method = id ? "PUT" : "POST"; // Determine method based on existence of id
 

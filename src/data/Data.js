@@ -1,5 +1,6 @@
 import { countries } from "country-data";
 import Config from "constants/config";
+import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
   fetchDepartments,
   fetchDesignations,
@@ -812,5 +813,6 @@ export const handleUpdateProfile = async (dispatch, data) => {
   await dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
   await dispatch(fetchUserAttendanceDetails(userprofile.id));
+  dispatch(fetchTaskLabels());
   await dispatch(fetchProjects(userprofile));
 };
