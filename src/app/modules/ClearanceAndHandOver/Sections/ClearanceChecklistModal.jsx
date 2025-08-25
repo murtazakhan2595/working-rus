@@ -5,245 +5,117 @@ import { Progress } from "src/@/components/ui/progress";
 import { Badge } from "components/ui/badge";
 import { StatusIcon, getStatusVariant } from "components/StatusLabel";
 import { toast } from "react-toastify";
-
-// Dummy checklist data based on clearance type and department
-const generateChecklistData = (clearanceRequest) => {
-  const baseItems = {
-    "IT Department": [
-      {
-        id: 1,
-        name: "Return laptop and accessories",
-        eSignatureStatus: "Pending",
-        status: "Pending",
-        required: true,
-      },
-      {
-        id: 2,
-        name: "Return ID card and access cards",
-        eSignatureStatus: "Not Required",
-        status: "Pending",
-        required: true,
-      },
-      {
-        id: 3,
-        name: "Software license handover",
-        eSignatureStatus: "Pending",
-        status: "Pending",
-        required: clearanceRequest.clearance_type !== "Leave",
-      },
-    ],
-    "HR Department": [
-      {
-        id: 4,
-        name: "Final settlement calculation",
-        eSignatureStatus: "Pending",
-        status: "Pending",
-        required: true,
-      },
-      {
-        id: 5,
-        name: "Exit interview completion",
-        eSignatureStatus: "Not Required",
-        status: "Pending",
-        required: ["Resignation", "Termination", "External Transfer"].includes(
-          clearanceRequest.clearance_type
-        ),
-      },
-      {
-        id: 6,
-        name: "Update employee records",
-        eSignatureStatus: "Acknowledged",
-        status: "Pending",
-        required: true,
-      },
-    ],
-    "Finance Department": [
-      {
-        id: 7,
-        name: "Clear outstanding advances",
-        eSignatureStatus: "Pending",
-        status: "Pending",
-        required: true,
-      },
-      {
-        id: 8,
-        name: "Final payroll processing",
-        eSignatureStatus: "Not Required",
-        status: "Pending",
-        required: ["Resignation", "Termination"].includes(
-          clearanceRequest.clearance_type
-        ),
-      },
-    ],
-    "Reporting Manager": [
-      {
-        id: 9,
-        name: "Handover of ongoing projects",
-        eSignatureStatus: "Pending",
-        status: "Pending",
-        required: true,
-      },
-      {
-        id: 10,
-        name: "Knowledge transfer completion",
-        eSignatureStatus: "Pending",
-        status: "Pending",
-        required: clearanceRequest.clearance_type !== "Leave",
-      },
-    ],
-  };
-
-  // Filter items based on requirements
-  const filteredItems = {};
-  Object.keys(baseItems).forEach((department) => {
-    filteredItems[department] = baseItems[department].filter(
-      (item) => item.required
-    );
-  });
-
-  return filteredItems;
-};
-
-const statusOptions = [
-  { value: "Pending", label: "Pending" },
-  { value: "Approved", label: "Approved" },
-  { value: "Not Applicable", label: "Not Applicable" },
-  { value: "Rejected", label: "Rejected" },
-];
+import {
+  getClearanceRequestItems,
+  updateClearanceRequestItem,
+} from "app/hooks/clearanceAndHandover";
+import { renderDate } from "utils/renderValues";
+import {
+  clearanceStatusOptions,
+  clearanceRequestStatusOptions,
+} from "data/Data";
 
 export default function ClearanceChecklistModal({
   isOpen = false,
   setIsOpen = () => {},
   clearanceRequest,
   reload = () => {},
+  clearanceTypes,
 }) {
-  const [checklistData, setChecklistData] = useState({});
-  const [formData, setFormData] = useState({});
+  const [checklistItems, setChecklistItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    if (clearanceRequest) {
-      const generatedChecklist = generateChecklistData(clearanceRequest);
-      setChecklistData(generatedChecklist);
-
-      // Initialize form data
-      const initialFormData = {};
-      Object.keys(generatedChecklist).forEach((department) => {
-        initialFormData[department] = {
-          items: {},
-          remarks: "",
-          isLocked: Math.random() > 0.7, // Simulate some departments already submitted
-        };
-        generatedChecklist[department].forEach((item) => {
-          initialFormData[department].items[item.id] = item.status;
-        });
-      });
-      setFormData(initialFormData);
+    if (clearanceRequest && isOpen) {
+      fetchChecklistItems();
     }
-  }, [clearanceRequest]);
+  }, [clearanceRequest, isOpen]);
 
-  const FormSheetData = {
-    triggerText: "",
-    title: `Clearance Checklist - ${clearanceRequest?.employee_name}`,
-    description: `${clearanceRequest?.clearance_type} clearance for ${clearanceRequest?.employee_id}`,
-    footer: null,
-    width: "800px",
+  const fetchChecklistItems = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        filterData: { request: clearanceRequest.id },
+        options: { page: 1, sizePerPage: 100 },
+        ordering: "id",
+      };
+
+      const response = await getClearanceRequestItems(payload);
+      if (response && response.results) {
+        setChecklistItems(response.results);
+      }
+    } catch (error) {
+      console.error("Error fetching checklist items:", error);
+      toast.error("Failed to load checklist items");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Simple local state update - no API calls
+  const updateItemStatus = (itemId, newStatus) => {
+    setChecklistItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === itemId ? { ...item, status: newStatus } : item
+      )
+    );
+  };
+
+  // Simple local state update - no API calls
+  const updateItemRemarks = (itemId, newRemarks) => {
+    setChecklistItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === itemId ? { ...item, remarks: newRemarks } : item
+      )
+    );
   };
 
   // Calculate progress
   const calculateProgress = () => {
-    let totalItems = 0;
-    let completedItems = 0;
-
-    Object.keys(checklistData).forEach((department) => {
-      checklistData[department].forEach((item) => {
-        totalItems++;
-        const currentStatus =
-          formData[department]?.items[item.id] || item.status;
-        if (
-          currentStatus === "Approved" ||
-          currentStatus === "Not Applicable"
-        ) {
-          completedItems++;
-        }
-      });
-    });
-
-    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-  };
-
-  // Check if any item is rejected
-  const hasRejectedItems = () => {
-    return Object.keys(checklistData).some((department) =>
-      checklistData[department].some((item) => {
-        const currentStatus =
-          formData[department]?.items[item.id] || item.status;
-        return currentStatus === "Rejected";
-      })
-    );
+    if (checklistItems.length === 0) return 0;
+    const completedItems = checklistItems.filter(
+      (item) => item.status === "APPROVED" || item.status === "NOT_APPLICABLE"
+    ).length;
+    return Math.round((completedItems / checklistItems.length) * 100);
   };
 
   // Get overall status
   const getOverallStatus = () => {
-    if (hasRejectedItems()) return "Rejected";
+    const hasRejected = checklistItems.some(
+      (item) => item.status === "REJECTED"
+    );
+    if (hasRejected) return "REJECTED";
 
     const progress = calculateProgress();
-    if (progress === 100) return "Completed";
-    if (progress > 0) return "In Process";
-    return "Pending";
+    if (progress === 100) return "COMPLETED";
+    if (progress > 0) return "IN_PROCESS";
+    return "PENDING";
   };
 
-  const handleItemStatusChange = (department, itemId, newStatus) => {
-    setFormData((prev) => ({
-      ...prev,
-      [department]: {
-        ...prev[department],
-        items: {
-          ...prev[department].items,
-          [itemId]: newStatus,
-        },
-      },
-    }));
-    setHasChanges(true);
-  };
-
-  const handleRemarksChange = (department, remarks) => {
-    setFormData((prev) => ({
-      ...prev,
-      [department]: {
-        ...prev[department],
-        remarks,
-      },
-    }));
-    setHasChanges(true);
-  };
-
+  // ONLY API CALL - when form is submitted
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setIsSubmitting(true);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Update all items via API
+      const updatePromises = checklistItems.map((item) =>
+        updateClearanceRequestItem(item.id, {
+          status: item.status,
+          remarks: item.remarks || "",
+        })
+      );
 
-      // Lock the sections that have been updated
-      setFormData((prev) => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach((department) => {
-          if (hasChanges) {
-            updated[department].isLocked = true;
-          }
-        });
-        return updated;
-      });
+      await Promise.all(updatePromises);
 
-      setHasChanges(false);
       toast.success("Checklist updated successfully!");
 
-      // If all completed, show completion message
-      if (getOverallStatus() === "Completed") {
+      if (getOverallStatus() === "COMPLETED") {
         toast.success("Clearance process completed!");
       }
+
+      // Close and reload
+      handleClose();
     } catch (error) {
       console.error("Error updating checklist:", error);
       toast.error("Failed to update checklist");
@@ -258,66 +130,52 @@ export default function ClearanceChecklistModal({
     reload();
   };
 
-  // Generate form fields for each department
+  // Group items by checklist
+  const groupedItems = checklistItems.reduce((groups, item) => {
+    const groupKey = item.checklist || "General";
+    if (!groups[groupKey]) {
+      groups[groupKey] = [];
+    }
+    groups[groupKey].push(item);
+    return groups;
+  }, {});
+
+  // Simple form fields generation
   const generateFormFields = () => {
-    return Object.keys(checklistData).map((department) => ({
+    return Object.keys(groupedItems).map((groupName) => ({
       sheetCardExtension: true,
-      sheetCardTitle: (
-        <div className="flex justify-between items-center">
-          <span>{department}</span>
-          {formData[department]?.isLocked && (
-            <Badge variant="success">Submitted</Badge>
-          )}
-        </div>
-      ),
+      sheetCardTitle: groupName,
       InputFields: [
-        // Department items
-        ...checklistData[department].map((item) => ({
-          InputField: ({ value, onFieldUpdate, disabled }) => (
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <StatusIcon
-                    status={formData[department]?.items[item.id] || item.status}
-                  />
-                  <span className="font-medium text-sm">{item.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-neutral-900">E-Signature:</span>
-                  <Badge variant={getStatusVariant(item.eSignatureStatus)}>
-                    {item.eSignatureStatus}
-                  </Badge>
-                </div>
-              </div>
-              <div className="w-40">
-                <SelectInputComponent
-                  value={formData[department]?.items[item.id] || item.status}
-                  options={statusOptions}
-                  disabled={disabled || formData[department]?.isLocked}
-                  onFieldUpdate={(field, newValue) => {
-                    handleItemStatusChange(department, item.id, newValue);
-                  }}
-                />
-              </div>
-            </div>
-          ),
-          name: `${department}_item_${item.id}`,
-          label: "",
-          colsSpan: 2,
-          value: formData[department]?.items[item.id] || item.status,
+        // Status dropdowns for each item
+        ...groupedItems[groupName].map((item) => ({
+          InputField: SelectInputComponent,
+          name: `status_${item.id}`,
+          label: `${item.checklist_name} Status`,
+          placeholder: "Select Status",
+          value: item.status,
+          options: clearanceRequestStatusOptions,
+          disabled: item.is_locked,
+          colsSpan: 1,
+          onFieldUpdate: (field, newValue) => {
+            updateItemStatus(item.id, newValue);
+          },
         })),
-        // Department remarks
+
+        // Remarks textarea for the group
         {
           InputField: TextAreaInput,
-          name: `${department}_remarks`,
+          name: `remarks_${groupName}`,
           label: "Remarks (Optional)",
-          placeholder: "Add any additional comments for this section...",
-          disabled: formData[department]?.isLocked,
-          value: formData[department]?.remarks || "",
+          placeholder: "Add any additional comments...",
+          value: groupedItems[groupName][0]?.remarks || "",
+          disabled: groupedItems[groupName].every((item) => item.is_locked),
           colsSpan: 2,
           rows: 2,
-          onFieldUpdate: (field, value) => {
-            handleRemarksChange(department, value);
+          onFieldUpdate: (field, newValue) => {
+            // Update remarks for first item in group
+            if (groupedItems[groupName][0]) {
+              updateItemRemarks(groupedItems[groupName][0].id, newValue);
+            }
           },
         },
       ],
@@ -327,78 +185,96 @@ export default function ClearanceChecklistModal({
   const progress = calculateProgress();
   const overallStatus = getOverallStatus();
 
+  if (loading) {
+    return <div>Loading checklist...</div>;
+  }
+
   return (
-    <>
-      <SheetUI
-        isOpen={isOpen}
-        setIsOpen={handleClose}
-        variant="sheet"
-        sheetConfig={FormSheetData}
-        formConfig={{
-          initialValues: {},
-          enableReinitialize: false,
-          handleSubmit: handleSubmit,
-          submitButtonText: "Update Checklist",
-          cancelButtonText: "Close",
-          columns: 2,
-          disableSubmit: isSubmitting || !hasChanges,
-          loadingMessage: isSubmitting ? "Updating checklist..." : "",
-          formFields: [
-            // Progress header
-            {
-              sheetCardExtension: true,
-              sheetCardTitle: "Clearance Progress Overview",
-              InputFields: [
-                {
-                  InputField: () => (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-sm font-medium text-neutral-900">
-                            Overall Status:
-                          </span>
-                          <div className="mt-1">
-                            <Badge variant={getStatusVariant(overallStatus)}>
-                              {overallStatus}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-neutral-900">
-                            Progress:
-                          </span>
-                          <div className="mt-2">
-                            <Progress value={progress} className="h-2" />
-                            <span className="text-xs text-neutral-900 mt-1">
-                              {progress}% Complete
-                            </span>
-                          </div>
+    <SheetUI
+      isOpen={isOpen}
+      setIsOpen={handleClose}
+      variant="sheet"
+      sheetConfig={{
+        triggerText: "",
+        title: `Clearance Checklist - ${
+          clearanceRequest?.employee_name || "Employee"
+        }`,
+        footer: null,
+        width: "800px",
+      }}
+      formConfig={{
+        initialValues: {},
+        enableReinitialize: false,
+        handleSubmit: handleSubmit,
+        submitButtonText: "Update Checklist",
+        cancelButtonText: "Close",
+        columns: 2,
+        disableSubmit: isSubmitting,
+        loadingMessage: isSubmitting ? "Updating checklist..." : "",
+        formFields: [
+          // Progress header
+          {
+            sheetCardExtension: true,
+            sheetCardTitle: "Progress Overview",
+            InputFields: [
+              {
+                InputField: () => (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-sm font-medium">
+                          Overall Status:
+                        </span>
+                        <div className="mt-1">
+                          <Badge
+                            variant={
+                              overallStatus === "COMPLETED"
+                                ? "success"
+                                : overallStatus === "IN_PROCESS"
+                                ? "info"
+                                : overallStatus === "REJECTED"
+                                ? "error"
+                                : "warning"
+                            }
+                          >
+                            {overallStatus.replace("_", " ")}
+                          </Badge>
                         </div>
                       </div>
-                      <div className="text-sm text-neutral-900">
-                        <strong>Employee:</strong>{" "}
-                        {clearanceRequest?.employee_name} (
-                        {clearanceRequest?.employee_id})
-                        <br />
-                        <strong>Type:</strong>{" "}
-                        {clearanceRequest?.clearance_type}
-                        <br />
-                        <strong>Department:</strong>{" "}
-                        {clearanceRequest?.department}
+                      <div>
+                        <span className="text-sm font-medium">Progress:</span>
+                        <div className="mt-2">
+                          <Progress value={progress} className="h-2" />
+                          <span className="text-xs mt-1">
+                            {progress}% Complete
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  ),
-                  name: "progress_overview",
-                  label: "",
-                  colsSpan: 2,
-                },
-              ],
-            },
-            // Department sections
-            ...generateFormFields(),
-          ],
-        }}
-      />
-    </>
+                    <div className="text-sm">
+                      <strong>Employee:</strong>{" "}
+                      {clearanceRequest?.employee_name || "N/A"}
+                      <br />
+                      <strong>Type:</strong>{" "}
+                      {clearanceTypes?.find(
+                        (type) => type?.id === clearanceRequest?.clearance_type
+                      )?.name || "N/A"}
+                      <br />
+                      <strong>Start Date:</strong>{" "}
+                      {renderDate(clearanceRequest?.start_date) || "N/A"}
+                    </div>
+                  </div>
+                ),
+                name: "progress_overview",
+                label: "",
+                colsSpan: 2,
+              },
+            ],
+          },
+          // Dynamic checklist sections
+          ...generateFormFields(),
+        ],
+      }}
+    />
   );
 }

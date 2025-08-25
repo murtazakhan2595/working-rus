@@ -6,6 +6,7 @@ const ClearanceActions = ({
   data,
   reloadData = () => {},
   clearanceList = [],
+  clearanceTypes,
 }) => {
   const [viewChecklist, setViewChecklist] = useState(null);
 
@@ -33,6 +34,7 @@ const ClearanceActions = ({
           setIsOpen={setViewChecklist}
           clearanceRequest={data}
           reload={reloadData}
+          clearanceTypes={clearanceTypes}
         />
       )}
     </>

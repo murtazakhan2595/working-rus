@@ -410,6 +410,22 @@ export const assignmentScopeOptions = [
   { value: "INDIRECT", label: "Indirect Reporting" },
   { value: "DESIGNATION", label: "By Designation" },
 ];
+
+// Clearance status options based on API response
+export const clearanceStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "IN_PROCESS", label: "In Process" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
+export const clearanceRequestStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "NOT_APPLICABLE", label: "Not Applicable" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
 export const PriorityListIcons = [
   {
     value: 3,
