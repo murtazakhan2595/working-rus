@@ -32,6 +32,21 @@ export default function ClearanceChecklistModal({
     }
   }, [clearanceRequest, isOpen]);
 
+  // Helper function to format checklist name
+  const formatChecklistName = (name) => {
+    if (!name) return "Checklist Item";
+
+    // Replace underscores and camelCase with spaces, then capitalize
+    return name
+      .replace(/([A-Z])/g, " $1") // Add space before capital letters
+      .replace(/[_-]/g, " ") // Replace underscores and hyphens with spaces
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+      .trim();
+  };
+
   const fetchChecklistItems = async () => {
     setLoading(true);
     try {
@@ -130,9 +145,9 @@ export default function ClearanceChecklistModal({
     reload();
   };
 
-  // Group items by checklist
+  // Group items by checklist name instead of ID
   const groupedItems = checklistItems.reduce((groups, item) => {
-    const groupKey = item.checklist || "General";
+    const groupKey = formatChecklistName(item.checklist_name) || "General";
     if (!groups[groupKey]) {
       groups[groupKey] = [];
     }
@@ -150,7 +165,7 @@ export default function ClearanceChecklistModal({
         ...groupedItems[groupName].map((item) => ({
           InputField: SelectInputComponent,
           name: `status_${item.id}`,
-          label: `${item.checklist_name} Status`,
+          label: `${formatChecklistName(item.checklist_name)} Status`, // ✅ FORMATTED NAME
           placeholder: "Select Status",
           value: item.status,
           options: clearanceRequestStatusOptions,
