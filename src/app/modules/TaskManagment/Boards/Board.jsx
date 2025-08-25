@@ -13,13 +13,16 @@ import {
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import ActionAlert from "components/ui/ActionAlert";
-import { useSelector } from "react-redux";
+import { useSelector , useDispatch} from "react-redux";
 import Err404 from "app/modules/Error/Err404";
 import { AddNewListModel } from "./Sections";
+import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
+
 
 const Board = () => {
   const { projectId, taskId, boardId } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch()
   // const { activeView } = location.state || {};
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
@@ -46,6 +49,8 @@ const Board = () => {
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
+    dispatch(fetchTaskLabels(projectId));
+    
     return () => {
       isMounted = false;
     };

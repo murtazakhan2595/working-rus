@@ -37,7 +37,7 @@ export const TaskLabelBadge = React.memo(({ label }) => {
 });
 
 export const AddNewLabel = React.memo(
-  ({ showNewLabel = false, setShowNewLabel = () => {}, labelId = null }) => {
+  ({ showNewLabel = false, setShowNewLabel = () => {}, labelId = null,ProjectId,onResetLabelId }) => {
     const dispatch = useDispatch();
     const [selectedColor, setSelectedColor] = useState("#1B1B1B");
     const [newLabelTitle, setNewLabelTitle] = useState("");
@@ -87,13 +87,14 @@ export const AddNewLabel = React.memo(
           {
             name: newLabelTitle,
             color: selectedColor,
+            project_id : ProjectId,
             id: labelId,
           },
           labelId
         );
 
         if (response) {
-          dispatch(fetchTaskLabels());
+         await dispatch(fetchTaskLabels(ProjectId));
           toast.success("Label Added!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -102,8 +103,8 @@ export const AddNewLabel = React.memo(
         console.error("Error saving label:", error);
       } finally {
         setShowNewLabel(false);
-        setNewLabelTitle("");
-        setSelectedColor("#1B1B1B");
+         onResetLabelId();
+         setNewLabelTitle("")
       }
     };
 
@@ -170,18 +171,28 @@ const Labels = React.memo(
     labelsSelected = [],
     onSelectedLabelsChange = () => {},
     editMode = true,
+    projectId
   }) => {
     const dispatch = useDispatch();
     const [showNewLabel, setShowNewLabel] = useState(false);
     const [LabelID, setLabelID] = useState(null);
+   const [persistedProjectId, setPersistedProjectId] = useState(null);
     const labelsList = useSelector((state) => state.task_managment.task_labels);
+    console.log(labelsList)
     const TaskLabelListOptions = getLabelDropdownList(labelsList);
+
+    useEffect(()=>{
+      if(projectId){
+        setPersistedProjectId(projectId)
+         dispatch(fetchTaskLabels(projectId));
+      }
+    },[projectId,dispatch])
 
     const handleDeleteLabel = async (labelId) => {
       const response = await deleteTaskLabel(labelId);
       try {
         if (response) {
-          dispatch(fetchTaskLabels());
+          await dispatch(fetchTaskLabels(persistedProjectId));
           toast.success("Label Deleted!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -240,9 +251,11 @@ const Labels = React.memo(
         )}
         {showNewLabel && (
           <AddNewLabel
+            ProjectId={persistedProjectId} 
             showNewLabel={showNewLabel}
             setShowNewLabel={setShowNewLabel}
             labelId={LabelID}
+            onResetLabelId={() => setLabelID(null)}  
           />
         )}
       </>

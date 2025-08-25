@@ -1,5 +1,6 @@
 import { countries } from "country-data";
 import Config from "constants/config";
+import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
   fetchDepartments,
   fetchDesignations,
@@ -7,7 +8,6 @@ import {
   fetchBranches,
   fetchCalendarHoliday,
 } from "state/slices/CommonSlice";
-import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
   fetchModules,
   fetchUserRoles,
@@ -826,9 +826,9 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchDesignations());
   await dispatch(fetchCalendarHoliday(userprofile.id));
   await dispatch(fetchDocumentCategory());
-  dispatch(fetchTaskLabels());
   await dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
   await dispatch(fetchUserAttendanceDetails(userprofile.id));
+  dispatch(fetchTaskLabels());
   await dispatch(fetchProjects(userprofile));
 };
