@@ -45,4 +45,5 @@ export const EvaluationType = {
   description: null,
   id: null,
   created_at: null,
+  created_by: null,
 }

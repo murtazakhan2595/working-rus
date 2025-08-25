@@ -99,6 +99,11 @@ const Config = {
   APPROVAL_HIERARCHY: true,
   LEAVE_SETUP: true,
   CLEARANCE_CHECKLIST: true,
+
+  //--------------Performance Edge-----------
+  PERFORMANCE_EDGE:true,
+  //Sub Modules
+  GENERATE_FORM:true,
 };
 
 export const URLS = [
