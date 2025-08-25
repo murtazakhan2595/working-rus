@@ -12,7 +12,8 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Install project dependencies
 RUN npm ci --silent
-RUN npm install react-scripts@5.0.1 -g --silent
+RUN npm install react-scripts@5.0.1 --silent
+# RUN npm install react-scripts@5.0.1 -g --silent
 
 # Copy the rest of the application code to the container
 COPY . ./
