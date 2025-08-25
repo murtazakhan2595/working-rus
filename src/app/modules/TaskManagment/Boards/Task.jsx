@@ -164,6 +164,7 @@ const TaskDetails = ({
           <div className="flex justify-start items-start py-0.5">
             {task?.label && task?.label.length > 0 && (
               <Labels
+                projectId={projectId} 
                 labelsSelected={task.label || []}
                 onSelectedLabelsChange={() => {}}
                 editMode={false}
