@@ -938,6 +938,27 @@ export const uploadRecord = async (formData, URL) => {
   }
 };
 
+
+export const getEmployeeTenure = async (employee_id) => {
+ const filterData = {employee_id:employee_id};
+  try {
+    const URL = `/employee-tenure/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      
+      return ResponseData;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 export {
   getDepartmentList,
   getManagersList,

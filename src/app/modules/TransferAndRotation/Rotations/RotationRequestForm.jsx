@@ -1,5 +1,6 @@
 import { saveJobRotation, getJobRotationReasons, getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
 import { JobRotation } from "app/utils/Types/TransferAndRotation";
+import { getEmployeeTenure } from "app/hooks/general";
 import {
     TextAreaInput,
     TextInput,
@@ -16,13 +17,14 @@ import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 
-const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdminView, isBranchView, isDepartmentView }) => {
+const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdminView, isBranchView, isDepartmentView, isEmployee = false }) => {
     const Employees = GetEmployeeFilteredList(
         false,
         isAdminView,
         isBranchView,
         isDepartmentView
     );
+    const UserDetails = GetDispatchStateList('user_details', 'emp');
     const Managers = GetDispatchStateList("reportingManagers", "emp") || []
     const Departments = GetDispatchStateList("departments", "common") || []
     const Branches = GetDispatchStateList("branches", "common") || []
@@ -94,9 +96,41 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
         };
     }, [id]);
 
+    useEffect(() => {
+        if (isEmployee) {
+            setSelectedEmployee(UserDetails);
+
+            const fetchBranchTenure = async () => {
+                try {
+                    const branch_tenure = await getBranchTenure(UserDetails.id, UserDetails.branch_id);
+                    setFormData((prev) => ({
+                        ...prev,
+                        employee: UserDetails.id,
+                        branch_tenure: branch_tenure,
+                    }));
+                } catch (error) {
+                    console.error("Failed to fetch branch tenure:", error);
+                }
+            };
+
+            fetchBranchTenure();
+        }
+    }, [isEmployee, UserDetails]);
+
+
     const handleClose = () => {
         setIsOpen(false);
     };
+
+    const getBranchTenure = async (employee_id, branch_id) => {
+        try {
+            const response = await getEmployeeTenure(employee_id);
+            const branchTenure = response.find(obj => obj.branch_id === branch_id);
+            console.log(response, UserDetails, branchTenure)
+            return `${branchTenure?.months || 0} months`;
+        } catch (error) { console.log(error); }
+        return '0 months';
+    }
 
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
@@ -141,6 +175,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
                 columns: 2,
+                renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
@@ -154,11 +189,14 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 required: true,
                                 label: "Employee",
                                 options: Employees,
-                                onFieldUpdate: async (_, value) => {
+                                disabled: isEmployee,
+                                onFieldUpdate: async (_, value, __, handleChange) => {
                                     const employee = value
                                         ? Employees.find((obj) => obj.value === value)
                                         : {};
                                     setSelectedEmployee(employee);
+                                    const branch_tenure = await getBranchTenure(employee.id, employee.branch_id);
+                                    handleChange('branch_tenure', branch_tenure)
                                 },
                             },
                             {
@@ -199,8 +237,6 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 name: "branch_tenure",
                                 disabled: true,
                                 label: "Branch Tenure",
-                                placeholder: "Reporting Manager",
-                                value: selectedEmployee.branch_tenure,
                             },
 
                         ],
@@ -209,6 +245,14 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                         sheetCardExtension: true,
                         sheetCardTitle: `Rotation Details`,
                         InputFields: [
+                            {
+                                InputField: RadioGroupInput,
+                                label: 'Rotation Type',
+                                name: 'rotation_type',
+                                colsSpan: 2,
+                                required: true,
+                                options: [{ value: "temporary", label: "Temporary" }, { value: "permanent", label: "Permanent" },]
+                            },
                             {
                                 InputField: SelectInputComponent,
                                 name: "new_department",
@@ -239,20 +283,14 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 label: 'Effective Date',
                                 name: 'effective_date',
                                 required: true,
-                            },
-                            {
-                                InputField: RadioGroupInput,
-                                label: 'Rotation Type',
-                                name: 'rotation_type',
-                                colsSpan: 2,
-                                required: true,
-                                options: [{ value: "temporary", label: "Temporary" }, { value: "permanent", label: "Permanent" },]
+                                minDate: new Date(),
                             },
                             {
                                 InputField: DateInput,
-                                label: 'Rotation Type',
+                                label: 'Expiry Date',
                                 name: 'rotation_expiry_date',
-                                required: formValues?.rotation_type?.temporary,
+                                required: formValues?.rotation_type === 'temporary',
+                                renderCondition: formValues?.rotation_type === 'temporary',
                             },
                             {
                                 InputField: NumberInput,

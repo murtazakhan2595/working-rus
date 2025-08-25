@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "components/ui/card";
-import {
-  MyTransfersColumns,
-  TransferForm,
-  EmployeeTransferDetails,
-} from "app/modules/TransferAndRotation/Transfers/Sections";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
+import { RotationRequestForm } from "app/modules/TransferAndRotation";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
-import { getJobRotationRequests, getEmployeeTransferStats } from "app/hooks/transferAndRotation";
+import { getJobRotationRequests, getRotationStats } from "app/hooks/transferAndRotation";
 import Stats from "components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { Button } from "components/ui/button";
@@ -21,12 +17,12 @@ export default function MyJobRotations() {
     results: [],
     count: 0,
   });
-  const [OpenTransferForm, setOpenTransferForm] = useState(false);
+  const [OpenRotationForm, setOpenRotationForm] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState({ employee: userId });
+  const [filterData, setFilterData] = useState({ employee_id: userId });
   const [statsData, setStatsData] = useState({});
 
   const onPageChange = (name, value) => {
@@ -49,8 +45,8 @@ export default function MyJobRotations() {
     let isMounted = true;
     const fetchStatData = async () => {
       try {
-        const filter = { employee: userId };
-        const response = await getEmployeeTransferStats({
+        const filter = { employee_id: userId };
+        const response = await getRotationStats({
           filterData: filter,
         });
 
@@ -105,46 +101,40 @@ export default function MyJobRotations() {
       <Header
         content={
           <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenTransferForm(true);
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setOpenRotationForm(true);
             }}
           >
-            Request Transfer
+            Request Rotation
           </Button>
         }
       />
       <Stats stats={TransferStatsData} />
       <Card>
+        <CardHeader>
+          <CardTitle>My Job Rotations</CardTitle>
+          <CardDescription></CardDescription>
+        </CardHeader>
         <CardContent>
           <TableCustom
             data={MyTransferData.results}
-            columns={JobRotationColumns}
+            columns={JobRotationColumns(fetchData)}
             pagination={true}
             dataTotalSize={MyTransferData.count || 0}
             tableOptions={tableOptions}
           />
         </CardContent>
       </Card>
-      {OpenTransferDetailID && (
-        <EmployeeTransferDetails
-          transferID={OpenTransferDetailID}
-          isOpen={!!OpenTransferDetailID}
+      {OpenRotationForm && (
+        <RotationRequestForm
+          isOpen={OpenRotationForm}
           setIsOpen={() => {
-            setOpenTransferDetailID(null);
-          }}
-          TransferList={MyTransferData.results}
-          reloadData={fetchData}
-          readOnlyMode={true}
-        />
-      )}
-      {OpenTransferForm && (
-        <TransferForm
-          isOpen={OpenTransferForm}
-          setIsOpen={() => {
-            setOpenTransferForm(false);
+            setOpenRotationForm(false);
             fetchData(true);
           }}
+          isAdminView={true}
           isEmployee={true}
         />
       )}
