@@ -378,7 +378,7 @@ const OfficeSetting = () => {
                       setReloadSettingData((prev) => {
                         return {
                           ...prev,
-                          onboarding: !prev["evaluation-type"],
+                          'evaluation-type': !prev["evaluation-type"],
                         };
                       });
                     }}

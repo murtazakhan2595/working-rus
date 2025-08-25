@@ -1,5 +1,6 @@
 import BranchAction from "../Screens/Branches/BranchAction";
 import GraceTimeAction from "../Screens/GraceTime/GraceTimeAction";
+import EvaluationTypeAction from "../Screens/EvaluationType/EvaluationTypeAction";
 import { ShiftActions } from "app/modules/OfficeSetting";
 import DepartmentAction from "../Screens/Departments/DepartmentAction";
 import DesignationAction from "../Screens/Designations/DesignationAction";
@@ -192,6 +193,33 @@ export const GraceTimeColumn = (reload) => [
     text: "Action",
     formatter: (_, row, data_list) => (
       <GraceTimeAction reloadData={reload} data={row} DataList={data_list} />
+    ),
+    width: "80px",
+  },
+];
+
+export const EvaluationTypeColumn = (reload) => [
+  {
+    dataField: "id",
+    text: "ID",
+    dataSort: true,
+    formatter: (cell) => <FormatID value={cell} prefix={"EVT-"} />,
+  },
+  {
+    dataField: "name",
+    dataSort: true,
+    text: "Name",
+  },
+  {
+    dataField: "description",
+    text: "Description",
+    dataSort: true,
+    formatter: (cell) => `${cell}min`,
+  },
+  {
+    text: "Action",
+    formatter: (_, row, data_list) => (
+      <EvaluationTypeAction reloadData={reload} data={row} DataList={data_list} />
     ),
     width: "80px",
   },

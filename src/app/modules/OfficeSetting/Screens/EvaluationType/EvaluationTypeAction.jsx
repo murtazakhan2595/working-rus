@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import AddGraceTimeForm from "./AddGraceTimeForm";
-import ViewGraceTime from "app/modules/OfficeSetting/Screens/GraceTime/ViewGraceTime";
+import AddEvaluationTypeForm from "./AddEvaluationTypeForm";
+import ViewEvaluationType from "app/modules/OfficeSetting/Screens/EvaluationType/ViewEvaluationType";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
+const EvaluationTypeAction = ({ data, reloadData, DataList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteBranch, setDeleteBranch] = useState(null);
@@ -42,7 +42,7 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/grace-times/${data?.id}/`, data?.name);
+      await deleteRecord(`/evaluation-types/${data?.id}/`, data?.name);
       if (typeof reloadData === "function") {
         reloadData(true);
       }
@@ -62,10 +62,10 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
         onView={permissions.graceTime.canView ? handleView : null}
         onEdit={permissions.graceTime.canUpdate ? handleEdit : null}
         onDelete={permissions.graceTime.canDelete ? handleDelete : null}
-        viewText="View Grace Time"
-        editText="Edit Grace Time"
-        deleteText="Delete Grace Time"
-        menuTooltip="Grace Time Actions"
+        viewText="View Evaluation Type"
+        editText="Edit Evaluation Type"
+        deleteText="Delete Evaluation Type"
+        menuTooltip="Grace Evaluation Type"
       />
 
       {deleteBranch?.open && (
@@ -84,7 +84,7 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
       )}
 
       {edit?.open && (
-        <AddGraceTimeForm
+        <AddEvaluationTypeForm
           reloadData={() => {
             reloadData(true);
             setEdit(null);
@@ -95,7 +95,7 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
       )}
 
       {view?.visible && (
-        <ViewGraceTime
+        <ViewEvaluationType
           isOpen={view.visible}
           setIsOpen={(isOpen) =>
             setView((prev) => ({ ...prev, visible: isOpen }))
@@ -110,4 +110,4 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
   );
 };
 
-export default GraceTimeAction;
+export default EvaluationTypeAction;
