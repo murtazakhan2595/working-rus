@@ -14,6 +14,7 @@ import {
   clearanceStatusOptions,
   clearanceRequestStatusOptions,
 } from "data/Data";
+import { useSelector } from "react-redux";
 
 export default function ClearanceChecklistModal({
   isOpen = false,
@@ -25,6 +26,10 @@ export default function ClearanceChecklistModal({
   const [checklistItems, setChecklistItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get current logged-in user
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const currentUserId = userProfile?.id;
 
   useEffect(() => {
     if (clearanceRequest && isOpen) {
@@ -45,6 +50,33 @@ export default function ClearanceChecklistModal({
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ")
       .trim();
+  };
+
+  // Check if current user can edit specific item based on assignment scope
+  const canUserEditItem = (item) => {
+    if (!currentUserId || !item.assignment_scope) return false;
+
+    switch (item.assignment_scope) {
+      case "DIRECT":
+        return currentUserId === parseInt(item.direct_report);
+      case "INDIRECT":
+        return (
+          Array.isArray(item.indirect_report) &&
+          item.indirect_report.includes(currentUserId)
+        );
+      case "DESIGNATION":
+        return (
+          Array.isArray(item.employees_with_matching_designation) &&
+          item.employees_with_matching_designation.includes(currentUserId)
+        );
+      default:
+        return false;
+    }
+  };
+
+  // Check if user can edit any item in group (for remarks field)
+  const canUserEditGroupRemarks = (groupItems) => {
+    return groupItems.some((item) => canUserEditItem(item));
   };
 
   const fetchChecklistItems = async () => {
@@ -108,13 +140,22 @@ export default function ClearanceChecklistModal({
     return "PENDING";
   };
 
-  // ONLY API CALL - when form is submitted
+  // ONLY API CALL - when form is submitted (only update items user can edit)
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setIsSubmitting(true);
 
-      // Update all items via API
-      const updatePromises = checklistItems.map((item) =>
+      // Update only items that user has permission to edit
+      const editableItems = checklistItems.filter((item) =>
+        canUserEditItem(item)
+      );
+
+      if (editableItems.length === 0) {
+        toast.warning("You don't have permission to update any items.");
+        return;
+      }
+
+      const updatePromises = editableItems.map((item) =>
         updateClearanceRequestItem(item.id, {
           status: item.status,
           remarks: item.remarks || "",
@@ -123,7 +164,9 @@ export default function ClearanceChecklistModal({
 
       await Promise.all(updatePromises);
 
-      toast.success("Checklist updated successfully!");
+      toast.success(
+        `Updated ${editableItems.length} checklist item(s) successfully!`
+      );
 
       if (getOverallStatus() === "COMPLETED") {
         toast.success("Clearance process completed!");
@@ -155,50 +198,72 @@ export default function ClearanceChecklistModal({
     return groups;
   }, {});
 
-  // Simple form fields generation
+  // Simple form fields generation with permission checks
   const generateFormFields = () => {
     return Object.keys(groupedItems).map((groupName) => ({
       sheetCardExtension: true,
       sheetCardTitle: groupName,
       InputFields: [
         // Status dropdowns for each item
-        ...groupedItems[groupName].map((item) => ({
-          InputField: SelectInputComponent,
-          name: `status_${item.id}`,
-          label: `${formatChecklistName(item.checklist_name)} Status`, // ✅ FORMATTED NAME
-          placeholder: "Select Status",
-          value: item.status,
-          options: clearanceRequestStatusOptions,
-          disabled: item.is_locked,
-          colsSpan: 1,
-          onFieldUpdate: (field, newValue) => {
-            updateItemStatus(item.id, newValue);
-          },
-        })),
+        ...groupedItems[groupName].map((item) => {
+          const canEdit = canUserEditItem(item);
+          const isDisabled = item.is_locked || !canEdit;
 
-        // Remarks textarea for the group
-        {
-          InputField: TextAreaInput,
-          name: `remarks_${groupName}`,
-          label: "Remarks (Optional)",
-          placeholder: "Add any additional comments...",
-          value: groupedItems[groupName][0]?.remarks || "",
-          disabled: groupedItems[groupName].every((item) => item.is_locked),
-          colsSpan: 2,
-          rows: 2,
-          onFieldUpdate: (field, newValue) => {
-            // Update remarks for first item in group
-            if (groupedItems[groupName][0]) {
-              updateItemRemarks(groupedItems[groupName][0].id, newValue);
-            }
-          },
-        },
+          return {
+            InputField: SelectInputComponent,
+            name: `status_${item.id}`,
+            label: `${formatChecklistName(item.checklist_name)} Status`,
+            placeholder: canEdit ? "Select Status" : "No permission",
+            value: item.status,
+            options: clearanceRequestStatusOptions,
+            disabled: isDisabled,
+            colsSpan: 1,
+            // Add visual indicator for permission status
+            helperText: !canEdit
+              ? "You don't have permission to edit this item"
+              : undefined,
+            onFieldUpdate: (field, newValue) => {
+              if (canEdit) {
+                updateItemStatus(item.id, newValue);
+              }
+            },
+          };
+        }),
+
+        // Remarks textarea for the group (only show if user can edit at least one item)
+        ...(canUserEditGroupRemarks(groupedItems[groupName])
+          ? [
+              {
+                InputField: TextAreaInput,
+                name: `remarks_${groupName}`,
+                label: "Remarks (Optional)",
+                placeholder: "Add any additional comments...",
+                value: groupedItems[groupName][0]?.remarks || "",
+                disabled: groupedItems[groupName].every(
+                  (item) => item.is_locked
+                ),
+                colsSpan: 2,
+                rows: 2,
+                onFieldUpdate: (field, newValue) => {
+                  // Update remarks for first item in group
+                  if (groupedItems[groupName][0]) {
+                    updateItemRemarks(groupedItems[groupName][0].id, newValue);
+                  }
+                },
+              },
+            ]
+          : []),
       ],
     }));
   };
 
   const progress = calculateProgress();
   const overallStatus = getOverallStatus();
+
+  // Check if user has permission to edit any items
+  const hasAnyEditPermission = checklistItems.some((item) =>
+    canUserEditItem(item)
+  );
 
   if (loading) {
     return <div>Loading checklist...</div>;
@@ -221,10 +286,11 @@ export default function ClearanceChecklistModal({
         initialValues: {},
         enableReinitialize: false,
         handleSubmit: handleSubmit,
-        submitButtonText: "Update Checklist",
+        submitButtonText: hasAnyEditPermission ? "Update Checklist" : "Close",
         cancelButtonText: "Close",
         columns: 2,
-        disableSubmit: isSubmitting,
+        disableSubmit: isSubmitting || !hasAnyEditPermission,
+        hideSubmit: !hasAnyEditPermission, // Hide submit button if no edit permissions
         loadingMessage: isSubmitting ? "Updating checklist..." : "",
         formFields: [
           // Progress header
@@ -235,6 +301,15 @@ export default function ClearanceChecklistModal({
               {
                 InputField: () => (
                   <div className="space-y-4">
+                    {!hasAnyEditPermission && (
+                      <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                        <p className="text-sm text-yellow-800">
+                          <strong>Note:</strong> You don't have permission to
+                          edit any items in this checklist. This view is
+                          read-only for you.
+                        </p>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <span className="text-sm font-medium">
