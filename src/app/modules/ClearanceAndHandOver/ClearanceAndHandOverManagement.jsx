@@ -7,10 +7,10 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import { Card, CardContent } from "components/ui/card";
-import { Button } from "components/ui/button";
-import ClearanceChecklistModal from "./Sections/ClearanceChecklistModal";
 import ClearanceRequests from "./Sections/ClearanceRequests";
-// import { getClearanceRequests } from "app/hooks/clearanceHooks"; // You'll need to create this
+import ClearanceRecords from "./Sections/ClearanceRecords"; // NEW IMPORT
+import { getClearanceRequestsList } from "app/hooks/clearanceAndHandover";
+import { getClearanceTypeList } from "app/hooks/officeSetting";
 
 export default function ClearanceAndHandover() {
   const [activeTab, setActiveTab] = useState("clearance-requests");
@@ -18,51 +18,72 @@ export default function ClearanceAndHandover() {
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [selectedClearance, setSelectedClearance] = useState(null);
-  const [showChecklistModal, setShowChecklistModal] = useState(false);
+  const [data, setData] = useState({ results: [], count: 0 });
+  const [clearanceTypes, setClearanceTypes] = useState([]);
+
+  // Load clearance types on component mount - MOVED OUTSIDE fetchData
+  useEffect(() => {
+    fetchClearanceTypes();
+  }, []);
+
+  const fetchClearanceTypes = async () => {
+    try {
+      console.log("Fetching clearance types...");
+      const response = await getClearanceTypeList();
+      console.log("Clearance types response:", response);
+
+      if (response) {
+        setClearanceTypes(response?.results || []);
+        console.log("Clearance types set:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching clearance types:", error);
+      setClearanceTypes([]); // Set empty array on error
+    }
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const payload = { options, ordering, filterData };
-      console.log("Fetching clearance data with payload:", activeTab);
+      console.log("Fetching clearance data with payload:", payload);
 
       if (activeTab === "clearance-requests") {
-        // const response = await getClearanceRequests(payload);
-        // Mock data for now
-        const response = {
-          results: [
-            {
-              id: 1,
-              employee_name: "John Doe",
-              employee_id: "EMP001",
-              department: "IT Department",
-              designation: "Software Engineer",
-              clearance_type: "Leave",
-              clearance_start_date: "2024-08-20",
-              status: "Pending",
-            },
-            {
-              id: 2,
-              employee_name: "Jane Smith",
-              employee_id: "EMP002",
-              department: "HR Department",
-              designation: "HR Specialist",
-              clearance_type: "Internal Transfer",
-              clearance_start_date: "2024-08-18",
-              status: "In Process",
-            },
-          ],
-          count: 2,
+        // Fetch requests that are NOT completed
+        const requestsPayload = {
+          ...payload,
+          filterData: {
+            ...payload.filterData,
+            status__ne: "COMPLETED", // Exclude completed records
+          },
         };
+        const response = await getClearanceRequestsList(requestsPayload);
 
-        if (response) {
+        if (response && response.results) {
           setData(response);
+        } else {
+          setData({ results: [], count: 0 });
+        }
+      } else if (activeTab === "clearance-records") {
+        // Fetch ONLY completed records
+        const recordsPayload = {
+          ...payload,
+          filterData: {
+            ...payload.filterData,
+            // status: "COMPLETED", // Only completed records
+          },
+        };
+        const response = await getClearanceRequestsList(recordsPayload);
+
+        if (response && response.results) {
+          setData(response);
+        } else {
+          setData({ results: [], count: 0 });
         }
       }
     } catch (error) {
-      console.error("Error fetching clearance requests:", error);
+      console.error("Error fetching clearance data:", error);
+      setData({ results: [], count: 0 });
     } finally {
       setLoading(false);
     }
@@ -83,10 +104,9 @@ export default function ClearanceAndHandover() {
     setOptions((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleViewChecklist = (clearanceRequest) => {
-    setSelectedClearance(clearanceRequest);
-    setShowChecklistModal(true);
-  };
+  // Debug: Log current state
+  console.log("Current clearanceTypes state:", clearanceTypes);
+  console.log("Is clearanceTypes array?", Array.isArray(clearanceTypes));
 
   const tabsData = [
     {
@@ -100,39 +120,36 @@ export default function ClearanceAndHandover() {
           loading={loading}
           data={data}
           reload={fetchData}
-          onViewChecklist={handleViewChecklist}
           filterData={filterData}
           setFilterData={setFilterData}
+          clearanceTypes={clearanceTypes}
         />
       ),
     },
-    // Future tabs can be added here like:
-    // {
-    //   value: "clearance-templates",
-    //   label: "Clearance Templates",
-    //   component: <ClearanceTemplates />
-    // },
-    // {
-    //   value: "clearance-reports",
-    //   label: "Clearance Reports",
-    //   component: <ClearanceReports />
-    // }
+    // NEW TAB - Clearance Records
+    {
+      value: "clearance-records",
+      label: "Clearance & Handover Records",
+      component: (
+        <ClearanceRecords
+          options={options}
+          onPageChange={onPageChange}
+          setOrdering={setOrdering}
+          loading={loading}
+          data={data}
+          reload={fetchData}
+          filterData={filterData}
+          setFilterData={setFilterData}
+          clearanceTypes={clearanceTypes}
+        />
+      ),
+    },
+    // Future tabs can be added here
   ];
 
   return (
     <div className="flex flex-col gap-4">
-      <Header
-        content={
-          <>
-            {activeTab === "clearance-requests" && (
-              <div className="flex gap-2">
-                <Button variant="outline">Export Clearance Data</Button>
-                <Button>Generate Report</Button>
-              </div>
-            )}
-          </>
-        }
-      />
+      <Header />
 
       <Tabs
         value={activeTab}
@@ -157,15 +174,6 @@ export default function ClearanceAndHandover() {
           ))}
         </Card>
       </Tabs>
-{/* 
-      {showChecklistModal && selectedClearance && (
-        <ClearanceChecklistModal
-          isOpen={showChecklistModal}
-          setIsOpen={setShowChecklistModal}
-          clearanceRequest={selectedClearance}
-          reload={fetchData}
-        />
-      )} */}
     </div>
   );
 }
