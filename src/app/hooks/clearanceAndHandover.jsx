@@ -178,10 +178,52 @@ const getClearanceActionLogs = async (payload) => {
   }
 };
 
+const getClearanceAnalytics = async (filterData = {}) => {
+  const queryParams = new URLSearchParams();
+
+  // Add filters to query params
+  Object.keys(filterData).forEach((key) => {
+    if (
+      filterData[key] !== "" &&
+      filterData[key] !== null &&
+      filterData[key] !== undefined
+    ) {
+      if (Array.isArray(filterData[key])) {
+        queryParams.append(key, filterData[key].join(","));
+      } else {
+        queryParams.append(key, filterData[key]);
+      }
+    }
+  });
+
+  const URL = `/analytics/clearance/list/?${queryParams.toString()}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting clearance analytics:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {
+      status_summary: [],
+      department_summary: [],
+      type_summary: [],
+      clearance_list: [],
+    };
+  }
+};
+
 export {
   getClearanceRequestsList,
   getClearanceRequestById,
   getClearanceRequestItems,
+  getClearanceAnalytics,
   updateClearanceRequestItem,
   createClearanceRequest,
   updateClearanceRequest,
