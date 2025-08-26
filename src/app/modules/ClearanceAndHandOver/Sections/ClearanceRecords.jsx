@@ -9,27 +9,7 @@ import {
   CardDescription,
   CardTitle,
 } from "components/ui/card";
-
-// Department options - you may want to fetch this from your common state or API
-const departmentOptions = [
-  { value: "IT Department", label: "IT Department" },
-  { value: "HR Department", label: "HR Department" },
-  { value: "Finance Department", label: "Finance Department" },
-  { value: "Marketing Department", label: "Marketing Department" },
-  { value: "Operations Department", label: "Operations Department" },
-  { value: "Legal Department", label: "Legal Department" },
-];
-
-// Clearance type options based on API schema
-const clearanceTypeOptions = [
-  { value: "1", label: "Leave" },
-  { value: "2", label: "Job Rotation" },
-  { value: "3", label: "Internal Transfer" },
-  { value: "4", label: "External Transfer" },
-  { value: "5", label: "Resignation" },
-  { value: "6", label: "Termination" },
-  { value: "7", label: "Special Leave" },
-];
+import { useSelector } from "react-redux";
 
 export default function ClearanceRecords({
   options,
@@ -42,11 +22,7 @@ export default function ClearanceRecords({
   setFilterData,
   clearanceTypes,
 }) {
-
-  console.log(
-    "datadatadatadatadatadatadatadatadatadatadatadatadatadatadata",
-    data
-  );
+  const Departments = useSelector((state) => state.common.departments);
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -93,13 +69,13 @@ export default function ClearanceRecords({
             },
             {
               type: "select-multi",
-              options: departmentOptions,
+              options: Departments,
               name: "department",
               placeholder: "Department",
             },
             {
               type: "select",
-              options: clearanceTypeOptions,
+              options: clearanceTypes,
               name: "clearance_type",
               placeholder: "Clearance Type",
             },

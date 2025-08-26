@@ -33,7 +33,7 @@ const ClearanceRecordsModal = ({
 
       // Fetch action logs and attach them to the record
       const payload = {
-        // filterData: { request: id },
+        filterData: { checklist_request: id },
         options: { page: 1, sizePerPage: 100 },
         ordering: "-timestamp",
       };

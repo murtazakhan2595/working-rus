@@ -54,7 +54,7 @@ export default function ClearanceAndHandover() {
           ...payload,
           filterData: {
             ...payload.filterData,
-            status__ne: "COMPLETED", // Exclude completed records
+            status: ["PENDING", "IN_PROCESS", "COMPLETED", "REJECTED"], // Exclude completed records
           },
         };
         const response = await getClearanceRequestsList(requestsPayload);
@@ -70,7 +70,7 @@ export default function ClearanceAndHandover() {
           ...payload,
           filterData: {
             ...payload.filterData,
-            // status: "COMPLETED", // Only completed records
+            status: ["COMPLETED"], // Only completed records
           },
         };
         const response = await getClearanceRequestsList(recordsPayload);
