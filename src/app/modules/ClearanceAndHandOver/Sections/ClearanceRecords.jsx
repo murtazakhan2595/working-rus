@@ -1,51 +1,52 @@
 import { TableCustom } from "components";
 import { PageLoader } from "components";
-import { ClearanceColumns } from "./ClearanceColumns";
+import { ClearanceRecordsColumns } from "./ClearanceRecordsColumns";
 import { FilterInput } from "components/FormControl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   CardHeader,
   CardContent,
   CardDescription,
   CardTitle,
 } from "components/ui/card";
-import { useSelector } from "react-redux";
-import { getClearanceTypeList } from "app/hooks/officeSetting";
-import { clearanceStatusOptions } from "data/Data";
 
+// Department options - you may want to fetch this from your common state or API
+const departmentOptions = [
+  { value: "IT Department", label: "IT Department" },
+  { value: "HR Department", label: "HR Department" },
+  { value: "Finance Department", label: "Finance Department" },
+  { value: "Marketing Department", label: "Marketing Department" },
+  { value: "Operations Department", label: "Operations Department" },
+  { value: "Legal Department", label: "Legal Department" },
+];
 
+// Clearance type options based on API schema
+const clearanceTypeOptions = [
+  { value: "1", label: "Leave" },
+  { value: "2", label: "Job Rotation" },
+  { value: "3", label: "Internal Transfer" },
+  { value: "4", label: "External Transfer" },
+  { value: "5", label: "Resignation" },
+  { value: "6", label: "Termination" },
+  { value: "7", label: "Special Leave" },
+];
 
-export default function ClearanceRequests({
+export default function ClearanceRecords({
   options,
   onPageChange,
   setOrdering,
   loading,
   data,
   reload,
-  onViewChecklist,
   filterData,
   setFilterData,
+  clearanceTypes,
 }) {
-  const Departments = useSelector((state) => state.common.departments);
-  const [clearanceTypes, setClearanceTypes] = useState([]);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchClearanceTypes = async () => {
-      try {
-        const response = await getClearanceTypeList();
-        if (isMounted && response?.results) {
-          setClearanceTypes(response.results);
-        }
-      } catch (error) {
-        console.error("Error fetching clearance types:", error);
-      }
-    };
-    fetchClearanceTypes();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  console.log(
+    "datadatadatadatadatadatadatadatadatadatadatadatadatadatadata",
+    data
+  );
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -72,10 +73,13 @@ export default function ClearanceRequests({
     <div className="flex flex-col">
       <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
         <div>
-          <CardTitle className="text-primary">Clearance Requests</CardTitle>
+          <CardTitle className="text-primary">
+            Clearance & Handover Records
+          </CardTitle>
           <CardDescription className="text-neutral-1100">
-            Manage and track all employee clearance requests including leave,
-            transfers, rotations, and other clearance types.
+            View historical records of all completed clearance and handover
+            processes. This tab serves as an audit log for compliance and
+            reference.
           </CardDescription>
         </div>
       </CardHeader>
@@ -89,26 +93,25 @@ export default function ClearanceRequests({
             },
             {
               type: "select-multi",
-              options: Departments,
+              options: departmentOptions,
               name: "department",
               placeholder: "Department",
             },
             {
               type: "select",
-              options: clearanceStatusOptions,
-              name: "status",
-              placeholder: "Clearance Status",
-            },
-            {
-              type: "select",
-              options: clearanceTypes,
+              options: clearanceTypeOptions,
               name: "clearance_type",
               placeholder: "Clearance Type",
             },
             {
               type: "date-range",
               name: "start_date_range",
-              placeholder: "Start Date",
+              placeholder: "Clearance Start Date",
+            },
+            {
+              type: "date-range",
+              name: "completion_date_range",
+              placeholder: "Completion Date",
             },
           ]}
           onChange={handleFilterChange}
@@ -118,7 +121,7 @@ export default function ClearanceRequests({
           <PageLoader />
         ) : (
           <TableCustom
-            columns={ClearanceColumns(
+            columns={ClearanceRecordsColumns(
               reload,
               data?.results || [],
               clearanceTypes

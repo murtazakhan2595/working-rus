@@ -13,6 +13,8 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
+
+
 const formDataHeader = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   // Don't explicitly set 'Content-Type' for FormData
@@ -175,11 +177,12 @@ const getAllBoards = async (payload) => {
   return [];
 };
 
+// get all labels here----------------------------------------------------------------------
 export const getAllLabels = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/TaskLabel`;
+  const URL = `/TaskLabel?project_id=${payload}`;
   // /?ordering=-name&${
   //   pageNo ? `page=${pageNo}&` : ""
   // }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -1061,15 +1064,17 @@ export const getTaskLabelById = async (id) => {
   }
 };
 
+// here you adding the labels-------------------------------------------------
 export const addTaskLabel = async (payload, id) => {
   try {
     // Create FormData object
     const formData = new FormData();
     formData.append("name", payload?.name);
     formData.append("color", payload?.color);
+    formData.append("project_id",payload?.project_id)
     const url = id
       ? `${baseUrl}/TaskLabel/${id}` // Use id if updating
-      : `${baseUrl}/TaskLabel`; // No id means create new
+      : `${baseUrl}/TaskLabel?project_id=${payload?.project_id}`; // No id means create new
 
     const method = id ? "PUT" : "POST"; // Determine method based on existence of id
 

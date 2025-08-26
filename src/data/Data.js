@@ -1,5 +1,6 @@
 import { countries } from "country-data";
 import Config from "constants/config";
+import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
   fetchDepartments,
   fetchDesignations,
@@ -7,7 +8,6 @@ import {
   fetchBranches,
   fetchCalendarHoliday,
 } from "state/slices/CommonSlice";
-import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
   fetchModules,
   fetchUserRoles,
@@ -410,6 +410,22 @@ export const assignmentScopeOptions = [
   { value: "INDIRECT", label: "Indirect Reporting" },
   { value: "DESIGNATION", label: "By Designation" },
 ];
+
+// Clearance status options based on API response
+export const clearanceStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "IN_PROCESS", label: "In Process" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
+export const clearanceRequestStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "NOT_APPLICABLE", label: "Not Applicable" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
 export const PriorityListIcons = [
   {
     value: 3,
@@ -810,9 +826,9 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchDesignations());
   await dispatch(fetchCalendarHoliday(userprofile.id));
   await dispatch(fetchDocumentCategory());
-  dispatch(fetchTaskLabels());
   await dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
   await dispatch(fetchUserAttendanceDetails(userprofile.id));
+  dispatch(fetchTaskLabels());
   await dispatch(fetchProjects(userprofile));
 };
