@@ -6,6 +6,8 @@ import { renderDate } from "utils/renderValues";
 import { Badge } from "components/ui/badge";
 import { EmployeeUsername } from "utils/getValuesFromTables";
 import { getStatusVariant } from "components";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { DesignationName } from "utils/getValuesFromTables";
 export const ClearanceRecordsColumns = (
   reload,
   clearanceRecords = [],
@@ -31,31 +33,22 @@ export const ClearanceRecordsColumns = (
     },
   },
   {
-    dataField: "department", // API returns department ID
+    dataField: "department",
     text: "Department",
     sort: true,
-    formatter: (cell, row) => {
-      // You might want to use DepartmentName component from utils if you have department mapping
-      return cell || "N/A";
-    },
+    formatter: (cell, row) => <DepartmentName value={cell} />,
   },
   {
-    dataField: "designation", // API returns designation ID
+    dataField: "designation",
     text: "Designation",
     sort: true,
-    formatter: (cell, row) => {
-      // You might want to use DesignationName component from utils if you have designation mapping
-      return cell || "N/A";
-    },
+    formatter: (cell, row) => <DesignationName value={cell} />,
   },
   {
     dataField: "clearance_type", // API returns clearance_type ID
     text: "Clearance Type",
     sort: true,
     formatter: (cell, row) => {
-      console.log("Clearance Type Cell:", cell);
-      console.log("ClearanceTypes Array:", clearanceTypes);
-      console.log("Is Array:", Array.isArray(clearanceTypes));
 
       // Safety check: ensure clearanceTypes is an array
       if (!Array.isArray(clearanceTypes) || clearanceTypes.length === 0) {

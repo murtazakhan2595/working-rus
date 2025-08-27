@@ -219,6 +219,121 @@ const getClearanceAnalytics = async (filterData = {}) => {
   }
 };
 
+// ==================== CERTIFICATE APIs ====================
+
+// Get clearance certificates list
+const getClearanceCertificatesList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/clearance-certificates/?${
+    ordering ? `ordering=${ordering}&` : ""
+  }${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting clearance certificates list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Create new clearance certificate
+const createClearanceCertificate = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/clearance-certificates/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error creating clearance certificate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// Upload clearance certificate
+const uploadClearanceCertificate = async (id, payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/clearance-certificates/${id}/upload_certificate/`,
+      payload,
+      {
+        headers: formDataHeader(),
+      }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error uploading clearance certificate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// Send clearance certificate
+const sendClearanceCertificate = async (id, payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/clearance-certificates/${id}/send_certificate/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error sending clearance certificate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// Check if certificate exists for a request
+const getClearanceCertificateByRequest = async (requestId) => {
+  try {
+    const response = await getClearanceCertificatesList({
+      filterData: { request: requestId },
+      options: { page: 1, sizePerPage: 1 },
+      ordering: "-id",
+    });
+    return response?.results?.[0] || null;
+  } catch (error) {
+    console.error("Error checking existing certificate:", error);
+    return null;
+  }
+};
+
 export {
   getClearanceRequestsList,
   getClearanceRequestById,
@@ -228,4 +343,11 @@ export {
   createClearanceRequest,
   updateClearanceRequest,
   getClearanceActionLogs,
+
+  // Certificate exports
+  getClearanceCertificatesList,
+  createClearanceCertificate,
+  uploadClearanceCertificate,
+  sendClearanceCertificate,
+  getClearanceCertificateByRequest,
 };

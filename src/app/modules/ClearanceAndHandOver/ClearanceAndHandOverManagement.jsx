@@ -1,4 +1,3 @@
-// src/app/modules/ClearanceAndHandOver/ClearanceAndHandOverManagement.jsx
 
 import { Header } from "components";
 import { useCallback, useEffect, useState } from "react";
@@ -10,9 +9,13 @@ import {
 } from "src/@/components/ui/tabs";
 import { Card, CardContent } from "components/ui/card";
 import ClearanceRequests from "./Sections/ClearanceRequests";
-import ClearanceRecords from "./Sections/ClearanceRecords";
-import ClearanceAnalyticsDashboard from "./Sections/ClearanceAnalyticsDashboard"; // NEW IMPORT
-import { getClearanceRequestsList } from "app/hooks/clearanceAndHandover";
+import ClearanceRecords from "./Sections//ClearanceRecords";
+import ClearanceCertificates from "./Sections/ClearanceCertificates/ClearanceCertificates";
+import ClearanceAnalyticsDashboard from "./Sections/ClearanceAnalyticsDashboard";
+import {
+  getClearanceRequestsList,
+  getClearanceCertificatesList,
+} from "app/hooks/clearanceAndHandover";
 import { getClearanceTypeList } from "app/hooks/officeSetting";
 
 export default function ClearanceAndHandover() {
@@ -77,6 +80,14 @@ export default function ClearanceAndHandover() {
         } else {
           setData({ results: [], count: 0 });
         }
+      } else if (activeTab === "clearance-certificates") {
+        // Fetch certificates data
+        const response = await getClearanceCertificatesList(payload);
+        if (response && response.results) {
+          setData(response);
+        } else {
+          setData({ results: [], count: 0 });
+        }
       }
     } catch (error) {
       console.error("Error fetching clearance data:", error);
@@ -136,7 +147,24 @@ export default function ClearanceAndHandover() {
         />
       ),
     },
-    // NEW TAB - Analytics Dashboard
+    // NEW TAB - Clearance Certificates
+    {
+      value: "clearance-certificates",
+      label: "Clearance Certificates",
+      component: (
+        <ClearanceCertificates
+          options={options}
+          onPageChange={onPageChange}
+          setOrdering={setOrdering}
+          loading={loading}
+          data={data}
+          reload={fetchData}
+          filterData={filterData}
+          setFilterData={setFilterData}
+          clearanceTypes={clearanceTypes}
+        />
+      ),
+    },
     {
       value: "analytics",
       label: "Analytics Dashboard",
