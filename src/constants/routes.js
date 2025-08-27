@@ -158,14 +158,9 @@ export const SidebarRoutes = [
           component: <MyShiftCalendar />,
           name: "MY_SHIFT_CALENDAR",
         },
-        // Config.EXIT && {
-        //   path: "/exit-employee",
-        //   component: <EmployeeExit />,
-        //   name: "EXIT",
-        // },
         Config.EXIT && {
-          path: "/my-clearance",
-          component: <MyClearanceTab />,
+          path: "/exit-employee",
+          component: <EmployeeExit />,
           name: "EXIT",
         },
         Config.MY_JOB_ROTATIONS && {
