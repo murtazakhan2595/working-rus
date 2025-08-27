@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import {
   sendClearanceCertificate,
   getClearanceRequestById,
+  getClearanceRequestItems,
 } from "app/hooks/clearanceAndHandover";
 
 const ClearanceCertificateActions = ({
@@ -14,6 +15,7 @@ const ClearanceCertificateActions = ({
 }) => {
   const [viewCertificate, setViewCertificate] = useState(false);
   const [clearanceRequest, setClearanceRequest] = useState(null);
+  const [clearanceRequestItems, setClearanceRequestItems] = useState([]);
   const [isResending, setIsResending] = useState(false);
   const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
@@ -24,6 +26,13 @@ const ClearanceCertificateActions = ({
       // Fetch the associated clearance request data
       const requestData = await getClearanceRequestById(data.request);
       setClearanceRequest(requestData);
+
+      // Fetch clearance request items
+      const clearanceRequestItems = await getClearanceRequestItems({
+        filterData: { request: data.request },
+      });
+      setClearanceRequestItems(clearanceRequestItems?.results || []);
+
       setViewCertificate(true);
     } catch (error) {
       console.error("Error fetching clearance request:", error);
@@ -91,6 +100,7 @@ const ClearanceCertificateActions = ({
           certificateData={data}
           clearanceRequest={clearanceRequest}
           onCertificateUpdate={handleCertificateUpdate}
+          clearanceRequestItems={clearanceRequestItems}
         />
       )}
     </>

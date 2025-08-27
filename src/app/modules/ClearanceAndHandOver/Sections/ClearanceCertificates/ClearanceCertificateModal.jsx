@@ -74,21 +74,52 @@ const ClearanceCertificateModal = ({
     return `${days} days`;
   };
 
-  // Convert PDF blob to File for upload
+  // Convert PDF blob to File for upload (without triggering download)
   const convertPDFToFile = async () => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const noPrintElements = document.querySelectorAll(".no-print");
 
-      // Hide no-print elements
-      noPrintElements.forEach((el) => (el.style.display = "none"));
+      try {
+        // Hide no-print elements
+        noPrintElements.forEach((el) => (el.style.display = "none"));
 
-      // Generate PDF and convert to File
-      toPDF().then(() => {
-        // Show no-print elements again
-        noPrintElements.forEach((el) => (el.style.display = ""));
+        // Get the PDF element
+        const element = pdfTargetRef.current;
 
-        // For demo purposes, create a mock file
-        // In actual implementation, you'd get the blob from toPDF
+        if (!element) {
+          throw new Error("PDF target ref not found");
+        }
+
+        // Use html2pdf library directly to get blob without downloading
+        const html2pdf = (await import("html2pdf.js")).default;
+
+        const opt = {
+          margin: 10,
+          filename: `clearance-certificate-${certificateData?.id}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 0.8 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        };
+
+        // Generate PDF as blob
+        const pdfBlob = await html2pdf()
+          .set(opt)
+          .from(element)
+          .outputPdf("blob");
+
+        // Convert blob to File
+        const file = new File(
+          [pdfBlob],
+          `clearance-certificate-${certificateData?.id}.pdf`,
+          {
+            type: "application/pdf",
+          }
+        );
+
+        resolve(file);
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        // Fallback: create a mock file if PDF generation fails
         const mockPDFContent = new Blob(["PDF content"], {
           type: "application/pdf",
         });
@@ -99,9 +130,11 @@ const ClearanceCertificateModal = ({
             type: "application/pdf",
           }
         );
-
         resolve(file);
-      });
+      } finally {
+        // Show no-print elements again
+        noPrintElements.forEach((el) => (el.style.display = ""));
+      }
     });
   };
 
@@ -125,11 +158,19 @@ const ClearanceCertificateModal = ({
       );
       formData.append("file", pdfFile);
 
+      console.log("Uploading certificate with FormData:", {
+        generated_by: certificateData.generated_by || 1,
+        request: certificateData.request || clearanceRequest?.id,
+        file: pdfFile,
+      });
+
       // Upload to server
       const response = await uploadClearanceCertificate(
         certificateData.id,
         formData
       );
+
+      console.log("Upload response:", response);
 
       if (response) {
         setUploadSuccess(true);

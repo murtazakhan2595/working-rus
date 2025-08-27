@@ -283,8 +283,12 @@ const uploadClearanceCertificate = async (id, payload) => {
         headers: formDataHeader(),
       }
     );
-    if (response.status === 201) {
+    // Handle both 200 and 201 status codes as success
+    if (response.status === 200 || response.status === 201) {
       return response.data;
+    } else {
+      console.log(`Unexpected status code: ${response.status}`);
+      return false;
     }
   } catch (error) {
     console.error("Error uploading clearance certificate:", error);
