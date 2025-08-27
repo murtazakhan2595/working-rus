@@ -90,22 +90,54 @@ const ClearanceCertificateModal = ({
           throw new Error("PDF target ref not found");
         }
 
-        // Use html2pdf library directly to get blob without downloading
-        const html2pdf = (await import("html2pdf.js")).default;
+        console.log("Attempting to generate PDF using html2canvas + jspdf...");
 
-        const opt = {
-          margin: 10,
-          filename: `clearance-certificate-${certificateData?.id}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 0.8 },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        };
+        // Use html2canvas and jsPDF directly (more reliable approach)
+        const html2canvas = (await import("html2canvas")).default;
+        const { jsPDF } = await import("jspdf");
 
-        // Generate PDF as blob
-        const pdfBlob = await html2pdf()
-          .set(opt)
-          .from(element)
-          .outputPdf("blob");
+        // Generate canvas from HTML
+        const canvas = await html2canvas(element, {
+          scale: 0.8,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          width: element.scrollWidth,
+          height: element.scrollHeight,
+        });
+
+        // Create PDF
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
+
+        // Calculate dimensions to fit A4
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 295; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+
+        let position = 0;
+
+        // Add image to PDF
+        const imgData = canvas.toDataURL("image/jpeg", 0.98);
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        // Add new pages if needed
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        // Get PDF as blob
+        const pdfBlob = pdf.output("blob");
+
+        console.log("PDF generated successfully, size:", pdfBlob.size, "bytes");
 
         // Convert blob to File
         const file = new File(
@@ -118,19 +150,49 @@ const ClearanceCertificateModal = ({
 
         resolve(file);
       } catch (error) {
-        console.error("Error generating PDF:", error);
-        // Fallback: create a mock file if PDF generation fails
-        const mockPDFContent = new Blob(["PDF content"], {
-          type: "application/pdf",
-        });
-        const file = new File(
-          [mockPDFContent],
-          `clearance-certificate-${certificateData?.id}.pdf`,
-          {
-            type: "application/pdf",
-          }
-        );
-        resolve(file);
+        console.error("Error generating PDF with html2canvas + jsPDF:", error);
+
+        try {
+          // Fallback: try with html2pdf if available
+          console.log("Trying html2pdf as fallback...");
+          const html2pdf = (await import("html2pdf.js")).default;
+
+          const opt = {
+            margin: 10,
+            filename: `clearance-certificate-${certificateData?.id}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 0.8 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          };
+
+          const element = pdfTargetRef.current;
+          const pdfBlob = await html2pdf()
+            .set(opt)
+            .from(element)
+            .outputPdf("blob");
+
+          const file = new File(
+            [pdfBlob],
+            `clearance-certificate-${certificateData?.id}.pdf`,
+            {
+              type: "application/pdf",
+            }
+          );
+
+          console.log(
+            "PDF generated with html2pdf fallback, size:",
+            pdfBlob.size,
+            "bytes"
+          );
+          resolve(file);
+        } catch (fallbackError) {
+          console.error("Both PDF generation methods failed:", fallbackError);
+
+          // Don't create a fake PDF file - instead reject the promise
+          throw new Error(
+            "PDF generation failed. Please install html2canvas and jspdf: npm install html2canvas jspdf"
+          );
+        }
       } finally {
         // Show no-print elements again
         noPrintElements.forEach((el) => (el.style.display = ""));
