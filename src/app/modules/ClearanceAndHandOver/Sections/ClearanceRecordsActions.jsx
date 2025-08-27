@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import {
   getClearanceCertificateByRequest,
   createClearanceCertificate,
+  getClearanceRequestItems,
 } from "app/hooks/clearanceAndHandover";
 
 const ClearanceRecordsActions = ({
@@ -17,6 +18,7 @@ const ClearanceRecordsActions = ({
   const [certificateModal, setCertificateModal] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [clearanceRequestItems, setClearanceRequestItems] = useState([]);
 
   // Handle opening the details view
   const handleViewDetails = () => {
@@ -36,6 +38,8 @@ const ClearanceRecordsActions = ({
       const existingCertificate = await getClearanceCertificateByRequest(
         data.id
       );
+
+      
 
       if (existingCertificate) {
         // Use existing certificate
@@ -61,6 +65,12 @@ const ClearanceRecordsActions = ({
           toast.error("Failed to generate certificate");
         }
       }
+
+
+      const clearanceRequestItems = await getClearanceRequestItems({
+        filterData: { request: data.id },
+      });
+      setClearanceRequestItems(clearanceRequestItems?.results || []);
     } catch (error) {
       console.error("Error generating certificate:", error);
       toast.error("Failed to generate certificate");
@@ -109,6 +119,7 @@ const ClearanceRecordsActions = ({
           certificateData={certificateData}
           clearanceRequest={data}
           onCertificateUpdate={handleCertificateUpdate}
+          clearanceRequestItems={clearanceRequestItems}
         />
       )}
     </>
