@@ -39,6 +39,7 @@ const ClearanceCertificateModal = ({
   clearanceRequest = null,
   onCertificateUpdate = () => {},
   clearanceRequestItems = [],
+  isMyCertificate = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -669,7 +670,7 @@ const ClearanceCertificateModal = ({
           </Card>
 
           {/* Action Buttons */}
-          <Card>
+          {!isMyCertificate &&<Card>
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="text-center">
@@ -796,7 +797,7 @@ const ClearanceCertificateModal = ({
                 Close
               </Button>
             </CardFooter>
-          </Card>
+          </Card>}
         </div>
       </DialogContent>
     </Dialog>
