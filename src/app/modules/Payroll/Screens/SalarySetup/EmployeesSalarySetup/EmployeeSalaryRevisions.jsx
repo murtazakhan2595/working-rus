@@ -168,7 +168,6 @@ export default function EmployeeSalaryRevisions({
   };
 
   const handleStatusChange = async (name, value, revision) => {
-    debugger;
     if (name === "revision_status") {
       revision.revision_status = value;
     } else if (name === "revision_letter") {

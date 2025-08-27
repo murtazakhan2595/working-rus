@@ -93,6 +93,7 @@ import {
   ShiftCalendarHistoryLogs,
 } from "app/modules/Attendance/ShiftCalendar";
 import { ClearanceAndHandover } from "app/modules/ClearanceAndHandOver";
+import { MyClearanceTab } from "app/modules/ClearanceAndHandOver/Sections/MyClearance";
 
 export const SidebarRoutes = [
   {
@@ -157,15 +158,25 @@ export const SidebarRoutes = [
           component: <MyShiftCalendar />,
           name: "MY_SHIFT_CALENDAR",
         },
+        // Config.EXIT && {
+        //   path: "/exit-employee",
+        //   component: <EmployeeExit />,
+        //   name: "EXIT",
+        // },
         Config.EXIT && {
-          path: "/exit-employee",
-          component: <EmployeeExit />,
+          path: "/my-clearance",
+          component: <MyClearanceTab />,
           name: "EXIT",
         },
         Config.MY_JOB_ROTATIONS && {
           path: "/my-job-rotations",
           component: <MyJobRotations />,
           name: "MY_JOB_ROTATIONS",
+        },
+        Config.MY_CLEARANCE && {
+          path: "/my-clearance",
+          component: <MyClearanceTab />,
+          name: "MY_CLEARANCE",
         },
       ].filter(Boolean) // Filter out undefined routes
     : []),

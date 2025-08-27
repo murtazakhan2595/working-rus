@@ -70,7 +70,6 @@ const AssignDocumentForm = ({
   }, [document_id]);
 
   const handleSubmit = async (data) => {
-    debugger;
     setDisableSubmit(true);
     try {
       const object_id_list = data.object_id;

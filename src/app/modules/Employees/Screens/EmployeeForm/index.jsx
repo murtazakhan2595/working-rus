@@ -179,7 +179,6 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
   const saveCustomShiftSchedule = async (employeeId, shiftData) => {
     try {
       const [startDate, endDate] = shiftData.dateRange.split(",");
-      debugger
       // Build custom_schedule object
       const customSchedule = {};
       shiftData.dailySchedule.forEach((day) => {

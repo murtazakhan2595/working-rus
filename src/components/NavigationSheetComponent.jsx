@@ -40,7 +40,6 @@ const NavigationSheetComponent = ({
   const [editMode, setEditMode] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
   const [currentItemId, setCurrentItemId] = useState(currentItem_Id);
-  console.log(fetchCurrentItemDetails())
   // Reset to original data when sheet opens
   useEffect(() => {
     if (isOpen && currentItemId) {

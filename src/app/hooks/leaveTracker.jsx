@@ -246,7 +246,6 @@ export const getEligibleLeaveTypeDurations = async (
         return [];
       const offsetLeave = await getOffsetLeaveInfo();
       const sepcialLeave = await getEmpSpecialLeave(employee_id);
-      debugger;
       const OffsetLeaveType = ResponseList.find(
         (obj) => obj.name === "Offset Leaves"
       );
