@@ -170,6 +170,10 @@ const ViewClearanceChecklist = ({
           ),
         },
         {
+          key: "sla",
+          label: "SLA (in days)",
+        },
+        {
           key: "created_by_name",
           label: "Created By",
         },
