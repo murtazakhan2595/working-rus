@@ -100,6 +100,7 @@ export const MyClearanceActions = ({
           clearanceRequest={data}
           onCertificateUpdate={() => {}}
           clearanceRequestItems={clearanceRequestItems}
+          isMyCertificate={true}
         />
       )}
     </>
