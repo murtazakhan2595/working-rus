@@ -55,6 +55,12 @@ export default function ClearanceChecklistModal({
   // Check if current user can edit specific item based on assignment scope
   const canUserEditItem = (item) => {
     if (!currentUserId || !item.assignment_scope) return false;
+    console.log(
+      "canuser edit ?",
+      currentUserId,
+      item.assignment_scope,
+      item.direct_report
+    );
 
     switch (item.assignment_scope) {
       case "DIRECT":
