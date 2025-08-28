@@ -22,11 +22,10 @@ export const getAllProjects = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/project/?ordering=-created_at&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/project/?ordering=-created_at&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -35,16 +34,16 @@ export const getAllProjects = async (payload) => {
       const data = response.data;
       const projects = await Promise.all(
         data?.results &&
-          data?.results?.length &&
-          data?.results.map(async (project) => {
-            const profileResponse = await getAttachmentById(
-              project.profile_picture
-            );
-            return {
-              ...project,
-              profile_img: profileResponse?.attachment || null,
-            };
-          })
+        data?.results?.length &&
+        data?.results.map(async (project) => {
+          const profileResponse = await getAttachmentById(
+            project.profile_picture
+          );
+          return {
+            ...project,
+            profile_img: profileResponse?.attachment || null,
+          };
+        })
       );
       const ProjectsData = {
         count: data?.count,
@@ -66,9 +65,8 @@ const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
-  const URL = `/task/?${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/task/?${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -140,9 +138,8 @@ const getAllBoards = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/board/?ordering=-ordering&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/board/?ordering=-ordering&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -191,8 +188,8 @@ export const getAllLabels = async (payload) => {
     });
 
     if (response.status === 200) {
-      const data = response.data?.results;
-      return data;
+      const data = response.data?.results || [];
+      return data.filter(dta => dta?.project_id != null);
     } else {
       return [];
     }
@@ -244,9 +241,9 @@ const addProject = async (payload, projectID) => {
   const profilePictureResponse =
     payload.profile_img instanceof File
       ? await addAttachments(
-          { attachment: payload.profile_img },
-          payload.profile_picture
-        )
+        { attachment: payload.profile_img },
+        payload.profile_picture
+      )
       : null;
   const formData = mapProjectPayloadData({
     ...payload,
@@ -621,10 +618,10 @@ export const getAttachmentDetails = async (attachmentIds) => {
           const response = await getAttachmentById(id);
           return response.attachment
             ? {
-                attachment: response.attachment,
-                id: response.id,
-                name: getFileNameFromURL(response.attachment),
-              }
+              attachment: response.attachment,
+              id: response.id,
+              name: getFileNameFromURL(response.attachment),
+            }
             : null; // Return null if no attachment
         })
       )
@@ -778,9 +775,8 @@ export const getAllTasks = async (payload) => {
   const ordering = payload?.ordering ?? "-start_date";
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
-  const URL = `/task/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/task/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -815,10 +811,10 @@ const getCommentsAttachmentDetails = async (attachmentIds) => {
           );
           return response?.data?.attachment
             ? {
-                attachment: response?.data?.attachment,
-                id: response?.data?.id,
-                name: getFileNameFromURL(response?.data?.attachment),
-              }
+              attachment: response?.data?.attachment,
+              id: response?.data?.id,
+              name: getFileNameFromURL(response?.data?.attachment),
+            }
             : null; // Return null if no attachment
         })
       )
@@ -956,11 +952,10 @@ const getAllCustomFields = async (projectId, payload = {}) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? { project: [projectId] };
-  const URL = `/dynamic-fields/?ordering=-created_at&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/dynamic-fields/?ordering=-created_at&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -1153,9 +1148,8 @@ const getRelationship = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
-  const URL = `/relationship/?${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/relationship/?${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
