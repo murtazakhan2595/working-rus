@@ -147,7 +147,7 @@ export default function ClearanceAndHandover() {
         />
       ),
     },
-    // NEW TAB - Clearance Certificates
+    // NEW TAB - Clearance Certificate
     {
       value: "clearance-certificates",
       label: "Clearance Certificates",
