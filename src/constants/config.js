@@ -17,7 +17,6 @@ const Config = {
   MY_SHIFT_CALENDAR: true,
   EXIT: true,
   MY_JOB_ROTATIONS: true,
-  MY_CLEARANCE: true,
 
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,

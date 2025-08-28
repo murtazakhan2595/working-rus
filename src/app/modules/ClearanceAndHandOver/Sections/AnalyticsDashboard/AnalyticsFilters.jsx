@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FilterInput } from "components/FormControl";
+import { Card, CardContent } from "components/ui/card";
 
 const AnalyticsFilters = ({
   filterData,
@@ -17,17 +18,15 @@ const AnalyticsFilters = ({
     { value: "REJECTED", label: "Rejected" },
   ];
 
+  const riskLevelOptions = [
+    { value: "HIGH", label: "High Risk" },
+    { value: "MEDIUM", label: "Medium Risk" },
+    { value: "LOW", label: "Low Risk" },
+  ];
+
   const overdueOptions = [
     { value: true, label: "Yes" },
     { value: false, label: "No" },
-  ];
-
-  // SLA status filter options
-  const slaStatusOptions = [
-    { value: "WITHIN_SLA", label: "Within SLA" },
-    { value: "AT_RISK", label: "At Risk" },
-    { value: "BREACHED", label: "Breached" },
-    { value: "NO_SLA", label: "No SLA" },
   ];
 
   const hasActiveFilters = Object.keys(filterData).some(
@@ -52,24 +51,25 @@ const AnalyticsFilters = ({
           placeholder: "Department",
         },
         {
-          type: "select-one",
-          option: clearanceTypeOptions,
+          type: "select-one", // Using select-one instead of select-multi
+          option: clearanceTypeOptions, // Note: it's 'option' not 'options'
           name: "clearance_type",
           placeholder: "Clearance Type",
           values: filterData.clearance_type || "",
         },
         {
-          type: "select-two",
+          type: "select-two", // Using select-two instead of select-multi
           option: statusOptions,
           name: "status",
           placeholder: "Status",
           values: filterData.status || "",
         },
         {
-          type: "select",
-          options: slaStatusOptions,
-          name: "sla_status",
-          placeholder: "SLA Status",
+          type: "select-three", // Using select-three instead of select-multi
+          option: riskLevelOptions,
+          name: "risk_level",
+          placeholder: "Risk Level",
+          values: filterData.risk_level || "",
         },
         {
           type: "select",

@@ -10,7 +10,7 @@ import {
   TextInput,
   SelectInputComponent,
   SelectMultiInputComponent,
-  SwitchInput,NumberInput,
+  SwitchInput,
   CoverFileUpload,
 } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
@@ -36,7 +36,6 @@ const AddClearanceChecklistForm = ({
     e_signature_required: false,
     status: "ACTIVE",
     designation:"",
-    sla: "",
   });
   const [NameExist, setNameExist] = useState(false);
   const [ClearanceChecklistList, setClearanceChecklistList] = useState([]);
@@ -191,10 +190,6 @@ const AddClearanceChecklistForm = ({
       errors.assignment_scope = "Assignment scope is required";
     }
 
-    if (values.sla <= 0) {
-      errors.sla = "SLA must be a positive number";
-    }
-
     if (values.assignment_scope === "DESIGNATION" && !values.designation) {
       errors.designation = "Designation is required when assignment scope is DESIGNATION";
     }
@@ -251,13 +246,6 @@ const AddClearanceChecklistForm = ({
                 required: true,
                 options: ClearanceTypeOptions,
                 placeholder: "Select one or more clearance types",
-              },
-              {
-                InputField: NumberInput,
-                name: "sla",
-                label: "SLA (in days)",
-                required: true,
-                placeholder: "Enter SLA in days",
               },
               {
                 InputField: SelectInputComponent,

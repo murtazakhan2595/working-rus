@@ -338,28 +338,6 @@ const getClearanceCertificateByRequest = async (requestId) => {
   }
 };
 
-const updateClearanceRequestItemWithFile = async (id, formData) => {
-  try {
-    const response = await axios.patch(
-      `${baseUrl}/clearance-request-items/${id}/`,
-      formData,
-      {
-        headers: formDataHeader(),
-      }
-    );
-    if (response.status === 200) {
-      return response.data;
-    }
-  } catch (error) {
-    console.error("Error updating clearance request item with file:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    renderErrorMessages(error?.response?.data);
-    return false;
-  }
-};
-
 export {
   getClearanceRequestsList,
   getClearanceRequestById,
@@ -376,5 +354,4 @@ export {
   uploadClearanceCertificate,
   sendClearanceCertificate,
   getClearanceCertificateByRequest,
-  updateClearanceRequestItemWithFile,
 };

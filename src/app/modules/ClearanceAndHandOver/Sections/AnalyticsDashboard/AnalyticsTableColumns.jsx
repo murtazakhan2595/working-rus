@@ -5,14 +5,21 @@ import { Badge } from "components/ui/badge";
 import { Progress } from "src/@/components/ui/progress";
 import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import moment from "moment";
 
-// SLA status badge component with support for dynamic SLA
-const SLAStatusBadge = ({ status, isOverdue, daysOverdue, slaValue }) => {
-  // Handle case where SLA is not defined (slaValue is 0 or null)
-  if (!slaValue || slaValue === 0) {
-    return <Badge variant="secondary">No SLA</Badge>;
-  }
+// Risk level badge component
+const RiskBadge = ({ level }) => {
+  const variants = {
+    HIGH: "error",
+    MEDIUM: "warning",
+    LOW: "success",
+  };
 
+  return <Badge variant={variants[level] || "neutral"}>{level}</Badge>;
+};
+
+// SLA status badge component
+const SLAStatusBadge = ({ status, isOverdue, daysOverdue }) => {
   if (isOverdue) {
     return <Badge variant="error">Overdue ({daysOverdue}d)</Badge>;
   }
@@ -21,19 +28,11 @@ const SLAStatusBadge = ({ status, isOverdue, daysOverdue, slaValue }) => {
     WITHIN_SLA: "success",
     AT_RISK: "warning",
     BREACHED: "error",
-    NO_SLA: "secondary",
-  };
-
-  const displayNames = {
-    WITHIN_SLA: "Within SLA",
-    AT_RISK: "At Risk",
-    BREACHED: "Breached",
-    NO_SLA: "No SLA",
   };
 
   return (
     <Badge variant={variants[status] || "neutral"}>
-      {displayNames[status] || status || "Unknown"}
+      {status?.replace("_", " ") || "Unknown"}
     </Badge>
   );
 };
@@ -87,19 +86,17 @@ export const AnalyticsTableColumns = (onViewDetails) => [
     formatter: (cell) => renderDate(cell),
   },
   {
-    dataField: "sla",
-    text: "SLA (Days)",
+    dataField: "sla_due_date",
+    text: "SLA Due Date",
     sort: true,
     formatter: (cell, row) => (
-      <div className="text-center">
-        <div className="text-sm font-medium">
-          {cell && parseFloat(cell) > 0 ? `${parseFloat(cell)} days` : "No SLA"}
-        </div>
-        {row.sla_due_date && (
-          <div className="text-xs text-mauve-1000">
-            Due: {renderDate(row.sla_due_date)}
-          </div>
-        )}
+      <div>
+        <div>{renderDate(cell)}</div>
+        <SLAStatusBadge
+          status={row.sla_status}
+          isOverdue={row.is_overdue}
+          daysOverdue={row.days_overdue}
+        />
       </div>
     ),
   },
@@ -110,14 +107,17 @@ export const AnalyticsTableColumns = (onViewDetails) => [
     formatter: (cell, row) => (
       <div className="text-center">
         <div className="text-lg font-semibold">{cell}</div>
-        <SLAStatusBadge
-          status={row.sla_status}
-          isOverdue={row.is_overdue}
-          daysOverdue={row.days_overdue}
-          slaValue={row.sla}
-        />
+        <div className="text-xs text-mauve-1000">
+          {row.is_overdue ? `${row.days_overdue}d overdue` : "On track"}
+        </div>
       </div>
     ),
+  },
+  {
+    dataField: "risk_level",
+    text: "Risk Level",
+    sort: true,
+    formatter: (cell) => <RiskBadge level={cell} />,
   },
   {
     dataField: "progress_percentage",
