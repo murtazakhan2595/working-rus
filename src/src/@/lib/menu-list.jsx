@@ -14,6 +14,7 @@ import {
   Settings,
   Network,
   Laptop,
+  Ratio,
 } from "lucide-react";
 import Config from "constants/config";
 import { getNodeExistInTree } from "utils/renderValues";
@@ -80,7 +81,6 @@ export function getMenuList(pathname, userRole) {
   const commonMenus = [
     { groupLabel: "", menus: [createMenu("/", "Dashboard", House)] },
   ];
-
   // Dynamically generate menu items based on configuration flags
   const configMenus = [
     ["SELF_SERVICE_HUB", UserRoundCheck],
@@ -92,8 +92,8 @@ export function getMenuList(pathname, userRole) {
     ["TASK_MANAGEMENT", ListTodo],
     ["TALENT_SPHERE", UserRoundSearch],
     ["ASSET_MANAGEMENT", Laptop],
+    ["PERFORMANCE_EDGE", Award],
     ["ORGANIZATIONAL_CHART", Network],
-    ["PERFORMANCE_MANAGEMENT", Award],
     ["PERSONAL_DEVELOPMENT", UsersRound],
     ["PEOPLE_ENGAGEMENT", Crosshair],
     ["REPORTS", GalleryHorizontalEnd],
