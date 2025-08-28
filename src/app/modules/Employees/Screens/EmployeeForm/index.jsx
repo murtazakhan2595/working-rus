@@ -481,6 +481,18 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                 },
                 {
                   InputField: SelectInputComponent,
+                  name: "national_service_status",
+                  options: [
+                    { value: "COMPLETED", label: "Completed" },
+                    { value: "NOT_COMPLETED", label: "Not Completed" },
+                  ],
+                  required: true,
+                  label: "National Service Status",
+                  renderCondition:
+                    FormValues.nationality === "United Arab Emirates",
+                },
+                {
+                  InputField: SelectInputComponent,
                   name: "department_position",
                   options: Designations,
                   required: true,
@@ -538,7 +550,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   label: "Probation Date Range",
                   value:
                     FormValues.probation_start_date ||
-                      FormValues.probation_end_date
+                    FormValues.probation_end_date
                       ? `${FormValues.probation_start_date},${FormValues.probation_end_date}`
                       : null,
                   minDate: FormValues.joining_date,
@@ -614,53 +626,54 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
             },
             ...(Config.SHIFT_CALENDAR
               ? [
-                {
-                  sheetCardExtension: true,
-                  sheetCardTitle: `Shift Details`,
-                  InputFields: [
-                    {
-                      InputField: SelectInputComponent,
-                      name: "shift_assignment",
-                      options: shiftList,
-                      required: false,
-                      label: "Shift",
-                    },
-                    {
-                      InputField: AddCustomShift,
-                      customShiftData: customShiftData,
-                      setCustomShiftData: setCustomShiftData,
-                      colsSpan: 2,
-                    },
-                  ],
-                },
-              ]
+                  {
+                    sheetCardExtension: true,
+                    sheetCardTitle: `Shift Details`,
+                    InputFields: [
+                      {
+                        InputField: SelectInputComponent,
+                        name: "shift_assignment",
+                        options: shiftList,
+                        required: false,
+                        label: "Shift",
+                      },
+                      {
+                        InputField: AddCustomShift,
+                        customShiftData: customShiftData,
+                        setCustomShiftData: setCustomShiftData,
+                        colsSpan: 2,
+                      },
+                    ],
+                  },
+                ]
               : []),
             ...(SalarySetupAllowed
               ? [
-                {
-                  sheetCardExtension: true,
-                  sheetCardTitle: `Salary Details`,
-                  InputFields: [
-                    {
-                      InputField: SelectInputComponent,
-                      name: "salary_type",
-                      options: SalaryTypeOptions,
-                      required: true,
-                      label: "Salary Type",
-                    },
-                    {
-                      InputField: NumberInput,
-                      name: "salary",
-                      options: shiftList,
-                      required: true,
-                      label: `Employee ${FormValues.salary_type === "hourly"
-                          ? "Hourly"
-                          : "Monthly"
+                  {
+                    sheetCardExtension: true,
+                    sheetCardTitle: `Salary Details`,
+                    InputFields: [
+                      {
+                        InputField: SelectInputComponent,
+                        name: "salary_type",
+                        options: SalaryTypeOptions,
+                        required: true,
+                        label: "Salary Type",
+                      },
+                      {
+                        InputField: NumberInput,
+                        name: "salary",
+                        options: shiftList,
+                        required: true,
+                        label: `Employee ${
+                          FormValues.salary_type === "hourly"
+                            ? "Hourly"
+                            : "Monthly"
                         } Salary`,
-                    },
-                  ],
-                },
-              ]
+                      },
+                    ],
+                  },
+                ]
               : []),
             {
               sheetCardExtension: true,

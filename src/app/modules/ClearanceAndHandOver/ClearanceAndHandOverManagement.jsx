@@ -18,6 +18,7 @@ import {
 } from "app/hooks/clearanceAndHandover";
 import { getClearanceTypeList } from "app/hooks/officeSetting";
 import { HasAccess } from "utils/PermissionUtils";
+import AccessConfiguration from "./Sections/AccessConfiguration";
 
 export default function ClearanceAndHandover() {
   const [activeTab, setActiveTab] = useState("clearance-requests");
@@ -151,6 +152,7 @@ export default function ClearanceAndHandover() {
         />
       ),
     },
+
     {
       value: "clearance-certificates",
       label: "Clearance Certificates",
@@ -177,6 +179,11 @@ export default function ClearanceAndHandover() {
           },
         ]
       : []),
+    {
+      value: "access-configuration", // NEW TAB
+      label: "Access Configuration",
+      component: <AccessConfiguration />,
+    },
   ];
 
   return (
