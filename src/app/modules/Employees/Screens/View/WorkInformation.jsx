@@ -21,7 +21,7 @@ const WorkInformation = ({
   getDataByHooks,
 }) => {
   const userRole = useSelector((state) => state.user.userProfile.role);
-
+  console.log("userData", userData);
   const workInformation = [
     {
       title: "Department",
@@ -46,6 +46,10 @@ const WorkInformation = ({
     {
       title: "Direct Report To",
       data: <ManagerName value={userData?.direct_report} />,
+    },
+    {
+      title: "National service",
+      data: userData?.national_service_status === "COMPLETED" ? "Completed" : "Not Completed",
     },
     { title: "Joining Date", data: renderDate(userData?.joining_date) },
     ...(userData?.contract_start_date

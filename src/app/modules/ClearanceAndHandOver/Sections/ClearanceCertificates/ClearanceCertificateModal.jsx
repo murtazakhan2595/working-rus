@@ -39,6 +39,7 @@ const ClearanceCertificateModal = ({
   clearanceRequest = null,
   onCertificateUpdate = () => {},
   clearanceRequestItems = [],
+  isMyCertificate = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -153,7 +154,7 @@ const ClearanceCertificateModal = ({
         console.error("Error generating PDF with html2canvas + jsPDF:", error);
 
         try {
-          // Fallback: try with html2pdf if availabl
+          // Fallback: try with html2pdf if available
           console.log("Trying html2pdf as fallback...");
           const html2pdf = (await import("html2pdf.js")).default;
 
@@ -669,7 +670,7 @@ const ClearanceCertificateModal = ({
           </Card>
 
           {/* Action Buttons */}
-          <Card>
+          {!isMyCertificate &&<Card>
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="text-center">
@@ -796,7 +797,7 @@ const ClearanceCertificateModal = ({
                 Close
               </Button>
             </CardFooter>
-          </Card>
+          </Card>}
         </div>
       </DialogContent>
     </Dialog>

@@ -2,28 +2,6 @@
 
 import moment from "moment";
 
-// SLA Rules (hardcoded as requested)
-export const SLA_RULES = {
-  "External Transfer": 7,
-  "Job Rotation": 5,
-  "Annual Leave": 3,
-  "Internal Transfer": 5,
-  Resignation: 10,
-  Termination: 7,
-  "Special Leave": 3,
-};
-
-// High-risk departments (hardcoded as requested)
-export const HIGH_RISK_DEPARTMENTS = [
-  "Accounts",
-  "Treasury",
-  "IT Security",
-  "AML Department",
-  "Finance",
-  "Compliance",
-  "Internal Audit",
-];
-
 // Helper function to get status count from API
 export const getStatusCount = (statusSummary, targetStatus) => {
   const found = statusSummary.find((item) => item.status === targetStatus);
@@ -37,23 +15,17 @@ export const calculateDaysPending = (startDate) => {
   return current.diff(start, "days");
 };
 
-// Check if request is overdue based on SLA rules
-export const isOverdue = (startDate, clearanceType) => {
+// Check if request is overdue based on dynamic SLA from API
+export const isOverdue = (startDate, slaInDays) => {
   const daysPending = calculateDaysPending(startDate);
-  const slaLimit = SLA_RULES[clearanceType] || 5;
-  return daysPending > slaLimit;
+  const sla = parseFloat(slaInDays) || 0; // Default to 0 if sla is undefined/null
+  return sla > 0 && daysPending > sla;
 };
 
-// Calculate overdue count from real data
+// Calculate overdue count from real data using dynamic SLA
 export const calculateOverdueCount = (clearanceList) => {
-  return clearanceList.filter((item) =>
-    isOverdue(item.start_date, item.clearance_type__name)
-  ).length;
-};
-
-// Determine risk level based on department
-export const determineRiskLevel = (departmentName) => {
-  return HIGH_RISK_DEPARTMENTS.includes(departmentName) ? "HIGH" : "MEDIUM";
+  return clearanceList.filter((item) => isOverdue(item.start_date, item.sla))
+    .length;
 };
 
 // Build status counts from API response
@@ -70,15 +42,16 @@ export const buildStatusCounts = (apiResponse) => {
   };
 };
 
-// Enhance clearance data with calculated fields
+// Enhance clearance data with calculated fields using dynamic SLA
 export const enhanceClearanceData = (clearanceList) => {
   if (!clearanceList || clearanceList.length === 0) return [];
 
   return clearanceList.map((item) => {
     const daysPending = calculateDaysPending(item.start_date);
-    const slaDays = SLA_RULES[item.clearance_type__name] || 5;
-    const overdueStatus = daysPending > slaDays;
-    const slaDate = moment(item.start_date).add(slaDays, "days");
+    const slaDays = parseFloat(item.sla) || 0; // Use dynamic SLA from API, default to 0
+    const overdueStatus = slaDays > 0 && daysPending > slaDays;
+    const slaDate =
+      slaDays > 0 ? moment(item.start_date).add(slaDays, "days") : null;
 
     return {
       ...item,
@@ -87,10 +60,7 @@ export const enhanceClearanceData = (clearanceList) => {
       days_pending: daysPending,
       is_overdue: overdueStatus,
       days_overdue: overdueStatus ? daysPending - slaDays : 0,
-      sla_due_date: slaDate.toDate(),
-
-      // Hardcoded logic fields (as requested)
-      risk_level: determineRiskLevel(item.department__name),
+      sla_due_date: slaDate ? slaDate.toDate() : null,
 
       // Status-based progress
       progress_percentage:
@@ -104,17 +74,20 @@ export const enhanceClearanceData = (clearanceList) => {
           ? 0
           : 10,
 
-      // SLA status
-      sla_status: overdueStatus
-        ? "BREACHED"
-        : daysPending > slaDays * 0.8
-        ? "AT_RISK"
-        : "WITHIN_SLA",
+      // SLA status using dynamic SLA
+      sla_status:
+        slaDays === 0
+          ? "NO_SLA" // New status for items without SLA
+          : overdueStatus
+          ? "BREACHED"
+          : daysPending > slaDays * 0.8
+          ? "AT_RISK"
+          : "WITHIN_SLA",
     };
   });
 };
 
-// THIS WAS MISSING - Filter enhanced data
+// Filter enhanced data - now includes SLA status filtering
 export const applyFilters = (enhancedData, filters) => {
   if (!enhancedData || enhancedData.length === 0) return [];
 
@@ -147,9 +120,9 @@ export const applyFilters = (enhancedData, filters) => {
       if (filters.is_overdue !== item.is_overdue) return false;
     }
 
-    // Risk level filter
-    if (filters.risk_level && filters.risk_level.length > 0) {
-      if (!filters.risk_level.includes(item.risk_level)) return false;
+    // SLA status filter (NEW)
+    if (filters.sla_status && filters.sla_status.length > 0) {
+      if (!filters.sla_status.includes(item.sla_status)) return false;
     }
 
     return true;

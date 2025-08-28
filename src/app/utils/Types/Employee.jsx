@@ -158,7 +158,8 @@ const EmployeeInformation = {
   nationality: null,
   biometric_id: null,
   probation_date_range: null,
-  religion:null,
+  religion: null,
+  national_service_status: null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,

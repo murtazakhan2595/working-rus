@@ -7,11 +7,10 @@ import { getClearanceAnalytics } from "app/hooks/clearanceAndHandover";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-// Import our new components
+// Import our components (removed AnalyticsAlerts)
 import AnalyticsStatusCards from "./AnalyticsDashboard/AnalyticsStatusCards";
 import AnalyticsCharts from "./AnalyticsDashboard/AnalyticsCharts";
 import AnalyticsFilters from "./AnalyticsDashboard/AnalyticsFilters";
-import AnalyticsAlerts from "./AnalyticsDashboard/AnalyticsAlerts";
 import { AnalyticsTableColumns } from "./AnalyticsDashboard/AnalyticsTableColumns";
 
 // Import utils
@@ -140,7 +139,7 @@ const ClearanceAnalyticsDashboard = () => {
             Analytics Dashboard
           </h2>
           <p className="text-mauve-1000">
-            Monitor clearance requests, SLA compliance, and identify bottlenecks
+            Monitor clearance requests, SLA compliance, and track progress
           </p>
         </div>
       </div>
@@ -148,15 +147,14 @@ const ClearanceAnalyticsDashboard = () => {
       {/* Status Cards */}
       <AnalyticsStatusCards
         apiData={apiData}
-        loading={loading} // Add this prop
+        loading={loading}
         onCardClick={handleCardClick}
       />
 
       {/* Charts Row */}
       <AnalyticsCharts apiData={apiData} enhancedData={enhancedData} />
 
-      {/* Alert Panels */}
-      <AnalyticsAlerts enhancedData={enhancedData} />
+      {/* Removed AnalyticsAlerts component */}
 
       {/* Detailed Data Table */}
       <Card>

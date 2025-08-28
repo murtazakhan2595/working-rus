@@ -29,7 +29,7 @@ import {
   JobRotationCalendar,
   MyJobRotations,
   MyTransfers,
-  UserJobRotations
+  UserJobRotations,
 } from "app/modules/TransferAndRotation";
 import {
   HRDocuments,
@@ -93,6 +93,7 @@ import {
   ShiftCalendarHistoryLogs,
 } from "app/modules/Attendance/ShiftCalendar";
 import { ClearanceAndHandover } from "app/modules/ClearanceAndHandOver";
+import { MyClearanceTab } from "app/modules/ClearanceAndHandOver/Sections/MyClearance";
 
 export const SidebarRoutes = [
   {
@@ -166,6 +167,11 @@ export const SidebarRoutes = [
           path: "/my-job-rotations",
           component: <MyJobRotations />,
           name: "MY_JOB_ROTATIONS",
+        },
+        Config.MY_CLEARANCE && {
+          path: "/my-clearance",
+          component: <MyClearanceTab />,
+          name: "MY_CLEARANCE",
         },
       ].filter(Boolean) // Filter out undefined routes
     : []),
@@ -574,11 +580,11 @@ const RemainingSidebarRoutes = [
   },
 
   Config.SELF_SERVICE_HUB &&
-  Config.EMPLOYEE_OFFBOARDING && {
-    path: "/self-service/exit/eos-settlement/:id",
-    component: <EOSSettlementDetails />,
-    name: "EOS Settlement Details",
-  },
+    Config.EMPLOYEE_OFFBOARDING && {
+      path: "/self-service/exit/eos-settlement/:id",
+      component: <EOSSettlementDetails />,
+      name: "EOS Settlement Details",
+    },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
