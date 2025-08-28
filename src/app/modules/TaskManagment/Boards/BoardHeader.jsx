@@ -21,12 +21,12 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 const BoardHeader = ({
-  setFilterData = () => {},
+  setFilterData = () => { },
   filterData,
   activeView = "grid",
-  setActiveView = () => {},
+  setActiveView = () => { },
   projectData = {},
-  fetchData = () => {},
+  fetchData = () => { },
 }) => {
   const navigate = useNavigate();
   const { projectId, viewStyle } = useParams();
@@ -149,12 +149,16 @@ const BoardHeader = ({
               options: AssigneesList,
               values: filterData["assigned_to"] || [],
             },
-            {
-              title: "Label",
-              label: "label",
-              options: TaskLabelList,
-              values: filterData["label"] || [],
-            },
+            ...(TaskLabelList.length > 0
+              ? [
+                {
+                  title: "Label",
+                  label: "label",
+                  options: TaskLabelList,
+                  values: filterData["label"] || [],
+                },
+              ]
+              : []),
           ]}
           onChange={(name, value, filterCheckStatus) => {
             handleFilterChange(name, value, filterCheckStatus);
