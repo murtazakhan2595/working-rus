@@ -28,6 +28,9 @@ export default function ClearanceAndHandover() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ results: [], count: 0 });
   const [clearanceTypes, setClearanceTypes] = useState([]);
+  const isViewClearanceAnalytics = HasAccess(
+    "VIEW_CLEARANCE_ANALYTICS_DASHBOARD"
+  );
 
   // Load clearance types on component mount
   useEffect(() => {

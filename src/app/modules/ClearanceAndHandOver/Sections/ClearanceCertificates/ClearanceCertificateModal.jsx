@@ -39,6 +39,7 @@ const ClearanceCertificateModal = ({
   clearanceRequest = null,
   onCertificateUpdate = () => {},
   clearanceRequestItems = [],
+  isMyCertificate = false,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -152,47 +153,47 @@ const ClearanceCertificateModal = ({
       } catch (error) {
         console.error("Error generating PDF with html2canvas + jsPDF:", error);
 
-        try {
-          // Fallback: try with html2pdf if availabl
-          console.log("Trying html2pdf as fallback...");
-          const html2pdf = (await import("html2pdf.js")).default;
+        // try {
+        //   // Fallback: try with html2pdf if available
+        //   console.log("Trying html2pdf as fallback...");
+        //   const html2pdf = (await import("html2pdf.js")).default;
 
-          const opt = {
-            margin: 10,
-            filename: `clearance-certificate-${certificateData?.id}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 0.8 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          };
+        //   const opt = {
+        //     margin: 10,
+        //     filename: `clearance-certificate-${certificateData?.id}.pdf`,
+        //     image: { type: "jpeg", quality: 0.98 },
+        //     html2canvas: { scale: 0.8 },
+        //     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        //   };
 
-          const element = pdfTargetRef.current;
-          const pdfBlob = await html2pdf()
-            .set(opt)
-            .from(element)
-            .outputPdf("blob");
+        //   const element = pdfTargetRef.current;
+        //   const pdfBlob = await html2pdf()
+        //     .set(opt)
+        //     .from(element)
+        //     .outputPdf("blob");
 
-          const file = new File(
-            [pdfBlob],
-            `clearance-certificate-${certificateData?.id}.pdf`,
-            {
-              type: "application/pdf",
-            }
-          );
+        //   const file = new File(
+        //     [pdfBlob],
+        //     `clearance-certificate-${certificateData?.id}.pdf`,
+        //     {
+        //       type: "application/pdf",
+        //     }
+        //   );
 
-          console.log(
-            "PDF generated with html2pdf fallback, size:",
-            pdfBlob.size,
-            "bytes"
-          );
-          resolve(file);
-        } catch (fallbackError) {
-          console.error("Both PDF generation methods failed:", fallbackError);
+        //   console.log(
+        //     "PDF generated with html2pdf fallback, size:",
+        //     pdfBlob.size,
+        //     "bytes"
+        //   );
+        //   resolve(file);
+        // } catch (fallbackError) {
+        //   console.error("Both PDF generation methods failed:", fallbackError);
 
-          // Don't create a fake PDF file - instead reject the promise
-          throw new Error(
-            "PDF generation failed. Please install html2canvas and jspdf: npm install html2canvas jspdf"
-          );
-        }
+        //   // Don't create a fake PDF file - instead reject the promise
+        //   throw new Error(
+        //     "PDF generation failed. Please install html2canvas and jspdf: npm install html2canvas jspdf"
+        //   );
+        // }
       } finally {
         // Show no-print elements again
         noPrintElements.forEach((el) => (el.style.display = ""));
@@ -669,7 +670,7 @@ const ClearanceCertificateModal = ({
           </Card>
 
           {/* Action Buttons */}
-          <Card>
+          {!isMyCertificate &&<Card>
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="text-center">
@@ -796,7 +797,7 @@ const ClearanceCertificateModal = ({
                 Close
               </Button>
             </CardFooter>
-          </Card>
+          </Card>}
         </div>
       </DialogContent>
     </Dialog>

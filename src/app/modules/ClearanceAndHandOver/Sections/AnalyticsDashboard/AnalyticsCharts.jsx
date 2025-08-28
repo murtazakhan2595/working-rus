@@ -24,10 +24,13 @@ const COLORS = [
   "#00ff00",
   "#ff00ff",
 ];
+
+// Updated SLA colors to include NO_SLA status
 const SLA_COLORS = {
   "Within SLA": "#10b981",
   "At Risk": "#f59e0b",
   Breached: "#ef4444",
+  "No SLA": "#6b7280", // Gray for items without SLA
 };
 
 const DepartmentChart = ({ data }) => {
@@ -119,7 +122,7 @@ const ClearanceTypeChart = ({ data }) => {
 };
 
 const SLAComplianceChart = ({ enhancedData }) => {
-  // Calculate SLA status counts from enhanced data
+  // Calculate SLA status counts from enhanced data using dynamic SLA
   const slaStats =
     enhancedData?.reduce((acc, item) => {
       const status = item.sla_status;
@@ -127,10 +130,18 @@ const SLAComplianceChart = ({ enhancedData }) => {
       return acc;
     }, {}) || {};
 
+  // Map status keys to display names
+  const statusDisplayMap = {
+    WITHIN_SLA: "Within SLA",
+    AT_RISK: "At Risk",
+    BREACHED: "Breached",
+    NO_SLA: "No SLA", // New status for items without SLA defined
+  };
+
   const chartData = Object.keys(slaStats).map((status) => ({
-    name: status.replace("_", " "),
+    name: statusDisplayMap[status] || status,
     value: slaStats[status],
-    fill: SLA_COLORS[status.replace("_", " ")] || "#8884d8",
+    fill: SLA_COLORS[statusDisplayMap[status]] || "#8884d8",
   }));
 
   if (chartData.length === 0) {
@@ -147,15 +158,22 @@ const SLAComplianceChart = ({ enhancedData }) => {
   }
 
   const totalRequests = enhancedData?.length || 0;
+  const withinSLACount = slaStats["WITHIN_SLA"] || 0;
+  const noSLACount = slaStats["NO_SLA"] || 0;
+
+  // Calculate compliance rate excluding items without SLA
+  const requestsWithSLA = totalRequests - noSLACount;
   const complianceRate =
-    totalRequests > 0
-      ? Math.round(((slaStats["WITHIN_SLA"] || 0) / totalRequests) * 100)
+    requestsWithSLA > 0
+      ? Math.round((withinSLACount / requestsWithSLA) * 100)
       : 0;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>SLA Compliance ({complianceRate}%)</CardTitle>
+        <CardTitle>
+          SLA Compliance {requestsWithSLA > 0 ? `(${complianceRate}%)` : ""}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
@@ -175,6 +193,12 @@ const SLAComplianceChart = ({ enhancedData }) => {
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>
+        {noSLACount > 0 && (
+          <div className="text-xs text-gray-500 mt-2 text-center">
+            * {noSLACount} items without SLA excluded from compliance
+            calculation
+          </div>
+        )}
       </CardContent>
     </Card>
   );
