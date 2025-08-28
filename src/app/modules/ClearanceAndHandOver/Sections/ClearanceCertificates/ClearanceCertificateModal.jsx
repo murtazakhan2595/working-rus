@@ -153,7 +153,7 @@ const ClearanceCertificateModal = ({
         console.error("Error generating PDF with html2canvas + jsPDF:", error);
 
         try {
-          // Fallback: try with html2pdf if available
+          // Fallback: try with html2pdf if availabl
           console.log("Trying html2pdf as fallback...");
           const html2pdf = (await import("html2pdf.js")).default;
 
