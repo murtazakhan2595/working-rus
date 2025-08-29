@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { SheetUI } from "components";
 import { SelectInputComponent, TextAreaInput } from "components/FormControl";
 import { Progress } from "src/@/components/ui/progress";
@@ -19,6 +19,84 @@ import {
 import { useSelector } from "react-redux";
 import { canReassignItem, canUserApproveItem } from "./ClearanceApprovalUtils";
 
+// FIXED: Create stable component outside the main component
+const ReassignmentSection = React.memo(
+  ({
+    itemId,
+    showReassignment,
+    reassignApprovers,
+    reassignNotes,
+    reassignmentSubmitting,
+    employees,
+    onToggleReassignment,
+    onUpdateApprover,
+    onUpdateNotes,
+    onHandleReassignment,
+  }) => {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-neutral-1200">
+            Task Reassignment
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onToggleReassignment(itemId)}
+            className="text-xs"
+          >
+            <UserPlus className="h-3 w-3 mr-1" />
+            {showReassignment[itemId] ? "Cancel" : "Reassign"}
+          </Button>
+        </div>
+
+        {showReassignment[itemId] && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded space-y-3">
+            <div>
+              <label className="text-xs font-medium text-neutral-1200 mb-1 block">
+                New Assignee *
+              </label>
+              <SelectInputComponent
+                name={`reassign_approver_${itemId}`}
+                placeholder="Select new assignee"
+                value={reassignApprovers[itemId] || ""}
+                options={employees}
+                onChange={(field, value) => onUpdateApprover(itemId, value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-neutral-1200 mb-1 block">
+                Notes (Optional)
+              </label>
+              <TextAreaInput
+                name={`reassign_notes_${itemId}`}
+                placeholder="Reassignment notes..."
+                value={reassignNotes[itemId] || ""}
+                rows={2}
+                onChange={(field, value) => onUpdateNotes(itemId, value)}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => onHandleReassignment(itemId)}
+                disabled={
+                  !reassignApprovers[itemId] || reassignmentSubmitting[itemId]
+                }
+                className="text-xs"
+              >
+                {reassignmentSubmitting[itemId] ? "Reassigning..." : "Confirm"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 export default function ClearanceChecklistModal({
   isOpen = false,
@@ -31,8 +109,11 @@ export default function ClearanceChecklistModal({
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showReassignment, setShowReassignment] = useState({}); // Track which items show reassignment
-  const [reassignmentData, setReassignmentData] = useState({}); // Track reassignment form data
-  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({}); // Track reassignment submission
+
+  // Separate state variables for reassignment inputs
+  const [reassignApprovers, setReassignApprovers] = useState({}); // {itemId: approverId}
+  const [reassignNotes, setReassignNotes] = useState({}); // {itemId: notes}
+  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({}); // {itemId: boolean}
 
   // Get current logged-in user and employees
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -41,6 +122,27 @@ export default function ClearanceChecklistModal({
 
   // Check if clearance is on hold
   const isOnHold = clearanceRequest?.status === "ONHOLD";
+
+  const fetchChecklistItems = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        filterData: { request: clearanceRequest.id },
+        options: { page: 1, sizePerPage: 100 },
+        ordering: "id",
+      };
+
+      const response = await getClearanceRequestItems(payload);
+      if (response && response.results) {
+        setChecklistItems(response.results);
+      }
+    } catch (error) {
+      console.error("Error fetching checklist items:", error);
+      toast.error("Failed to load checklist items");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (clearanceRequest && isOpen) {
@@ -78,95 +180,89 @@ export default function ClearanceChecklistModal({
     return canReassignItem(item, currentUserId, isOnHold);
   };
 
-  // Handle reassignment toggle
-  const toggleReassignment = (itemId) => {
+  // FIXED: Stable callback functions
+  const toggleReassignment = useCallback((itemId) => {
     setShowReassignment((prev) => ({
       ...prev,
       [itemId]: !prev[itemId],
     }));
 
     // Initialize reassignment data if showing for first time
-    if (!showReassignment[itemId]) {
-      setReassignmentData((prev) => ({
-        ...prev,
-        [itemId]: {
-          reassign_approver: "",
-          reassign_notes: "",
-        },
-      }));
-    }
-  };
+    setReassignApprovers((prev) => {
+      if (prev[itemId] === undefined) {
+        return { ...prev, [itemId]: "" };
+      }
+      return prev;
+    });
 
-  // Update reassignment data
-  const updateReassignmentData = (itemId, field, value) => {
-    setReassignmentData((prev) => ({
+    setReassignNotes((prev) => {
+      if (prev[itemId] === undefined) {
+        return { ...prev, [itemId]: "" };
+      }
+      return prev;
+    });
+  }, []);
+
+  const updateReassignApprover = useCallback((itemId, approverId) => {
+    setReassignApprovers((prev) => ({
       ...prev,
-      [itemId]: {
-        ...prev[itemId],
-        [field]: value,
-      },
+      [itemId]: approverId,
     }));
-  };
+  }, []);
+
+  const updateReassignNotes = useCallback((itemId, notes) => {
+    setReassignNotes((prev) => ({
+      ...prev,
+      [itemId]: notes,
+    }));
+  }, []);
 
   // Handle reassignment submission
-  const handleReassignment = async (itemId) => {
-    const data = reassignmentData[itemId];
+  const handleReassignment = useCallback(
+    async (itemId) => {
+      const approverId = reassignApprovers[itemId];
+      const notes = reassignNotes[itemId];
 
-    if (!data?.reassign_approver) {
-      toast.error("Please select a new assignee");
-      return;
-    }
-
-    setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: true }));
-
-    try {
-      const response = await updateClearanceRequestItem(itemId, {
-        reassign_approver: data.reassign_approver,
-        reassign_notes: data.reassign_notes || "",
-      });
-
-      if (response) {
-        toast.success("Task reassigned successfully!");
-
-        // Reset reassignment state
-        setShowReassignment((prev) => ({ ...prev, [itemId]: false }));
-        setReassignmentData((prev) => ({
-          ...prev,
-          [itemId]: { reassign_approver: "", reassign_notes: "" },
-        }));
-
-        // Refresh data
-        fetchChecklistItems();
-        reload();
+      if (!approverId) {
+        toast.error("Please select a new assignee");
+        return;
       }
-    } catch (error) {
-      console.error("Error reassigning task:", error);
-      toast.error("Failed to reassign task");
-    } finally {
-      setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: false }));
-    }
-  };
 
-  const fetchChecklistItems = async () => {
-    setLoading(true);
-    try {
-      const payload = {
-        filterData: { request: clearanceRequest.id },
-        options: { page: 1, sizePerPage: 100 },
-        ordering: "id",
-      };
+      setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: true }));
 
-      const response = await getClearanceRequestItems(payload);
-      if (response && response.results) {
-        setChecklistItems(response.results);
+      try {
+        const response = await updateClearanceRequestItem(itemId, {
+          reassign_approver: approverId,
+          reassign_notes: notes || "",
+        });
+
+        if (response) {
+          toast.success("Task reassigned successfully!");
+
+          // Reset reassignment state
+          setShowReassignment((prev) => ({ ...prev, [itemId]: false }));
+          setReassignApprovers((prev) => ({
+            ...prev,
+            [itemId]: "",
+          }));
+          setReassignNotes((prev) => ({
+            ...prev,
+            [itemId]: "",
+          }));
+
+          // Refresh data
+          fetchChecklistItems();
+          reload();
+        }
+      } catch (error) {
+        console.error("Error reassigning task:", error);
+        toast.error("Failed to reassign task");
+      } finally {
+        setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: false }));
       }
-    } catch (error) {
-      console.error("Error fetching checklist items:", error);
-      toast.error("Failed to load checklist items");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [reassignApprovers, reassignNotes, fetchChecklistItems, reload]
+  );
 
   // Simple local state update - no API calls
   const updateItemStatus = (itemId, newStatus) => {
@@ -266,7 +362,6 @@ export default function ClearanceChecklistModal({
     return groups;
   }, {});
 
-
   // Simple form fields generation with permission checks
   const generateFormFields = () => {
     return Object.keys(groupedItems).map((groupName) => ({
@@ -301,7 +396,7 @@ export default function ClearanceChecklistModal({
           };
         }),
 
-        // Add reassignment section for each item that can be reassigned
+        // FIXED: Add reassignment section using the stable component
         ...groupedItems[groupName]
           .map((item) => {
             const canReassign = canReassignItemCheck(item);
@@ -309,88 +404,18 @@ export default function ClearanceChecklistModal({
             if (!canReassign) return null; // Don't show reassignment for ineligible items
 
             return {
-              InputField: () => (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-neutral-1200">
-                      Task Reassignment
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => toggleReassignment(item.id)}
-                      className="text-xs"
-                    >
-                      <UserPlus className="h-3 w-3 mr-1" />
-                      {showReassignment[item.id] ? "Cancel" : "Reassign"}
-                    </Button>
-                  </div>
-
-                  {showReassignment[item.id] && (
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded space-y-3">
-                      <div>
-                        <label className="text-xs font-medium text-neutral-1200 mb-1 block">
-                          New Assignee *
-                        </label>
-                        <SelectInputComponent
-                          name={`reassign_approver_${item.id}`}
-                          placeholder="Select new assignee"
-                          value={
-                            reassignmentData[item.id]?.reassign_approver || ""
-                          }
-                          options={employees}
-                          onChange={(field, value) =>
-                            updateReassignmentData(
-                              item.id,
-                              "reassign_approver",
-                              value
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-medium text-neutral-1200 mb-1 block">
-                          Notes (Optional)
-                        </label>
-                        <TextAreaInput
-                          name={`reassign_notes_${item.id}`}
-                          placeholder="Reassignment notes..."
-                          value={
-                            reassignmentData[item.id]?.reassign_notes || ""
-                          }
-                          rows={2}
-                          onChange={(field, value) =>
-                            updateReassignmentData(
-                              item.id,
-                              "reassign_notes",
-                              value
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => handleReassignment(item.id)}
-                          disabled={
-                            !reassignmentData[item.id]?.reassign_approver ||
-                            reassignmentSubmitting[item.id]
-                          }
-                          className="text-xs"
-                        >
-                          {reassignmentSubmitting[item.id]
-                            ? "Reassigning..."
-                            : "Confirm"}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ),
+              InputField: ReassignmentSection, // FIXED: Use stable component reference
               name: `reassignment_${item.id}`,
+              itemId: item.id, // Pass props to the component
+              showReassignment,
+              reassignApprovers,
+              reassignNotes,
+              reassignmentSubmitting,
+              employees,
+              onToggleReassignment: toggleReassignment,
+              onUpdateApprover: updateReassignApprover,
+              onUpdateNotes: updateReassignNotes,
+              onHandleReassignment: handleReassignment,
               colsSpan: 2,
             };
           })
