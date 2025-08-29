@@ -39,3 +39,11 @@ export const ClearanceChecklist = {
   created_by: "",
   created_date: "",
 };
+
+export const EvaluationType = {
+  name: null,
+  description: null,
+  id: null,
+  created_at: null,
+  created_by: null,
+}

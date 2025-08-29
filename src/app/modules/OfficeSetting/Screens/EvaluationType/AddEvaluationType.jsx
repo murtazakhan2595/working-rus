@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddGraceTimeForm from "app/modules/OfficeSetting/Screens/GraceTime/AddGraceTimeForm";
+import AddEvaluationTypeForm from "app/modules/OfficeSetting/Screens/EvaluationType/AddEvaluationTypeForm";
 import { Button } from "components/ui/button";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
@@ -19,9 +19,9 @@ const AddEvaluationType = ({ reloadData = () => {} }) => {
 
   return (
     <>
-      <Button onClick={handleClick}>Add New Grace Time</Button>
+      <Button onClick={handleClick}>Add New Evaluation Type</Button>
       {isOpen && (
-        <AddGraceTimeForm
+        <AddEvaluationTypeForm
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           reloadData={reloadData}

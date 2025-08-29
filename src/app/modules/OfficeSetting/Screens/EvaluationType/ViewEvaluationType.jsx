@@ -1,12 +1,12 @@
 import React from "react";
 import { NavigationSheetComponent } from "components"; 
 import { DetailContent } from "components";
-import AddGraceTimeForm from "./AddGraceTimeForm";
+import AddEvaluationTypeForm from "./AddEvaluationTypeForm";
 import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
-import { getGraceTimeData } from "app/hooks/officeSetting";
-const ViewGraceTime = ({
+import { getEvaluationTypeData } from "app/hooks/officeSetting";
+const ViewEvaluationType = ({
   isOpen,
   setIsOpen,
   currentId,
@@ -16,36 +16,20 @@ const ViewGraceTime = ({
   // Define the fields to display
   const fields = [
     {
-      title: "Grace Time Details",
+      title: "Evaluation Type Details",
+      footerTitle: "Created At",
+      footerField: "created_at",
       field: [
         {
           key: "id",
           label: "Id",
-          formatter: (cell, row) => <FormatID value={cell} prefix={"GT-"} />,
+          formatter: (cell, row) => <FormatID value={cell} prefix={"EVT-"} />,
         },
         { key: "name", label: "Name" },
         {
-          key: "grace_time_minutes",
-          label: "Grace Time",
+          key: "description",
+          label: "Description",
           formatter: (cell) => `${cell}min`,
-        },
-        {
-          key: "branches",
-          label: "Branches",
-          formatter: (cell) => {
-            if (!cell || cell.length === 0) {
-              return "--";
-            }
-            return (
-              <div className="flex flex-wrap gap-1">
-                {cell.map((branch) => (
-                  <StatusLabel variant={"info"}>
-                    <BranchName value={branch} />
-                  </StatusLabel>
-                ))}
-              </div>
-            );
-          },
         },
       ],
     },
@@ -53,7 +37,7 @@ const ViewGraceTime = ({
 
   const fetchData = async (id, isMounted) => {
     try {
-      const response = await getGraceTimeData(id);
+      const response = await getEvaluationTypeData(id);
       if (isMounted) {
         return response;
       }
@@ -66,20 +50,20 @@ const ViewGraceTime = ({
     <NavigationSheetComponent
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      title="Grace Time Details"
+      title="Evaluation Type Details"
       currentItem_Id={currentId}
       dataList={DataList}
       reloadData={reloadData}
-      editComponent={AddGraceTimeForm}
-      apiEndpoint={"/grace-times/${id}/"}
+      editComponent={AddEvaluationTypeForm}
+      apiEndpoint={"/evaluation-types/${id}/"}
       fetchCurrentItemDetails={fetchData}
       deleteItemName="name"
-      editTooltip="Edit Grace Time"
-      deleteTooltip="Delete Grace Time"
+      editTooltip="Edit Evaluation Type"
+      deleteTooltip="Delete Evaluation Type"
     >
-      <DetailContent title="Grace Time Details" fields={fields} />
+      <DetailContent title="Evaluation Type Details" fields={fields} />
     </NavigationSheetComponent>
   );
 };
 
-export default ViewGraceTime;
+export default ViewEvaluationType;

@@ -88,6 +88,15 @@ export const useOfficeSettingPermissions = () => {
     orgChart: {
       canView: hasPermission(OFFICE_SETTING_PERMISSIONS.ORG_CHART.VIEW),
       canManage: hasPermission(OFFICE_SETTING_PERMISSIONS.ORG_CHART.MANAGE)
-    }
+    },
+
+
+    // Evaluation Type Permissions
+    evaluationType: {
+      canView: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW),
+      canCreate: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE),
+      canUpdate: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.UPDATE),
+      canDelete: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.DELETE)
+    },
   };
 }; 

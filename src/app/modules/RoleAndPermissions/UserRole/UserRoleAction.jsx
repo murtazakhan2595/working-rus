@@ -56,7 +56,7 @@ const UserRoleAction = ({ data, reload, UserRoleList = [] }) => {
     <>
       <DropdownActionMenu
         onView={handleView}
-        onEdit={isEditUserRolePermitted && data?.id !== 1 ? handleEdit : null}
+        onEdit={isEditUserRolePermitted && data?.id === 1 ? handleEdit : null}
         onDelete={
           isEditUserRolePermitted &&
           data?.id !== 1 &&

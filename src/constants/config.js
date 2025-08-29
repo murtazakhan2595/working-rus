@@ -100,6 +100,11 @@ const Config = {
   APPROVAL_HIERARCHY: true,
   LEAVE_SETUP: true,
   CLEARANCE_CHECKLIST: true,
+
+  //--------------Performance Edge-----------
+  PERFORMANCE_EDGE: true,
+  //Sub Modules
+  GENERATE_FORM: true,
 };
 
 export const URLS = [
@@ -135,6 +140,7 @@ export const WEBSOCKET_PATHS = [
   "/ws/payrollnotifications/",
   "/ws/approvalnotifications/",
   "/ws/leavenotification/",
+  "/ws/performance_system/"
   // Add more as needed
 ];
 

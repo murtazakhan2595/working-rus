@@ -1,4 +1,4 @@
-import { Branch, GraceTime } from "app/utils/Types/OfficeSetting";
+import { Branch, GraceTime, EvaluationType } from "app/utils/Types/OfficeSetting";
 
 export async function mapBranchList(data) {
   const branchList = await data?.map((branch) => {
@@ -93,3 +93,51 @@ export function mapGraceTimePayloadData(data, id) {
   // Return the constructed payload
   return payload;
 }
+
+
+//-------------Evaluation Type ---------------
+
+export function mapEvaluationTypeData(data) {
+  const graceTimeDetails = Object.keys(EvaluationType).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "name" || key === 'description') acc[key] = data[key].trim()
+      else acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return graceTimeDetails;
+}
+export async function mapEvaluationTypeList(data) {
+  const graceTimeList = await data?.map((graceTime) => {
+    const graceTimeDetails = mapEvaluationTypeData(graceTime);
+    return {
+      value: graceTimeDetails.id,
+      label: graceTimeDetails.branch_name,
+      ...graceTimeDetails,
+    };
+  });
+
+  return graceTimeList;
+}
+
+export function mapEvaluationTypePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in EvaluationType) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "name" || key === 'description') payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
