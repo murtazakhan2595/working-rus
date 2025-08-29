@@ -50,7 +50,8 @@ export const ClearanceColumns = (reload, clearanceList = [], clearanceTypes) => 
         PENDING: { label: "Pending", variant: "warning" },
         IN_PROCESS: { label: "In Process", variant: "info" },
         COMPLETED: { label: "Completed", variant: "success" },
-        REJECTED: { label: "Rejected", variant: "error" }, // use "error" not "danger"
+        REJECTED: { label: "Rejected", variant: "error" },
+        ONHOLD: { label: "On Hold", variant: "error" },
       };
 
       const status = statusMap[cell] || {

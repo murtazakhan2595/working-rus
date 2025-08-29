@@ -71,6 +71,7 @@ export const AnalyticsTableColumns = (onViewDetails) => [
         IN_PROCESS: "info",
         COMPLETED: "success",
         REJECTED: "error",
+        ONHOLD: "error",
       };
 
       return (
