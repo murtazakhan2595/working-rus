@@ -44,7 +44,11 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (response.status === 200) {
+        if (response.data?.clearance_required) {
+          navigate("/clearance-revoke");
+        }
         if (!response.data.is_filled) {
           navigate("/create-profile");
         }
