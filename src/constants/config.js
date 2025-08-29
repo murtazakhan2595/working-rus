@@ -18,6 +18,7 @@ const Config = {
   EXIT: true,
   MY_JOB_ROTATIONS: true,
   MY_CLEARANCE: true,
+  MANAGER_CLEARANCE_DASHBOARD: true,
 
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
