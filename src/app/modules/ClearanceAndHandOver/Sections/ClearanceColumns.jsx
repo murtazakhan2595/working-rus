@@ -34,6 +34,10 @@ export const ClearanceColumns = (reload, clearanceList = [], clearanceTypes) => 
     dataField: "clearance_type",
     text: "Clearance Type",
     sort: true,
+    formatter: (cell) => {
+      const clearanceType = clearanceTypes.find((type) => type.id === cell);
+      return clearanceType ? clearanceType.name : cell;
+    },
   },
   {
     dataField: "start_date",
