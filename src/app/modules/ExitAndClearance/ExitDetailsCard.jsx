@@ -267,19 +267,52 @@ const ExitDetailsCard = ({
                   Complete Clearance
                 </Button>
               );
-            if (
-              data.clearance_status &&
-              data.clearance_status.toLowerCase() === "completed"
-            )
+            // Completed clearance - check if exit interview is available
+          if (
+            data.clearance_status &&
+            data.clearance_status.toLowerCase() === "completed"
+          ) {
+            // Check if this is resignation/termination AND clearance is fully done
+             const isExitType = ["RESIGNATION", "TERMINATION"].includes(
+               data.exit_category
+             );
+
+            const isClearanceCompleted = data?.clearance_handover === true; // Your boolean flag
+            
+            if (isExitType && isClearanceCompleted) {
               return (
-                <Button
-                  variant="outline"
-                  onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
-                >
-                  Exit Interview
-                </Button>
+                <div className="space-y-2">
+                  <div className="text-sm text-green-600 font-medium">
+                    ✓ Exit Interview form is now available.
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
+                  >
+                    Proceed for Exit Interview
+                  </Button>
+                </div>
               );
+            } else {
+              return (
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    disabled={true}
+                  >
+                    Exit Interview
+                  </Button>
+                  <div className="text-sm text-amber-600">
+                    {!isExitType 
+                      ? "Exit interview not applicable for this clearance type"
+                      : "Waiting for all clearance items to be completed"
+                    }
+                  </div>
+                </div>
+              );
+            }
           }
+        }
           return (
             <StatusButtons
               permissionKey={"MANAGE_EXIT_REQUESTS"}
