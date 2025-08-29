@@ -277,7 +277,7 @@ const ExitDetailsCard = ({
                data.exit_category
              );
 
-            const isClearanceCompleted = data?.clearance_handover === true; // Your boolean flag
+            const isClearanceCompleted = data?.is_clearance_handover === true; // Your boolean flag
             
             if (isExitType && isClearanceCompleted) {
               return (
