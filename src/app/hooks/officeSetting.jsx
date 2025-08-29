@@ -472,6 +472,26 @@ export const getClearanceTypeList = async () => {
   }
 };
 
+const updateClearanceType = async (id, payload) => {
+  try {
+    const response = await axios.patch(
+      `${baseUrl}/clearance-types/${id}/`,
+      payload,
+      { headers: headers() }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error updating clearance type:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
 export const getEvaluationTypeList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -568,4 +588,5 @@ export {
   deleteOnboardingDocument,
   getOnboardingDocument,
   getOnboardingDocumentById,
+  updateClearanceType,
 };

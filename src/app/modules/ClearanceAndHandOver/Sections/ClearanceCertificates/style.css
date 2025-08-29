@@ -1,0 +1,26 @@
+/* Print-specific styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .payslip-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Hide non-essential elements when printing */
+  .container>.mb-4 {
+    display: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

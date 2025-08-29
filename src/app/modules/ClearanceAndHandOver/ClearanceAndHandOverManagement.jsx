@@ -1,3 +1,4 @@
+
 import { Header } from "components";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -8,9 +9,16 @@ import {
 } from "src/@/components/ui/tabs";
 import { Card, CardContent } from "components/ui/card";
 import ClearanceRequests from "./Sections/ClearanceRequests";
-import ClearanceRecords from "./Sections/ClearanceRecords"; // NEW IMPORT
-import { getClearanceRequestsList } from "app/hooks/clearanceAndHandover";
+import ClearanceRecords from "./Sections//ClearanceRecords";
+import ClearanceCertificates from "./Sections/ClearanceCertificates/ClearanceCertificates";
+import ClearanceAnalyticsDashboard from "./Sections/ClearanceAnalyticsDashboard";
+import {
+  getClearanceRequestsList,
+  getClearanceCertificatesList,
+} from "app/hooks/clearanceAndHandover";
 import { getClearanceTypeList } from "app/hooks/officeSetting";
+import { HasAccess } from "utils/PermissionUtils";
+import AccessConfiguration from "./Sections/AccessConfiguration";
 
 export default function ClearanceAndHandover() {
   const [activeTab, setActiveTab] = useState("clearance-requests");
@@ -20,61 +28,66 @@ export default function ClearanceAndHandover() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ results: [], count: 0 });
   const [clearanceTypes, setClearanceTypes] = useState([]);
+  const isViewClearanceAnalytics = HasAccess(
+    "VIEW_CLEARANCE_ANALYTICS_DASHBOARD"
+  );
 
-  // Load clearance types on component mount - MOVED OUTSIDE fetchData
+  // Load clearance types on component mount
   useEffect(() => {
     fetchClearanceTypes();
   }, []);
 
   const fetchClearanceTypes = async () => {
     try {
-      console.log("Fetching clearance types...");
       const response = await getClearanceTypeList();
-      console.log("Clearance types response:", response);
-
       if (response) {
         setClearanceTypes(response?.results || []);
-        console.log("Clearance types set:", response);
       }
     } catch (error) {
       console.error("Error fetching clearance types:", error);
-      setClearanceTypes([]); // Set empty array on error
+      setClearanceTypes([]);
     }
   };
 
   const fetchData = useCallback(async () => {
+    // Skip data fetching for analytics tab as it handles its own data
+    if (activeTab === "analytics") return;
+
     setLoading(true);
     try {
       const payload = { options, ordering, filterData };
-      console.log("Fetching clearance data with payload:", payload);
 
       if (activeTab === "clearance-requests") {
-        // Fetch requests that are NOT completed
         const requestsPayload = {
           ...payload,
           filterData: {
             ...payload.filterData,
-            status__ne: "COMPLETED", // Exclude completed records
+            status: ["PENDING", "IN_PROCESS", "COMPLETED", "REJECTED"],
           },
         };
         const response = await getClearanceRequestsList(requestsPayload);
-
         if (response && response.results) {
           setData(response);
         } else {
           setData({ results: [], count: 0 });
         }
       } else if (activeTab === "clearance-records") {
-        // Fetch ONLY completed records
         const recordsPayload = {
           ...payload,
           filterData: {
             ...payload.filterData,
-            // status: "COMPLETED", // Only completed records
+            status: ["COMPLETED"],
           },
         };
         const response = await getClearanceRequestsList(recordsPayload);
-
+        if (response && response.results) {
+          setData(response);
+        } else {
+          setData({ results: [], count: 0 });
+        }
+      } else if (activeTab === "clearance-certificates") {
+        // Fetch certificates data
+        const response = await getClearanceCertificatesList(payload);
         if (response && response.results) {
           setData(response);
         } else {
@@ -104,10 +117,6 @@ export default function ClearanceAndHandover() {
     setOptions((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Debug: Log current state
-  console.log("Current clearanceTypes state:", clearanceTypes);
-  console.log("Is clearanceTypes array?", Array.isArray(clearanceTypes));
-
   const tabsData = [
     {
       value: "clearance-requests",
@@ -126,10 +135,9 @@ export default function ClearanceAndHandover() {
         />
       ),
     },
-    // NEW TAB - Clearance Records
     {
       value: "clearance-records",
-      label: "Clearance & Handover Records",
+      label: "Clearance Records",
       component: (
         <ClearanceRecords
           options={options}
@@ -144,7 +152,38 @@ export default function ClearanceAndHandover() {
         />
       ),
     },
-    // Future tabs can be added here
+
+    {
+      value: "clearance-certificates",
+      label: "Clearance Certificates",
+      component: (
+        <ClearanceCertificates
+          options={options}
+          onPageChange={onPageChange}
+          setOrdering={setOrdering}
+          loading={loading}
+          data={data}
+          reload={fetchData}
+          filterData={filterData}
+          setFilterData={setFilterData}
+          clearanceTypes={clearanceTypes}
+        />
+      ),
+    },
+    ...(isViewClearanceAnalytics
+      ? [
+          {
+            value: "analytics",
+            label: "Analytics Dashboard",
+            component: <ClearanceAnalyticsDashboard />,
+          },
+        ]
+      : []),
+    {
+      value: "access-configuration", // NEW TAB
+      label: "Access Configuration",
+      component: <AccessConfiguration />,
+    },
   ];
 
   return (
@@ -166,13 +205,16 @@ export default function ClearanceAndHandover() {
           </TabsList>
         </div>
 
-        <Card>
-          {tabsData.map((tab) => (
-            <TabsContent key={tab.value} value={tab.value}>
-              {tab.component}
-            </TabsContent>
-          ))}
-        </Card>
+        {tabsData.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value}>
+            {/* Only wrap non-analytics tabs in Card */}
+            {tab.value === "analytics" ? (
+              tab.component
+            ) : (
+              <Card>{tab.component}</Card>
+            )}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );

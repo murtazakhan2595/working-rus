@@ -1,6 +1,6 @@
 import { TableCustom } from "components";
 import { PageLoader } from "components";
-import { ClearanceRecordsColumns } from "./ClearanceRecordsColumns";
+import { ClearanceCertificatesColumns } from "./ClearanceCertificatesColumns";
 import { FilterInput } from "components/FormControl";
 import { useState } from "react";
 import {
@@ -11,7 +11,7 @@ import {
 } from "components/ui/card";
 import { useSelector } from "react-redux";
 
-export default function ClearanceRecords({
+export default function ClearanceCertificates({
   options,
   onPageChange,
   setOrdering,
@@ -23,6 +23,7 @@ export default function ClearanceRecords({
   clearanceTypes,
 }) {
   const Departments = useSelector((state) => state.common.departments);
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -45,17 +46,26 @@ export default function ClearanceRecords({
     });
   };
 
+  const certificateStatusOptions = [
+    { value: "PENDING", label: "Pending" },
+    { value: "GENERATED", label: "Generated" },
+    { value: "SENT", label: "Sent" },
+  ];
+
+  const sentToEmployeeOptions = [
+    { value: true, label: "Yes" },
+    { value: false, label: "No" },
+  ];
+
   return (
     <div className="flex flex-col">
       <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
         <div>
-          <CardTitle className="text-primary">
-            Clearance & Handover Records
-          </CardTitle>
+          <CardTitle className="text-primary">Clearance Certificates</CardTitle>
           <CardDescription className="text-neutral-1100">
-            View historical records of all completed clearance and handover
-            processes. This tab serves as an audit log for compliance and
-            reference.
+            Manage and track all generated clearance certificates. View, edit,
+            resend, and download certificates with complete audit trail
+            functionality.
           </CardDescription>
         </div>
       </CardHeader>
@@ -75,19 +85,31 @@ export default function ClearanceRecords({
             },
             {
               type: "select",
+              options: certificateStatusOptions,
+              name: "status",
+              placeholder: "Certificate Status",
+            },
+            {
+              type: "select",
               options: clearanceTypes,
               name: "clearance_type",
               placeholder: "Clearance Type",
             },
             {
-              type: "date-range",
-              name: "start_date_range",
-              placeholder: "Clearance Start Date",
+              type: "select",
+              options: sentToEmployeeOptions,
+              name: "sent_to_employee",
+              placeholder: "Sent to Employee",
             },
             {
               type: "date-range",
-              name: "completion_date_range",
-              placeholder: "Completion Date",
+              name: "generated_date_range",
+              placeholder: "Certificate Generated Date",
+            },
+            {
+              type: "date-range",
+              name: "last_working_day_range",
+              placeholder: "Last Working Day",
             },
           ]}
           onChange={handleFilterChange}
@@ -97,7 +119,7 @@ export default function ClearanceRecords({
           <PageLoader />
         ) : (
           <TableCustom
-            columns={ClearanceRecordsColumns(
+            columns={ClearanceCertificatesColumns(
               reload,
               data?.results || [],
               clearanceTypes
