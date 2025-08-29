@@ -24,10 +24,9 @@ import {
 } from "src/@/components/ui/dialog";
 import { StatusButtons, StatusList } from "components";
 import { HasAccess } from "utils/PermissionUtils";
-import { handleRequest } from "app/hooks/general"; 
+import { handleRequest } from "app/hooks/general";
 import { DetailCard } from "components/SheetCardExtension";
 import { updateAsset } from "app/hooks/assets";
-
 
 const baseUrl = initialState.baseUrl;
 
@@ -52,6 +51,10 @@ const ViewAssetRequest = ({
   // Rejection dialog state
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+
+  // 🚀 NEW: Return dialog state
+  const [showReturnConfirm, setShowReturnConfirm] = useState(false);
+  const [isSubmittingReturn, setIsSubmittingReturn] = useState(false);
 
   console.log("data", data);
 
@@ -152,6 +155,8 @@ const ViewAssetRequest = ({
                 ? "bg-red-50 text-red-700"
                 : value === "Withdrawal"
                 ? "bg-yellow-50 text-yellow-700"
+                : value === "Returned"
+                ? "bg-blue-50 text-blue-700"
                 : "bg-[#f0f0f3] text-[#7f838d]"
             }`}
           >
@@ -346,9 +351,64 @@ const ViewAssetRequest = ({
     }
   };
 
+  // 🚀 NEW: Handle Return Asset
+  const handleReturnAsset = async () => {
+    setIsSubmittingReturn(true);
+    try {
+      // STEP 1: Update Asset Assignment (add return date and change status)
+      const updatedRequest = {
+        id: currentItem.id,
+        asset_returned_date: moment().format("YYYY-MM-DD"),
+        asset_request_status: "Returned",
+        asset_employee_id:
+          currentItem?.asset_employee_id || currentItem?.employee?.id || "",
+      };
+
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        // STEP 2: Update Asset Management (change status back to Unassigned)
+        if (currentItem?.asset?.id || currentItem?.asset_name) {
+          try {
+            const assetId = currentItem.asset?.id || currentItem.asset_name;
+            const assetStatusPayload = {
+              id: assetId,
+              asset_status: "Unassigned",
+            };
+            await updateAsset(assetStatusPayload);
+            console.log("Asset status updated to Unassigned");
+          } catch (assetError) {
+            console.error("Error updating asset status:", assetError);
+            toast.warning("Asset returned but failed to update asset status");
+          }
+        }
+
+        toast.success("Asset returned successfully!");
+        setShowReturnConfirm(false);
+        setIsOpen(false);
+        reload();
+      } else {
+        toast.error("Failed to return asset");
+      }
+    } catch (error) {
+      console.error("Error returning asset:", error);
+      toast.error("Error returning asset: " + error.message);
+    } finally {
+      setIsSubmittingReturn(false);
+    }
+  };
+
   // Custom content with employee overview and status
   const CustomContent = ({ currentItem }) => {
     const showButtons = !isMyRequest && currentItem?.asset_status === "Pending";
+
+    // 🚀 NEW: Show return button for accepted/assigned assets
+    const showReturnButton =
+      !isMyRequest &&
+      currentItem?.asset_status === "Accepted" &&
+      (HasAccess("MANAGE_ASSET_REQUEST") ||
+        HasAccess("ASSIGN_ASSETS_TO_EMPLOYEE")) &&
+      currentItem?.asset?.id; // Only show if asset is actually assigned
 
     // Handle accept button click
     const handleAcceptClick = () => {
@@ -392,6 +452,7 @@ const ViewAssetRequest = ({
         fetchAvailableAssets(currentItem);
       }
     };
+
     const handleDirectApproval = async () => {
       setIsSubmittingStatus(true);
       try {
@@ -456,11 +517,9 @@ const ViewAssetRequest = ({
           )}
         </div>
 
-        {/* Approval Details Section */}
-        {console.log("currentItem", currentItem)}
-
         {/* Request Details */}
         <DetailContent currentItem={currentItem} fields={detailContentFields} />
+
         {currentItem?.approval_details &&
           currentItem.approval_details.length > 0 && (
             <DetailCard detailCardTitle="Approval Details" className="mt-4">
@@ -490,6 +549,19 @@ const ViewAssetRequest = ({
           }
           rejectText="Reject with Reason"
         />
+
+        {/* 🚀 NEW: Return Asset Button */}
+        {showReturnButton && (
+          <div className="flex justify-end pt-4">
+            <Button
+              onClick={() => setShowReturnConfirm(true)}
+              disabled={isSubmittingReturn}
+              variant="outline"
+            >
+              {isSubmittingReturn ? "Processing..." : "Return Asset"}
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -601,7 +673,17 @@ const ViewAssetRequest = ({
         reason={rejectionReason}
         setReason={setRejectionReason}
       />
-    </>
+      {console.log("currentItem:", currentItem)}
+      {/* 🚀 NEW: Return Asset Confirmation Dialog */}
+      <ReturnAssetDialog
+        open={showReturnConfirm}
+        onOpenChange={setShowReturnConfirm}
+        onSubmit={handleReturnAsset}
+        isSubmitting={isSubmittingReturn}
+        assetName={currentItem?.asset?.asset_name}
+        employeeName={`${currentItem?.employee?.first_name} ${currentItem?.employee?.last_name}`}
+      />
+    </>   
   );
 };
 
@@ -830,6 +912,72 @@ const RejectionReasonDialog = ({
             disabled={reason.trim() === "" || isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// 🚀 NEW: Return Asset Confirmation Dialog Component
+const ReturnAssetDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isSubmitting,
+  assetName,
+  employeeName,
+}) => {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Return Asset </DialogTitle>
+          <DialogDescription>
+            Are you sure you want to return this asset? This action cannot be
+            undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="p-4 rounded-lg bg-orange-50 border border-orange-200">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-900">Asset:</span>
+                <span className="text-gray-900">{assetName || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-900">Employee:</span>
+                <span className="text-gray-900">{employeeName || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-900">Return Date:</span>
+                <span className="text-gray-900">
+                  {moment().format("MMM D, YYYY")}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+            <p className="text-sm text-yellow-800">
+              <strong>Warning:</strong> Once returned, the asset will become
+              available for reassignment and the current assignment will be
+              marked as completed.
+            </p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Returning..." : "Return Asset"}
           </Button>
         </DialogFooter>
       </DialogContent>

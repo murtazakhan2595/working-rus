@@ -94,6 +94,7 @@ import {
 } from "app/modules/Attendance/ShiftCalendar";
 import { ClearanceAndHandover } from "app/modules/ClearanceAndHandOver";
 import { MyClearanceTab } from "app/modules/ClearanceAndHandOver/Sections/MyClearance";
+import AccessRevokedPage from "app/modules/ClearanceAndHandOver/AccessRevoked";
 
 export const SidebarRoutes = [
   {
@@ -597,6 +598,11 @@ const LoginRoutes = [
     path: "/create-profile",
     component: <CreateEmployeeProfile />,
     name: "Create_Employee_Profile",
+  },
+  {
+    path: "/clearance-revoke",
+    component: <AccessRevokedPage />,
+    name: "Access_Revoked",
   },
 ].filter(Boolean); // Filter out undefined routes;
 
