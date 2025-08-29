@@ -1,5 +1,6 @@
 import { EmployeeEvaluationFormColumns } from './TableColumns';
 import AddNewSection from './AddNewSection';
+import AddNewSectionField from './AddNewSectionField';
 import RemoveSection from './RemoveSection';
 
-export { EmployeeEvaluationFormColumns, AddNewSection, RemoveSection };
+export { EmployeeEvaluationFormColumns, AddNewSection, RemoveSection, AddNewSectionField };

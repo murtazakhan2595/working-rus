@@ -1,4 +1,4 @@
-import { EmployeeOverview } from "components";
+import { MultiStatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
@@ -12,56 +12,39 @@ import { RotationAction, TransferActions } from 'app/modules/TransferAndRotation
  */
 export const EmployeeEvaluationFormColumns = (reloadData) => [
     {
-        dataField: "employee",
-        text: "Employee",
-        formatter: (cell, row) => (
-            <EmployeeOverview
-                id={row.employee}
-                showId={true}
-                showPosition={true}
-                showDepartment={true}
-            />
-        ),
-        minWidth: "120px",
-        // dataSort: true,
-    },
-    {
-        dataField: "initiated_by",
-        text: "Requestor",
-        formatter: (cell) => (
-            <EmployeeOverview
-                id={cell}
-                showId={true}
-                showPosition={true}
-                showDepartment={true}
-            />
-        ),
-        minWidth: "120px",
-    },
-    {
-        dataField: "old_branch",
-        text: "Current Branch",
-        formatter: (cell, row) => <BranchName value={cell} />,
-        minWidth: "120px",
+        dataField: "form_name",
+        text: "Form Name",
         dataSort: true,
     },
     {
-        dataField: "new_branch",
-        text: "Requested Branch",
-        formatter: (cell, row) => <BranchName value={cell} />,
+        dataField: "evaluation_type",
+        text: "Evaluation Type",
         dataSort: true,
-        minWidth: "110px",
     },
     {
-        dataField: "created_at",
-        text: "Requested Time",
-        formatter: (cell, row) => renderDate(cell, '--'),
-        dataSort: true,
-        minWidth: "110px",
+        dataField: "nationalities",
+        text: "Nationalities",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Nationalities"
+                />
+            );
+        },
     },
     {
         dataField: "status",
         text: "Status",
+        dataSort: true,
+        formatter: (cell, row) => (
+            <StatusLabel status={cell}>{cell}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "status",
+        text: "Created On",
         dataSort: true,
         formatter: (cell, row) => (
             <StatusLabel status={cell}>{cell}</StatusLabel>

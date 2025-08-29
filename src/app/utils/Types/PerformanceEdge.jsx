@@ -1,6 +1,6 @@
 export const EvaluationForm = {
     form_name: null,
-    evaluation_type: null,
+    evaluation_type: 4,
     departments: null,
     designation: null,
     nationalities: null,
@@ -12,4 +12,10 @@ export const EvaluationSection = {
     name: null,
     weightage: null,
     fields: null,
+}
+
+export const EvaluationSectionField = {
+    question: null,
+    weightage: null,
+    evaluation_type: null,
 }

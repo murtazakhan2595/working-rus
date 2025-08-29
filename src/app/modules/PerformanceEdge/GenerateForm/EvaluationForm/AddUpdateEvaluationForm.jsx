@@ -1,4 +1,5 @@
 import { saveJobRotation, getJobRotationReasons, getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
+import { saveEvaluationForm } from 'app/hooks/performanceEdge';
 import { EvaluationForm } from "app/utils/Types/PerformanceEdge";
 import { getEmployeeTenure } from "app/hooks/general";
 import {
@@ -18,7 +19,7 @@ import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
-import { AddNewSection,RemoveSection } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
+import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
 const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdminView, isBranchView, isDepartmentView, isEmployee = false }) => {
     const Employees = GetEmployeeFilteredList(
         false,
@@ -136,9 +137,10 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isA
 
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
+        debugger
         try {
-            const payload = { ...values, created_by: "manager" };
-            const response = await saveJobRotation(payload, id);
+            const payload = { ...values };
+            const response = await saveEvaluationForm(payload, id);
             if (response) {
                 return {
                     status: true,
@@ -176,7 +178,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isA
                 },
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
-                columns: 2,
+                columns: 3,
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
@@ -221,6 +223,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isA
                             sheetCardExtension: true,
                             sheetCardTitle: `Weightage Section ${index + 1}`,
                             InputFields: [
+
                                 {
                                     InputField: TextInput,
                                     name: `sections[${index}].name`,
@@ -230,11 +233,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isA
                                     //     handleChange(`levels[${index}].designation`, null);
                                     // },
                                 },
-                                {
-                                    InputField: RemoveSection,
-                                    name: "sections",
-                                    section: section,
-                                },
+
                                 {
                                     InputField: NumberInput,
                                     name: `sections[${index}].weightage`,
@@ -243,6 +242,48 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isA
                                     // onFieldUpdate: async (_, __, ___, handleChange) => {
                                     //     handleChange(`levels[${index}].designation`, null);
                                     // },
+                                },
+                                {
+                                    InputField: RemoveSection,
+                                    name: "sections",
+                                    section: section,
+                                },
+
+                                ...(section.fields
+                                    ? section.fields.map((field, fieldIndex) => ([
+                                        {
+                                            InputField: TextInput,
+                                            name: `sections[${index}].fields[${fieldIndex}].question`,
+                                            label: "Question",
+                                            value: field.question,
+                                            colsSpan: 2,
+                                        },
+                                        {
+                                            InputField: SelectInputComponent,
+                                            name: `sections[${index}].fields[${fieldIndex}].evaluation_type`,
+                                            label: "Evaluation Type",
+                                            value: field.evaluation_type,
+                                            options: [{ label: 'Radio', value: 'radio' }, { label: 'Dropdown', value: 'dropdown' }, { label: 'Text', value: 'text' }]
+                                        },
+                                        {
+                                            InputField: NumberInput,
+                                            name: `sections[${index}].fields[${fieldIndex}].weightage`,
+                                            label: "Weightage",
+                                            value: field.weightage,
+                                        },
+                                        {
+                                            InputField: RemoveSection,
+                                            name: `sections[${index}].fields`,
+                                            section: field,
+                                        },
+                                    ])).flat()
+                                    : []
+                                ),
+                                {
+                                    InputField: AddNewSectionField,
+                                    name: `sections[${index}].fields`,
+                                    colsSpan: 3,
+                                    value: section.fields,
                                 },
                             ],
                         }))
