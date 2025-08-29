@@ -89,6 +89,11 @@ const ClearanceHoldModal = ({
     reload();
   };
 
+  // Dummy submit handler for view mode (does nothing but closes modal)
+  const handleViewModeSubmit = async (values, { setSubmitting }) => {
+    handleClose();
+  };
+
   // Determine modal configuration based on mode
   const getModalConfig = () => {
     switch (mode) {
@@ -119,11 +124,11 @@ const ClearanceHoldModal = ({
           title: `Hold Details - ${
             clearanceRequest?.employee_name || "Employee"
           }`,
-          submitText: null,
-          cancelText: "Close",
-          handleSubmit: () => {},
+          submitText: "Close", // Changed from null to "Close"
+          cancelText: null, // Hide cancel button in view mode
+          handleSubmit: handleViewModeSubmit, // Use dummy handler that just closes
           formFields: getViewHoldFields(),
-          hideSubmit: true, // Hide submit button in view mode
+          hideSubmit: false, // Changed to false so Close button shows
         };
       default:
         return getModalConfig("place");
@@ -363,7 +368,7 @@ const ClearanceHoldModal = ({
         cancelButtonText: modalConfig.cancelText,
         columns: 2,
         disableSubmit: isSubmitting,
-        hideSubmit: modalConfig.hideSubmit, // This will hide submit button in view mode
+        hideSubmit: modalConfig.hideSubmit,
         loadingMessage: isSubmitting
           ? mode === "place"
             ? "Placing hold..."

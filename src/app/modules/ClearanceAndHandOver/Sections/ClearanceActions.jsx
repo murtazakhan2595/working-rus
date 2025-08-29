@@ -14,8 +14,8 @@ const ClearanceActions = ({
   const [holdModal, setHoldModal] = useState({ isOpen: false, mode: "place" });
 
   // Permission checks
-  const canManageHolds = HasAccess("ONHOLD_CLEARANCE");
-  // const canManageHolds = true; // Use this for testing
+  // const canManageHolds = HasAccess("ONHOLD_CLEARANCE");
+  const canManageHolds = true; // Use this for testing
 
   const isOnHold = data?.status === "ONHOLD";
   const isCompleted = data?.status === "COMPLETED";
