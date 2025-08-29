@@ -137,7 +137,6 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, isA
 
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
-        debugger
         try {
             const payload = { ...values };
             const response = await saveEvaluationForm(payload, id);

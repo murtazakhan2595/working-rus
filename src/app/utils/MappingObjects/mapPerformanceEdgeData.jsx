@@ -2,7 +2,6 @@
 import { EvaluationForm } from "app/utils/Types/PerformanceEdge";
 
 export function mapEvaluationPayloadData(data) {
-    debugger
     // Initialize an empty payload object
     const payload = {};
     // Iterate over the keys in the Task object
