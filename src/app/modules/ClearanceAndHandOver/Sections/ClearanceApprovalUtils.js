@@ -1,4 +1,15 @@
+// utils/clearanceApprovalUtils.js
 
+/**
+ * Determines approval permissions for clearance checklist items
+ * Prioritizes reassign_approver over original assignment scope
+ *
+ * @param {Object} item - The checklist item
+ * @param {number} currentUserId - Current logged-in user ID
+ * @param {boolean} isOnHold - Whether clearance is on hold
+ * @param {string} returnType - 'boolean' or 'approver' or 'details'
+ * @returns {boolean|Object} - Based on returnType
+ */
 export const checkClearanceApproval = (
   item,
   currentUserId,
@@ -26,7 +37,18 @@ export const checkClearanceApproval = (
 
   // PRIORITY 1: Check reassign_approver first (highest priority)
   if (item.reassign_approver && item.reassign_approver !== null) {
-    const canApprove = currentUserId === parseInt(item.reassign_approver);
+    const canApprove =
+      parseInt(currentUserId) === parseInt(item.reassign_approver);
+
+    // Debug logging
+    console.log("Reassignment Debug:", {
+      itemId: item.id,
+      currentUserId,
+      reassign_approver: item.reassign_approver,
+      currentUserIdParsed: parseInt(currentUserId),
+      reassignApproverParsed: parseInt(item.reassign_approver),
+      canApprove,
+    });
 
     if (returnType === "boolean") {
       return canApprove;

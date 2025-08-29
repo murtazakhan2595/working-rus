@@ -425,7 +425,6 @@ export const clearanceRequestStatusOptions = [
   { value: "APPROVED", label: "Approved" },
   { value: "NOT_APPLICABLE", label: "Not Applicable" },
   { value: "REJECTED", label: "Rejected" },
-  { value: "ONHOLD", label: "On Hold" },
 ];
 
 export const PriorityListIcons = [

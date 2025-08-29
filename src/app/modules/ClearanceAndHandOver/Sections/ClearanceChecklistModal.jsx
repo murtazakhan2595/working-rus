@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { SheetUI } from "components";
 import { SelectInputComponent, TextAreaInput } from "components/FormControl";
 import { Progress } from "src/@/components/ui/progress";
@@ -17,91 +17,8 @@ import {
   clearanceRequestStatusOptions,
 } from "data/Data";
 import { useSelector } from "react-redux";
+import { canReassignItem, canUserApproveItem } from "./ClearanceApprovalUtils";
 
-// Create a separate memoized component for reassignment
-const ReassignmentSection = React.memo(
-  ({
-    item,
-    canReassign,
-    showReassignment,
-    reassignmentData,
-    reassignmentSubmitting,
-    employees,
-    onToggleReassignment,
-    onUpdateReassignmentData,
-    onHandleReassignment,
-  }) => {
-    if (!canReassign) return null;
-
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-neutral-1200">
-            Task Reassignment
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onToggleReassignment(item.id)}
-            className="text-xs"
-          >
-            <UserPlus className="h-3 w-3 mr-1" />
-            {showReassignment[item.id] ? "Cancel" : "Reassign"}
-          </Button>
-        </div>
-
-        {showReassignment[item.id] && (
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded space-y-3">
-            <div>
-              <label className="text-xs font-medium text-neutral-1200 mb-1 block">
-                New Assignee *
-              </label>
-              <SelectInputComponent
-                name={`reassign_approver_${item.id}`}
-                placeholder="Select new assignee"
-                value={reassignmentData[item.id]?.reassign_approver || ""}
-                options={employees}
-                onChange={(field, value) =>
-                  onUpdateReassignmentData(item.id, "reassign_approver", value)
-                }
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-neutral-1200 mb-1 block">
-                Notes (Optional)
-              </label>
-              <TextAreaInput
-                name={`reassign_notes_${item.id}`}
-                placeholder="Reassignment notes..."
-                value={reassignmentData[item.id]?.reassign_notes || ""}
-                rows={2}
-                onChange={(field, value) =>
-                  onUpdateReassignmentData(item.id, "reassign_notes", value)
-                }
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => onHandleReassignment(item.id)}
-                disabled={
-                  !reassignmentData[item.id]?.reassign_approver ||
-                  reassignmentSubmitting[item.id]
-                }
-                className="text-xs"
-              >
-                {reassignmentSubmitting[item.id] ? "Reassigning..." : "Confirm"}
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-);
 
 export default function ClearanceChecklistModal({
   isOpen = false,
@@ -113,9 +30,9 @@ export default function ClearanceChecklistModal({
   const [checklistItems, setChecklistItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showReassignment, setShowReassignment] = useState({});
-  const [reassignmentData, setReassignmentData] = useState({});
-  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({});
+  const [showReassignment, setShowReassignment] = useState({}); // Track which items show reassignment
+  const [reassignmentData, setReassignmentData] = useState({}); // Track reassignment form data
+  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({}); // Track reassignment submission
 
   // Get current logged-in user and employees
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -135,9 +52,10 @@ export default function ClearanceChecklistModal({
   const formatChecklistName = (name) => {
     if (!name) return "Checklist Item";
 
+    // Replace underscores and camelCase with spaces, then capitalize
     return name
-      .replace(/([A-Z])/g, " $1")
-      .replace(/[_-]/g, " ")
+      .replace(/([A-Z])/g, " $1") // Add space before capital letters
+      .replace(/[_-]/g, " ") // Replace underscores and hyphens with spaces
       .toLowerCase()
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -145,27 +63,9 @@ export default function ClearanceChecklistModal({
       .trim();
   };
 
-  // Check if current user can edit specific item based on assignment scope
+  // Check if current user can edit specific item - now using utility function
   const canUserEditItem = (item) => {
-    if (!currentUserId || !item.assignment_scope) return false;
-    if (isOnHold) return false;
-
-    switch (item.assignment_scope) {
-      case "DIRECT":
-        return currentUserId === parseInt(item.direct_report);
-      case "INDIRECT":
-        return (
-          Array.isArray(item.indirect_report) &&
-          item.indirect_report.includes(currentUserId)
-        );
-      case "DESIGNATION":
-        return (
-          Array.isArray(item.employees_with_matching_designation) &&
-          item.employees_with_matching_designation.includes(currentUserId)
-        );
-      default:
-        return false;
-    }
+    return canUserApproveItem(item, currentUserId, isOnHold);
   };
 
   // Check if user can edit any item in group (for remarks field)
@@ -173,40 +73,32 @@ export default function ClearanceChecklistModal({
     return groupItems.some((item) => canUserEditItem(item));
   };
 
-  // Check if item can be reassigned (AC1: only pending items)
-  const canReassignItem = (item) => {
-    return (
-      item.status === "PENDING" &&
-      !item.is_locked &&
-      !isOnHold &&
-      canUserEditItem(item)
-    );
+  // Check if item can be reassigned - now using utility function
+  const canReassignItemCheck = (item) => {
+    return canReassignItem(item, currentUserId, isOnHold);
   };
 
-  // Memoize callback functions to prevent recreation on every render
-  const handleToggleReassignment = useCallback((itemId) => {
+  // Handle reassignment toggle
+  const toggleReassignment = (itemId) => {
     setShowReassignment((prev) => ({
       ...prev,
       [itemId]: !prev[itemId],
     }));
 
     // Initialize reassignment data if showing for first time
-    setReassignmentData((prev) => {
-      if (!prev[itemId]) {
-        return {
-          ...prev,
-          [itemId]: {
-            reassign_approver: "",
-            reassign_notes: "",
-          },
-        };
-      }
-      return prev;
-    });
-  }, []);
+    if (!showReassignment[itemId]) {
+      setReassignmentData((prev) => ({
+        ...prev,
+        [itemId]: {
+          reassign_approver: "",
+          reassign_notes: "",
+        },
+      }));
+    }
+  };
 
   // Update reassignment data
-  const handleUpdateReassignmentData = useCallback((itemId, field, value) => {
+  const updateReassignmentData = (itemId, field, value) => {
     setReassignmentData((prev) => ({
       ...prev,
       [itemId]: {
@@ -214,7 +106,7 @@ export default function ClearanceChecklistModal({
         [field]: value,
       },
     }));
-  }, []);
+  };
 
   // Handle reassignment submission
   const handleReassignment = async (itemId) => {
@@ -316,11 +208,12 @@ export default function ClearanceChecklistModal({
     return "PENDING";
   };
 
-  // ONLY API CALL - when form is submitted
+  // ONLY API CALL - when form is submitted (only update items user can edit)
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setIsSubmitting(true);
 
+      // Update only items that user has permission to edit
       const editableItems = checklistItems.filter((item) =>
         canUserEditItem(item)
       );
@@ -347,6 +240,7 @@ export default function ClearanceChecklistModal({
         toast.success("Clearance process completed!");
       }
 
+      // Close and reload
       handleClose();
     } catch (error) {
       console.error("Error updating checklist:", error);
@@ -363,18 +257,17 @@ export default function ClearanceChecklistModal({
   };
 
   // Group items by checklist name instead of ID
-  const groupedItems = useMemo(() => {
-    return checklistItems.reduce((groups, item) => {
-      const groupKey = formatChecklistName(item.checklist_name) || "General";
-      if (!groups[groupKey]) {
-        groups[groupKey] = [];
-      }
-      groups[groupKey].push(item);
-      return groups;
-    }, {});
-  }, [checklistItems]);
+  const groupedItems = checklistItems.reduce((groups, item) => {
+    const groupKey = formatChecklistName(item.checklist_name) || "General";
+    if (!groups[groupKey]) {
+      groups[groupKey] = [];
+    }
+    groups[groupKey].push(item);
+    return groups;
+  }, {});
 
-  // Generate form fields with memoized reassignment components
+
+  // Simple form fields generation with permission checks
   const generateFormFields = () => {
     return Object.keys(groupedItems).map((groupName) => ({
       sheetCardExtension: true,
@@ -394,6 +287,7 @@ export default function ClearanceChecklistModal({
             options: clearanceRequestStatusOptions,
             disabled: isDisabled,
             colsSpan: 1,
+            // Add visual indicator for permission status
             helperText: !canEdit
               ? isOnHold
                 ? "Clearance is on hold - editing disabled"
@@ -407,33 +301,102 @@ export default function ClearanceChecklistModal({
           };
         }),
 
-        // Add reassignment section using the memoized component
+        // Add reassignment section for each item that can be reassigned
         ...groupedItems[groupName]
           .map((item) => {
-            const canReassign = canReassignItem(item);
-            if (!canReassign) return null;
+            const canReassign = canReassignItemCheck(item);
+
+            if (!canReassign) return null; // Don't show reassignment for ineligible items
 
             return {
               InputField: () => (
-                <ReassignmentSection
-                  item={item}
-                  canReassign={canReassign}
-                  showReassignment={showReassignment}
-                  reassignmentData={reassignmentData}
-                  reassignmentSubmitting={reassignmentSubmitting}
-                  employees={employees}
-                  onToggleReassignment={handleToggleReassignment}
-                  onUpdateReassignmentData={handleUpdateReassignmentData}
-                  onHandleReassignment={handleReassignment}
-                />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-neutral-1200">
+                      Task Reassignment
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => toggleReassignment(item.id)}
+                      className="text-xs"
+                    >
+                      <UserPlus className="h-3 w-3 mr-1" />
+                      {showReassignment[item.id] ? "Cancel" : "Reassign"}
+                    </Button>
+                  </div>
+
+                  {showReassignment[item.id] && (
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded space-y-3">
+                      <div>
+                        <label className="text-xs font-medium text-neutral-1200 mb-1 block">
+                          New Assignee *
+                        </label>
+                        <SelectInputComponent
+                          name={`reassign_approver_${item.id}`}
+                          placeholder="Select new assignee"
+                          value={
+                            reassignmentData[item.id]?.reassign_approver || ""
+                          }
+                          options={employees}
+                          onChange={(field, value) =>
+                            updateReassignmentData(
+                              item.id,
+                              "reassign_approver",
+                              value
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-medium text-neutral-1200 mb-1 block">
+                          Notes (Optional)
+                        </label>
+                        <TextAreaInput
+                          name={`reassign_notes_${item.id}`}
+                          placeholder="Reassignment notes..."
+                          value={
+                            reassignmentData[item.id]?.reassign_notes || ""
+                          }
+                          rows={2}
+                          onChange={(field, value) =>
+                            updateReassignmentData(
+                              item.id,
+                              "reassign_notes",
+                              value
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => handleReassignment(item.id)}
+                          disabled={
+                            !reassignmentData[item.id]?.reassign_approver ||
+                            reassignmentSubmitting[item.id]
+                          }
+                          className="text-xs"
+                        >
+                          {reassignmentSubmitting[item.id]
+                            ? "Reassigning..."
+                            : "Confirm"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ),
               name: `reassignment_${item.id}`,
               colsSpan: 2,
             };
           })
-          .filter(Boolean),
+          .filter(Boolean), // Remove null entries
 
-        // Remarks textarea for the group
+        // Remarks textarea for the group (only show if user can edit at least one item)
         ...(canUserEditGroupRemarks(groupedItems[groupName])
           ? [
               {
@@ -448,6 +411,7 @@ export default function ClearanceChecklistModal({
                 colsSpan: 2,
                 maxRows: 2,
                 onFieldUpdate: (field, newValue) => {
+                  // Update remarks for first item in group
                   if (groupedItems[groupName][0]) {
                     updateItemRemarks(groupedItems[groupName][0].id, newValue);
                   }
@@ -492,7 +456,7 @@ export default function ClearanceChecklistModal({
         cancelButtonText: "Close",
         columns: 2,
         disableSubmit: isSubmitting || !hasAnyEditPermission,
-        hideSubmit: !hasAnyEditPermission,
+        hideSubmit: !hasAnyEditPermission, // Hide submit button if no edit permissions
         loadingMessage: isSubmitting ? "Updating checklist..." : "",
         formFields: [
           // Progress header with hold warning
@@ -503,6 +467,7 @@ export default function ClearanceChecklistModal({
               {
                 InputField: () => (
                   <div className="space-y-4">
+                    {/* Hold Warning Banner */}
                     {isOnHold && (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-md">
                         <div className="flex items-start gap-3">
