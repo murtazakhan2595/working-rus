@@ -359,9 +359,10 @@ const ViewAssetRequest = ({
       const updatedRequest = {
         id: currentItem.id,
         asset_returned_date: moment().format("YYYY-MM-DD"),
-        asset_request_status: "Returned",
+        asset_status: "Returned",
         asset_employee_id:
           currentItem?.asset_employee_id || currentItem?.employee?.id || "",
+        asset_request_status: currentItem?.asset_request_status,
       };
 
       const response = await requestAsset(updatedRequest);
