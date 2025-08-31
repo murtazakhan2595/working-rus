@@ -1,4 +1,4 @@
-// src/app/modules/ClearanceAndHandOver/Sections/clearanceAnalyticsUtils.js
+// src/app/modules/ClearanceAndHandOver/Sections/AnalyticsDashboard/clearanceAnalyticsUtils.js
 
 import moment from "moment";
 
@@ -24,11 +24,14 @@ export const isOverdue = (startDate, slaInDays) => {
 
 // Calculate overdue count from real data using dynamic SLA
 export const calculateOverdueCount = (clearanceList) => {
-  return clearanceList.filter((item) => isOverdue(item.start_date, item.sla))
-    .length;
+  return clearanceList.filter((item) => {
+    // Don't count ONHOLD items as overdue
+    if (item.status === "ONHOLD") return false;
+    return isOverdue(item.start_date, item.sla);
+  }).length;
 };
 
-// Build status counts from API response
+// Build status counts from API response - Updated to include ONHOLD
 export const buildStatusCounts = (apiResponse) => {
   const { status_summary, clearance_list } = apiResponse;
 
@@ -38,6 +41,7 @@ export const buildStatusCounts = (apiResponse) => {
     in_process: getStatusCount(status_summary, "IN_PROCESS"),
     completed: getStatusCount(status_summary, "COMPLETED"),
     rejected: getStatusCount(status_summary, "REJECTED"),
+    onhold: getStatusCount(status_summary, "ONHOLD"), // NEW: Added ONHOLD count
     overdue: calculateOverdueCount(clearance_list || []),
   };
 };
@@ -49,7 +53,10 @@ export const enhanceClearanceData = (clearanceList) => {
   return clearanceList.map((item) => {
     const daysPending = calculateDaysPending(item.start_date);
     const slaDays = parseFloat(item.sla) || 0; // Use dynamic SLA from API, default to 0
-    const overdueStatus = slaDays > 0 && daysPending > slaDays;
+
+    // Don't calculate overdue status for items on hold
+    const isOnHold = item.status === "ONHOLD";
+    const overdueStatus = !isOnHold && slaDays > 0 && daysPending > slaDays;
     const slaDate =
       slaDays > 0 ? moment(item.start_date).add(slaDays, "days") : null;
 
@@ -62,7 +69,7 @@ export const enhanceClearanceData = (clearanceList) => {
       days_overdue: overdueStatus ? daysPending - slaDays : 0,
       sla_due_date: slaDate ? slaDate.toDate() : null,
 
-      // Status-based progress
+      // Status-based progress - Updated to handle ONHOLD
       progress_percentage:
         item.status === "PENDING"
           ? 10
@@ -72,11 +79,15 @@ export const enhanceClearanceData = (clearanceList) => {
           ? 100
           : item.status === "REJECTED"
           ? 0
+          : item.status === "ONHOLD"
+          ? 0 // ONHOLD items have 0% progress
           : 10,
 
-      // SLA status using dynamic SLA
+      // SLA status using dynamic SLA - Updated to handle ONHOLD
       sla_status:
-        slaDays === 0
+        item.status === "ONHOLD"
+          ? "ON_HOLD" // Special SLA status for items on hold
+          : slaDays === 0
           ? "NO_SLA" // New status for items without SLA
           : overdueStatus
           ? "BREACHED"
@@ -87,7 +98,7 @@ export const enhanceClearanceData = (clearanceList) => {
   });
 };
 
-// Filter enhanced data - now includes SLA status filtering
+// Filter enhanced data - Updated to include ONHOLD status filtering
 export const applyFilters = (enhancedData, filters) => {
   if (!enhancedData || enhancedData.length === 0) return [];
 
@@ -110,17 +121,18 @@ export const applyFilters = (enhancedData, filters) => {
         return false;
     }
 
-    // Status filter
+    // Status filter - Updated to include ONHOLD
     if (filters.status && filters.status.length > 0) {
       if (!filters.status.includes(item.status)) return false;
     }
 
-    // Overdue filter
+    // Overdue filter - Don't consider ONHOLD items as overdue
     if (filters.is_overdue !== undefined && filters.is_overdue !== null) {
-      if (filters.is_overdue !== item.is_overdue) return false;
+      const itemOverdue = item.status !== "ONHOLD" && item.is_overdue;
+      if (filters.is_overdue !== itemOverdue) return false;
     }
 
-    // SLA status filter (NEW)
+    // SLA status filter - Updated to include ON_HOLD
     if (filters.sla_status && filters.sla_status.length > 0) {
       if (!filters.sla_status.includes(item.sla_status)) return false;
     }

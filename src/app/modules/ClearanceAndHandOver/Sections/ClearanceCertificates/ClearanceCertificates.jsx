@@ -50,6 +50,7 @@ export default function ClearanceCertificates({
     { value: "PENDING", label: "Pending" },
     { value: "GENERATED", label: "Generated" },
     { value: "SENT", label: "Sent" },
+    { value: "ONHOLD", label: "On Hold" },
   ];
 
   const sentToEmployeeOptions = [

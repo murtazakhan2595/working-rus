@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { SheetUI } from "components";
 import { SelectInputComponent, TextAreaInput } from "components/FormControl";
 import { Progress } from "src/@/components/ui/progress";
 import { Badge } from "components/ui/badge";
+import { Button } from "components/ui/button";
 import { StatusIcon, getStatusVariant } from "components/StatusLabel";
+import { AlertTriangle, FileText, UserPlus } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   getClearanceRequestItems,
@@ -15,6 +17,86 @@ import {
   clearanceRequestStatusOptions,
 } from "data/Data";
 import { useSelector } from "react-redux";
+import { canReassignItem, canUserApproveItem } from "./ClearanceApprovalUtils";
+
+// FIXED: Create stable component outside the main component
+const ReassignmentSection = React.memo(
+  ({
+    itemId,
+    showReassignment,
+    reassignApprovers,
+    reassignNotes,
+    reassignmentSubmitting,
+    employees,
+    onToggleReassignment,
+    onUpdateApprover,
+    onUpdateNotes,
+    onHandleReassignment,
+  }) => {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-neutral-1200">
+            Task Reassignment
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onToggleReassignment(itemId)}
+            className="text-xs"
+          >
+            <UserPlus className="h-3 w-3 mr-1" />
+            {showReassignment[itemId] ? "Cancel" : "Reassign"}
+          </Button>
+        </div>
+
+        {showReassignment[itemId] && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded space-y-3">
+            <div>
+              <label className="text-xs font-medium text-neutral-1200 mb-1 block">
+                New Assignee *
+              </label>
+              <SelectInputComponent
+                name={`reassign_approver_${itemId}`}
+                placeholder="Select new assignee"
+                value={reassignApprovers[itemId] || ""}
+                options={employees}
+                onChange={(field, value) => onUpdateApprover(itemId, value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-neutral-1200 mb-1 block">
+                Notes (Optional)
+              </label>
+              <TextAreaInput
+                name={`reassign_notes_${itemId}`}
+                placeholder="Reassignment notes..."
+                value={reassignNotes[itemId] || ""}
+                rows={2}
+                onChange={(field, value) => onUpdateNotes(itemId, value)}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => onHandleReassignment(itemId)}
+                disabled={
+                  !reassignApprovers[itemId] || reassignmentSubmitting[itemId]
+                }
+                className="text-xs"
+              >
+                {reassignmentSubmitting[itemId] ? "Reassigning..." : "Confirm"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 export default function ClearanceChecklistModal({
   isOpen = false,
@@ -26,10 +108,41 @@ export default function ClearanceChecklistModal({
   const [checklistItems, setChecklistItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showReassignment, setShowReassignment] = useState({}); // Track which items show reassignment
 
-  // Get current logged-in user
+  // Separate state variables for reassignment inputs
+  const [reassignApprovers, setReassignApprovers] = useState({}); // {itemId: approverId}
+  const [reassignNotes, setReassignNotes] = useState({}); // {itemId: notes}
+  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({}); // {itemId: boolean}
+
+  // Get current logged-in user and employees
   const userProfile = useSelector((state) => state.user.userProfile);
+  const employees = useSelector((state) => state.emp.employees || []);
   const currentUserId = userProfile?.id;
+
+  // Check if clearance is on hold
+  const isOnHold = clearanceRequest?.status === "ONHOLD";
+
+  const fetchChecklistItems = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        filterData: { request: clearanceRequest.id },
+        options: { page: 1, sizePerPage: 100 },
+        ordering: "id",
+      };
+
+      const response = await getClearanceRequestItems(payload);
+      if (response && response.results) {
+        setChecklistItems(response.results);
+      }
+    } catch (error) {
+      console.error("Error fetching checklist items:", error);
+      toast.error("Failed to load checklist items");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (clearanceRequest && isOpen) {
@@ -52,32 +165,9 @@ export default function ClearanceChecklistModal({
       .trim();
   };
 
-  // Check if current user can edit specific item based on assignment scope
+  // Check if current user can edit specific item - now using utility function
   const canUserEditItem = (item) => {
-    if (!currentUserId || !item.assignment_scope) return false;
-    console.log(
-      "canuser edit ?",
-      currentUserId,
-      item.assignment_scope,
-      item.direct_report
-    );
-
-    switch (item.assignment_scope) {
-      case "DIRECT":
-        return currentUserId === parseInt(item.direct_report);
-      case "INDIRECT":
-        return (
-          Array.isArray(item.indirect_report) &&
-          item.indirect_report.includes(currentUserId)
-        );
-      case "DESIGNATION":
-        return (
-          Array.isArray(item.employees_with_matching_designation) &&
-          item.employees_with_matching_designation.includes(currentUserId)
-        );
-      default:
-        return false;
-    }
+    return canUserApproveItem(item, currentUserId, isOnHold);
   };
 
   // Check if user can edit any item in group (for remarks field)
@@ -85,26 +175,94 @@ export default function ClearanceChecklistModal({
     return groupItems.some((item) => canUserEditItem(item));
   };
 
-  const fetchChecklistItems = async () => {
-    setLoading(true);
-    try {
-      const payload = {
-        filterData: { request: clearanceRequest.id },
-        options: { page: 1, sizePerPage: 100 },
-        ordering: "id",
-      };
-
-      const response = await getClearanceRequestItems(payload);
-      if (response && response.results) {
-        setChecklistItems(response.results);
-      }
-    } catch (error) {
-      console.error("Error fetching checklist items:", error);
-      toast.error("Failed to load checklist items");
-    } finally {
-      setLoading(false);
-    }
+  // Check if item can be reassigned - now using utility function
+  const canReassignItemCheck = (item) => {
+    return canReassignItem(item, currentUserId, isOnHold);
   };
+
+  // FIXED: Stable callback functions
+  const toggleReassignment = useCallback((itemId) => {
+    setShowReassignment((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
+
+    // Initialize reassignment data if showing for first time
+    setReassignApprovers((prev) => {
+      if (prev[itemId] === undefined) {
+        return { ...prev, [itemId]: "" };
+      }
+      return prev;
+    });
+
+    setReassignNotes((prev) => {
+      if (prev[itemId] === undefined) {
+        return { ...prev, [itemId]: "" };
+      }
+      return prev;
+    });
+  }, []);
+
+  const updateReassignApprover = useCallback((itemId, approverId) => {
+    setReassignApprovers((prev) => ({
+      ...prev,
+      [itemId]: approverId,
+    }));
+  }, []);
+
+  const updateReassignNotes = useCallback((itemId, notes) => {
+    setReassignNotes((prev) => ({
+      ...prev,
+      [itemId]: notes,
+    }));
+  }, []);
+
+  // Handle reassignment submission
+  const handleReassignment = useCallback(
+    async (itemId) => {
+      const approverId = reassignApprovers[itemId];
+      const notes = reassignNotes[itemId];
+
+      if (!approverId) {
+        toast.error("Please select a new assignee");
+        return;
+      }
+
+      setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: true }));
+
+      try {
+        const response = await updateClearanceRequestItem(itemId, {
+          reassign_approver: approverId,
+          reassign_notes: notes || "",
+        });
+
+        if (response) {
+          toast.success("Task reassigned successfully!");
+
+          // Reset reassignment state
+          setShowReassignment((prev) => ({ ...prev, [itemId]: false }));
+          setReassignApprovers((prev) => ({
+            ...prev,
+            [itemId]: "",
+          }));
+          setReassignNotes((prev) => ({
+            ...prev,
+            [itemId]: "",
+          }));
+
+          // Refresh data
+          fetchChecklistItems();
+          reload();
+        }
+      } catch (error) {
+        console.error("Error reassigning task:", error);
+        toast.error("Failed to reassign task");
+      } finally {
+        setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: false }));
+      }
+    },
+    [reassignApprovers, reassignNotes, fetchChecklistItems, reload]
+  );
 
   // Simple local state update - no API calls
   const updateItemStatus = (itemId, newStatus) => {
@@ -226,7 +384,9 @@ export default function ClearanceChecklistModal({
             colsSpan: 1,
             // Add visual indicator for permission status
             helperText: !canEdit
-              ? "You don't have permission to edit this item"
+              ? isOnHold
+                ? "Clearance is on hold - editing disabled"
+                : "You don't have permission to edit this item"
               : undefined,
             onFieldUpdate: (field, newValue) => {
               if (canEdit) {
@@ -235,6 +395,31 @@ export default function ClearanceChecklistModal({
             },
           };
         }),
+
+        // FIXED: Add reassignment section using the stable component
+        ...groupedItems[groupName]
+          .map((item) => {
+            const canReassign = canReassignItemCheck(item);
+
+            if (!canReassign) return null; // Don't show reassignment for ineligible items
+
+            return {
+              InputField: ReassignmentSection, // FIXED: Use stable component reference
+              name: `reassignment_${item.id}`,
+              itemId: item.id, // Pass props to the component
+              showReassignment,
+              reassignApprovers,
+              reassignNotes,
+              reassignmentSubmitting,
+              employees,
+              onToggleReassignment: toggleReassignment,
+              onUpdateApprover: updateReassignApprover,
+              onUpdateNotes: updateReassignNotes,
+              onHandleReassignment: handleReassignment,
+              colsSpan: 2,
+            };
+          })
+          .filter(Boolean), // Remove null entries
 
         // Remarks textarea for the group (only show if user can edit at least one item)
         ...(canUserEditGroupRemarks(groupedItems[groupName])
@@ -246,10 +431,10 @@ export default function ClearanceChecklistModal({
                 placeholder: "Add any additional comments...",
                 value: groupedItems[groupName][0]?.remarks || "",
                 disabled: groupedItems[groupName].every(
-                  (item) => item.is_locked
+                  (item) => item.is_locked || isOnHold
                 ),
                 colsSpan: 2,
-                rows: 2,
+                maxRows: 2,
                 onFieldUpdate: (field, newValue) => {
                   // Update remarks for first item in group
                   if (groupedItems[groupName][0]) {
@@ -299,7 +484,7 @@ export default function ClearanceChecklistModal({
         hideSubmit: !hasAnyEditPermission, // Hide submit button if no edit permissions
         loadingMessage: isSubmitting ? "Updating checklist..." : "",
         formFields: [
-          // Progress header
+          // Progress header with hold warning
           {
             sheetCardExtension: true,
             sheetCardTitle: "Progress Overview",
@@ -307,7 +492,44 @@ export default function ClearanceChecklistModal({
               {
                 InputField: () => (
                   <div className="space-y-4">
-                    {!hasAnyEditPermission && (
+                    {/* Hold Warning Banner */}
+                    {isOnHold && (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-red-800 mb-1">
+                              Clearance on Hold
+                            </h4>
+                            <p className="text-sm text-red-700 mb-2">
+                              This clearance is currently on hold. All editing
+                              actions are blocked until the hold is removed.
+                            </p>
+                            {clearanceRequest?.on_hold_reason && (
+                              <div className="text-sm text-red-700">
+                                <span className="font-medium">Reason:</span>{" "}
+                                {clearanceRequest.on_hold_reason}
+                              </div>
+                            )}
+                            {clearanceRequest?.on_hold_attachment && (
+                              <div className="flex items-center gap-1 mt-2">
+                                <FileText className="h-4 w-4 text-red-600" />
+                                <a
+                                  href={clearanceRequest.on_hold_attachment}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-red-800 hover:underline font-medium"
+                                >
+                                  View Hold Document
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {!hasAnyEditPermission && !isOnHold && (
                       <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                         <p className="text-sm text-yellow-800">
                           <strong>Note:</strong> You don't have permission to
@@ -316,6 +538,7 @@ export default function ClearanceChecklistModal({
                         </p>
                       </div>
                     )}
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <span className="text-sm font-medium">

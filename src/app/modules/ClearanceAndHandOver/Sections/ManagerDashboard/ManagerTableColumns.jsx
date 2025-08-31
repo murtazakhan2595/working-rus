@@ -1,14 +1,16 @@
-// src/app/modules/ClearanceAndHandOver/Sections/AnalyticsTableColumns.jsx
+// src/app/modules/ClearanceAndHandOver/Sections/ManagerDashboard/ManagerTableColumns.jsx
 
 import React from "react";
 import { Badge } from "components/ui/badge";
+import { Button } from "components/ui/button";
 import { Progress } from "src/@/components/ui/progress";
 import { StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import { Send, Eye } from "lucide-react";
 
-// SLA status badge component with support for dynamic SLA
+// SLA status badge component - reuse from analytics
 const SLAStatusBadge = ({ status, isOverdue, daysOverdue, slaValue }) => {
-  // Handle case where SLA is not defined (slaValue is 0 or null)
+  // Handle case where SLA is not defined
   if (!slaValue || slaValue === 0) {
     return <Badge variant="secondary">No SLA</Badge>;
   }
@@ -38,7 +40,7 @@ const SLAStatusBadge = ({ status, isOverdue, daysOverdue, slaValue }) => {
   );
 };
 
-export const AnalyticsTableColumns = (onViewDetails) => [
+export const ManagerTableColumns = (onViewDetails, onSendReminder) => [
   {
     dataField: "employee_full_name",
     text: "Employee",
@@ -46,6 +48,9 @@ export const AnalyticsTableColumns = (onViewDetails) => [
     formatter: (cell, row) => (
       <div>
         <div className="font-medium">{cell}</div>
+        <div className="text-xs text-mauve-1000">
+          ID: {row.employee || "N/A"}
+        </div>
       </div>
     ),
   },
@@ -88,23 +93,6 @@ export const AnalyticsTableColumns = (onViewDetails) => [
     formatter: (cell) => renderDate(cell),
   },
   {
-    dataField: "sla",
-    text: "SLA (Days)",
-    sort: true,
-    formatter: (cell, row) => (
-      <div className="text-center">
-        <div className="text-sm font-medium">
-          {cell && parseFloat(cell) > 0 ? `${parseFloat(cell)} days` : "No SLA"}
-        </div>
-        {row.sla_due_date && (
-          <div className="text-xs text-mauve-1000">
-            Due: {renderDate(row.sla_due_date)}
-          </div>
-        )}
-      </div>
-    ),
-  },
-  {
     dataField: "days_pending",
     text: "Days Pending",
     sort: true,
@@ -132,5 +120,62 @@ export const AnalyticsTableColumns = (onViewDetails) => [
         <Progress value={cell} className="h-2" />
       </div>
     ),
+  },
+  {
+    dataField: "actions",
+    text: "Actions",
+    isDummyField: true,
+    csvExport: false,
+    formatter: (cell, row) => {
+      const isPending = row.status === "PENDING" || row.status === "IN_PROCESS";
+      const isCompleted = row.status === "COMPLETED";
+      const isOnHold = row.status === "ONHOLD";
+
+      return (
+        <div className="flex gap-2">
+          {/* View Details Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onViewDetails(row)}
+            className="text-xs"
+            title="View clearance details"
+          >
+            <Eye className="h-3 w-3" />
+          </Button>
+
+          {/* Send Reminder Button - Only for pending/in-process items */}
+          {isPending && !isOnHold && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => onSendReminder(row)}
+              className="text-xs"
+              title="Send reminder to responsible departments"
+            >
+              <Send className="h-3 w-3 mr-1" />
+              Remind
+            </Button>
+          )}
+
+          {/* Status indicators for non-actionable items */}
+          {isCompleted && (
+            <Badge variant="success" className="text-xs">
+              Complete
+            </Badge>
+          )}
+
+          {isOnHold && (
+            <Badge variant="error" className="text-xs">
+              On Hold
+            </Badge>
+          )}
+        </div>
+      );
+    },
+    style: {
+      textAlign: "center",
+      minWidth: "120px",
+    },
   },
 ];

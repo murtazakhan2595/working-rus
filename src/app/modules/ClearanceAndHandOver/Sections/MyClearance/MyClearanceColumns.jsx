@@ -43,6 +43,7 @@ export const MyClearanceColumns = (
         IN_PROCESS: { label: "In Process", variant: "info" },
         COMPLETED: { label: "Completed", variant: "success" },
         REJECTED: { label: "Rejected", variant: "error" },
+        ONHOLD: { label: "On Hold", variant: "error" },
       };
 
       const status = statusMap[cell] || {

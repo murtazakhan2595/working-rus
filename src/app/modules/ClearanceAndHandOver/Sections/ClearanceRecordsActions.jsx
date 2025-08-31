@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import ClearanceRecordsModal from "./ClearanceRecordsModal";
 import ClearanceCertificateModal from "./ClearanceCertificates/ClearanceCertificateModal";
+import ClearanceHoldModal from "./OnHold/ClearanceHoldModal";
 import { toast } from "react-toastify";
+import { HasAccess } from "utils/PermissionUtils";
 import {
   getClearanceCertificateByRequest,
   createClearanceCertificate,
@@ -16,19 +18,48 @@ const ClearanceRecordsActions = ({
 }) => {
   const [viewDetails, setViewDetails] = useState(null);
   const [certificateModal, setCertificateModal] = useState(false);
+  const [holdModal, setHoldModal] = useState({ isOpen: false, mode: "view" });
   const [certificateData, setCertificateData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [clearanceRequestItems, setClearanceRequestItems] = useState([]);
+
+  // Permission checks
+  const canManageHolds = HasAccess("ONHOLD_CLEARANCE");
+  const isOnHold = data?.status === "ONHOLD";
 
   // Handle opening the details view
   const handleViewDetails = () => {
     setViewDetails(true);
   };
 
+  // Handle hold management
+  const handleViewHoldDetails = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setHoldModal({ isOpen: true, mode: "view" });
+  };
+
+  const handleRemoveHold = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setHoldModal({ isOpen: true, mode: "remove" });
+  };
+
   // Handle certificate generation
-  const handleGenerateCertificate = async () => {
+  const handleGenerateCertificate = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (!data?.id) {
       toast.error("Clearance request data not found");
+      return;
+    }
+
+    // Block certificate generation if on hold
+    if (isOnHold) {
+      toast.error(
+        "Cannot generate certificate while clearance is on hold due to a legal/disciplinary investigation."
+      );
       return;
     }
 
@@ -38,8 +69,6 @@ const ClearanceRecordsActions = ({
       const existingCertificate = await getClearanceCertificateByRequest(
         data.id
       );
-
-      
 
       if (existingCertificate) {
         // Use existing certificate
@@ -66,7 +95,6 @@ const ClearanceRecordsActions = ({
         }
       }
 
-
       const clearanceRequestItems = await getClearanceRequestItems({
         filterData: { request: data.id },
       });
@@ -86,18 +114,53 @@ const ClearanceRecordsActions = ({
     reloadData();
   };
 
+  // Prepare additional options for hold management and certificate generation
+  const additionalOptions = [];
+
+  // Certificate generation option (but blocked if on hold)
+  if (!isOnHold) {
+    additionalOptions.push({
+      text: isGenerating ? "Generating..." : "Generate Certificate",
+      action: handleGenerateCertificate,
+    });
+  } else {
+    // Show disabled certificate option when on hold
+    additionalOptions.push({
+      text: "Certificate Blocked (On Hold)",
+      action: (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toast.error(
+          "Cannot generate certificate while clearance is on hold due to a legal/disciplinary investigation."
+        );
+      },
+    });
+  }
+
+  // Add hold-related actions
+  if (isOnHold) {
+    // Always show view hold details for transparency
+    additionalOptions.push({
+      text: "View Hold Details",
+      action: handleViewHoldDetails,
+    });
+
+    // Only show remove hold for authorized users
+    if (canManageHolds) {
+      additionalOptions.push({
+        text: "Remove Hold",
+        action: handleRemoveHold,
+      });
+    }
+  }
+
   return (
     <>
       <DropdownActionMenu
         onView={handleViewDetails}
-        onCustom={handleGenerateCertificate}
         viewText="View Clearance Details"
-        customText={isGenerating ? "Generating..." : "Generate Certificate"}
-        editText="Edit Clearance"
-        deleteText="Delete Clearance"
         menuTooltip="Clearance Actions"
-        hideEdit={true}
-        hideDelete={true}
+        additionalOptionsConfig={additionalOptions}
       />
 
       {/* View Details Modal */}
@@ -120,6 +183,17 @@ const ClearanceRecordsActions = ({
           clearanceRequest={data}
           onCertificateUpdate={handleCertificateUpdate}
           clearanceRequestItems={clearanceRequestItems}
+        />
+      )}
+
+      {/* Hold Management Modal */}
+      {holdModal.isOpen && (
+        <ClearanceHoldModal
+          isOpen={holdModal.isOpen}
+          setIsOpen={(isOpen) => setHoldModal({ ...holdModal, isOpen })}
+          clearanceRequest={data}
+          reload={reloadData}
+          mode={holdModal.mode}
         />
       )}
     </>

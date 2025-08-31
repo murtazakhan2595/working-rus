@@ -9,6 +9,13 @@ import { renderDate } from "utils/renderValues";
 import { toast } from "react-toastify";
 import { getClearanceRequestItems } from "app/hooks/clearanceAndHandover";
 import { Progress } from "src/@/components/ui/progress";
+import {
+  AlertTriangle,
+  FileText,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { ESignatureComponent } from "./SignatureComponent";
 
 export const MyClearanceDetailsModal = ({
@@ -19,6 +26,9 @@ export const MyClearanceDetailsModal = ({
   clearanceTypes = [],
 }) => {
   const [checklistItems, setChecklistItems] = useState([]);
+
+  // Check if clearance is on hold
+  const isOnHold = clearanceRequest?.status === "ONHOLD";
 
   // This function will be called by NavigationSheetComponent
   const fetchCurrentItemDetails = async (id, isMounted) => {
@@ -95,61 +105,144 @@ export const MyClearanceDetailsModal = ({
       (type) => type?.id === clearanceRequest?.clearance_type
     )?.name || "N/A";
 
+  // Format status display properly (convert ONHOLD to "On Hold")
+  const formatStatus = (status) => {
+    if (!status) return "Unknown";
+    return status
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  // Get status variant for styling
+  const getStatusVariant = (status) => {
+    switch (status) {
+      case "COMPLETED":
+        return "success";
+      case "IN_PROCESS":
+        return "info";
+      case "REJECTED":
+        return "error";
+      case "ONHOLD":
+        return "error";
+      default:
+        return "warning";
+    }
+  };
+
   // Define the fields to display using your existing pattern
   const fields = [
+    // Hold Warning (if on hold)
+    ...(isOnHold
+      ? [
+          {
+            customContent: true,
+            renderContent: (data) => {
+              return (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-red-800 mb-1">
+                        Clearance on Hold
+                      </h4>
+                      <p className="text-sm text-red-700 mb-2">
+                        This clearance is currently on hold. All actions are
+                        blocked until the hold is removed.
+                      </p>
+                      {clearanceRequest?.on_hold_reason && (
+                        <div className="text-sm text-red-700">
+                          <span className="font-medium">Reason:</span>{" "}
+                          {clearanceRequest.on_hold_reason}
+                        </div>
+                      )}
+                      {clearanceRequest?.on_hold_attachment && (
+                        <div className="flex items-center gap-1 mt-2">
+                          <FileText className="h-4 w-4 text-red-600" />
+                          <a
+                            href={clearanceRequest.on_hold_attachment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-red-800 hover:underline font-medium"
+                          >
+                            View Hold Document
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
+
+    // Progress Overview - Styled similar to clearance records
     {
       title: "Progress Overview",
       customContent: true,
       renderContent: (data) => {
         return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm font-medium">Overall Status:</span>
-                <div className="mt-1">
-                  <StatusLabel
-                    status={clearanceRequest?.status || "PENDING"}
-                    variant={
-                      clearanceRequest?.status === "COMPLETED"
-                        ? "success"
-                        : clearanceRequest?.status === "IN_PROCESS"
-                        ? "info"
-                        : clearanceRequest?.status === "REJECTED"
-                        ? "error"
-                        : "warning"
-                    }
-                  >
-                    {clearanceRequest?.status?.replace("_", " ") || "PENDING"}
-                  </StatusLabel>
-                </div>
-              </div>
-              <div>
-                <span className="text-sm font-medium">Progress:</span>
-                <div className="mt-2">
-                  <Progress value={progress} className="h-2" />
-                  <span className="text-xs mt-1">{progress}% Complete</span>
-                </div>
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <span className="text-sm font-medium text-neutral-1100">
+                Overall Status:
+              </span>
+              <div className="mt-2">
+                <StatusLabel
+                  status={formatStatus(clearanceRequest?.status)}
+                  variant={getStatusVariant(clearanceRequest?.status)}
+                >
+                  {formatStatus(clearanceRequest?.status)}
+                </StatusLabel>
               </div>
             </div>
-            <div className="text-sm space-y-1">
-              <div>
-                <strong>Clearance Type:</strong> {clearanceTypeName}
-              </div>
-              <div>
-                <strong>Start Date:</strong>{" "}
-                {renderDate(clearanceRequest?.start_date) || "N/A"}
-              </div>
-              {clearanceRequest?.completion_date && (
-                <div>
-                  <strong>Completion Date:</strong>{" "}
-                  {renderDate(clearanceRequest?.completion_date)}
+            <div>
+              <span className="text-sm font-medium text-neutral-1100">
+                Progress:
+              </span>
+              <div className="mt-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Progress value={progress} className="h-2 flex-1" />
+                  <span className="text-sm font-medium text-neutral-1200">
+                    {progress}%
+                  </span>
                 </div>
-              )}
+                <span className="text-xs text-neutral-1000">
+                  {progress}% Complete
+                </span>
+              </div>
             </div>
           </div>
         );
       },
     },
+
+    // Clearance Details Section
+    {
+      title: "Clearance Details",
+      field: [
+        {
+          key: "clearance_type",
+          label: "Clearance Type",
+          formatter: () => clearanceTypeName,
+        },
+        {
+          key: "start_date",
+          label: "Start Date",
+          formatter: (cell) => renderDate(cell),
+        },
+        {
+          key: "completion_date",
+          label: "Completion Date",
+          formatter: (cell) => (cell ? renderDate(cell) : "Not completed yet"),
+        },
+      ],
+    },
+
+    // Checklist Items & E-Signatures
     {
       title: "Checklist Items & E-Signatures",
       customContent: true,
@@ -159,38 +252,55 @@ export const MyClearanceDetailsModal = ({
         if (items.length === 0) {
           return (
             <div className="text-center py-8 text-neutral-1100">
-              No checklist items found for this clearance request.
+              <p>No checklist items found for this clearance request.</p>
             </div>
           );
         }
 
         return (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="text-sm text-neutral-1100 mb-4">
               Review your clearance checklist items and submit e-signatures
               where required.
             </div>
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="border border-neutral-500 rounded-lg p-4"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-neutral-1200">
+
+            {/* Table-like header */}
+            <div className="grid grid-cols-12 gap-4 p-3 bg-neutral-100 border border-neutral-300 rounded-t-md text-sm font-medium text-neutral-1200">
+              <div className="col-span-4">Item</div>
+              <div className="col-span-2">Assignment Scope</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-2">E-Signature</div>
+              <div className="col-span-2">Updated</div>
+            </div>
+
+            {/* Table body - Compact rows similar to clearance records */}
+            <div className="border border-neutral-300 border-t-0 rounded-b-md">
+              {items.map((item, index) => (
+                <div
+                  key={item.id}
+                  className={`grid grid-cols-12 gap-4 p-3 text-sm border-b border-neutral-200 last:border-b-0 ${
+                    index % 2 === 0 ? "bg-white" : "bg-neutral-50"
+                  }`}
+                >
+                  {/* Item Name */}
+                  <div className="col-span-4">
+                    <div className="font-medium text-neutral-1200 capitalize">
                       {item.checklist_name || "Checklist Item"}
-                    </h4>
-                    <div className="text-sm text-neutral-1100 mt-1">
-                      Assignment Scope: {item.assignment_scope || "N/A"}
                     </div>
                     {item.remarks && (
-                      <div className="text-sm text-neutral-1100 mt-1">
+                      <div className="text-xs text-neutral-1100 mt-1">
                         Remarks: {item.remarks}
                       </div>
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-2 items-end">
+                  {/* Assignment Scope */}
+                  <div className="col-span-2 text-neutral-1100">
+                    {item.assignment_scope || "N/A"}
+                  </div>
+
+                  {/* Status */}
+                  <div className="col-span-2">
                     <StatusLabel
                       status={item.status || "PENDING"}
                       variant={
@@ -206,32 +316,52 @@ export const MyClearanceDetailsModal = ({
                       {item.status || "PENDING"}
                     </StatusLabel>
                   </div>
-                </div>
 
-                <div className="border-t border-neutral-300 pt-3">
-                  <ESignatureComponent
-                    item={item}
-                    onSignatureUpload={handleESignatureUpload}
-                    disabled={
-                      item.is_locked ||
-                      clearanceRequest?.status === "COMPLETED" ||
-                      clearanceRequest?.status === "REJECTED"
-                    }
-                  />
-                </div>
-
-                <div className="mt-3 pt-3 border-t border-neutral-300">
-                  <div className="flex justify-between text-xs text-neutral-1100">
-                    <span>
-                      Updated: {renderDate(item.updated_at) || "Never"}
-                    </span>
-                    {item.completed_at && (
-                      <span>Completed: {renderDate(item.completed_at)}</span>
-                    )}
+                  {/* E-Signature Status - Compact */}
+                  <div className="col-span-2">
+                    <div className="flex items-center gap-1">
+                      {item.e_signature_status === "ACKNOWLEDGED" ? (
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      ) : item.e_signature_status === "PENDING" ? (
+                        <Clock className="h-4 w-4 text-orange-600" />
+                      ) : (
+                        <span className="h-4 w-4 flex items-center justify-center bg-gray-300 rounded-full text-xs">
+                          -
+                        </span>
+                      )}
+                      <span className="text-xs text-neutral-1100">
+                        {item.e_signature_status === "ACKNOWLEDGED"
+                          ? "Done"
+                          : item.e_signature_status === "PENDING"
+                          ? "Required"
+                          : "Not Required"}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Updated Date */}
+                  <div className="col-span-2 text-neutral-1100">
+                    {renderDate(item.updated_at) || "Never"}
+                  </div>
+
+                  {/* E-Signature Component - Full width row below */}
+                  {item.e_signature_status === "PENDING" && (
+                    <div className="col-span-12 mt-3 pt-3 border-t border-neutral-200">
+                      <ESignatureComponent
+                        item={item}
+                        onSignatureUpload={handleESignatureUpload}
+                        disabled={
+                          item.is_locked ||
+                          clearanceRequest?.status === "COMPLETED" ||
+                          clearanceRequest?.status === "REJECTED" ||
+                          clearanceRequest?.status === "ONHOLD"
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         );
       },
