@@ -178,7 +178,7 @@ export const SidebarRoutes = [
         Config.MANAGER_CLEARANCE_DASHBOARD && {
           path: "/manager-clearance-dashboard",
           component: <ManagerClearanceDashboard />,
-          name: "ManagerClearanceDashboard",
+          name: "MANAGER_CLEARANCE_DASHBOARD",
         },
       ].filter(Boolean) // Filter out undefined routes
     : []),

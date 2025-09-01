@@ -34,6 +34,8 @@ const ManagerClearanceDashboard = () => {
   const [enhancedData, setEnhancedData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
+  console.log("ManagerClearanceDashboard Rendered");
+
   // Modal state
   const [detailsModal, setDetailsModal] = useState(false);
   const [selectedClearanceRequest, setSelectedClearanceRequest] =
@@ -47,7 +49,7 @@ const ManagerClearanceDashboard = () => {
   const Departments = useSelector((state) => state.common.departments);
 
   // Permission check
-  const isManager = HasAccess("VIEW_MANAGER_CLEARANCE_DASHBOARD") || true; // TODO: Replace with actual permission
+  const isManager = HasAccess("VIEW_MANAGER_CLEARANCE_DASHBOARD"); 
 
   // Fetch data on component mount and filter changes
   useEffect(() => {
@@ -77,8 +79,7 @@ const ManagerClearanceDashboard = () => {
     try {
       const managerFilterData = {
         ...filterData,
-        // TODO: Add manager filter when backend implements it
-        // manager: currentUserId,
+        reporting_employees: [currentUserId],
       };
 
       const response = await getClearanceAnalytics(managerFilterData);

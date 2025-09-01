@@ -141,7 +141,8 @@ export const WEBSOCKET_PATHS = [
   "/ws/payrollnotifications/",
   "/ws/approvalnotifications/",
   "/ws/leavenotification/",
-  "/ws/performance_system/"
+  "/ws/performance_system/",
+  "/ws/clearancenotifications/"
   // Add more as needed
 ];
 
