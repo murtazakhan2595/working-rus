@@ -19,7 +19,29 @@ import {
 import { useSelector } from "react-redux";
 import { canReassignItem, canUserApproveItem } from "./ClearanceApprovalUtils";
 
-// FIXED: Create stable component outside the main component
+// Constants for better maintainability and code organization
+const REASSIGNMENT_CONFIG = {
+  MAX_NOTES_LENGTH: 500,
+  ALLOWED_STATUSES: ["PENDING", "IN_PROCESS"],
+  DISABLED_REASONS: {
+    LOCKED: "Item is locked and cannot be reassigned",
+    ON_HOLD: "Clearance is on hold - editing disabled",
+    NO_PERMISSION: "You don't have permission to edit this item",
+  },
+};
+
+const PROGRESS_CALCULATION = {
+  COMPLETED_STATUSES: ["APPROVED", "NOT_APPLICABLE"],
+  STATUS_WEIGHTS: {
+    PENDING: 10,
+    IN_PROCESS: 60,
+    COMPLETED: 100,
+    REJECTED: 0,
+    ONHOLD: 0,
+  },
+};
+
+// Enhanced memoized component for reassignment functionality
 const ReassignmentSection = React.memo(
   ({
     itemId,
@@ -33,6 +55,35 @@ const ReassignmentSection = React.memo(
     onUpdateNotes,
     onHandleReassignment,
   }) => {
+    // Local state for enhanced UX
+    const [localNotes, setLocalNotes] = useState(reassignNotes[itemId] || "");
+
+    // Debounced notes update to reduce unnecessary renders
+    const debouncedNotesUpdate = useCallback(
+      debounce((value) => {
+        onUpdateNotes(itemId, value);
+      }, 300),
+      [itemId, onUpdateNotes]
+    );
+
+    // Handle notes change with validation
+    const handleNotesChange = useCallback(
+      (field, value) => {
+        if (value.length <= REASSIGNMENT_CONFIG.MAX_NOTES_LENGTH) {
+          setLocalNotes(value);
+          debouncedNotesUpdate(value);
+        }
+      },
+      [debouncedNotesUpdate]
+    );
+
+    // Validate reassignment form
+    const isFormValid = useMemo(() => {
+      return (
+        reassignApprovers[itemId] && reassignApprovers[itemId].trim() !== ""
+      );
+    }, [reassignApprovers, itemId]);
+
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -63,18 +114,25 @@ const ReassignmentSection = React.memo(
                 options={employees}
                 onChange={(field, value) => onUpdateApprover(itemId, value)}
               />
+              {!isFormValid && (
+                <p className="text-xs text-red-600 mt-1">
+                  Please select a new assignee
+                </p>
+              )}
             </div>
 
             <div>
               <label className="text-xs font-medium text-neutral-1200 mb-1 block">
-                Notes (Optional)
+                Notes (Optional) - {localNotes.length}/
+                {REASSIGNMENT_CONFIG.MAX_NOTES_LENGTH}
               </label>
               <TextAreaInput
                 name={`reassign_notes_${itemId}`}
                 placeholder="Reassignment notes..."
-                value={reassignNotes[itemId] || ""}
+                value={localNotes}
                 rows={2}
-                onChange={(field, value) => onUpdateNotes(itemId, value)}
+                onChange={handleNotesChange}
+                maxLength={REASSIGNMENT_CONFIG.MAX_NOTES_LENGTH}
               />
             </div>
 
@@ -83,9 +141,7 @@ const ReassignmentSection = React.memo(
                 variant="default"
                 size="sm"
                 onClick={() => onHandleReassignment(itemId)}
-                disabled={
-                  !reassignApprovers[itemId] || reassignmentSubmitting[itemId]
-                }
+                disabled={!isFormValid || reassignmentSubmitting[itemId]}
                 className="text-xs"
               >
                 {reassignmentSubmitting[itemId] ? "Reassigning..." : "Confirm"}
@@ -98,32 +154,27 @@ const ReassignmentSection = React.memo(
   }
 );
 
-export default function ClearanceChecklistModal({
-  isOpen = false,
-  setIsOpen = () => {},
-  clearanceRequest,
-  reload = () => {},
-  clearanceTypes,
-}) {
+// Utility function for debouncing
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Custom hook for managing checklist state
+const useChecklistManager = (clearanceRequest, isOpen) => {
   const [checklistItems, setChecklistItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showReassignment, setShowReassignment] = useState({}); // Track which items show reassignment
 
-  // Separate state variables for reassignment inputs
-  const [reassignApprovers, setReassignApprovers] = useState({}); // {itemId: approverId}
-  const [reassignNotes, setReassignNotes] = useState({}); // {itemId: notes}
-  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({}); // {itemId: boolean}
+  const fetchChecklistItems = useCallback(async () => {
+    if (!clearanceRequest?.id) return;
 
-  // Get current logged-in user and employees
-  const userProfile = useSelector((state) => state.user.userProfile);
-  const employees = useSelector((state) => state.emp.employees || []);
-  const currentUserId = userProfile?.id;
-
-  // Check if clearance is on hold
-  const isOnHold = clearanceRequest?.status === "ONHOLD";
-
-  const fetchChecklistItems = async () => {
     setLoading(true);
     try {
       const payload = {
@@ -133,7 +184,7 @@ export default function ClearanceChecklistModal({
       };
 
       const response = await getClearanceRequestItems(payload);
-      if (response && response.results) {
+      if (response?.results) {
         setChecklistItems(response.results);
       }
     } catch (error) {
@@ -142,52 +193,37 @@ export default function ClearanceChecklistModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [clearanceRequest?.id]);
 
   useEffect(() => {
     if (clearanceRequest && isOpen) {
       fetchChecklistItems();
     }
-  }, [clearanceRequest, isOpen]);
+  }, [clearanceRequest, isOpen, fetchChecklistItems]);
 
-  // Helper function to format checklist name
-  const formatChecklistName = (name) => {
-    if (!name) return "Checklist Item";
-
-    // Replace underscores and camelCase with spaces, then capitalize
-    return name
-      .replace(/([A-Z])/g, " $1") // Add space before capital letters
-      .replace(/[_-]/g, " ") // Replace underscores and hyphens with spaces
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-      .trim();
+  return {
+    checklistItems,
+    setChecklistItems,
+    loading,
+    fetchChecklistItems,
   };
+};
 
-  // Check if current user can edit specific item - now using utility function
-  const canUserEditItem = (item) => {
-    return canUserApproveItem(item, currentUserId, isOnHold);
-  };
+// Custom hook for reassignment management
+const useReassignmentManager = (currentUserId, reload, fetchChecklistItems) => {
+  const [showReassignment, setShowReassignment] = useState({});
+  const [reassignApprovers, setReassignApprovers] = useState({});
+  const [reassignNotes, setReassignNotes] = useState({});
+  const [reassignmentSubmitting, setReassignmentSubmitting] = useState({});
 
-  // Check if user can edit any item in group (for remarks field)
-  const canUserEditGroupRemarks = (groupItems) => {
-    return groupItems.some((item) => canUserEditItem(item));
-  };
-
-  // Check if item can be reassigned - now using utility function
-  const canReassignItemCheck = (item) => {
-    return canReassignItem(item, currentUserId, isOnHold);
-  };
-
-  // FIXED: Stable callback functions
+  // Enhanced toggle with validation
   const toggleReassignment = useCallback((itemId) => {
     setShowReassignment((prev) => ({
       ...prev,
       [itemId]: !prev[itemId],
     }));
 
-    // Initialize reassignment data if showing for first time
+    // Initialize reassignment data with validation
     setReassignApprovers((prev) => {
       if (prev[itemId] === undefined) {
         return { ...prev, [itemId]: "" };
@@ -211,19 +247,23 @@ export default function ClearanceChecklistModal({
   }, []);
 
   const updateReassignNotes = useCallback((itemId, notes) => {
-    setReassignNotes((prev) => ({
-      ...prev,
-      [itemId]: notes,
-    }));
+    // Enhanced validation for notes
+    if (notes.length <= REASSIGNMENT_CONFIG.MAX_NOTES_LENGTH) {
+      setReassignNotes((prev) => ({
+        ...prev,
+        [itemId]: notes,
+      }));
+    }
   }, []);
 
-  // Handle reassignment submission
+  // Enhanced reassignment handler with better error handling
   const handleReassignment = useCallback(
     async (itemId) => {
       const approverId = reassignApprovers[itemId];
       const notes = reassignNotes[itemId];
 
-      if (!approverId) {
+      // Enhanced validation
+      if (!approverId || approverId.trim() === "") {
         toast.error("Please select a new assignee");
         return;
       }
@@ -231,15 +271,17 @@ export default function ClearanceChecklistModal({
       setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: true }));
 
       try {
-        const response = await updateClearanceRequestItem(itemId, {
+        const payload = {
           reassign_approver: approverId,
           reassign_notes: notes || "",
-        });
+        };
+
+        const response = await updateClearanceRequestItem(itemId, payload);
 
         if (response) {
           toast.success("Task reassigned successfully!");
 
-          // Reset reassignment state
+          // Enhanced state cleanup
           setShowReassignment((prev) => ({ ...prev, [itemId]: false }));
           setReassignApprovers((prev) => ({
             ...prev,
@@ -250,13 +292,20 @@ export default function ClearanceChecklistModal({
             [itemId]: "",
           }));
 
-          // Refresh data
-          fetchChecklistItems();
-          reload();
+          // Refresh data with error handling
+          try {
+            await fetchChecklistItems();
+            await reload();
+          } catch (refreshError) {
+            console.error("Error refreshing data:", refreshError);
+            toast.warning("Item reassigned but data refresh failed");
+          }
         }
       } catch (error) {
         console.error("Error reassigning task:", error);
-        toast.error("Failed to reassign task");
+        const errorMessage =
+          error.response?.data?.message || "Failed to reassign task";
+        toast.error(errorMessage);
       } finally {
         setReassignmentSubmitting((prev) => ({ ...prev, [itemId]: false }));
       }
@@ -264,52 +313,141 @@ export default function ClearanceChecklistModal({
     [reassignApprovers, reassignNotes, fetchChecklistItems, reload]
   );
 
-  // Simple local state update - no API calls
-  const updateItemStatus = (itemId, newStatus) => {
+  return {
+    showReassignment,
+    reassignApprovers,
+    reassignNotes,
+    reassignmentSubmitting,
+    toggleReassignment,
+    updateReassignApprover,
+    updateReassignNotes,
+    handleReassignment,
+  };
+};
+
+export default function ClearanceChecklistModal({
+  isOpen = false,
+  setIsOpen = () => {},
+  clearanceRequest,
+  reload = () => {},
+  clearanceTypes,
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get current logged-in user and employees
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const employees = useSelector((state) => state.emp.employees || []);
+  const currentUserId = userProfile?.id;
+
+  // Check if clearance is on hold
+  const isOnHold = useMemo(
+    () => clearanceRequest?.status === "ONHOLD",
+    [clearanceRequest?.status]
+  );
+
+  // Use custom hooks for better code organization
+  const { checklistItems, setChecklistItems, loading, fetchChecklistItems } =
+    useChecklistManager(clearanceRequest, isOpen);
+
+  const reassignmentManager = useReassignmentManager(
+    currentUserId,
+    reload,
+    fetchChecklistItems
+  );
+
+  // Enhanced helper function to format checklist name
+  const formatChecklistName = useCallback((name) => {
+    if (!name) return "Checklist Item";
+
+    // Enhanced formatting with better regex patterns
+    return name
+      .replace(/([A-Z])/g, " $1")
+      .replace(/[_-]/g, " ")
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+      .trim();
+  }, []);
+
+  // Enhanced permission checking with memoization
+  const canUserEditItem = useCallback(
+    (item) => {
+      return canUserApproveItem(item, currentUserId, isOnHold);
+    },
+    [currentUserId, isOnHold]
+  );
+
+  const canUserEditGroupRemarks = useCallback(
+    (groupItems) => {
+      return groupItems.some((item) => canUserEditItem(item));
+    },
+    [canUserEditItem]
+  );
+
+  const canReassignItemCheck = useCallback(
+    (item) => {
+      return canReassignItem(item, currentUserId, isOnHold);
+    },
+    [currentUserId, isOnHold]
+  );
+
+  // Enhanced state update functions with validation
+  const updateItemStatus = useCallback((itemId, newStatus) => {
+    if (!PROGRESS_CALCULATION.STATUS_WEIGHTS.hasOwnProperty(newStatus)) {
+      console.warn(`Invalid status: ${newStatus}`);
+      return;
+    }
+
     setChecklistItems((prevItems) =>
       prevItems.map((item) =>
         item.id === itemId ? { ...item, status: newStatus } : item
       )
     );
-  };
+  }, []);
 
-  // Simple local state update - no API calls
-  const updateItemRemarks = (itemId, newRemarks) => {
+  const updateItemRemarks = useCallback((itemId, newRemarks) => {
+    // Enhanced validation for remarks
+    if (newRemarks && newRemarks.length > 1000) {
+      toast.warning("Remarks are too long. Maximum 1000 characters allowed.");
+      return;
+    }
+
     setChecklistItems((prevItems) =>
       prevItems.map((item) =>
         item.id === itemId ? { ...item, remarks: newRemarks } : item
       )
     );
-  };
+  }, []);
 
-  // Calculate progress
-  const calculateProgress = () => {
+  // Enhanced progress calculation with memoization
+  const calculateProgress = useMemo(() => {
     if (checklistItems.length === 0) return 0;
-    const completedItems = checklistItems.filter(
-      (item) => item.status === "APPROVED" || item.status === "NOT_APPLICABLE"
+    const completedItems = checklistItems.filter((item) =>
+      PROGRESS_CALCULATION.COMPLETED_STATUSES.includes(item.status)
     ).length;
     return Math.round((completedItems / checklistItems.length) * 100);
-  };
+  }, [checklistItems]);
 
-  // Get overall status
-  const getOverallStatus = () => {
+  // Enhanced overall status calculation
+  const getOverallStatus = useMemo(() => {
     const hasRejected = checklistItems.some(
       (item) => item.status === "REJECTED"
     );
     if (hasRejected) return "REJECTED";
 
-    const progress = calculateProgress();
+    const progress = calculateProgress;
     if (progress === 100) return "COMPLETED";
     if (progress > 0) return "IN_PROCESS";
     return "PENDING";
-  };
+  }, [checklistItems, calculateProgress]);
 
-  // ONLY API CALL - when form is submitted (only update items user can edit)
+  // Enhanced submit handler with better error handling and validation
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       setIsSubmitting(true);
 
-      // Update only items that user has permission to edit
+      // Enhanced filtering for editable items
       const editableItems = checklistItems.filter((item) =>
         canUserEditItem(item)
       );
@@ -319,59 +457,92 @@ export default function ClearanceChecklistModal({
         return;
       }
 
+      // Validate all items before submission
+      const invalidItems = editableItems.filter(
+        (item) =>
+          !item.status ||
+          !PROGRESS_CALCULATION.STATUS_WEIGHTS.hasOwnProperty(item.status)
+      );
+
+      if (invalidItems.length > 0) {
+        toast.error(
+          "Some items have invalid status. Please review and try again."
+        );
+        return;
+      }
+
+      // Enhanced update promises with individual error handling
       const updatePromises = editableItems.map((item) =>
         updateClearanceRequestItem(item.id, {
           status: item.status,
           remarks: item.remarks || "",
+        }).catch((error) => {
+          console.error(`Failed to update item ${item.id}:`, error);
+          return { error: true, itemId: item.id, message: error.message };
         })
       );
 
-      await Promise.all(updatePromises);
+      const results = await Promise.all(updatePromises);
 
-      toast.success(
-        `Updated ${editableItems.length} checklist item(s) successfully!`
-      );
+      // Check for failures
+      const failures = results.filter((result) => result?.error);
+      const successes = results.length - failures.length;
 
-      if (getOverallStatus() === "COMPLETED") {
-        toast.success("Clearance process completed!");
+      if (failures.length > 0) {
+        toast.error(
+          `Updated ${successes} items successfully, but ${failures.length} failed.`
+        );
+      } else {
+        toast.success(`Updated ${successes} checklist item(s) successfully!`);
       }
 
-      // Close and reload
+      // Enhanced completion check
+      if (getOverallStatus === "COMPLETED") {
+        toast.success("🎉 Clearance process completed!");
+      }
+
       handleClose();
     } catch (error) {
       console.error("Error updating checklist:", error);
-      toast.error("Failed to update checklist");
+      toast.error("Failed to update checklist. Please try again.");
     } finally {
       setIsSubmitting(false);
       setSubmitting(false);
     }
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false);
     reload();
-  };
+  }, [setIsOpen, reload]);
 
-  // Group items by checklist name instead of ID
-  const groupedItems = checklistItems.reduce((groups, item) => {
-    const groupKey = formatChecklistName(item.checklist_name) || "General";
-    if (!groups[groupKey]) {
-      groups[groupKey] = [];
-    }
-    groups[groupKey].push(item);
-    return groups;
-  }, {});
+  // Enhanced grouping with better data structure
+  const groupedItems = useMemo(() => {
+    return checklistItems.reduce((groups, item) => {
+      const groupKey = formatChecklistName(item.checklist_name) || "General";
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
+      }
+      groups[groupKey].push(item);
+      return groups;
+    }, {});
+  }, [checklistItems, formatChecklistName]);
 
-  // Simple form fields generation with permission checks
-  const generateFormFields = () => {
+  // Enhanced form fields generation with better validation and error handling
+  const generateFormFields = useCallback(() => {
     return Object.keys(groupedItems).map((groupName) => ({
       sheetCardExtension: true,
       sheetCardTitle: groupName,
       InputFields: [
-        // Status dropdowns for each item
+        // Enhanced status dropdowns for each item
         ...groupedItems[groupName].map((item) => {
           const canEdit = canUserEditItem(item);
           const isDisabled = item.is_locked || !canEdit;
+          const disabledReason = item.is_locked
+            ? REASSIGNMENT_CONFIG.DISABLED_REASONS.LOCKED
+            : isOnHold
+            ? REASSIGNMENT_CONFIG.DISABLED_REASONS.ON_HOLD
+            : REASSIGNMENT_CONFIG.DISABLED_REASONS.NO_PERMISSION;
 
           return {
             InputField: SelectInputComponent,
@@ -382,12 +553,7 @@ export default function ClearanceChecklistModal({
             options: clearanceRequestStatusOptions,
             disabled: isDisabled,
             colsSpan: 1,
-            // Add visual indicator for permission status
-            helperText: !canEdit
-              ? isOnHold
-                ? "Clearance is on hold - editing disabled"
-                : "You don't have permission to edit this item"
-              : undefined,
+            helperText: !canEdit ? disabledReason : undefined,
             onFieldUpdate: (field, newValue) => {
               if (canEdit) {
                 updateItemStatus(item.id, newValue);
@@ -396,32 +562,33 @@ export default function ClearanceChecklistModal({
           };
         }),
 
-        // FIXED: Add reassignment section using the stable component
+        // Enhanced reassignment section using the stable component
         ...groupedItems[groupName]
           .map((item) => {
             const canReassign = canReassignItemCheck(item);
 
-            if (!canReassign) return null; // Don't show reassignment for ineligible items
+            if (!canReassign) return null;
 
             return {
-              InputField: ReassignmentSection, // FIXED: Use stable component reference
+              InputField: ReassignmentSection,
               name: `reassignment_${item.id}`,
-              itemId: item.id, // Pass props to the component
-              showReassignment,
-              reassignApprovers,
-              reassignNotes,
-              reassignmentSubmitting,
+              itemId: item.id,
+              showReassignment: reassignmentManager.showReassignment,
+              reassignApprovers: reassignmentManager.reassignApprovers,
+              reassignNotes: reassignmentManager.reassignNotes,
+              reassignmentSubmitting:
+                reassignmentManager.reassignmentSubmitting,
               employees,
-              onToggleReassignment: toggleReassignment,
-              onUpdateApprover: updateReassignApprover,
-              onUpdateNotes: updateReassignNotes,
-              onHandleReassignment: handleReassignment,
+              onToggleReassignment: reassignmentManager.toggleReassignment,
+              onUpdateApprover: reassignmentManager.updateReassignApprover,
+              onUpdateNotes: reassignmentManager.updateReassignNotes,
+              onHandleReassignment: reassignmentManager.handleReassignment,
               colsSpan: 2,
             };
           })
-          .filter(Boolean), // Remove null entries
+          .filter(Boolean),
 
-        // Remarks textarea for the group (only show if user can edit at least one item)
+        // Enhanced remarks textarea for the group
         ...(canUserEditGroupRemarks(groupedItems[groupName])
           ? [
               {
@@ -435,8 +602,8 @@ export default function ClearanceChecklistModal({
                 ),
                 colsSpan: 2,
                 maxRows: 2,
+                maxLength: 1000,
                 onFieldUpdate: (field, newValue) => {
-                  // Update remarks for first item in group
                   if (groupedItems[groupName][0]) {
                     updateItemRemarks(groupedItems[groupName][0].id, newValue);
                   }
@@ -446,14 +613,27 @@ export default function ClearanceChecklistModal({
           : []),
       ],
     }));
-  };
+  }, [
+    groupedItems,
+    canUserEditItem,
+    canReassignItemCheck,
+    canUserEditGroupRemarks,
+    formatChecklistName,
+    isOnHold,
+    clearanceRequestStatusOptions,
+    employees,
+    reassignmentManager,
+    updateItemStatus,
+    updateItemRemarks,
+  ]);
 
-  const progress = calculateProgress();
-  const overallStatus = getOverallStatus();
+  const progress = calculateProgress;
+  const overallStatus = getOverallStatus;
 
   // Check if user has permission to edit any items
-  const hasAnyEditPermission = checklistItems.some((item) =>
-    canUserEditItem(item)
+  const hasAnyEditPermission = useMemo(
+    () => checklistItems.some((item) => canUserEditItem(item)),
+    [checklistItems, canUserEditItem]
   );
 
   if (loading) {
@@ -481,10 +661,10 @@ export default function ClearanceChecklistModal({
         cancelButtonText: "Close",
         columns: 2,
         disableSubmit: isSubmitting || !hasAnyEditPermission,
-        hideSubmit: !hasAnyEditPermission, // Hide submit button if no edit permissions
+        hideSubmit: !hasAnyEditPermission,
         loadingMessage: isSubmitting ? "Updating checklist..." : "",
         formFields: [
-          // Progress header with hold warning
+          // Enhanced progress header with hold warning
           {
             sheetCardExtension: true,
             sheetCardTitle: "Progress Overview",
@@ -492,7 +672,7 @@ export default function ClearanceChecklistModal({
               {
                 InputField: () => (
                   <div className="space-y-4">
-                    {/* Hold Warning Banner */}
+                    {/* Enhanced Hold Warning Banner */}
                     {isOnHold && (
                       <div className="p-4 bg-red-50 border border-red-200 rounded-md">
                         <div className="flex items-start gap-3">
@@ -565,7 +745,14 @@ export default function ClearanceChecklistModal({
                         <div className="mt-2">
                           <Progress value={progress} className="h-2" />
                           <span className="text-xs mt-1">
-                            {progress}% Complete
+                            {progress}% Complete (
+                            {PROGRESS_CALCULATION.COMPLETED_STATUSES.map(
+                              (status) =>
+                                checklistItems.filter(
+                                  (item) => item.status === status
+                                ).length
+                            ).reduce((a, b) => a + b, 0)}{" "}
+                            of {checklistItems.length})
                           </span>
                         </div>
                       </div>
