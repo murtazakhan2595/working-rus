@@ -76,6 +76,7 @@ export const AddNewLabel = React.memo(
     useEffect(() => {
       let isMounted = true;
       if (labelId) fetchTaskLabelData(isMounted);
+       
       return () => {
         isMounted = false;
       };
@@ -99,12 +100,12 @@ export const AddNewLabel = React.memo(
             position: toast.POSITION.TOP_RIGHT,
           });
         }
+
       } catch (error) {
         console.error("Error saving label:", error);
       } finally {
-        setShowNewLabel(false);
-        onResetLabelId();
         setNewLabelTitle("")
+        setShowNewLabel(false);
       }
     };
 
@@ -216,6 +217,7 @@ const Labels = React.memo(
             newOptionConfig={{
               buttonValue: "Add New Label",
               onClick: () => {
+                setLabelID(null)
                 setShowNewLabel(true);
               },
             }}
