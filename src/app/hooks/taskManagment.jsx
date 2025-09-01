@@ -189,7 +189,7 @@ export const getAllLabels = async (payload) => {
 
     if (response.status === 200) {
       const data = response.data?.results || [];
-      return data.filter(dta => dta?.project_id === payload);
+      return data.filter(dta => dta?.project_id !== null);
     } else {
       return [];
     }
