@@ -417,6 +417,7 @@ export const clearanceStatusOptions = [
   { value: "IN_PROCESS", label: "In Process" },
   { value: "COMPLETED", label: "Completed" },
   { value: "REJECTED", label: "Rejected" },
+  { value: "ONHOLD", label: "On Hold" },
 ];
 
 export const clearanceRequestStatusOptions = [

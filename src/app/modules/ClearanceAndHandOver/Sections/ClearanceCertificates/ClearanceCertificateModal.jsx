@@ -24,7 +24,14 @@ import {
   uploadClearanceCertificate,
   sendClearanceCertificate,
 } from "app/hooks/clearanceAndHandover";
-import { FileUp, Send, Download, X } from "lucide-react";
+import {
+  FileUp,
+  Send,
+  Download,
+  X,
+  AlertTriangle,
+  FileText,
+} from "lucide-react";
 import {
   EmployeeID,
   EmployeeName,
@@ -63,6 +70,9 @@ const ClearanceCertificateModal = ({
     },
     scale: 0.8,
   });
+
+  // Check if clearance is on hold
+  const isOnHold = clearanceRequest?.status === "ONHOLD";
 
   // Calculate completion duration
   const calculateDuration = () => {
@@ -152,48 +162,9 @@ const ClearanceCertificateModal = ({
         resolve(file);
       } catch (error) {
         console.error("Error generating PDF with html2canvas + jsPDF:", error);
-
-        // try {
-        //   // Fallback: try with html2pdf if available
-        //   console.log("Trying html2pdf as fallback...");
-        //   const html2pdf = (await import("html2pdf.js")).default;
-
-        //   const opt = {
-        //     margin: 10,
-        //     filename: `clearance-certificate-${certificateData?.id}.pdf`,
-        //     image: { type: "jpeg", quality: 0.98 },
-        //     html2canvas: { scale: 0.8 },
-        //     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        //   };
-
-        //   const element = pdfTargetRef.current;
-        //   const pdfBlob = await html2pdf()
-        //     .set(opt)
-        //     .from(element)
-        //     .outputPdf("blob");
-
-        //   const file = new File(
-        //     [pdfBlob],
-        //     `clearance-certificate-${certificateData?.id}.pdf`,
-        //     {
-        //       type: "application/pdf",
-        //     }
-        //   );
-
-        //   console.log(
-        //     "PDF generated with html2pdf fallback, size:",
-        //     pdfBlob.size,
-        //     "bytes"
-        //   );
-        //   resolve(file);
-        // } catch (fallbackError) {
-        //   console.error("Both PDF generation methods failed:", fallbackError);
-
-        //   // Don't create a fake PDF file - instead reject the promise
-        //   throw new Error(
-        //     "PDF generation failed. Please install html2canvas and jspdf: npm install html2canvas jspdf"
-        //   );
-        // }
+        throw new Error(
+          "PDF generation failed. Please install html2canvas and jspdf: npm install html2canvas jspdf"
+        );
       } finally {
         // Show no-print elements again
         noPrintElements.forEach((el) => (el.style.display = ""));
@@ -204,6 +175,14 @@ const ClearanceCertificateModal = ({
   const handleUploadCertificate = async () => {
     if (!certificateData?.id) {
       toast.error("Certificate data not found");
+      return;
+    }
+
+    // AC2: Block upload if clearance is on hold
+    if (isOnHold) {
+      toast.error(
+        "Clearance is currently on hold due to a legal/disciplinary investigation."
+      );
       return;
     }
 
@@ -256,6 +235,14 @@ const ClearanceCertificateModal = ({
       return;
     }
 
+    // AC2: Block send if clearance is on hold
+    if (isOnHold) {
+      toast.error(
+        "Clearance is currently on hold due to a legal/disciplinary investigation."
+      );
+      return;
+    }
+
     setIsSending(true);
     try {
       const payload = {
@@ -284,6 +271,14 @@ const ClearanceCertificateModal = ({
   };
 
   const handleDownloadPDF = () => {
+    // AC2: Block download if clearance is on hold
+    if (isOnHold) {
+      toast.error(
+        "Clearance is currently on hold due to a legal/disciplinary investigation."
+      );
+      return;
+    }
+
     const noPrintElements = document.querySelectorAll(".no-print");
 
     // Hide no-print elements
@@ -319,6 +314,49 @@ const ClearanceCertificateModal = ({
 
         {/* Certificate Preview */}
         <div className="p-6">
+          {/* Hold Warning Section - AC2: Certificate Blocking */}
+          {isOnHold && (
+            <Card className="mb-6">
+              <CardContent className="p-6">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-red-800 mb-2">
+                        Certificate Actions Blocked
+                      </h4>
+                      <p className="text-sm text-red-700 mb-3">
+                        Clearance is currently on hold due to a
+                        legal/disciplinary investigation. All certificate
+                        actions (download, upload, send) are disabled until the
+                        hold is removed.
+                      </p>
+                      {clearanceRequest?.on_hold_reason && (
+                        <div className="text-sm text-red-700 mb-2">
+                          <span className="font-medium">Hold Reason:</span>{" "}
+                          {clearanceRequest.on_hold_reason}
+                        </div>
+                      )}
+                      {clearanceRequest?.on_hold_attachment && (
+                        <div className="flex items-center gap-1">
+                          <FileText className="h-4 w-4 text-red-600" />
+                          <a
+                            href={clearanceRequest.on_hold_attachment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-red-800 hover:underline font-medium"
+                          >
+                            View Hold Document
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <Card className="mb-6">
             <div ref={pdfTargetRef}>
               {/* Certificate Template Content */}
@@ -669,135 +707,155 @@ const ClearanceCertificateModal = ({
             </div>
           </Card>
 
-          {/* Action Buttons */}
-          {!isMyCertificate &&<Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-slate-1200 mb-2">
-                    Certificate Actions
-                  </h3>
-                  <p className="text-sm text-slate-1000 mb-6">
-                    You can download, upload to system, or send the certificate
-                    to employee and HR
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Download Button */}
-                  <Button
-                    onClick={handleDownloadPDF}
-                    variant="outline"
-                    className="flex items-center justify-center gap-2 h-12"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download PDF
-                  </Button>
-
-                  {/* Upload Button */}
-                  <Button
-                    onClick={handleUploadCertificate}
-                    disabled={isUploading}
-                    variant={uploadSuccess ? "default" : "secondary"}
-                    className="flex items-center justify-center gap-2 h-12"
-                  >
-                    {isUploading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                        Uploading...
-                      </div>
-                    ) : uploadSuccess ? (
-                      <div className="flex items-center gap-2">
-                        <FileUp className="h-4 w-4" />
-                        Uploaded ✓
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <FileUp className="h-4 w-4" />
-                        Upload to System
-                      </div>
-                    )}
-                  </Button>
-
-                  {/* Send Button */}
-                  <Button
-                    onClick={handleSendCertificate}
-                    disabled={isSending}
-                    variant={sendSuccess ? "default" : "default"}
-                    className="flex items-center justify-center gap-2 h-12"
-                  >
-                    {isSending ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                        Sending...
-                      </div>
-                    ) : sendSuccess ? (
-                      <div className="flex items-center gap-2">
-                        <Send className="h-4 w-4" />
-                        Sent ✓
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Send className="h-4 w-4" />
-                        Send Certificate
-                      </div>
-                    )}
-                  </Button>
-                </div>
-
-                {/* Status Messages */}
-                {(uploadSuccess || sendSuccess) && (
-                  <div className="mt-6 p-4 bg-plum-200 border border-plum-400 rounded-lg">
-                    <div className="space-y-2">
-                      {uploadSuccess && (
-                        <div className="flex items-center text-plum-900 text-sm">
-                          <FileUp className="h-4 w-4 mr-2" />
-                          Certificate has been uploaded to the system
-                          successfully
-                        </div>
-                      )}
-                      {sendSuccess && (
-                        <div className="flex items-center text-plum-900 text-sm">
-                          <Send className="h-4 w-4 mr-2" />
-                          Certificate has been sent to employee and HR via email
-                        </div>
-                      )}
-                    </div>
+          {/* Action Buttons - Updated with hold blocking */}
+          {!isMyCertificate && (
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-slate-1200 mb-2">
+                      Certificate Actions
+                    </h3>
+                    <p className="text-sm text-slate-1000 mb-6">
+                      You can download, upload to system, or send the
+                      certificate to employee and HR
+                    </p>
                   </div>
-                )}
 
-                {/* Information Note */}
-                <div className="mt-6 p-4 bg-slate-100 border border-slate-300 rounded-lg">
-                  <h4 className="text-sm font-medium text-slate-1200 mb-1">
-                    Information:
-                  </h4>
-                  <ul className="text-xs text-slate-1000 space-y-1">
-                    <li>
-                      • Download: Save certificate as PDF to your computer
-                    </li>
-                    <li>
-                      • Upload: Store certificate in the document management
-                      system
-                    </li>
-                    <li>
-                      • Send: Email certificate to employee and HR department
-                    </li>
-                    <li>• You can perform multiple actions as needed</li>
-                  </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Download Button */}
+                    <Button
+                      onClick={handleDownloadPDF}
+                      variant="outline"
+                      className="flex items-center justify-center gap-2 h-12"
+                      disabled={isOnHold}
+                    >
+                      <Download className="h-4 w-4" />
+                      Download PDF
+                    </Button>
+
+                    {/* Upload Button */}
+                    <Button
+                      onClick={handleUploadCertificate}
+                      disabled={isUploading || isOnHold}
+                      variant={uploadSuccess ? "default" : "secondary"}
+                      className="flex items-center justify-center gap-2 h-12"
+                    >
+                      {isUploading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                          Uploading...
+                        </div>
+                      ) : uploadSuccess ? (
+                        <div className="flex items-center gap-2">
+                          <FileUp className="h-4 w-4" />
+                          Uploaded ✓
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <FileUp className="h-4 w-4" />
+                          Upload to System
+                        </div>
+                      )}
+                    </Button>
+
+                    {/* Send Button */}
+                    <Button
+                      onClick={handleSendCertificate}
+                      disabled={isSending || isOnHold}
+                      variant={sendSuccess ? "default" : "default"}
+                      className="flex items-center justify-center gap-2 h-12"
+                    >
+                      {isSending ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                          Sending...
+                        </div>
+                      ) : sendSuccess ? (
+                        <div className="flex items-center gap-2">
+                          <Send className="h-4 w-4" />
+                          Sent ✓
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Send className="h-4 w-4" />
+                          Send Certificate
+                        </div>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Status Messages */}
+                  {(uploadSuccess || sendSuccess) && (
+                    <div className="mt-6 p-4 bg-plum-200 border border-plum-400 rounded-lg">
+                      <div className="space-y-2">
+                        {uploadSuccess && (
+                          <div className="flex items-center text-plum-900 text-sm">
+                            <FileUp className="h-4 w-4 mr-2" />
+                            Certificate has been uploaded to the system
+                            successfully
+                          </div>
+                        )}
+                        {sendSuccess && (
+                          <div className="flex items-center text-plum-900 text-sm">
+                            <Send className="h-4 w-4 mr-2" />
+                            Certificate has been sent to employee and HR via
+                            email
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hold Warning in Action Section */}
+                  {isOnHold && (
+                    <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center text-red-800 text-sm">
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        Certificate actions are disabled while clearance is on
+                        hold
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Information Note */}
+                  <div className="mt-6 p-4 bg-slate-100 border border-slate-300 rounded-lg">
+                    <h4 className="text-sm font-medium text-slate-1200 mb-1">
+                      Information:
+                    </h4>
+                    <ul className="text-xs text-slate-1000 space-y-1">
+                      <li>
+                        • Download: Save certificate as PDF to your computer
+                      </li>
+                      <li>
+                        • Upload: Store certificate in the document management
+                        system
+                      </li>
+                      <li>
+                        • Send: Email certificate to employee and HR department
+                      </li>
+                      <li>• You can perform multiple actions as needed</li>
+                      {isOnHold && (
+                        <li className="text-red-600">
+                          • Actions are disabled when clearance is on hold
+                        </li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
 
-            <CardFooter className="px-6 pb-6">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                className="w-full"
-              >
-                Close
-              </Button>
-            </CardFooter>
-          </Card>}
+              <CardFooter className="px-6 pb-6">
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  className="w-full"
+                >
+                  Close
+                </Button>
+              </CardFooter>
+            </Card>
+          )}
         </div>
       </DialogContent>
     </Dialog>

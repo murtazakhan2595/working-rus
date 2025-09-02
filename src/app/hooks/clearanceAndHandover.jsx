@@ -181,7 +181,7 @@ const getClearanceActionLogs = async (payload) => {
 const getClearanceAnalytics = async (filterData = {}) => {
   const queryParams = new URLSearchParams();
 
-  // Add filters to query params
+  // Add filters to query params with special handling for certain arrays
   Object.keys(filterData).forEach((key) => {
     if (
       filterData[key] !== "" &&
@@ -189,12 +189,27 @@ const getClearanceAnalytics = async (filterData = {}) => {
       filterData[key] !== undefined
     ) {
       if (Array.isArray(filterData[key])) {
-        queryParams.append(key, filterData[key].join(","));
+        // Special handling for reporting_employees - send as [1,2,3] format
+        if (key === "reporting_employees") {
+          console.log(
+            "Adding reporting_employees to query params:",
+            filterData[key]
+          );
+          // Convert array [1] to string "[1]"
+          const arrayAsString = `[${filterData[key].join(",")}]`;
+          console.log("Array as string:", arrayAsString);
+          queryParams.append("reporting_employees", arrayAsString);
+        } else {
+          // For other arrays, use comma-separated format
+          queryParams.append(key, filterData[key].join(","));
+        }
       } else {
         queryParams.append(key, filterData[key]);
       }
     }
   });
+
+  console.log("queryParams:", queryParams.toString());
 
   const URL = `/analytics/clearance/list/?${queryParams.toString()}`;
 

@@ -34,6 +34,10 @@ export const ClearanceColumns = (reload, clearanceList = [], clearanceTypes) => 
     dataField: "clearance_type",
     text: "Clearance Type",
     sort: true,
+    formatter: (cell) => {
+      const clearanceType = clearanceTypes.find((type) => type.id === cell);
+      return clearanceType ? clearanceType.name : cell;
+    },
   },
   {
     dataField: "start_date",
@@ -50,7 +54,8 @@ export const ClearanceColumns = (reload, clearanceList = [], clearanceTypes) => 
         PENDING: { label: "Pending", variant: "warning" },
         IN_PROCESS: { label: "In Process", variant: "info" },
         COMPLETED: { label: "Completed", variant: "success" },
-        REJECTED: { label: "Rejected", variant: "error" }, // use "error" not "danger"
+        REJECTED: { label: "Rejected", variant: "error" },
+        ONHOLD: { label: "On Hold", variant: "error" },
       };
 
       const status = statusMap[cell] || {

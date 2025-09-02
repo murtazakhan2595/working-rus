@@ -19,6 +19,7 @@ const Config = {
   EXIT: true,
   MY_JOB_ROTATIONS: true,
   MY_CLEARANCE: true,
+  MANAGER_CLEARANCE_DASHBOARD: true,
 
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
@@ -142,7 +143,8 @@ export const WEBSOCKET_PATHS = [
   "/ws/payrollnotifications/",
   "/ws/approvalnotifications/",
   "/ws/leavenotification/",
-  "/ws/performance_system/"
+  "/ws/performance_system/",
+  "/ws/clearancenotifications/"
   // Add more as needed
 ];
 

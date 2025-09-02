@@ -20,12 +20,25 @@ const ClearanceCertificateActions = ({
   const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
   // Handle viewing the certificate
-  const handleViewCertificate = async () => {
+  const handleViewCertificate = () => {
+    handleLoadCertificate();
+  };
+
+  const handleLoadCertificate = async () => {
     setIsLoadingRequest(true);
     try {
       // Fetch the associated clearance request data
       const requestData = await getClearanceRequestById(data.request);
       setClearanceRequest(requestData);
+
+      // AC2: Check if clearance is on hold and block certificate actions
+      if (requestData?.status === "ONHOLD") {
+        toast.error(
+          "Clearance is currently on hold due to a legal/disciplinary investigation."
+        );
+        setIsLoadingRequest(false);
+        return;
+      }
 
       // Fetch clearance request items
       const clearanceRequestItems = await getClearanceRequestItems({
@@ -43,9 +56,29 @@ const ClearanceCertificateActions = ({
   };
 
   // Handle resending certificate
-  const handleResendCertificate = async () => {
+  const handleResendCertificate = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (!data?.id) {
       toast.error("Certificate data not found");
+      return;
+    }
+
+    // Check if associated clearance request is on hold before resending
+    try {
+      const requestData = await getClearanceRequestById(data.request);
+
+      // AC2: Block resending if clearance is on hold
+      if (requestData?.status === "ONHOLD") {
+        toast.error(
+          "Clearance is currently on hold due to a legal/disciplinary investigation."
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("Error checking clearance status:", error);
+      toast.error("Failed to verify clearance status");
       return;
     }
 
@@ -78,18 +111,21 @@ const ClearanceCertificateActions = ({
     reloadData();
   };
 
+  // Prepare additional options - you can add more certificate-related actions here
+  const additionalOptions = [
+    {
+      text: isResending ? "Resending..." : "Resend Certificate",
+      action: handleResendCertificate,
+    },
+  ];
+
   return (
     <>
       <DropdownActionMenu
         onView={handleViewCertificate}
-        onCustom={handleResendCertificate}
         viewText={isLoadingRequest ? "Loading..." : "View Certificate"}
-        customText={isResending ? "Resending..." : "Resend Certificate"}
-        editText="Edit Certificate"
-        deleteText="Delete Certificate"
         menuTooltip="Certificate Actions"
-        hideEdit={true}
-        hideDelete={true}
+        additionalOptionsConfig={additionalOptions}
       />
 
       {/* View Certificate Modal */}

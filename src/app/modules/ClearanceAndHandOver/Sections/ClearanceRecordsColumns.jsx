@@ -82,6 +82,7 @@ export const ClearanceRecordsColumns = (
         IN_PROCESS: { label: "In Process", variant: "info" },
         COMPLETED: { label: "Completed", variant: "success" },
         REJECTED: { label: "Rejected", variant: "error" }, // use "error" not "danger"
+        ONHOLD: { label: "On Hold", variant: "error" },
       };
 
       const status = statusMap[cell] || {
