@@ -1,63 +1,38 @@
-import { EmployeeOverview } from "components";
+import { MultiStatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
-import { RotationAction, TransferActions } from 'app/modules/TransferAndRotation';
+import { EvaluationFormActions } from 'app/modules/PerformanceEdge';
 /**
- * JobRotationColumns
+ * EmployeeEvaluationFormColumns
  *
- * Returns an array of column definitions for the JobRotationColumns table.
+ * Returns an array of column definitions for the EmployeeEvaluationFormColumns table.
  *
  * @returns {array} An array of column definitions.
  */
 export const EmployeeEvaluationFormColumns = (reloadData) => [
     {
-        dataField: "employee",
-        text: "Employee",
-        formatter: (cell, row) => (
-            <EmployeeOverview
-                id={row.employee}
-                showId={true}
-                showPosition={true}
-                showDepartment={true}
-            />
-        ),
-        minWidth: "120px",
-        // dataSort: true,
-    },
-    {
-        dataField: "initiated_by",
-        text: "Requestor",
-        formatter: (cell) => (
-            <EmployeeOverview
-                id={cell}
-                showId={true}
-                showPosition={true}
-                showDepartment={true}
-            />
-        ),
-        minWidth: "120px",
-    },
-    {
-        dataField: "old_branch",
-        text: "Current Branch",
-        formatter: (cell, row) => <BranchName value={cell} />,
-        minWidth: "120px",
+        dataField: "form_name",
+        text: "Form Name",
         dataSort: true,
     },
     {
-        dataField: "new_branch",
-        text: "Requested Branch",
-        formatter: (cell, row) => <BranchName value={cell} />,
+        dataField: "evaluation_type",
+        text: "Evaluation Type",
         dataSort: true,
-        minWidth: "110px",
     },
     {
-        dataField: "created_at",
-        text: "Requested Time",
-        formatter: (cell, row) => renderDate(cell, '--'),
-        dataSort: true,
-        minWidth: "110px",
+        dataField: "nationalities",
+        text: "Nationalities",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Nationalities"
+                />
+            );
+        },
     },
     {
         dataField: "status",
@@ -68,10 +43,141 @@ export const EmployeeEvaluationFormColumns = (reloadData) => [
         ),
     },
     {
+        dataField: "status",
+        text: "Created On",
+        dataSort: true,
+        formatter: (cell, row) => (
+            <StatusLabel status={cell}>{cell}</StatusLabel>
+        ),
+    },
+    {
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <RotationAction DataList={dataList} data={row} />
+            <EvaluationFormActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+/**
+ * SelfAssessmentFormColumns
+ *
+ * Returns an array of column definitions for the SelfAssessmentFormColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const SelfAssessmentFormColumns = (reloadData) => [
+    {
+        dataField: "form_name",
+        text: "Form Name",
+        dataSort: true,
+    },
+    {
+        dataField: "nationalities",
+        text: "Nationalities",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Nationalities"
+                />
+            );
+        },
+    },
+    //  {
+    //     dataField: "branches",
+    //     text: "Branches",
+    //     formatter: (cell) => {
+    //         return (
+    //             <MultiStatusLabel
+    //                 statusList={cell}
+    //                 variant="info"
+    //                 fallBackText="All Branches"
+    //             />
+    //         );
+    //     },
+    // },
+    //  {
+    //     dataField: "departments",
+    //     text: "Departments",
+    //     formatter: (cell) => {
+    //         return (
+    //             <MultiStatusLabel
+    //                 statusList={cell}
+    //                 variant="info"
+    //                 fallBackText="All Departments"
+    //             />
+    //         );
+    //     },
+    // },
+    //  {
+    //     dataField: "designation",
+    //     text: "Designations",
+    //     formatter: (cell) => {
+    //         return (
+    //             <MultiStatusLabel
+    //                 statusList={cell}
+    //                 variant="info"
+    //                 fallBackText="All Designations"
+    //             />
+    //         );
+    //     },
+    // },
+    {
+        dataField: "status",
+        text: "Status",
+        dataSort: true,
+        formatter: (cell, row) => (
+            <StatusLabel status={cell}>{cell}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "status",
+        text: "Created On",
+        dataSort: true,
+        formatter: (cell, row) => (
+            <StatusLabel status={cell}>{cell}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <EvaluationFormActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+/**
+ * PerformanceCycleColumns
+ *
+ * Returns an array of column definitions for the PerformanceCycleColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const PerformanceCycleColumns = (reloadData) => [
+    {
+        dataField: "name",
+        text: "Name",
+        dataSort: true,
+    },
+    {
+        dataField: "issuance_date",
+        text: "Issuance Date",
+        dataSort: true,
+        formatter: (cell, row) => renderDate(cell, '--'),
+    },
+    {
+        dataField: "review_start",
+        text: "Review Period",
+        dataSort: true,
+        formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
+    },
+ {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <EvaluationFormActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];

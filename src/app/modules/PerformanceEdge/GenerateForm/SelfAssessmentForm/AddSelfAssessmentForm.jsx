@@ -20,7 +20,7 @@ import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
-const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
+const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
     const UserDetails = GetDispatchStateList('user_details', 'emp');
     const Managers = GetDispatchStateList("reportingManagers", "emp") || []
     const Departments = GetDispatchStateList("departments", "common") || []
@@ -34,11 +34,10 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(EvaluationForm);
-    const [EvaluationTypes, setEvaluationTypes] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
-        title: isEditMode ? "Edit Job Rotation" : "Add New Job Rotation",
+        title:`${ isEditMode ? "Edit" : "Create"} Self Assessment Form`,
         description: null,
         footer: null,
     };
@@ -48,12 +47,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
         const fetchFormData = async (isMounted) => {
             try {
                 setIsLoading(true);
-                const typeResponse = await getEvaluationTypeList();
-                if (typeResponse && isMounted) {
-                    setEvaluationTypes(typeResponse.results);
-                }
-
-                const response = await getEvaluationFormsList();
+               const response = await getEvaluationFormsList();
                 if (response && isMounted) {
                     setFormList(response.results);
                 }
@@ -99,20 +93,10 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
         reloadData(true);
     };
 
-    const getBranchTenure = async (employee_id, branch_id) => {
-        try {
-            const response = await getEmployeeTenure(employee_id);
-            const branchTenure = response.find(obj => obj.branch_id === branch_id);
-            console.log(response, UserDetails, branchTenure)
-            return `${branchTenure?.months || 0} months`;
-        } catch (error) { console.log(error); }
-        return '0 months';
-    }
-
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, form_type: 'EmployeeEvaluationForm' };
+            const payload = { ...values, form_type: 'SelfAssessmentForm' };
             const response = await saveEvaluationForm(payload, id);
             if (response) {
                 return {
@@ -169,17 +153,17 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                 validateDuplicate: true,
                             },
                             {
-                                InputField: SelectInputComponent,
-                                name: "evaluation_type",
-                                required: true,
-                                label: "Evaluation Type",
-                                options: EvaluationTypes,
-                            },
-                            {
                                 InputField: SelectMultiInputComponent,
                                 name: "nationalities",
                                 label: "Nationalities",
                                 options: countriesList,
+                                SelectAllOption: true,
+                            },
+                             {
+                                InputField: SelectMultiInputComponent,
+                                name: "branches",
+                                label: "Branches",
+                                options: Branches,
                                 SelectAllOption: true,
                             },
                             {
@@ -187,6 +171,13 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                 name: "departments",
                                 label: "Departments",
                                 options: Departments,
+                                SelectAllOption: true,
+                            },
+                             {
+                                InputField: SelectMultiInputComponent,
+                                name: "designation",
+                                label: "Designations",
+                                options: Designations,
                                 SelectAllOption: true,
                             },
 
@@ -208,16 +199,6 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                     //     handleChange(`levels[${index}].designation`, null);
                                     // },
                                 },
-
-                                {
-                                    InputField: NumberInput,
-                                    name: `sections[${index}].weightage`,
-                                    label: "Weightage",
-                                    value: section.weightage,
-                                    // onFieldUpdate: async (_, __, ___, handleChange) => {
-                                    //     handleChange(`levels[${index}].designation`, null);
-                                    // },
-                                },
                                 {
                                     InputField: RemoveSection,
                                     name: "sections",
@@ -227,7 +208,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                 ...(section.fields
                                     ? section.fields.map((field, fieldIndex) => ([
                                         {
-                                            InputField: TextInput,
+                                            InputField: TextAreaInput,
                                             name: `sections[${index}].fields[${fieldIndex}].question`,
                                             label: "Question",
                                             value: field.question,
@@ -239,12 +220,6 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                             label: "Evaluation Type",
                                             value: field.evaluation_type,
                                             options: [{ label: 'Radio', value: 'radio' }, { label: 'Dropdown', value: 'dropdown' }, { label: 'Text', value: 'text' }]
-                                        },
-                                        {
-                                            InputField: NumberInput,
-                                            name: `sections[${index}].fields[${fieldIndex}].weightage`,
-                                            label: "Weightage",
-                                            value: field.weightage,
                                         },
                                         {
                                             InputField: RemoveSection,
@@ -281,4 +256,4 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
     );
 };
 
-export default AddUpdateEvaluationForm;
+export default AddSelfAssessmentForm;
