@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import ClearanceRecordsModal from "./ClearanceRecordsModal";
-import ClearanceCertificateModal from "./ClearanceCertificates/ClearanceCertificateModal";
-import ClearanceHoldModal from "./OnHold/ClearanceHoldModal";
 import { toast } from "react-toastify";
 import { HasAccess } from "utils/PermissionUtils";
 import {
@@ -10,6 +8,8 @@ import {
   createClearanceCertificate,
   getClearanceRequestItems,
 } from "app/hooks/clearanceAndHandover";
+import ClearanceHoldModal from "../OnHold/ClearanceHoldModal";
+import ClearanceCertificateModal from "../ClearanceCertificates/ClearanceCertificateModal";
 
 const ClearanceRecordsActions = ({
   data,
