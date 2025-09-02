@@ -191,7 +191,7 @@ const Labels = React.memo(
       const response = await deleteTaskLabel(labelId);
       try {
         if (response) {
-          dispatch(fetchTaskLabels());
+          dispatch(fetchTaskLabels(projectId));
           toast.success("Label Deleted!", {
             position: toast.POSITION.TOP_RIGHT,
           });
