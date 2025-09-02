@@ -75,7 +75,7 @@ import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import { OrganizationalTree } from "app/modules/OrganizationalChart";
-import { GenerateForm } from "app/modules/PerformanceEdge";
+import { GenerateForm, PerformanceCycleSetup } from "app/modules/PerformanceEdge";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
@@ -103,77 +103,82 @@ export const SidebarRoutes = [
   },
   ...(Config.SELF_SERVICE_HUB
     ? [
-        Config.MY_PROFILE && {
-          path: "/my-profile",
-          component: <ViewEmployee profileView />,
-          name: "MY_PROFILE",
-        },
-        Config.MY_ATTENDANCE && {
-          path: "/my-attendance",
-          component: <MyAttendance />,
-          name: "MY_ATTENDANCE",
-        },
-        Config.MY_ATTENDANCE && {
-          path: "/my-attendance-report/:id",
-          component: <EmployeeAttendanceReport />,
-          name: "VIEW_ATTENDANCE",
-        },
-        Config.DAILY_TASK_REPORT && {
-          path: "/my-dtr",
-          component: <MyDtr />,
-          name: "DAILY_TASK_REPORT",
-        },
-        Config.MY_LEAVE_TRACKER && {
-          path: "/my-leave-tracker",
-          component: <MyLeaveTracker />,
-          name: "MY_LEAVE_TRACKER",
-        },
-        Config.MY_PAYROLL && {
-          path: "/my-payroll",
-          component: <MyPayroll />,
-          name: "MY_PAYROLL",
-        },
-        Config.MY_CLAIMS && {
-          path: "/my-claims",
-          component: <MyClaims />,
-          name: "MY_CLAIMS",
-        },
-        Config.MY_TRANSFERS && {
-          path: "/my-tranfers",
-          component: <MyTransfers />,
-          name: "MY_TRANSFERS",
-        },
-        Config.DOCUMENTS && {
-          path: "/my-documents",
-          component: <MyDocuments />,
-          name: "DOCUMENTS",
-        },
-        Config.MY_ASSETS && {
-          path: "/my-assets",
-          component: <MyAssets />,
-          name: "MY_ASSETS",
-        },
-        Config.MY_SHIFT_CALENDAR && {
-          path: "/my-shift-calendar",
-          component: <MyShiftCalendar />,
-          name: "MY_SHIFT_CALENDAR",
-        },
-        Config.EXIT && {
-          path: "/exit-employee",
-          component: <EmployeeExit />,
-          name: "EXIT",
-        },
-        Config.MY_JOB_ROTATIONS && {
-          path: "/my-job-rotations",
-          component: <MyJobRotations />,
-          name: "MY_JOB_ROTATIONS",
-        },
-        Config.MY_CLEARANCE && {
-          path: "/my-clearance",
-          component: <MyClearanceTab />,
-          name: "MY_CLEARANCE",
-        },
-      ].filter(Boolean) // Filter out undefined routes
+      Config.MY_PROFILE && {
+        path: "/my-profile",
+        component: <ViewEmployee profileView />,
+        name: "MY_PROFILE",
+      },
+      Config.MY_ATTENDANCE && {
+        path: "/my-attendance",
+        component: <MyAttendance />,
+        name: "MY_ATTENDANCE",
+      },
+      Config.MY_ATTENDANCE && {
+        path: "/my-attendance-report/:id",
+        component: <EmployeeAttendanceReport />,
+        name: "VIEW_ATTENDANCE",
+      },
+      Config.DAILY_TASK_REPORT && {
+        path: "/my-dtr",
+        component: <MyDtr />,
+        name: "DAILY_TASK_REPORT",
+      },
+      Config.MY_LEAVE_TRACKER && {
+        path: "/my-leave-tracker",
+        component: <MyLeaveTracker />,
+        name: "MY_LEAVE_TRACKER",
+      },
+      Config.MY_PAYROLL && {
+        path: "/my-payroll",
+        component: <MyPayroll />,
+        name: "MY_PAYROLL",
+      },
+      Config.MY_CLAIMS && {
+        path: "/my-claims",
+        component: <MyClaims />,
+        name: "MY_CLAIMS",
+      },
+      Config.MY_TRANSFERS && {
+        path: "/my-tranfers",
+        component: <MyTransfers />,
+        name: "MY_TRANSFERS",
+      },
+      Config.DOCUMENTS && {
+        path: "/my-documents",
+        component: <MyDocuments />,
+        name: "DOCUMENTS",
+      },
+      Config.MY_ASSETS && {
+        path: "/my-assets",
+        component: <MyAssets />,
+        name: "MY_ASSETS",
+      },
+      Config.MY_SHIFT_CALENDAR && {
+        path: "/my-shift-calendar",
+        component: <MyShiftCalendar />,
+        name: "MY_SHIFT_CALENDAR",
+      },
+      Config.EXIT && {
+        path: "/exit-employee",
+        component: <EmployeeExit />,
+        name: "EXIT",
+      },
+      Config.MY_JOB_ROTATIONS && {
+        path: "/my-job-rotations",
+        component: <MyJobRotations />,
+        name: "MY_JOB_ROTATIONS",
+      },
+      Config.MY_CLEARANCE && {
+        path: "/my-clearance",
+        component: <MyClearanceTab />,
+        name: "MY_CLEARANCE",
+      },
+      Config.MY_PERFORMANCE && {
+        path: "/my-performance",
+        component: <MyJobRotations />,
+        name: "MY_JOB_ROTATIONS",
+      },
+    ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
     ? [
@@ -538,6 +543,11 @@ export const SidebarRoutes = [
         component: <GenerateForm />,
         name: "GENERATE_FORM",
       },
+      Config.PERFORMANCE_CYCLE_SETUP && {
+        path: "/performance-cycle-setup",
+        component: <PerformanceCycleSetup />,
+        name: "PERFORMANCE_CYCLE_SETUP",
+      },
     ].filter(Boolean) // Filter out undefined route
     : []),
   {
@@ -585,11 +595,11 @@ const RemainingSidebarRoutes = [
   },
 
   Config.SELF_SERVICE_HUB &&
-    Config.EMPLOYEE_OFFBOARDING && {
-      path: "/self-service/exit/eos-settlement/:id",
-      component: <EOSSettlementDetails />,
-      name: "EOS Settlement Details",
-    },
+  Config.EMPLOYEE_OFFBOARDING && {
+    path: "/self-service/exit/eos-settlement/:id",
+    component: <EOSSettlementDetails />,
+    name: "EOS Settlement Details",
+  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [

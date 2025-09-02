@@ -14,6 +14,7 @@ const Config = {
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
+  MY_PERFORMANCE:true,
   MY_SHIFT_CALENDAR: true,
   EXIT: true,
   MY_JOB_ROTATIONS: true,
@@ -105,6 +106,7 @@ const Config = {
   PERFORMANCE_EDGE: true,
   //Sub Modules
   GENERATE_FORM: true,
+  PERFORMANCE_CYCLE_SETUP:true,
 };
 
 export const URLS = [

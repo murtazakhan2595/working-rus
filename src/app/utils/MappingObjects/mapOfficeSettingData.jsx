@@ -109,16 +109,16 @@ export function mapEvaluationTypeData(data) {
   return graceTimeDetails;
 }
 export async function mapEvaluationTypeList(data) {
-  const graceTimeList = await data?.map((graceTime) => {
-    const graceTimeDetails = mapEvaluationTypeData(graceTime);
+  const DataList = await data?.map((graceTime) => {
+    const Details = mapEvaluationTypeData(graceTime);
     return {
-      value: graceTimeDetails.id,
-      label: graceTimeDetails.branch_name,
-      ...graceTimeDetails,
+      value: Details.id,
+      label: Details.name,
+      ...Details,
     };
   });
 
-  return graceTimeList;
+  return DataList;
 }
 
 export function mapEvaluationTypePayloadData(data, id) {

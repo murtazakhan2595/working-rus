@@ -11,13 +11,14 @@ import {
     TabsContent,
 } from "src/@/components/ui/tabs";
 import { Header } from "components";
-import Stats from "components/ui/Stats";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { GetDispatchStateList } from "utils/Lists";
-import { Rotations, EmployeeTransfer } from 'app/modules/TransferAndRotation';
-import { TransferForm, RotationRequestForm } from "app/modules/TransferAndRotation";
-import { EvaluationForm, AddUpdateEvaluationForm } from 'app/modules/PerformanceEdge';
+import {
+    EvaluationForm, AddUpdateEvaluationForm,
+    SelfAssessmentForm, AddSelfAssessmentForm,
+    PeerAssessmentForm,
+} from 'app/modules/PerformanceEdge';
 const GenerateForm = ({ }) => {
     // permissions for tranfer
     const isAdminView = HasAccess("VIEW_EMPLOYEE_TRANSFER");
@@ -33,7 +34,8 @@ const GenerateForm = ({ }) => {
         department_name: user_department,
     } = GetDispatchStateList("user_details", "emp") || {}
     const [OpenEvaluationForm, setOpenEvaluationForm] = useState(false);
-    const [OpenRotationForm, setOpenRotationForm] = useState(false);
+    const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
+    const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
     const [activeTab, setActiveTab] = useState("Employee Evaluation");
     const [TransferStats, setTransferStats] = useState({});
     const [RotationStats, setRotationStats] = useState({});
@@ -133,39 +135,40 @@ const GenerateForm = ({ }) => {
         event.preventDefault();
         event.stopPropagation();
         setOpenEvaluationForm(false);
-        setOpenRotationForm(false);
+        setOpenSelfAssessmentForm(false);
+        setOpenPeerAssessmentForm(false);
         const triggeredResquest = event.target.title;
         if (triggeredResquest === 'employee-evaluation')
             setOpenEvaluationForm(true);
-        else if (triggeredResquest === 'rotations')
-            setOpenRotationForm(true);
+        else if (triggeredResquest === 'self-assessment')
+            setOpenSelfAssessmentForm(true);
+        else if (triggeredResquest === 'peer-assessment')
+            setOpenPeerAssessmentForm(true);
     }
 
     return (
-        <div
-            className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-        >
+        <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}        >
             <Header
                 content={
                     <>
                         {activeTab === "Employee Evaluation" && (
-                            <Button
-                                title='employee-evaluation'
-                                onClick={handleRequestClick}
-                            >
+                            <Button title='employee-evaluation' onClick={handleRequestClick}>
                                 Add Employee Evaluation Form
                             </Button>
                         )}
-                        {activeTab === "Rotations" && (
-                            <Button title="rotations" onClick={handleRequestClick}>
-                                Request Rotation
+                        {activeTab === "Self Assessment" && (
+                            <Button title="self-assessment" onClick={handleRequestClick}>
+                                Add Self Assessment Form
+                            </Button>
+                        )}
+                        {activeTab === "Peer Assessment" && (
+                            <Button title="peer-assessment" onClick={handleRequestClick}>
+                                Add Peer Assessment Form
                             </Button>
                         )}
                     </>
                 }
             />
-            {activeTab === "Transfers" && <Stats stats={TransferStatsData} />}
-            {activeTab === "Rotations" && <Stats stats={RotationStatsData} />}
             <Tabs
                 defaultValue="Transfers"
                 className="w-full"
@@ -186,7 +189,10 @@ const GenerateForm = ({ }) => {
                         <EvaluationForm permittedViewFilterData={permittedRotationViewFilterData} />
                     </TabsContent>
                     <TabsContent value="Self Assessment">
-                        <EmployeeTransfer />
+                        <SelfAssessmentForm />
+                    </TabsContent>
+                    <TabsContent value="Peer Assessment">
+                        <PeerAssessmentForm />
                     </TabsContent>
                 </Card>
             </Tabs>
@@ -200,16 +206,24 @@ const GenerateForm = ({ }) => {
                     initiator={'MANAGER'}
                 />
             )}
-            {OpenRotationForm && (
-                <RotationRequestForm
-                    isOpen={OpenRotationForm}
+            {OpenSelfAssessmentForm && (
+                <AddSelfAssessmentForm
+                    isOpen={OpenSelfAssessmentForm}
                     setIsOpen={() => {
-                        setOpenRotationForm(false);
+                        setOpenSelfAssessmentForm(false);
                         //fetchData(true);
                     }}
-                    isAdminView={isRAdminView}
-                    isBranchView={isRBranchView}
-                    isDepartmentView={isRDepartmentView}
+
+                />
+            )}
+            {OpenPeerAssessmentForm && (
+                <AddSelfAssessmentForm
+                    isOpen={OpenPeerAssessmentForm}
+                    setIsOpen={() => {
+                        setOpenPeerAssessmentForm(false);
+                        //fetchData(true);
+                    }}
+
                 />
             )}
         </div>
