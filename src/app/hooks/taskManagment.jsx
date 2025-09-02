@@ -176,7 +176,11 @@ export const getAllLabels = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/TaskLabel?project_id=${payload}`;
+  const fetched_label = { project_id: [payload] };
+  
+  const search = encodeURIComponent(JSON.stringify(fetched_label));
+  const URL = `/TaskLabel?search=${search}`;
+
   // /?ordering=-name&${
   //   pageNo ? `page=${pageNo}&` : ""
   // }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
