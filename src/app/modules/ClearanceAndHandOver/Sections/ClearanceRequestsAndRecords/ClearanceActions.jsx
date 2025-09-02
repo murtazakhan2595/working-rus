@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import ClearanceChecklistModal from "./ClearanceChecklistModal";
-import ClearanceHoldModal from "./OnHold/ClearanceHoldModal";
 import { HasAccess } from "utils/PermissionUtils";
+import ClearanceHoldModal from "../OnHold/ClearanceHoldModal";
 
 const ClearanceActions = ({
   data,

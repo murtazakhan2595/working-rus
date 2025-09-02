@@ -8,10 +8,9 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import { Card, CardContent } from "components/ui/card";
-import ClearanceRequests from "./Sections/ClearanceRequests";
-import ClearanceRecords from "./Sections//ClearanceRecords";
+import ClearanceRequests from "./Sections/ClearanceRequestsAndRecords/ClearanceRequests";
 import ClearanceCertificates from "./Sections/ClearanceCertificates/ClearanceCertificates";
-import ClearanceAnalyticsDashboard from "./Sections/ClearanceAnalyticsDashboard";
+import ClearanceAnalyticsDashboard from "./Sections/AnalyticsDashboard/ClearanceAnalyticsDashboard";
 import {
   getClearanceRequestsList,
   getClearanceCertificatesList,
@@ -19,6 +18,7 @@ import {
 import { getClearanceTypeList } from "app/hooks/officeSetting";
 import { HasAccess } from "utils/PermissionUtils";
 import AccessConfiguration from "./Sections/AccessConfiguration";
+import ClearanceRecords from "./Sections/ClearanceRequestsAndRecords/ClearanceRecords";
 
 export default function ClearanceAndHandover() {
   const [activeTab, setActiveTab] = useState("clearance-requests");
