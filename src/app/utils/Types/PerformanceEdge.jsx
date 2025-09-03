@@ -33,3 +33,9 @@ export const PerformanceCycle = {
     forms: null,
     review_period: null,
 }
+export const EvaluationSubmission = {
+    form: null,
+    cycle: null,
+    is_submitted: null,
+    status: null,
+}

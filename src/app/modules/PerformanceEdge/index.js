@@ -12,6 +12,8 @@ import {
     PerformanceCycleSetup,
     CreateUpdateCycleForm,
 } from './PerformanceCycleSetup';
+
+import { MyPerformance, MyPerformanceActions, StartAssessmentForm } from './MyPerformance';
 export {
     GenerateForm,
     EvaluationForm,
@@ -23,4 +25,7 @@ export {
     PeerAssessmentForm,
     PerformanceCycleSetup,
     CreateUpdateCycleForm,
+    MyPerformance,
+    MyPerformanceActions,
+    StartAssessmentForm
 };
