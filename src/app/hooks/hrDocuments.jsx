@@ -292,3 +292,59 @@ export const addUpdateDocumentcategory = async (payload, id = null) => {
     return false;
   }
 };
+
+
+export const addUpdateLetterRequest = async (payload, id = null) => {
+  try {
+    const url = id
+      ? `${baseUrl}/letterrequest/${id}` // Use id if updating
+      : `${baseUrl}/letterrequest/`; // No id means create new
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: payload,
+      headers: headers(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating Letter Request:", error);
+    return false;
+  }
+};
+
+export const getLetterRequestList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/letterrequest/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Letter Request data :", error);
+  }
+  return { results: [], count: 0 };
+};

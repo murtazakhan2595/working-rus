@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Documents from "app/modules/HRDocuments/Documents";
 import MyDocuments from "app/modules/HRDocuments/MyDocuments";
+import MyLetterRequests from "app/modules/HRDocuments/Screens/LetterRequest/MyLetterRequest";
 import Category from "app/modules/HRDocuments/Category";
 import {
   UploadDocumentForm,
@@ -106,5 +107,6 @@ export {
   UploadDocumentForm,
   MyDocuments,
   HRDocuments,
+  MyLetterRequests,
   DocumentDetails,
 };

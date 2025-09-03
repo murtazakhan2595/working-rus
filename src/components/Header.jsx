@@ -98,7 +98,8 @@ const pathNames = () => {
     "employee-leave-count": "Employee Leave Count",
     "organizational-tree": "Organizational Chart",
     "job-rotation-calendar": "Job Rotation Calendar",
-    "clearance-requests": "Clearance & Handover Management"
+    "clearance-requests": "Clearance & Handover Management",
+    "my-letter-request": "My Letter Requests",
   };
 };
 
