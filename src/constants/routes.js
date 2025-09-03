@@ -146,15 +146,15 @@ export const SidebarRoutes = [
           component: <MyTransfers />,
           name: "MY_TRANSFERS",
         },
-        // Config.DOCUMENTS && {
-        //   path: "/my-documents",
-        //   component: <MyDocuments />,
-        //   name: "DOCUMENTS",
-        // },
         Config.DOCUMENTS && {
+          path: "/my-documents",
+          component: <MyDocuments />,
+          name: "DOCUMENTS",
+        },
+        Config.MY_LETTER_REQUEST && {
           path: "/my-letter-requests",
           component: <MyLetterRequests />,
-          name: "DOCUMENTS",
+          name: "MY_LETTER_REQUEST",
         },
         Config.MY_ASSETS && {
           path: "/my-assets",

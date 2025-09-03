@@ -29,6 +29,7 @@ function HRDocuments() {
   const [reloadData, setReloadData] = useState(false);
   const uploadHRDocumentPermitted = HasAccess("UPLOAD_HR_DOCUMENT");
   const addDocumentCategoryPermitted = HasAccess("ADD_DOCUMENT_CATEGORY");
+  const manageLetterRequestsPermitted = HasAccess("MANAGE_LETTER_REQUESTS");
 
   const showHeaderButton = () => {
     if (activeHRDocumentsTab === "Documents" && uploadHRDocumentPermitted) {
@@ -88,9 +89,11 @@ function HRDocuments() {
           <TabsContent value="Category">
             <Category reload={reloadData} />
           </TabsContent>
-          <TabsContent value="Letter Requests">
-            <LetterRequests reload={reloadData} />
-          </TabsContent>
+          {manageLetterRequestsPermitted && (
+            <TabsContent value="Letter Requests">
+              <LetterRequests reload={reloadData} />
+            </TabsContent>
+          )}
         </Card>
       </Tabs>
       {OpenUploadDocumentForm && (

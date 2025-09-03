@@ -36,13 +36,27 @@ const createMenu = (to, label, icon, submenus = [], active = false) => ({
 });
 
 // Fetch submenu list efficiently
-const getSubModuleMenuList = (currentNodeTree) =>
-  (currentNodeTree?.childrens || [])
+const getSubModuleMenuList = (currentNodeTree) => {
+  const directChildren = (currentNodeTree?.childrens || [])
     .filter(({ code_name }) => Config[code_name])
     .map(({ code_name, name }) => {
       const route = findRouteByCodeName(code_name);
       return createMenu(route?.path || "#", name);
     });
+
+  // Add nested children
+  const nestedChildren = (currentNodeTree?.childrens || [])
+    .flatMap((parent) =>
+      (parent.childrens || [])
+        .filter(({ code_name }) => Config[code_name])
+        .map(({ code_name, name }) => {
+          const route = findRouteByCodeName(code_name);
+          return createMenu(route?.path || "#", name);
+        })
+    );
+
+  return [...directChildren, ...nestedChildren];
+};
 
 // Function to generate menu items
 const generateMenuItems = (moduleName, icon, moduleTree) => {
