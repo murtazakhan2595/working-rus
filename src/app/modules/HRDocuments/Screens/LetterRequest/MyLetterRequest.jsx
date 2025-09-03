@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import { Button } from "components/ui/button";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
-import { getEmployeeAssets } from "app/hooks/assets";
-// import AssetRequestSheet from "./AssetRequestSheet";
-// import AssetRequestViewSheet from "./AssetRequestViewSheet";
+import {
+  getLetterRequestList,
+  addUpdateLetterRequest,
+} from "app/hooks/hrDocuments";
 import CustomTable from "components/CustomTable";
 import { Header } from "components";
 import { Card, CardContent } from "components/ui/card";
-import { HasAccess } from "utils/PermissionUtils";
 import AddUpdateLetterRequest from "./AddUpdateLetterRequest";
-import { LetterRequestColumn } from "./LetterRequestColumn";
+import { MyLetterRequestColumns } from "./LetterRequestColumn";
 
 const MyLetterRequests = ({ userProfile }) => {
-
-  const [assets, setAssets] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [isOpenRequest, setIsOpenRequest] = useState(false);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
@@ -23,37 +22,34 @@ const MyLetterRequests = ({ userProfile }) => {
     page: 1,
     sizePerPage: 10,
   });
-  const [selectedAsset, setSelectedAsset] = useState(null);
-  const [openAssetViewSheet, setOpenAssetViewSheet] = useState(false);
 
   // Function to handle page/size changes
   const onPageChange = (name, value) => {
     setTableOptions((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Fetch employee assets and statuses
+  // Fetch employee letter requests
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Fetch assets for the current employee with pagination
-      const response = await getEmployeeAssets({
+      const response = await getLetterRequestList({
         options: {
           page: tableOptions.page,
           sizePerPage: tableOptions.sizePerPage,
         },
         filterData: {
-          asset_employee_id: userProfile.id,
+          employee_id: userProfile.id,
         },
         ordering: ordering,
       });
 
       if (response) {
-        setAssets(response.results || []);
+        setRequests(response.results || []);
         setTotalCount(response.count || 0);
       }
     } catch (error) {
-      console.error("Error fetching assets:", error);
-      toast.error("Failed to load your assets");
+      console.error("Error fetching letter requests:", error);
+      toast.error("Failed to load your letter requests");
     } finally {
       setLoading(false);
     }
@@ -63,21 +59,65 @@ const MyLetterRequests = ({ userProfile }) => {
     fetchData();
   }, [userProfile.id, tableOptions.page, tableOptions.sizePerPage, ordering]);
 
-  // Action handlers for the dropdown menu
-  const handleViewAsset = (row) => {
-    setSelectedAsset(row);
-    setOpenAssetViewSheet(true);
+  // Handle acknowledgment
+  const handleAcknowledgment = async (requestId) => {
+    try {
+      const response = await addUpdateLetterRequest(
+        {
+          is_emp_ack: true,
+          status: "ACCEPTED",
+        },
+        requestId
+      );
+
+      if (response) {
+        toast.success("Request acknowledged successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        fetchData(); // Refresh the table
+      } else {
+        throw new Error("Failed to acknowledge request");
+      }
+    } catch (error) {
+      console.error("Error acknowledging request:", error);
+      toast.error("Failed to acknowledge request", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
   };
 
+  // Enhanced columns with acknowledgment button
+  const enhancedColumns = [
+    ...MyLetterRequestColumns,
+    {
+      dataField: "",
+      text: "Actions",
+      formatter: (cell, row) => {
+        // Show acknowledgment button if needed
+        if (
+          row.status === "PENDING" &&
+          row.is_acknowledgment &&
+          !row.is_emp_ack
+        ) {
+          return (
+            <Button
+              size="sm"
+              onClick={() => handleAcknowledgment(row.id)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Acknowledge
+            </Button>
+          );
+        }
+        return null;
+      },
+      width: "120px",
+      headerAlign: "center",
+      align: "center",
+    },
+  ];
 
-  const handleWithdrawAsset = (row) => {
-    // Add your withdraw logic here
-    console.log("Withdraw asset request:", row);
-    // You can show a confirmation dialog and then withdraw
-    toast.info("Withdraw functionality will be implemented here");
-  };
-
-  const myAssetsTableOptions = {
+  const myRequestsTableOptions = {
     page: tableOptions.page,
     sizePerPage: tableOptions.sizePerPage,
     onPageChange: onPageChange,
@@ -85,6 +125,7 @@ const MyLetterRequests = ({ userProfile }) => {
       setOrdering(sortName);
     },
   };
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -97,11 +138,11 @@ const MyLetterRequests = ({ userProfile }) => {
       <Card>
         <CardContent>
           <CustomTable
-            data={assets}
-            columns={LetterRequestColumn}
+            data={requests}
+            columns={enhancedColumns}
             pagination={true}
             dataTotalSize={totalCount}
-            tableOptions={myAssetsTableOptions}
+            tableOptions={myRequestsTableOptions}
             loading={loading}
           />
         </CardContent>
@@ -110,21 +151,14 @@ const MyLetterRequests = ({ userProfile }) => {
       {isOpenRequest && (
         <AddUpdateLetterRequest
           isOpen={isOpenRequest}
-          setIsOpen={setIsOpenRequest}
+          setIsOpen={() => {
+            setIsOpenRequest(false);
+            fetchData(); // Refresh after creating new request
+          }}
           reload={fetchData}
           userProfile={userProfile}
         />
       )}
-      {/* 
-      {openAssetViewSheet && selectedAsset && (
-        <AssetRequestViewSheet
-          isOpen={openAssetViewSheet}
-          setIsOpen={setOpenAssetViewSheet}
-          request={selectedAsset}
-          isMyRequest={true}
-          reload={fetchData}
-        />
-      )} */}
     </div>
   );
 };

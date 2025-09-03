@@ -294,27 +294,41 @@ export const addUpdateDocumentcategory = async (payload, id = null) => {
 };
 
 
+export const getLetterRequestData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/letterrequest/${id}`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching letter request data:", error);
+  }
+  return null;
+};
+
+// Update existing function to use formDataHeader for file uploads
 export const addUpdateLetterRequest = async (payload, id = null) => {
   try {
     const url = id
-      ? `${baseUrl}/letterrequest/${id}` // Use id if updating
-      : `${baseUrl}/letterrequest/`; // No id means create new
+      ? `${baseUrl}/letterrequest/${id}`
+      : `${baseUrl}/letterrequest/`;
 
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const method = id ? "PATCH" : "POST";
 
     const response = await axios({
       method,
       url,
       data: payload,
-      headers: headers(),
+      headers: formDataHeader(), // Changed from headers() to handle file uploads
     });
 
-    // Check response status
     if (response.status === 201 || response.status === 200) {
       return response.data;
     }
   } catch (error) {
-    // Handle errors
     if (error?.response?.status === 401) {
       HandleLogout();
     }

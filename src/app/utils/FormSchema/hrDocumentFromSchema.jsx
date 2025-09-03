@@ -46,3 +46,15 @@ export const validationLetterRequestFormSchema = (values) => {
   if (!values.description) errors.description = "Description is required";
   return errors;
 };
+
+// New validation for HR Accept/Reject form
+export const validationLetterRequestStatusSchema = (values) => {
+  const errors = {};
+
+  // If attachments are being added, require the file
+  if (values.action === "accept" && !values.attachments) {
+    errors.attachments = "Document attachment is required";
+  }
+
+  return errors;
+};
