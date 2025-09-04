@@ -38,7 +38,7 @@ const MyLetterRequests = ({ userProfile }) => {
           sizePerPage: tableOptions.sizePerPage,
         },
         filterData: {
-          employee_id: userProfile.id,
+          employee_id_request: userProfile.id,
         },
         ordering: ordering,
       });
@@ -66,6 +66,7 @@ const MyLetterRequests = ({ userProfile }) => {
         {
           is_emp_ack: true,
           status: "ACCEPTED",
+          id:requestId,
         },
         requestId
       );
@@ -86,37 +87,53 @@ const MyLetterRequests = ({ userProfile }) => {
     }
   };
 
-  // Enhanced columns with acknowledgment button
-  const enhancedColumns = [
-    ...MyLetterRequestColumns,
-    {
-      dataField: "",
-      text: "Actions",
-      formatter: (cell, row) => {
-        // Show acknowledgment button if needed
-        if (
-          row.status === "PENDING" &&
-          row.is_acknowledgment &&
-          !row.is_emp_ack
-        ) {
-          return (
-            <Button
-              size="sm"
-              onClick={() => handleAcknowledgment(row.id)}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              Acknowledge
-            </Button>
-          );
-        }
-        return null;
-      },
-      width: "120px",
-      headerAlign: "center",
-      align: "center",
-    },
-  ];
+ const enhancedColumns = [
+   ...MyLetterRequestColumns,
+   {
+     dataField: "",
+     text: "Actions",
+     formatter: (cell, row) => {
+       // DEBUG: Log the row data to see what fields we're getting
+       console.log("Row data:", row);
+       console.log("Status:", row.status);
+       console.log("is_acknowledgment:", row.is_acknowledgment);
+       console.log("is_emp_ack:", row.is_emp_ack);
 
+       // Show acknowledgment button if needed
+       if (
+         row.status === "PENDING" &&
+         row.is_acknowledgment &&
+         !row.is_emp_ack
+       ) {
+         return (
+           <Button
+             size="sm"
+             onClick={() => handleAcknowledgment(row.id)}
+           >
+             Acknowledge
+           </Button>
+         );
+       }
+
+       // DEBUG: Show what condition failed
+       if (row.status === "PENDING") {
+         if (!row.is_acknowledgment) {
+           return (
+             <span className="text-xs ">No ack required</span>
+           );
+         }
+         if (row.is_emp_ack) {
+           return <span className="text-xs ">Already acked</span>;
+         }
+       }
+
+       return <span className="text-xs ">No action needed</span>;
+     },
+     width: "150px",
+     headerAlign: "center",
+     align: "center",
+   },
+ ];
   const myRequestsTableOptions = {
     page: tableOptions.page,
     sizePerPage: tableOptions.sizePerPage,

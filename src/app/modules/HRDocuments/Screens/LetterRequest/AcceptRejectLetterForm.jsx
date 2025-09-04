@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { Button } from "components/ui/button";
 import { SheetUI } from "components";
 import {
   CoverFileUpload,
@@ -8,19 +9,43 @@ import {
   RadioGroupInput,
 } from "components/FormControl";
 import {
+  getLetterRequestData,
   addUpdateLetterRequest,
   getDocumentList,
 } from "app/hooks/hrDocuments";
-import { useSelector } from "react-redux";
-import { getLetterRequestData } from "app/hooks/hrDocuments";
 
-const FormSheetData = {
-  title: "Accept/Reject Letter Request",
-  description: null,
-  footer: null,
-  width: "600px",
+const urlToFile = async (url, filename) => {
+  try {
+    // Use cors.lol proxy (currently working and free)
+    const proxyUrl = `https://api.cors.lol/?url=${url}`;
+    const response = await fetch(proxyUrl);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+
+    let finalFilename = filename;
+    if (!filename || !filename.includes(".")) {
+      const urlPath = url.split("/").pop();
+      const extension = urlPath?.split(".").pop();
+      finalFilename = filename
+        ? `${filename}.${extension}`
+        : urlPath || "document";
+    }
+
+    const file = new File([blob], finalFilename, {
+      type: blob.type || "application/octet-stream",
+      lastModified: new Date().getTime(),
+    });
+
+    return file;
+  } catch (error) {
+    console.error("Error converting URL to File:", error);
+    throw new Error(`Failed to convert URL to file: ${error.message}`);
+  }
 };
-
 export const AcceptRejectLetterForm = ({
   requestId = null,
   isOpen = true,
@@ -28,72 +53,65 @@ export const AcceptRejectLetterForm = ({
 }) => {
   const [currentRequest, setCurrentRequest] = useState({});
   const [hrDocuments, setHrDocuments] = useState([]);
-  const [formData, setFormData] = useState({
-    action: "accept", // accept or reject
-    attachment_type: "upload", // upload or existing
+  const [actionType, setActionType] = useState(null); // null, "accept", "reject"
+
+  const initialValues = {
+    attachment_type: "upload",
     attachments: null,
     selected_document_id: null,
     is_acknowledgment: false,
-  });
-  const [formValues, setFormValues] = useState(formData);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Fetch current request data
-  const fetchRequestData = async (isMounted) => {
-    try {
-      const response = await getLetterRequestData(requestId);
-      if (isMounted && response) {
-        setCurrentRequest(response);
-      }
-    } catch (error) {
-      console.error("Error fetching request:", error);
-    }
   };
 
-  // Fetch HR documents for selection
-  const fetchHrDocuments = async (isMounted) => {
+  const attachmentOptions = [
+    { value: "upload", label: "Upload New Document" },
+    { value: "existing", label: "Select Existing HR Document" },
+  ];
+
+  // Fetch current request and HR documents
+  const fetchData = async (isMounted) => {
     try {
-      const response = await getDocumentList({
-        options: { page: 1, sizePerPage: 100 },
-        filterData: { exclude_expired: true },
-        ordering: "-id",
-      });
-      if (isMounted && response) {
-        const formattedDocs = response.results.map((doc) => ({
-          value: doc.id,
-          label: doc.name,
-          file: doc.file,
-        }));
-        setHrDocuments(formattedDocs);
+      const [requestResponse, documentsResponse] = await Promise.all([
+        getLetterRequestData(requestId),
+        getDocumentList({
+          options: { page: 1, sizePerPage: 100 },
+          filterData: { exclude_expired: true },
+          ordering: "-id",
+        }),
+      ]);
+
+      if (isMounted) {
+        if (requestResponse) setCurrentRequest(requestResponse);
+        if (documentsResponse) {
+          const formattedDocs = documentsResponse.results.map((doc) => ({
+            value: doc.id,
+            label: doc.name,
+            file: doc.file,
+          }));
+          setHrDocuments(formattedDocs);
+        }
       }
     } catch (error) {
-      console.error("Error fetching HR documents:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
     let isMounted = true;
     if (requestId) {
-      fetchRequestData(isMounted);
-      fetchHrDocuments(isMounted);
+      fetchData(isMounted);
     }
     return () => {
       isMounted = false;
     };
   }, [requestId]);
 
-  const handleSubmit = async (data) => {
-    setIsLoading(true);
+  const handleSubmit = async (data, action) => {
     try {
       let payload = {};
 
-      if (data.action === "reject") {
-        // Simple rejection
-        payload = {
-          status: "REJECTED",
-        };
-      } else {
-        // Accept with attachment
+      if (action === "reject") {
+        payload = { status: "REJECTED" };
+      } else if (action === "accept") {
         payload = {
           status: data.is_acknowledgment ? "PENDING" : "ACCEPTED",
           is_acknowledgment: data.is_acknowledgment,
@@ -107,136 +125,166 @@ export const AcceptRejectLetterForm = ({
           data.attachment_type === "existing" &&
           data.selected_document_id
         ) {
-          // For existing document, we need to copy the file
-          // Simple approach: get the selected document's file
           const selectedDoc = hrDocuments.find(
             (doc) => doc.value === data.selected_document_id
           );
-          if (selectedDoc && selectedDoc.file) {
-            // In a real implementation, you might want to copy the file
-            // For now, we'll just reference it
-            payload.attachments = selectedDoc.file;
+          if (selectedDoc?.file) {
+            // Convert URL to File object
+            try {
+              const fileFromUrl = await urlToFile(
+                selectedDoc.file,
+                selectedDoc.label
+              );
+              payload.attachments = fileFromUrl;
+              console.log(
+                "Successfully converted existing document to File object"
+              );
+            } catch (error) {
+              console.error("Error converting URL to file:", error);
+              throw new Error("Failed to process selected document");
+            }
           }
         }
       }
 
       const response = await addUpdateLetterRequest(payload, requestId);
       if (response) {
-        toast.success(
-          `Letter request ${
-            data.action === "accept" ? "accepted" : "rejected"
-          } successfully!`,
-          { position: toast.POSITION.TOP_RIGHT }
-        );
-        setIsOpen(false);
-      } else {
-        throw new Error("Failed to update request");
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: `Request ${
+            action === "accept" ? "Accepted" : "Rejected"
+          } Successfully!`,
+          description: `Letter request has been ${
+            action === "accept" ? "accepted" : "rejected"
+          } successfully.`,
+        };
       }
     } catch (error) {
       console.error("Error updating letter request:", error);
-      toast.error("Failed to update letter request", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } finally {
-      setIsLoading(false);
+      return {
+        status: false,
+        messageType: "ERROR",
+        title: "Error",
+        description: error.message || "Failed to update letter request",
+      };
     }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  // Custom footer buttons
+  const renderCustomButtons = (formProps) => {
+    return (
+      <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+        <Button variant="outline" size="lg" onClick={handleClose} type="button">
+          Cancel
+        </Button>
+        <Button
+          variant="destructive"
+          size="lg"
+          type="button"
+          onClick={async () => {
+            const result = await handleSubmit(formProps.values, "reject");
+            if (result?.status) {
+              toast.success(result.title);
+              setIsOpen(false);
+            } else {
+              toast.error(result?.description || "Failed to reject request");
+            }
+          }}
+        >
+          Reject Request
+        </Button>
+        <Button
+          variant="default"
+          size="lg"
+          type="button"
+          onClick={async () => {
+            try {
+              const result = await handleSubmit(formProps.values, "accept");
+              if (result?.status) {
+                toast.success(result.title);
+                setIsOpen(false);
+              } else {
+                toast.error(result?.description || "Failed to accept request");
+              }
+            } catch (error) {
+              toast.error(error.message || "Failed to process request");
+            }
+          }}
+        >
+          {formProps.values.is_acknowledgment
+            ? "Update Request"
+            : "Accept Request"}
+        </Button>
+      </div>
+    );
+  };
+
+  // Sheet configuration
+  const FormSheetData = {
+    title: "Manage Letter Request",
+    description: "Choose an action for this letter request",
+    width: "600px",
   };
 
   return (
     <SheetUI
       isOpen={isOpen}
-      setIsOpen={setIsOpen}
+      setIsOpen={handleClose}
       variant="sheet"
       sheetConfig={FormSheetData}
       formConfig={{
-        initialValues: formData,
+        initialValues: initialValues,
         enableReinitialize: true,
-        handleSubmit: handleSubmit,
-        validateFormSchema: (values) => {
-          const errors = {};
-          if (values.action === "accept") {
-            if (values.attachment_type === "upload" && !values.attachments) {
-              errors.attachments = "Please upload a document";
-            }
-            if (
-              values.attachment_type === "existing" &&
-              !values.selected_document_id
-            ) {
-              errors.selected_document_id = "Please select a document";
-            }
-          }
-          return errors;
-        },
-        submitButtonText:
-          formValues.action === "accept" ? "Accept Request" : "Reject Request",
-        cancelButtonText: "Cancel",
+        handleSubmit: () => {}, // No default submit since we use custom buttons
+        validateFormSchema: () => ({}), // No validation since we handle it in custom buttons
+        // Hide default buttons since we use custom ones
+        submitButtonText: null,
+        cancelButtonText: null,
+        customFooter: renderCustomButtons, // Custom footer function
         columns: 1,
-        disableSubmit: isLoading,
-        renderUpdatedFormValues: setFormValues,
         formFields: [
           {
-            sheetCardExtension: false,
+            sheetCardExtension: true,
+            sheetCardTitle: "Attachment Details",
             InputFields: [
               {
-                InputField: RadioGroupInput,
-                name: "action",
+                InputField: SelectInputComponent,
+                name: "attachment_type",
                 required: true,
-                label: "Action",
-                options: [
-                  { value: "accept", label: "Accept Request" },
-                  { value: "reject", label: "Reject Request" },
-                ],
-                variant: "stacked",
+                label: "Attachment Method",
+                options: attachmentOptions,
               },
-              // Only show attachment options if accepting
-              ...(formValues.action === "accept"
-                ? [
-                    {
-                      InputField: RadioGroupInput,
-                      name: "attachment_type",
-                      required: true,
-                      label: "Attachment Method",
-                      options: [
-                        { value: "upload", label: "Upload New Document" },
-                        {
-                          value: "existing",
-                          label: "Select Existing HR Document",
-                        },
-                      ],
-                      variant: "stacked",
-                    },
-                    ...(formValues.attachment_type === "upload"
-                      ? [
-                          {
-                            InputField: CoverFileUpload,
-                            name: "attachments",
-                            required: true,
-                            label: "Upload Document",
-                            variant: "AttachmentFileUpload",
-                            multiple: false,
-                          },
-                        ]
-                      : []),
-                    ...(formValues.attachment_type === "existing"
-                      ? [
-                          {
-                            InputField: SelectInputComponent,
-                            name: "selected_document_id",
-                            required: true,
-                            label: "Select HR Document",
-                            options: hrDocuments,
-                            placeholder: "Choose from existing documents",
-                          },
-                        ]
-                      : []),
-                    {
-                      InputField: SwitchInput,
-                      name: "is_acknowledgment",
-                      label: "Requires Employee Acknowledgment",
-                      description: "Employee needs to acknowledge receipt",
-                    },
-                  ]
-                : []),
+              {
+                InputField: CoverFileUpload,
+                name: "attachments",
+                required: true,
+                label: "Upload Document",
+                variant: "AttachmentFileUpload",
+                allowUpdate: true,
+                multiple: false,
+                shouldRender: (values) => values?.attachment_type === "upload",
+              },
+              {
+                InputField: SelectInputComponent,
+                name: "selected_document_id",
+                required: true,
+                label: "Select HR Document",
+                options: hrDocuments,
+                placeholder: "Choose from existing documents",
+                shouldRender: (values) =>
+                  values?.attachment_type === "existing",
+              },
+              {
+                InputField: SwitchInput,
+                name: "is_acknowledgment",
+                label: "Requires Employee Acknowledgment",
+                description: "Employee needs to acknowledge receipt",
+              },
             ],
           },
         ],

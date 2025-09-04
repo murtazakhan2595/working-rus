@@ -35,4 +35,7 @@ export const LetterRequest = {
   status: "PENDING",
   attachments: null,
   is_acknowledgment: null,
+  name: null,
+  description: null,
+  is_emp_ack: null,
 };

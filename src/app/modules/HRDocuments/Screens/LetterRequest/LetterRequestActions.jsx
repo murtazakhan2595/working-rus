@@ -27,7 +27,7 @@ export const LetterRequestActions = ({ request, reloadData = () => {} }) => {
         onView={handleViewRequest}
         onEdit={isPending ? handleAcceptReject : undefined}
         viewText="View Request"
-        editText="Accept/Reject"
+        editText="Manage Request"
         menuTooltip="Letter Request Actions"
       />
 

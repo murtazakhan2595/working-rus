@@ -100,29 +100,15 @@ export default function LetterRequests({ reload }) {
     setFilterData((prevFilter) => {
       const updatedFilter = { ...prevFilter };
       if (activeTab === "requests") {
-        updatedFilter.status = "PENDING";
+        updatedFilter.status_request = ["PENDING"];
       } else {
         // Records tab - show accepted and rejected
-        delete updatedFilter.status;
-        updatedFilter.status__in = "ACCEPTED,REJECTED";
+        delete updatedFilter.status_request;
+        updatedFilter.status_request = ["ACCEPTED", "REJECTED"];
       }
       return updatedFilter;
     });
   }, [activeTab]);
-
-  const handleFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
 
   return (
     <>
@@ -151,30 +137,7 @@ export default function LetterRequests({ reload }) {
         <CardDescription>{activeTabDetails.description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by employee or request name",
-              name: "search",
-            },
-            ...(activeTab === "records"
-              ? [
-                  {
-                    type: "select",
-                    options: [
-                      { value: "ACCEPTED", label: "Accepted" },
-                      { value: "REJECTED", label: "Rejected" },
-                    ],
-                    name: "status",
-                    placeholder: "Status",
-                  },
-                ]
-              : []),
-          ]}
-          onChange={handleFilterChange}
-          className="justify-end mb-4"
-        />
+
         {isLoading ? (
           <PageLoader />
         ) : (

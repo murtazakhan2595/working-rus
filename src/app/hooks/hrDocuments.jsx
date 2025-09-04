@@ -11,6 +11,7 @@ import {
   mapDocumentAssignmentPayloadData,
   mapDocumentCategoryData,
   mapDocumentData,
+  mapLetterRequestPayloadData
 } from "app/utils/MappingObjects/mapHRDocumentData";
 import { HandleLogout } from "./general";
 
@@ -296,7 +297,7 @@ export const addUpdateDocumentcategory = async (payload, id = null) => {
 
 export const getLetterRequestData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/letterrequest/${id}`, {
+    const response = await axios.get(`${baseUrl}/letter-request/${id}`, {
       headers: headers(),
     });
     return response.data;
@@ -309,20 +310,33 @@ export const getLetterRequestData = async (id) => {
   return null;
 };
 
-// Update existing function to use formDataHeader for file uploads
+// Simplified API function - the mapping function handles FormData creation
 export const addUpdateLetterRequest = async (payload, id = null) => {
   try {
     const url = id
-      ? `${baseUrl}/letterrequest/${id}`
-      : `${baseUrl}/letterrequest/`;
+      ? `${baseUrl}/letter-request/${id}/`
+      : `${baseUrl}/letter-request/`;
 
-    const method = id ? "PATCH" : "POST";
+    const finalPayload = mapLetterRequestPayloadData(payload);
+    const method = id ? "PUT" : "POST";
+
+    // Use appropriate headers based on payload type
+    const requestHeaders = finalPayload instanceof FormData 
+      ? formDataHeader() 
+      : headers();
+
+    console.log("API Request:", {
+      url,
+      method,
+      payloadType: finalPayload instanceof FormData ? "FormData" : "JSON",
+      originalPayload: payload
+    });
 
     const response = await axios({
       method,
       url,
-      data: payload,
-      headers: formDataHeader(), // Changed from headers() to handle file uploads
+      data: finalPayload,
+      headers: requestHeaders,
     });
 
     if (response.status === 201 || response.status === 200) {
@@ -342,7 +356,7 @@ export const getLetterRequestList = async (payload) => {
   const ordering = payload?.ordering ?? "-id";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/letterrequest/?ordering=${ordering}&${
+  const URL = `/letter-request/?ordering=${ordering}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
