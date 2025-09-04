@@ -35,6 +35,7 @@ import {
   HRDocuments,
   MyDocuments,
   DocumentDetails,
+  MyLetterRequests,
 } from "app/modules/HRDocuments";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
@@ -105,87 +106,92 @@ export const SidebarRoutes = [
   },
   ...(Config.SELF_SERVICE_HUB
     ? [
-      Config.MY_PROFILE && {
-        path: "/my-profile",
-        component: <ViewEmployee profileView />,
-        name: "MY_PROFILE",
-      },
-      Config.MY_ATTENDANCE && {
-        path: "/my-attendance",
-        component: <MyAttendance />,
-        name: "MY_ATTENDANCE",
-      },
-      Config.MY_ATTENDANCE && {
-        path: "/my-attendance-report/:id",
-        component: <EmployeeAttendanceReport />,
-        name: "VIEW_ATTENDANCE",
-      },
-      Config.DAILY_TASK_REPORT && {
-        path: "/my-dtr",
-        component: <MyDtr />,
-        name: "DAILY_TASK_REPORT",
-      },
-      Config.MY_LEAVE_TRACKER && {
-        path: "/my-leave-tracker",
-        component: <MyLeaveTracker />,
-        name: "MY_LEAVE_TRACKER",
-      },
-      Config.MY_PAYROLL && {
-        path: "/my-payroll",
-        component: <MyPayroll />,
-        name: "MY_PAYROLL",
-      },
-      Config.MY_CLAIMS && {
-        path: "/my-claims",
-        component: <MyClaims />,
-        name: "MY_CLAIMS",
-      },
-      Config.MY_TRANSFERS && {
-        path: "/my-tranfers",
-        component: <MyTransfers />,
-        name: "MY_TRANSFERS",
-      },
-      Config.DOCUMENTS && {
-        path: "/my-documents",
-        component: <MyDocuments />,
-        name: "DOCUMENTS",
-      },
-      Config.MY_ASSETS && {
-        path: "/my-assets",
-        component: <MyAssets />,
-        name: "MY_ASSETS",
-      },
-      Config.MY_SHIFT_CALENDAR && {
-        path: "/my-shift-calendar",
-        component: <MyShiftCalendar />,
-        name: "MY_SHIFT_CALENDAR",
-      },
-      Config.EXIT && {
-        path: "/exit-employee",
-        component: <EmployeeExit />,
-        name: "EXIT",
-      },
-      Config.MY_JOB_ROTATIONS && {
-        path: "/my-job-rotations",
-        component: <MyJobRotations />,
-        name: "MY_JOB_ROTATIONS",
-      },
-      Config.MY_CLEARANCE && {
-        path: "/my-clearance",
-        component: <MyClearanceTab />,
-        name: "MY_CLEARANCE",
-      },
+        Config.MY_PROFILE && {
+          path: "/my-profile",
+          component: <ViewEmployee profileView />,
+          name: "MY_PROFILE",
+        },
+        Config.MY_ATTENDANCE && {
+          path: "/my-attendance",
+          component: <MyAttendance />,
+          name: "MY_ATTENDANCE",
+        },
+        Config.MY_ATTENDANCE && {
+          path: "/my-attendance-report/:id",
+          component: <EmployeeAttendanceReport />,
+          name: "VIEW_ATTENDANCE",
+        },
+        Config.DAILY_TASK_REPORT && {
+          path: "/my-dtr",
+          component: <MyDtr />,
+          name: "DAILY_TASK_REPORT",
+        },
+        Config.MY_LEAVE_TRACKER && {
+          path: "/my-leave-tracker",
+          component: <MyLeaveTracker />,
+          name: "MY_LEAVE_TRACKER",
+        },
+        Config.MY_PAYROLL && {
+          path: "/my-payroll",
+          component: <MyPayroll />,
+          name: "MY_PAYROLL",
+        },
+        Config.MY_CLAIMS && {
+          path: "/my-claims",
+          component: <MyClaims />,
+          name: "MY_CLAIMS",
+        },
+        Config.MY_TRANSFERS && {
+          path: "/my-tranfers",
+          component: <MyTransfers />,
+          name: "MY_TRANSFERS",
+        },
+        Config.DOCUMENTS && {
+          path: "/my-documents",
+          component: <MyDocuments />,
+          name: "DOCUMENTS",
+        },
+        Config.MY_LETTER_REQUEST && {
+          path: "/my-letter-requests",
+          component: <MyLetterRequests />,
+          name: "MY_LETTER_REQUEST",
+        },
+        Config.MY_ASSETS && {
+          path: "/my-assets",
+          component: <MyAssets />,
+          name: "MY_ASSETS",
+        },
+        Config.MY_SHIFT_CALENDAR && {
+          path: "/my-shift-calendar",
+          component: <MyShiftCalendar />,
+          name: "MY_SHIFT_CALENDAR",
+        },
+        Config.EXIT && {
+          path: "/exit-employee",
+          component: <EmployeeExit />,
+          name: "EXIT",
+        },
+        Config.MY_JOB_ROTATIONS && {
+          path: "/my-job-rotations",
+          component: <MyJobRotations />,
+          name: "MY_JOB_ROTATIONS",
+        },
+        Config.MY_CLEARANCE && {
+          path: "/my-clearance",
+          component: <MyClearanceTab />,
+          name: "MY_CLEARANCE",
+        },
         Config.MANAGER_CLEARANCE_DASHBOARD && {
           path: "/manager-clearance-dashboard",
           component: <ManagerClearanceDashboard />,
           name: "MANAGER_CLEARANCE_DASHBOARD",
         },
-      Config.MY_PERFORMANCE && {
-        path: "/my-performance",
-        component: <MyJobRotations />,
-        name: "MY_JOB_ROTATIONS",
-      },
-    ].filter(Boolean) // Filter out undefined routes
+        Config.MY_PERFORMANCE && {
+          path: "/my-performance",
+          component: <MyJobRotations />,
+          name: "MY_JOB_ROTATIONS",
+        },
+      ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
     ? [
@@ -545,17 +551,17 @@ export const SidebarRoutes = [
     : []),
   ...(Config.PERFORMANCE_EDGE
     ? [
-      Config.GENERATE_FORM && {
-        path: "/performance-forms",
-        component: <GenerateForm />,
-        name: "GENERATE_FORM",
-      },
-      Config.PERFORMANCE_CYCLE_SETUP && {
-        path: "/performance-cycle-setup",
-        component: <PerformanceCycleSetup />,
-        name: "PERFORMANCE_CYCLE_SETUP",
-      },
-    ].filter(Boolean) // Filter out undefined route
+        Config.GENERATE_FORM && {
+          path: "/performance-forms",
+          component: <GenerateForm />,
+          name: "GENERATE_FORM",
+        },
+        Config.PERFORMANCE_CYCLE_SETUP && {
+          path: "/performance-cycle-setup",
+          component: <PerformanceCycleSetup />,
+          name: "PERFORMANCE_CYCLE_SETUP",
+        },
+      ].filter(Boolean) // Filter out undefined route
     : []),
   {
     path: "/change-password",

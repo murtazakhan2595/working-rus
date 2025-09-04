@@ -28,3 +28,14 @@ export const DocumentAssignment = {
   acknowledgment_type:null,
   assigned_date:null,
 };
+
+export const LetterRequest = {
+  id: null,
+  employee_id: null,
+  status: "PENDING",
+  attachments: null,
+  is_acknowledgment: null,
+  name: null,
+  description: null,
+  is_emp_ack: null,
+};

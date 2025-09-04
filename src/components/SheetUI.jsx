@@ -16,7 +16,7 @@ const SheetUI = forwardRef(
   (
     {
       isOpen = true,
-      setIsOpen = () => { },
+      setIsOpen = () => {},
       children,
       className,
       variant = "modal", // Determines if the component is a 'modal' or 'sheet'
@@ -48,13 +48,14 @@ const SheetUI = forwardRef(
       submitButtonText = "Submit",
       cancelButtonText,
       formFields,
-      renderUpdatedFormValues = () => { },
+      renderUpdatedFormValues = () => {},
       columns,
       onFormChange,
       disableSubmit = false,
       loadingMessage,
-      onSubmitClick = () => { },
+      onSubmitClick = () => {},
       DataList = [],
+      customFooter = null, // NEW: Custom footer function
     } = formConfig;
 
     const handleClose = () => {
@@ -181,9 +182,6 @@ const SheetUI = forwardRef(
                 errors = { ...errors, ...schemaErrors };
               }
 
-              // Optional debugging
-              console.error("Form Errors:", errors, "Values:", values);
-
               // Notify form value update
               if (typeof renderUpdatedFormValues === "function") {
                 renderUpdatedFormValues(values);
@@ -259,8 +257,8 @@ const SheetUI = forwardRef(
                               colsSpan,
                               InputField,
                               subColumns,
-                              shouldRender = true, // NEW: Default to true for backward compatibility
-                              renderCondition = true, // NEW: Alternative prop name for conditional rendering
+                              shouldRender = true,
+                              renderCondition = true,
                               customComponent,
                               validateDuplicate = false,
                             } = fieldsConfig;
@@ -269,26 +267,30 @@ const SheetUI = forwardRef(
                             if (customComponent) {
                               return (
                                 <div
-                                  className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                    }`}
+                                  className={`space-y-4 ${
+                                    colsSpan ? `col-span-${colsSpan || 1}` : ""
+                                  }`}
                                   key={name || `custom-${index}`}
                                 >
                                   {typeof customComponent === "function"
                                     ? customComponent({
-                                      field: fieldsConfig,
-                                      form: props,
-                                    })
+                                        field: fieldsConfig,
+                                        form: props,
+                                      })
                                     : customComponent}
                                 </div>
                               );
                             }
 
-                            // NEW: Check if field should be rendered
-                            // Support both shouldRender and renderCondition props for flexibility
-                            const isFieldVisible =
-                              shouldRender && renderCondition;
+                            // Check if field should be rendered
+                            const isFieldVisible = (() => {
+                              if (typeof shouldRender === "function") {
+                                return shouldRender(props.values);
+                              }
+                              return shouldRender && renderCondition;
+                            })();
 
-                            // NEW: Skip rendering if field should not be visible
+                            // Skip rendering if field should not be visible
                             if (!isFieldVisible) {
                               return null;
                             }
@@ -296,8 +298,9 @@ const SheetUI = forwardRef(
                             const error = get(props.errors, name);
                             return (
                               <div
-                                className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                  }`}
+                                className={`space-y-4 ${
+                                  colsSpan ? `col-span-${colsSpan || 1}` : ""
+                                }`}
                                 key={name || index}
                               >
                                 <InputField
@@ -307,10 +310,22 @@ const SheetUI = forwardRef(
                                     value ? value : get(props?.values, name)
                                   }
                                   onChange={async (field, value) => {
-                                    if (onFieldUpdate && typeof onFieldUpdate === "function")
-                                      await onFieldUpdate(field, value, props.values, props.setFieldValue);
+                                    if (
+                                      onFieldUpdate &&
+                                      typeof onFieldUpdate === "function"
+                                    )
+                                      await onFieldUpdate(
+                                        field,
+                                        value,
+                                        props.values,
+                                        props.setFieldValue
+                                      );
                                     if (validateDuplicate) {
-                                      await validateFieldValue(value, name, props.values.id);
+                                      await validateFieldValue(
+                                        value,
+                                        name,
+                                        props.values.id
+                                      );
                                     }
 
                                     props?.setFieldValue(field, value);
@@ -326,36 +341,46 @@ const SheetUI = forwardRef(
                     );
                   }
                 )}
+
+                {/* Footer Section */}
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
-                  <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                    {cancelButtonText && (
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={handleClose}
-                        type="button"
-                      >
-                        {cancelButtonText}
-                      </Button>
-                    )}
-                    <Button
-                      type="submit"
-                      size="lg"
-                      variant="default"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        onSubmitClick(props.values);
-                        props.handleSubmit();
-                      }}
-                      disabled={disableSubmit || isSubmittingForm}
-                    >
-                      {isSubmittingForm
-                        ? "Submitting Form..."
-                        : disableSubmit && loadingMessage
-                          ? loadingMessage
-                          : submitButtonText}
-                    </Button>
-                  </div>
+                  {customFooter && typeof customFooter === "function" ? (
+                    // Render custom footer if provided
+                    customFooter(props)
+                  ) : (
+                    // Render default footer buttons
+                    <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                      {cancelButtonText && (
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={handleClose}
+                          type="button"
+                        >
+                          {cancelButtonText}
+                        </Button>
+                      )}
+                      {submitButtonText && (
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="default"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            onSubmitClick(props.values);
+                            props.handleSubmit();
+                          }}
+                          disabled={disableSubmit || isSubmittingForm}
+                        >
+                          {isSubmittingForm
+                            ? "Submitting Form..."
+                            : disableSubmit && loadingMessage
+                            ? loadingMessage
+                            : submitButtonText}
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </form>
             )}
@@ -374,8 +399,9 @@ const FormBody = ({
   columns,
   description,
 }) => {
-  const className = `grid grid-cols-1 gap-4 lg:grid-cols-${columns || 1
-    } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
+  const className = `grid grid-cols-1 gap-4 lg:grid-cols-${
+    columns || 1
+  } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
 
   return sheetCardExtension ? (
     <SheetCardExtension
@@ -399,8 +425,8 @@ const SheetVariant = ({
   children,
   isOpen = true,
   className,
-  setIsOpen = () => { },
-  setIsCloseConfirmationOpen = () => { },
+  setIsOpen = () => {},
+  setIsCloseConfirmationOpen = () => {},
   isCloseConfirmationOpen = false,
   variant = "modal", // Can be 'modal' or 'sheet'
   sheetConfig = {

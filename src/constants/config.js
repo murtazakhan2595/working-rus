@@ -14,12 +14,13 @@ const Config = {
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
-  MY_PERFORMANCE:true,
+  MY_PERFORMANCE: true,
   MY_SHIFT_CALENDAR: true,
   EXIT: true,
   MY_JOB_ROTATIONS: true,
   MY_CLEARANCE: true,
   MANAGER_CLEARANCE_DASHBOARD: true,
+  MY_LETTER_REQUEST: true,
 
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
@@ -107,7 +108,7 @@ const Config = {
   PERFORMANCE_EDGE: true,
   //Sub Modules
   GENERATE_FORM: true,
-  PERFORMANCE_CYCLE_SETUP:true,
+  PERFORMANCE_CYCLE_SETUP: true,
 };
 
 export const URLS = [
