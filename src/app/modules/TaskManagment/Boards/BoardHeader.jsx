@@ -19,6 +19,7 @@ import { AlignRight } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { getAllLabels } from "app/hooks/taskManagment";
 
 const BoardHeader = ({
   setFilterData = () => { },
@@ -32,12 +33,13 @@ const BoardHeader = ({
   const { projectId, viewStyle } = useParams();
   const [isDelete, setIsDelete] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [TaskLabelList, setTaskLabelList] = useState([]);
 
-  const TaskLabelList = getLabelDropdownList(
-    useSelector((state) => state.task_managment.task_labels),
-    "name",
-    "id"
-  );
+  // const TaskLabelList = getLabelDropdownList(
+  //   useSelector((state) => state.task_managment.task_labels),
+  //   "name",
+  //   "id"
+  // );
   const Employees = useSelector((state) => state.emp.employees);
   const ProjectMembers = projectData?.project_members || [];
   const AssigneesList = React.useMemo(() => {
@@ -45,6 +47,25 @@ const BoardHeader = ({
       ProjectMembers.includes(employee.value)
     );
   }, [Employees, ProjectMembers]);
+
+  useEffect(() => {
+    const getLabelList = async (isMounted) => {
+      try {
+        const response = await getAllLabels({ filterData: { project_id: [projectId] } });
+        if (isMounted && response) {
+          setTaskLabelList(getLabelDropdownList(response, "name", "id"));
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+    let isMounted = true;
+    getLabelList(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
+
   const handleFilterChange = (
     filterName,
     filterValue,
@@ -110,7 +131,6 @@ const BoardHeader = ({
     setIsDelete(false);
   };
   if (!projectId) return null;
-
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center">
