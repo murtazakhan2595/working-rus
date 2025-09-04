@@ -34,7 +34,7 @@ const Board = () => {
   const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] = useState(false);
 
   const previousFilters = React.useMemo(() => {
-    const stored = window.localStorage.getItem("project-filters");
+    const stored = window.localStorage.getItem(`project-filters-${projectId}`);
     return stored ? JSON.parse(stored) : null;
   }, []);
 

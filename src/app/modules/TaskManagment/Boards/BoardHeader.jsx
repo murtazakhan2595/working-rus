@@ -106,7 +106,7 @@ const BoardHeader = ({
         delete updatedFilters[filterName];
       }
     }
-    window.localStorage.setItem("project-filters", JSON.stringify(updatedFilters));
+    window.localStorage.setItem(`project-filters-${projectId}`, JSON.stringify(updatedFilters));
     // Update the filter data
     setFilterData(updatedFilters);
     return;
