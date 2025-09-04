@@ -172,12 +172,16 @@ const BoardHeader = ({
               options: AssigneesList,
               values: filterData["assigned_to"] || [],
             },
-            {
-              title: "Label",
-              label: "label",
-              options: TaskLabelList,
-              values: filterData["label"] || [],
-            },
+            ...(TaskLabelList.length > 0
+              ? [
+                {
+                  title: "Label",
+                  label: "label",
+                  options: TaskLabelList,
+                  values: filterData["label"] || [],
+                },
+              ]
+              : []),
           ]}
           onChange={(name, value, filterCheckStatus) => {
             handleFilterChange(name, value, filterCheckStatus);

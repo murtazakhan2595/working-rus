@@ -12,9 +12,9 @@ const initialState = {
 // Define the thunk to fetch task labels
 export const fetchTaskLabels = createAsyncThunk(
   "task_managment/fetchTaskLabels",
-  async () => {
+   async (projectId) => {
     try {
-      const response = await getAllLabels();
+      const response = await getAllLabels(projectId);
       return response;
     } catch (error) {
       throw error;

@@ -186,8 +186,8 @@ export const getAllLabels = async (payload) => {
     });
 
     if (response.status === 200) {
-      const data = response.data?.results;
-      return data;
+      const data = response.data?.results || [];
+      return data.filter(dta => dta?.project_id !== null);
     } else {
       return [];
     }
@@ -1060,9 +1060,10 @@ export const addTaskLabel = async (payload, id) => {
     const formData = new FormData();
     formData.append("name", payload?.name);
     formData.append("color", payload?.color);
+    formData.append("project_id",payload?.project_id)
     const url = id
       ? `${baseUrl}/TaskLabel/${id}` // Use id if updating
-      : `${baseUrl}/TaskLabel`; // No id means create new
+      : `${baseUrl}/TaskLabel?project_id=${payload?.project_id}`; // No id means create new
 
     const method = id ? "PUT" : "POST"; // Determine method based on existence of id
 
