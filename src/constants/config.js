@@ -109,6 +109,7 @@ const Config = {
   //Sub Modules
   GENERATE_FORM: true,
   PERFORMANCE_CYCLE_SETUP: true,
+  PERFORMANCE_DASHBOARD: true,
 };
 
 export const URLS = [
