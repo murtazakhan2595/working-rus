@@ -187,11 +187,7 @@ export const SidebarRoutes = [
           component: <ManagerClearanceDashboard />,
           name: "MANAGER_CLEARANCE_DASHBOARD",
         },
-        Config.MY_PERFORMANCE && {
-          path: "/performance-dashboard",
-          component: <PerformanceDashboard />,
-          name: "MY_JOB_ROTATIONS",
-        },
+
         Config.MY_PERFORMANCE && {
           path: "/my-performance",
           component: <MyJobRotations />,
@@ -557,6 +553,11 @@ export const SidebarRoutes = [
     : []),
   ...(Config.PERFORMANCE_EDGE
     ? [
+        Config.PERFORMANCE_DASHBOARD && {
+          path: "/performance-dashboard",
+          component: <PerformanceDashboard />,
+          name: "PERFORMANCE_DASHBOARD",
+        },
         Config.GENERATE_FORM && {
           path: "/performance-forms",
           component: <GenerateForm />,
