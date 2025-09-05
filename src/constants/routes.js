@@ -97,6 +97,7 @@ import { ClearanceAndHandover } from "app/modules/ClearanceAndHandOver";
 import { MyClearanceTab } from "app/modules/ClearanceAndHandOver/Sections/MyClearance";
 import AccessRevokedPage from "app/modules/ClearanceAndHandOver/AccessRevoked";
 import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sections/ManagerDashboard";
+import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 
 export const SidebarRoutes = [
   {
@@ -185,6 +186,11 @@ export const SidebarRoutes = [
           path: "/manager-clearance-dashboard",
           component: <ManagerClearanceDashboard />,
           name: "MANAGER_CLEARANCE_DASHBOARD",
+        },
+        Config.MY_PERFORMANCE && {
+          path: "/performance-dashboard",
+          component: <PerformanceDashboard />,
+          name: "MY_JOB_ROTATIONS",
         },
         Config.MY_PERFORMANCE && {
           path: "/my-performance",
