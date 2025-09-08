@@ -112,7 +112,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, form_type: 'EmployeeEvaluationForm' };
+            const payload = { ...values, form_type: 'MnagerEvaluationForm' };
             const response = await saveEvaluationForm(payload, id);
             if (response) {
                 return {

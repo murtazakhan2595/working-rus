@@ -18,10 +18,13 @@ import { renderDate } from 'utils/renderValues';
 const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
     const [DataList, setDataList] = useState([]);
     const [EmployeeEvaluationFormList, setEmployeeEvaluationFormList] = useState([]);
+    const [PeerAssessmentFormList, setPeerAssessmentFormList] = useState([]);
+    const [SelfAssessmentFormList, setSelfAssessmentFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(PerformanceCycle);
+    const [FormValues, setFormValues] = useState(PerformanceCycle);
 
     const FormSheetData = {
         triggerText: "",
@@ -41,7 +44,13 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                 }
                 const formResponse = await getEvaluationFormsList();
                 if (formResponse && isMounted) {
-                    setEmployeeEvaluationFormList(getDropdownList(formResponse.results, 'form_name', 'id'));
+                    const evaluationForms = formResponse.results;
+                    const employeeEvaluatoionForm = evaluationForms.filter(obj => obj.form_type === 'MnagerEvaluationForm');
+                    const peerAssessmentForm = evaluationForms.filter(obj => obj.form_type === 'PeerAssessmentForm');
+                    const selfAssessmentForm = evaluationForms.filter(obj => obj.form_type === 'SelfAssessmentForm');
+                    setEmployeeEvaluationFormList(getDropdownList(employeeEvaluatoionForm, 'form_name', 'id'));
+                    setPeerAssessmentFormList(getDropdownList(peerAssessmentForm, 'form_name', 'id'));
+                    setSelfAssessmentFormList(getDropdownList(selfAssessmentForm, 'form_name', 'id'));
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -94,7 +103,7 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                     status: true,
                     messageType: "SUCCESS",
                     title: `Performance Cycle Submitted`,
-                    description: `Performance Cycle is submitted successfully for review from ${renderDate(values.review_start)} to ${renderDate(values.review_end)}`,
+                    description: `Performance Cycle is submitted successfully.`,
                 }
             }
         } catch (error) {
@@ -126,7 +135,7 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
                 columns: 2,
-                // renderUpdatedFormValues: setFormValues,
+                renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 DataList: DataList,
@@ -145,8 +154,9 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                             {
                                 InputField: SelectMultiInputComponent,
                                 name: "forms",
-                                label: "Employee Assessment Template/Form",
+                                label: "Employee Assessment Form",
                                 options: EmployeeEvaluationFormList,
+                                required: true,
                             },
                             {
                                 InputField: DateRangeInput,
@@ -167,12 +177,26 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                                 label: "Self Assessment Enabled",
                                 colsSpan: 2,
                             },
+                            ...(FormValues.self_assessment_enabled ? [{
+                                InputField: SelectInputComponent,
+                                name: "self_assement_form",
+                                required: true,
+                                label: "Self Assessment Form",
+                                options: SelfAssessmentFormList,
+                            }] : []),
                             {
                                 InputField: CheckBoxInput,
                                 name: "peer_assessment_enabled",
                                 label: "Peer Assessment Enabled",
                                 colsSpan: 2,
                             },
+                            ...(FormValues.peer_assessment_enabled ? [{
+                                InputField: SelectInputComponent,
+                                name: "peer_assessment_form",
+                                required: true,
+                                label: "Peer Assessment Form",
+                                options: PeerAssessmentFormList,
+                            }] : []),
 
                         ],
                     },

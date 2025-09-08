@@ -11,18 +11,16 @@ import { Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import {
-    EvaluationForm,
+    Evaluations,
     AddUpdateEvaluationForm,
-    SelfAssessmentForm,
+    EvaluationResults,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
 } from 'app/modules/PerformanceEdge';
-const GenerateForm = ({ }) => {
+const MyPerformance = ({ }) => {
     // permissions for tranfer
-    const isViewEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
-    const isViewSelfAssessmentFormPermitted = HasAccess("VIEW_SELF_ASSESSMENT_FORMS");
-    const isViewPeerAssessmentFormPermitted = HasAccess("VIEW_PEER_ASSESSMENT_FORMS");
-    const isCreateEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
+    const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
+    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
     const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
     const isCreatePeerAssessmentFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
     const [OpenEvaluationForm, setOpenEvaluationForm] = useState(false);
@@ -32,10 +30,9 @@ const GenerateForm = ({ }) => {
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isViewEvaluatioFormPermitted ? ["Employee Evaluation"] : []),
-        ...(isViewSelfAssessmentFormPermitted ? ["Self Assessment"] : []),
-        ...(isViewPeerAssessmentFormPermitted ? ["Peer Assessment"] : []),
-    ], [isViewEvaluatioFormPermitted, isViewSelfAssessmentFormPermitted, isViewPeerAssessmentFormPermitted]);
+        ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
+    ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
 
     const handleRequestClick = (event) => {
@@ -58,11 +55,6 @@ const GenerateForm = ({ }) => {
             <Header
                 content={
                     <>
-                        {activeTab === "Employee Evaluation" && isCreateEvaluatioFormPermitted && (
-                            <Button title='employee-evaluation' onClick={handleRequestClick}>
-                                Add Employee Evaluation Form
-                            </Button>
-                        )}
                         {activeTab === "Self Assessment" && isCreateSelfAssessmentFormPermitted && (
                             <Button title="self-assessment" onClick={handleRequestClick}>
                                 Add Self Assessment Form
@@ -77,7 +69,7 @@ const GenerateForm = ({ }) => {
                 }
             />
             <Tabs
-                defaultValue="Transfers"
+                defaultValue="Submit Evaluation"
                 className="w-full"
                 onValueChange={(tab) => {
                     setActiveTab(tab);
@@ -92,11 +84,11 @@ const GenerateForm = ({ }) => {
                     ))}
                 </TabsList>
                 <Card>
-                    <TabsContent value="Employee Evaluation">
-                        <EvaluationForm />
+                    <TabsContent value="Submit Evaluation">
+                        <Evaluations />
                     </TabsContent>
-                    <TabsContent value="Self Assessment">
-                        <SelfAssessmentForm />
+                    <TabsContent value="Final Evaluations">
+                        <EvaluationResults />
                     </TabsContent>
                     <TabsContent value="Peer Assessment">
                         <PeerAssessmentForm />
@@ -137,4 +129,4 @@ const GenerateForm = ({ }) => {
     );
 };
 
-export default GenerateForm
+export default MyPerformance

@@ -30,6 +30,14 @@ export const PerformanceCycle = {
     issuance_date: null,
     self_assessment_enabled: null,
     peer_assessment_enabled: null,
+    peer_assessment_form: null,
+    self_assement_form: null,
     forms: null,
     review_period: null,
+}
+export const EvaluationSubmission = {
+    form: null,
+    cycle: null,
+    is_submitted: null,
+    status: null,
 }

@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { getEvaluationFormsList, } from "app/hooks/performanceEdge";
-import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
+import { getMyPerformanceForms } from "app/hooks/performanceEdge";
+import { CreateUpdateCycleForm } from "app/modules/PerformanceEdge";
 import {
     CardContent,
     CardHeader,
     CardTitle,
     CardDescription,
+    Card,
 } from "components/ui/card";
-import { TableCustom, PageLoader } from "components";
+import { TableCustom, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { EmployeeEvaluationFormColumns } from "app/modules/PerformanceEdge/GenerateForm/Sections";
+import { MyPerformanceCycleColumns } from "app/modules/PerformanceEdge/GenerateForm/Sections";
+import { Button } from "components/ui/button";
 
-const EvaluationForm = ({ reload }) => {
+const Evaluations = ({ reload, permittedViewFilterData }) => {
+    const Designations = GetDispatchStateList("designations", "common") || [];
+    const Departments = GetDispatchStateList("departments", "common") || [];
+
+    const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
+    const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
+
     const [isLoading, setIsLoading] = useState(true);
-    const [EvaluationFormList, setEvaluationFormList] = useState({});
+    const [OpenCreateCycleForm, setOpenCreateCycleForm] = useState(false);
+    const [JobRotationList, setJobRotationList] = useState(null);
     const [filterData, setFilterData] = useState({});
+
     const [ordering, setOrdering] = useState("-id");
+
     const [options, setOptions] = useState({
         page: 1,
         sizePerPage: 10,
@@ -45,14 +56,14 @@ const EvaluationForm = ({ reload }) => {
             setIsLoading(true);
             const filter = {
                 ...filterData,
-                form_type: "MnagerEvaluationForm",
+                ...permittedViewFilterData,
             };
-            const response = await getEvaluationFormsList({
+            const response = await getMyPerformanceForms({
                 filterData: filter,
                 options,
                 ordering,
             });
-            setEvaluationFormList(response);
+            setJobRotationList(response);
         } catch (e) {
             console.error(e);
         } finally {
@@ -62,11 +73,11 @@ const EvaluationForm = ({ reload }) => {
 
     useEffect(() => {
         let isMounted = true;
-        fetchData(isMounted);
+        if (permittedViewFilterData) fetchData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering]);
+    }, [filterData, options, ordering, permittedViewFilterData]);
 
     useEffect(() => {
         let isMounted = true;
@@ -90,28 +101,33 @@ const EvaluationForm = ({ reload }) => {
         });
     };
 
+
+    const safeDepartments = (Departments || []).filter(
+        (d) => d && typeof d.label === "string"
+    );
+    const safeDesignations = (Designations || []).filter(
+        (d) => d && typeof d.label === "string"
+    );
+    const handleRequestClick = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setOpenCreateCycleForm(false);
+
+        const triggeredResquest = event.target.title;
+        if (triggeredResquest === 'create-cycle')
+            setOpenCreateCycleForm(true);
+    }
     return (
         <>
             <CardHeader>
-                <CardTitle>Employee Evaluation Forms</CardTitle>
+                <CardTitle>Evaluations</CardTitle>
                 <CardDescription>
+                    Here you can submit the self assessment and peer assessment
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <FilterInput
-                    filters={[
-                        {
-                            type: "search",
-                            name: "employee",
-                            placeholder: "Form Name",
-                        },
-                        // {
-                        //     type: "select",
-                        //     options: Departments,
-                        //     name: "department_position",
-                        //     placeholder: "Requested Designation",
-                        // },
-                    ]}
+                    filters={[]}
                     onChange={handleFilterChange}
                     className="justify-end mb-4"
                 />
@@ -119,17 +135,16 @@ const EvaluationForm = ({ reload }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        data={EvaluationFormList?.results || []}
-                        columns={EmployeeEvaluationFormColumns(fetchData)}
+                        data={JobRotationList?.results || []}
+                        columns={MyPerformanceCycleColumns(fetchData)}
                         pagination={true}
-                        dataTotalSize={EvaluationFormList?.count || 0}
+                        dataTotalSize={JobRotationList?.count || 0}
                         tableOptions={tableOptions}
                     />
                 )}
             </CardContent>
-
         </>
     );
 };
 
-export default EvaluationForm;
+export default Evaluations;
