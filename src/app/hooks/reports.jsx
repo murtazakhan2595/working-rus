@@ -1,21 +1,62 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { HandleLogout, baseUrl, headers } from "./general";
-import { getEmployeeCustomList } from "app/hooks/general";
 import { exportRecordToExcel } from "utils/downloadUtils";
 import { renderDate, formatDuration } from "utils/renderValues";
+import { EmployeeListData } from "app/utils/Types/General";
+
+
+const getEmployeeCustomList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/customemp/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const employeeDataResponse = response.data.results;
+      const employeeData = {
+        count: employeeDataResponse.total_count,
+        results: employeeDataResponse.employees,
+        ActiveEmployee: employeeDataResponse.active_employees,
+        TotalEmployee: employeeDataResponse.total_employees,
+        TotalManager: employeeDataResponse.total_managers,
+        on_leave_employees: employeeDataResponse.on_leave_employees,
+        on_probation_employees: employeeDataResponse.on_probation_employees,
+      };
+      return employeeData;
+    } else return EmployeeListData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return EmployeeListData;
+};
+
 
 // Get employee data for reports with enhanced filtering
 export const getEmployeeReportsData = async (payload) => {
   try {
     const response = await getEmployeeCustomList(payload);
     if (response.results) {
+      console.log("API response:", response);
       return {
         results: response.results,
         count: response.count,
         ActiveEmployee: response.ActiveEmployee,
         TotalEmployee: response.TotalEmployee,
         TotalManager: response.TotalManager,
+        on_leave_employees: response.on_leave_employees,
+        on_probation_employees: response.on_probation_employees,
       };
     }
     return { results: [], count: 0 };
@@ -267,37 +308,11 @@ export const getEmployeeSkillsQualifications = async (employeeId) => {
   }
 };
 
-// Get document compliance data (placeholder - will need new API)
-export const getDocumentComplianceData = async (filterData = {}) => {
+export const getDocumentComplianceData = async (payload = {}) => {
   try {
-    // TODO: Implement when document compliance API is available
-    // For now, return placeholder data structure
-    const response = await getEmployeeCustomList({ filterData });
+    const response = await getEmployeeCustomList(payload);
     if (response.results) {
-      const employees = response.results;
-
-      // Create placeholder compliance data
-      const complianceData = employees.map((emp) => ({
-        employee_id: emp.id,
-        employee_name: emp.name,
-        employee_serial_number: emp.serial_number,
-        department_name: emp.department_name,
-        nationality: emp.nationality,
-        // Placeholder fields - will come from actual API
-        passport_status: "N/A - API Pending",
-        visa_status: "N/A - API Pending",
-        emirates_id_status: "N/A - API Pending",
-        passport_expiry: "N/A - API Pending",
-        visa_expiry: "N/A - API Pending",
-        emirates_id_expiry: "N/A - API Pending",
-        compliance_status: "N/A - API Pending",
-        days_to_expire: "N/A - API Pending",
-      }));
-
-      return {
-        results: complianceData,
-        count: complianceData.length,
-      };
+      return response;
     }
     return { results: [], count: 0 };
   } catch (error) {
@@ -537,78 +552,49 @@ export const exportEmployeeReport = async (reportType, filterData = {}) => {
   }
 };
 
-// Get turnover analytics (placeholder - needs new API)
-export const getTurnoverAnalytics = async (filterData = {}) => {
+export const getWorkforceReport = async (filterData = {}) => {
   try {
-    // TODO: Implement when turnover analytics API is available
-    // const response = await axios.get(`${baseUrl}/employees/turnover-analytics/`, {
-    //   headers: headers(),
-    //   params: filterData
-    // });
+    const response = await axios.get(
+      `${baseUrl}/employees/work-force-report/`,
+      {
+        headers: headers(),
+        params: filterData,
+      }
+    );
 
-    // For now, return placeholder structure
-    return {
-      monthlyTrends: [
-        { month: "Jan 2024", joiners: 0, leavers: 0, netChange: 0 },
-        { month: "Feb 2024", joiners: 0, leavers: 0, netChange: 0 },
-        // ... more months
-      ],
-      departmentTurnover: {},
-      turnoverRate: 0,
-      averageTenure: 0,
-    };
+    if (response.data) {
+      // Transform the API response for better chart usage
+      const monthlyData = [];
+      const summaryData = {};
+
+      Object.entries(response.data).forEach(([period, data]) => {
+        if (period.includes("Total") || period.includes("Q1-Q2")) {
+          // This is summary data
+          summaryData[period] = data;
+        } else {
+          // This is monthly data
+          monthlyData.push({
+            month: period,
+            joiners: data.joiners,
+            leavers: data.leavers,
+            net_change: data.net_change,
+            turnover_rate: parseFloat(data.turnover_rate.replace("%", "")),
+          });
+        }
+      });
+
+      return {
+        monthlyData,
+        summaryData,
+        raw: response.data,
+      };
+    }
+    return null;
   } catch (error) {
-    console.error("Error fetching turnover analytics:", error);
+    console.error("Error fetching workforce report:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
     return null;
-  }
-};
-
-// Get succession planning data (placeholder - needs new API)
-export const getSuccessionPlanningData = async (filterData = {}) => {
-  try {
-    // TODO: Implement when succession planning API is available
-    // const response = await axios.get(`${baseUrl}/succession-planning/`, {
-    //   headers: headers(),
-    //   params: filterData
-    // });
-
-    // For now, return placeholder structure
-    return {
-      criticalPositions: [],
-      backupEmployees: [],
-      readinessLevels: {},
-      riskAssessment: {},
-    };
-  } catch (error) {
-    console.error("Error fetching succession planning data:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return null;
-  }
-};
-
-// Get employee dependents data (placeholder - needs new API)
-export const getEmployeeDependents = async (employeeId) => {
-  try {
-    // TODO: Implement when dependents API is available
-    // const response = await axios.get(`${baseUrl}/employees/${employeeId}/dependents/`, {
-    //   headers: headers(),
-    // });
-
-    // For now, return placeholder structure
-    return {
-      dependents: [],
-      totalDependents: 0,
-    };
-  } catch (error) {
-    console.error("Error fetching employee dependents:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return { dependents: [], totalDependents: 0 };
   }
 };

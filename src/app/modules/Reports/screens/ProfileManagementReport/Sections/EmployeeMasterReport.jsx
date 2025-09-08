@@ -65,17 +65,15 @@ const EmployeeMasterReport = ({
   };
 
   console.log("employeemsterreport employeeData", employeeData);
-
+console.log("Full employeeData object:", employeeData);
+console.log("on_leave_employees:", employeeData.on_leave_employees);
+console.log("on_probation_employees:", employeeData.on_probation_employees);
   // Calculate stats
   const stats = {
     totalEmployees: employeeData.count || 0,
     activeEmployees: employeeData.ActiveEmployee || 0,
-    onLeave: employeeData.results.filter(
-      (emp) => emp.employee_status === "On Leave"
-    ).length,
-    probation: employeeData.results.filter(
-      (emp) => emp.employee_status === "Probation"
-    ).length,
+    onLeave: employeeData.on_leave_employees || 0,
+    probation: employeeData.on_probation_employees || 0,
   };
 
   return (
