@@ -8,7 +8,7 @@ import {
     CardDescription,
     Card,
 } from "components/ui/card";
-import { TableCustom, PageLoader ,Header} from "components";
+import { TableCustom, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
@@ -128,10 +128,9 @@ const PerformanceCycleSetup = ({ reload, permittedViewFilterData }) => {
             />
             <Card>
                 <CardHeader>
-                    <CardTitle>Employee Evaluation Forms</CardTitle>
+                    <CardTitle>Performance Cycle</CardTitle>
                     <CardDescription>
-                        Here you can manage and  requests of
-                        employees.
+                      
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
