@@ -30,6 +30,7 @@ const Config = {
   TEAM_DAILY_TASK_REPORT: false,
   TEAM_LEAVE_REQUEST: true,
   TEAM_EXIT_CLEARANCE: true,
+  TEAM_PERFORMANCE_EVALUATION: true,
 
   //-------------PROFIL_MANAGMENT-----------
   PEOPLE_TEAM: true,

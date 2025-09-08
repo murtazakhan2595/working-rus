@@ -34,6 +34,12 @@ import {
     EvaluationResultsActions,
     EvaluationResultDetails
 } from './MyPerformance';
+
+import {
+    TeamPerformanceEvaluation,
+    PendingEvaluation
+} from './TeamPerformanceEvaluation';
+
 export {
     GenerateForm,
     EvaluationForm,
@@ -54,6 +60,8 @@ export {
     EvaluationResultDetails,
     PerformanceCycleActions,
     PerformanceCycleDetails,
+    TeamPerformanceEvaluation,
+    PendingEvaluation,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,
