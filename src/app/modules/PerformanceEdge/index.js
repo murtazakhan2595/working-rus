@@ -12,6 +12,8 @@ import {
 import {
     PerformanceCycleSetup,
     CreateUpdateCycleForm,
+    PerformanceCycleActions,
+    PerformanceCycleDetails
 } from "./PerformanceCycleSetup";
 import {
     PerformanceDashboard,
@@ -50,7 +52,8 @@ export {
     EvaluationResults,
     EvaluationResultsActions,
     EvaluationResultDetails,
-
+    PerformanceCycleActions,
+    PerformanceCycleDetails,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,

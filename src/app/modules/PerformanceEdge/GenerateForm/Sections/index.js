@@ -1,12 +1,13 @@
-import { EmployeeEvaluationFormColumns, SelfAssessmentFormColumns,PerformanceCycleColumns,
+import {
+    EmployeeEvaluationFormColumns, SelfAssessmentFormColumns,
     MyPerformanceCycleColumns
- } from './TableColumns';
+} from './TableColumns';
 import AddNewSection from './AddNewSection';
 import AddNewSectionField from './AddNewSectionField';
 import RemoveSection from './RemoveSection';
 
-export { EmployeeEvaluationFormColumns, AddNewSection, RemoveSection, AddNewSectionField, SelfAssessmentFormColumns ,
-    PerformanceCycleColumns,
+export {
+    EmployeeEvaluationFormColumns, AddNewSection, RemoveSection, AddNewSectionField, SelfAssessmentFormColumns,
     MyPerformanceCycleColumns,
-    
+
 };

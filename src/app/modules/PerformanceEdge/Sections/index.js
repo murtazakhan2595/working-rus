@@ -1,6 +1,10 @@
-import { EvaluationResultColumns } from './TableColumn';
+import {
+    EvaluationResultColumns,
+    PerformanceCycleColumns
+} from './TableColumn';
 
 export {
     EvaluationResultColumns,
+    PerformanceCycleColumns,
 
 }

@@ -33,7 +33,7 @@ export async function mapEvaluatoionData(data, fetchApprovalDetails = true) {
 }
 export async function mapPerformanceCycleData(data, fetchApprovalDetails = true) {
     const RecordDetails = {};
-    for (const key of Object.keys(EvaluationForm)) {
+    for (const key of Object.keys(PerformanceCycle)) {
         if (key === 'review_period') {
             RecordDetails[key] = `${data['review_start'] || undefined},${data['review_end'] || undefined}`;
         }

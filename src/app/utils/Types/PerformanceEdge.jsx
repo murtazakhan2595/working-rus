@@ -34,6 +34,7 @@ export const PerformanceCycle = {
     self_assement_form: null,
     forms: null,
     review_period: null,
+    id: null,
 }
 export const EvaluationSubmission = {
     form: null,

@@ -147,7 +147,7 @@ export const savePerformanceCycle = async (payload, id) => {
 
 export const getPerformanceCycleById = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/evaluation-forms/${id}`, {
+    const response = await axios.get(`${baseUrl}/cycles/${id}/`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -237,8 +237,8 @@ export const exportPerformanceReports = async (params = {}) => {
 
 export const getOrgStructure = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/org-structure/`, { 
-      headers: headers() 
+    const response = await axios.get(`${baseUrl}/org-structure/`, {
+      headers: headers()
     });
     if (response.status === 200) {
       return response.data;
