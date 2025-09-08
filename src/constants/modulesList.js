@@ -272,75 +272,43 @@ const FeatureList = [
 ];
 
 // Add Sub-Module
-const sub_module = {
-  module_id: 3,
-  name: "Exit & Clearance",
-  code: "TEAM_EXIT_CLEARANCE",
-  Features: [
+const sub_module = [{
+  "id": 2,
+  "name": "Self Service Hub",
+  "code_name": "SELF_SERVICE_HUB",
+  "submodules": [
     {
-      Name: "View Team Exit & Clearance",
-      code_name: "VIEW_TEAM_EXIT_CLEARANCE",
-    },
-  ],
-};
-// Add Features
+      "name": "My Performance",
+      "code_name": "MY_PERFORMANCE",
+      "features": [
+        {
+          "name": "View Evaluation Result",
+          "code_name": "VIEW_EVALUATION_RESULT",
+          "description": "Employee can view my finalized performance evaluation results so that employee review overall performance, including feedback from all stages (Self, Peer, Manager) and the final rating approved by HR"
+        },
+      ]
+    }
+  ]
+},
+{
+  "id": 3,
+  "name": "Team Management",
+  "code_name": "TEAM_MANAGEMENT",
+  "order": 3,
+  "submodules": [
+    {
+      "name": "Performance Evaluation",
+      "code_name": "TEAM_PERFORMANCE_EVALUATION",
+      "features": [
+        {
+          "name": "Submit Team Evaluation",
+          "code_name": "SUBMIT_TEAM_EVALUATION",
+          "description": ""
+        },
+      ]
+    }
+  ]
+},]
 
-const featires = {
-  sub_module_id: 16,
-  features: [
-    {
-      name: "View Branch Exit Requests & Records",
-      code_name: "VIEW_BRANCH_EXIT",
-      description: "",
-    },
-    {
-      id: 95,
-      name: "View Exit Requests & Records",
-      code_name: "VIEW_EXIT",
-      description: "",
-    },
-    {
-      id: 96,
-      name: "View Department Exit Records & Records",
-      code_name: "VIEW_DPT_EXIT",
-      description: "",
-    },
-    {
-      name: "View Termination Reasons",
-      code_name: "VIEW_TERMINATION_REASONS",
-      description: "",
-    },
-    {
-      name: "Add Termination Reasons",
-      code_name: "ADD_TERMINATION_REASONS",
-      description: "",
-    },
-    {
-      name: "Delete Termination Reasons",
-      code_name: "DELETE_TERMINATION_REASONS",
-      description: "",
-    },
-    {
-      name: "Edit Termination Reasons",
-      code_name: "EDIT_TERMINATION_REASONS",
-      description: "",
-    },
-    {
-      name: "Initiate Clearance",
-      code_name: "INITIATE_CLEARANCE",
-      description: "Can initiate clearance by setting final settlement details.",
-    },
-    {
-      name: "Initiate Clearance",
-      code_name: "COMPLETE_CLEARANCE",
-      description: "Can complete clearance by uploading the clearance report.",
-    },
-    {
-      name: "Edit Termination Reasons",
-      code_name: "EXIT_INTERVIEW",
-      description: "Can add exit interview details with the employee.",
-    },
-  ],
-};
 
 export { ModuleList, SubModuleList, FeatureList };

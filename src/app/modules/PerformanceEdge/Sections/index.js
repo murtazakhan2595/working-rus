@@ -1,10 +1,12 @@
 import {
     EvaluationResultColumns,
-    PerformanceCycleColumns
+    PerformanceCycleColumns,
+    ManagerPendingEvaluationColumns
 } from './TableColumn';
 
 export {
     EvaluationResultColumns,
     PerformanceCycleColumns,
+    ManagerPendingEvaluationColumns,
 
 }
