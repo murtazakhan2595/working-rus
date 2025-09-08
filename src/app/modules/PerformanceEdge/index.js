@@ -13,7 +13,15 @@ import {
     CreateUpdateCycleForm,
 } from './PerformanceCycleSetup';
 
-import { MyPerformance, MyPerformanceActions, StartAssessmentForm } from './MyPerformance';
+import {
+    MyPerformance,
+    MyPerformanceActions,
+    StartAssessmentForm,
+    Evaluations,
+    EvaluationResults,
+    EvaluationResultsActions,
+    EvaluationResultDetails
+} from './MyPerformance';
 export {
     GenerateForm,
     EvaluationForm,
@@ -27,5 +35,10 @@ export {
     CreateUpdateCycleForm,
     MyPerformance,
     MyPerformanceActions,
-    StartAssessmentForm
+    StartAssessmentForm,
+    Evaluations,
+    EvaluationResults,
+    EvaluationResultsActions,
+    EvaluationResultDetails,
+    
 };

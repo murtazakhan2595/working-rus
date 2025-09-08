@@ -86,3 +86,15 @@ export async function mapAssesmentForm(data, fetchApprovalDetails = true) {
     }
     return RecordDetails;
 }
+
+export async function mapEvaltaionResults(submissions, submissionanswers) {
+    // debugger
+    const RecordList = [];
+    for (const submission of submissions) {
+        const RecordDetails = { ...submission };
+        const answers = submissionanswers.filter(obj => obj.submission === submission.id);
+        RecordDetails.evaluationsAnswer = answers;
+        RecordList.push(RecordDetails);
+    }
+    return RecordList;
+}

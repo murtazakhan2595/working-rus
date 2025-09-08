@@ -9,6 +9,7 @@ import {
   mapPerformanceCycleData,
   mapAssesmentForm,
   mapEvaluationSubmissionPayloadData,
+  mapEvaltaionResults,
 } from 'app/utils/MappingObjects/mapPerformanceEdgeData'
 
 
@@ -17,12 +18,12 @@ export const getEvaluationFormsList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/evaluation-forms/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}`;
   // let URL = `/evaluation-forms/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-  //   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-  //     JSON.stringify(filterData)
-  //   )}`;
+  //   }${pageSize ? `page_size=${pageSize}&` : ""}`;
+  let URL = `/evaluation-forms/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
@@ -211,6 +212,7 @@ export const getMyPerformanceFormsById = async (id) => {
   }
 }
 
+
 export const saveEvaluationSubmission = async (payload, id) => {
   const ID = id || payload?.id;
   try {
@@ -271,3 +273,74 @@ export const saveEvaluationSubmissionAnswers = async (payload, id) => {
     return false;
   }
 };
+export const getSubmissionAnswers = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const sortField = payload?.ordering || "id";
+    const URL = `/submissionanswers/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      return Response;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+export const getEvaluationsResults = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const sortField = payload?.ordering || "id";
+    const URL = `/FinalEvaluation/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapEvaltaionResults(Response.results, []);
+
+      return { count: Response.count, results: ResponseData };
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+export const getFinalEvaluationById = async (id) => {
+  try {
+    const URL = `/FinalEvaluation/${id}/`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+
+      return Response;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}

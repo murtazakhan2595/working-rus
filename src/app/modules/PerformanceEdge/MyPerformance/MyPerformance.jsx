@@ -1,170 +1,132 @@
-import React, { useState, useEffect } from "react";
-import { getMyPerformanceForms } from "app/hooks/performanceEdge";
-import { CreateUpdateCycleForm } from "app/modules/PerformanceEdge";
+import React from "react";
+import { useState } from "react";
+import { Card } from "components/ui/card";
 import {
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    Card,
-} from "components/ui/card";
-import { TableCustom, PageLoader ,Header} from "components";
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+} from "src/@/components/ui/tabs";
+import { Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
-import { GetDispatchStateList } from "utils/Lists";
-import { FilterInput } from "components/FormControl";
-import { MyPerformanceCycleColumns } from "app/modules/PerformanceEdge/GenerateForm/Sections";
 import { Button } from "components/ui/button";
-
-const PerformanceCycleSetup = ({ reload, permittedViewFilterData }) => {
-    const Designations = GetDispatchStateList("designations", "common") || [];
-    const Departments = GetDispatchStateList("departments", "common") || [];
-
-    const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-    const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
-
-    const [isLoading, setIsLoading] = useState(true);
-    const [OpenCreateCycleForm, setOpenCreateCycleForm] = useState(false);
-    const [JobRotationList, setJobRotationList] = useState(null);
-    const [filterData, setFilterData] = useState({});
-
-    const [ordering, setOrdering] = useState("-id");
-
-    const [options, setOptions] = useState({
-        page: 1,
-        sizePerPage: 10,
-    });
-
-    const onPageChange = (name, value) => {
-        const pageOptions = options;
-        if (pageOptions[name] !== value) {
-            pageOptions[name] = value;
-            setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
-        }
-    };
-
-    const tableOptions = {
-        page: options.page,
-        sizePerPage: options.sizePerPage,
-        onPageChange: onPageChange,
-        onSortChange: (sortName) => {
-            setOrdering(sortName);
-        },
-    };
-
-    const fetchData = async () => {
-        try {
-            setIsLoading(true);
-            const filter = {
-                ...filterData,
-                ...permittedViewFilterData,
-            };
-            const response = await getMyPerformanceForms({
-                filterData: filter,
-                options,
-                ordering,
-            });
-            setJobRotationList(response);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        let isMounted = true;
-        if (permittedViewFilterData) fetchData(isMounted);
-        return () => {
-            isMounted = false;
-        };
-    }, [filterData, options, ordering, permittedViewFilterData]);
-
-    useEffect(() => {
-        let isMounted = true;
-        if (isMounted) {
-            onPageChange("page", 1);
-            setOrdering("-id");
-            fetchData(true);
-        }
-    }, [reload]);
-
-    const handleFilterChange = (filterName, filterValue) => {
-        onPageChange("page", 1);
-        setFilterData((prevFilters) => {
-            const updatedFilters = { ...prevFilters };
-            if (filterValue === "") {
-                delete updatedFilters[filterName];
-            } else {
-                updatedFilters[filterName] = filterValue;
-            }
-            return updatedFilters;
-        });
-    };
+import {
+    Evaluations,
+    AddUpdateEvaluationForm,
+    EvaluationResults,
+    AddSelfAssessmentForm,
+    PeerAssessmentForm,
+} from 'app/modules/PerformanceEdge';
+const MyPerformance = ({ }) => {
+    // permissions for tranfer
+    const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
+    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
+    const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
+    const isCreatePeerAssessmentFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
+    const [OpenEvaluationForm, setOpenEvaluationForm] = useState(false);
+    const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
+    const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
+    const [activeTab, setActiveTab] = useState("Employee Evaluation");
 
 
-    const safeDepartments = (Departments || []).filter(
-        (d) => d && typeof d.label === "string"
-    );
-    const safeDesignations = (Designations || []).filter(
-        (d) => d && typeof d.label === "string"
-    );
+    const TabListArray = React.useMemo(() => [
+        ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
+    ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
+
+
     const handleRequestClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        setOpenCreateCycleForm(false);
-
+        setOpenEvaluationForm(false);
+        setOpenSelfAssessmentForm(false);
+        setOpenPeerAssessmentForm(false);
         const triggeredResquest = event.target.title;
-        if (triggeredResquest === 'create-cycle')
-            setOpenCreateCycleForm(true);
+        if (triggeredResquest === 'employee-evaluation')
+            setOpenEvaluationForm(true);
+        else if (triggeredResquest === 'self-assessment')
+            setOpenSelfAssessmentForm(true);
+        else if (triggeredResquest === 'peer-assessment')
+            setOpenPeerAssessmentForm(true);
     }
+
     return (
         <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}        >
             <Header
                 content={
-                    <Button title='create-cycle' onClick={handleRequestClick}>
-                        Create Cycle
-                    </Button>
+                    <>
+                        {activeTab === "Self Assessment" && isCreateSelfAssessmentFormPermitted && (
+                            <Button title="self-assessment" onClick={handleRequestClick}>
+                                Add Self Assessment Form
+                            </Button>
+                        )}
+                        {activeTab === "Peer Assessment" && isCreatePeerAssessmentFormPermitted && (
+                            <Button title="peer-assessment" onClick={handleRequestClick}>
+                                Add Peer Assessment Form
+                            </Button>
+                        )}
+                    </>
                 }
             />
-            <Card>
-                <CardHeader>
-                    <CardTitle>Employee Evaluation Forms</CardTitle>
-                    <CardDescription>
-                        Here you can manage and  requests of
-                        employees.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <FilterInput
-                        filters={[]}
-                        onChange={handleFilterChange}
-                        className="justify-end mb-4"
-                    />
-                    {isLoading ? (
-                        <PageLoader />
-                    ) : (
-                        <TableCustom
-                            data={JobRotationList?.results || []}
-                            columns={MyPerformanceCycleColumns(fetchData)}
-                            pagination={true}
-                            dataTotalSize={JobRotationList?.count || 0}
-                            tableOptions={tableOptions}
-                        />
-                    )}
-                </CardContent>
-            </Card>
-            {OpenCreateCycleForm && (
-                <CreateUpdateCycleForm
-                    isOpen={OpenCreateCycleForm}
+            <Tabs
+                defaultValue="Submit Evaluation"
+                className="w-full"
+                onValueChange={(tab) => {
+                    setActiveTab(tab);
+                }}
+                value={activeTab ?? TabListArray[0]}
+            >
+                <TabsList>
+                    {TabListArray.map((tab) => (
+                        <TabsTrigger key={tab} value={tab}>
+                            {tab}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+                <Card>
+                    <TabsContent value="Submit Evaluation">
+                        <Evaluations />
+                    </TabsContent>
+                    <TabsContent value="Final Evaluations">
+                        <EvaluationResults />
+                    </TabsContent>
+                    <TabsContent value="Peer Assessment">
+                        <PeerAssessmentForm />
+                    </TabsContent>
+                </Card>
+            </Tabs>
+            {OpenEvaluationForm && (
+                <AddUpdateEvaluationForm
+                    isOpen={OpenEvaluationForm}
                     setIsOpen={() => {
-                        setOpenCreateCycleForm(false);
+                        setOpenEvaluationForm(false);
                         //fetchData(true);
                     }}
                     initiator={'MANAGER'}
+                />
+            )}
+            {OpenSelfAssessmentForm && (
+                <AddSelfAssessmentForm
+                    isOpen={OpenSelfAssessmentForm}
+                    setIsOpen={() => {
+                        setOpenSelfAssessmentForm(false);
+                        //fetchData(true);
+                    }}
+
+                />
+            )}
+            {OpenPeerAssessmentForm && (
+                <AddSelfAssessmentForm
+                    isOpen={OpenPeerAssessmentForm}
+                    setIsOpen={() => {
+                        setOpenPeerAssessmentForm(false);
+                        //fetchData(true);
+                    }}
+
                 />
             )}
         </div>
     );
 };
 
-export default PerformanceCycleSetup;
+export default MyPerformance
