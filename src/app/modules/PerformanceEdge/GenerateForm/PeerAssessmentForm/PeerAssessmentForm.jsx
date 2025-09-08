@@ -13,15 +13,9 @@ import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
 import { SelfAssessmentFormColumns } from "app/modules/PerformanceEdge/GenerateForm/Sections";
 
-const PeerAssessmentForm = ({ reload, permittedViewFilterData }) => {
-    const Designations = GetDispatchStateList("designations", "common") || [];
-    const Departments = GetDispatchStateList("departments", "common") || [];
-
-    const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-    const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
-
+const PeerAssessmentForm = ({ reload }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [JobRotationList, setJobRotationList] = useState(null);
+    const [PeerAssessmentList, setPeerAssessmentList] = useState(null);
     const [filterData, setFilterData] = useState({});
 
     const [ordering, setOrdering] = useState("-id");
@@ -53,14 +47,14 @@ const PeerAssessmentForm = ({ reload, permittedViewFilterData }) => {
             setIsLoading(true);
             const filter = {
                 ...filterData,
-                ...permittedViewFilterData,
+                form_type: "PeerAssessmentForm",
             };
             const response = await getEvaluationFormsList({
                 filterData: filter,
                 options,
                 ordering,
             });
-            setJobRotationList(response);
+            setPeerAssessmentList(response);
         } catch (e) {
             console.error(e);
         } finally {
@@ -70,11 +64,11 @@ const PeerAssessmentForm = ({ reload, permittedViewFilterData }) => {
 
     useEffect(() => {
         let isMounted = true;
-        if (permittedViewFilterData) fetchData(isMounted);
+        fetchData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering, permittedViewFilterData]);
+    }, [filterData, options, ordering]);
 
     useEffect(() => {
         let isMounted = true;
@@ -99,19 +93,12 @@ const PeerAssessmentForm = ({ reload, permittedViewFilterData }) => {
     };
 
 
-    const safeDepartments = (Departments || []).filter(
-        (d) => d && typeof d.label === "string"
-    );
-    const safeDesignations = (Designations || []).filter(
-        (d) => d && typeof d.label === "string"
-    );
     return (
         <>
             <CardHeader>
-                <CardTitle>Employee Evaluation Forms</CardTitle>
+                <CardTitle>Peer Assessment Forms</CardTitle>
                 <CardDescription>
-                    Here you can manage and  requests of
-                    employees.
+
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -120,28 +107,8 @@ const PeerAssessmentForm = ({ reload, permittedViewFilterData }) => {
                         {
                             type: "search",
                             name: "employee",
-                            placeholder: "Employee ID/Name",
+                            placeholder: "Form Name",
                         },
-                        ...(isAdminView || isBranchView
-                            ? [
-                                {
-                                    type: "select",
-                                    options: safeDepartments,
-                                    name: "department",
-                                    placeholder: "Requested Department",
-                                },
-                            ]
-                            : []),
-                        ...(isAdminView || isBranchView
-                            ? [
-                                {
-                                    type: "select",
-                                    options: safeDesignations,
-                                    name: "department_position",
-                                    placeholder: "Requested Designation",
-                                },
-                            ]
-                            : []),
                     ]}
                     onChange={handleFilterChange}
                     className="justify-end mb-4"
@@ -150,10 +117,10 @@ const PeerAssessmentForm = ({ reload, permittedViewFilterData }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        data={JobRotationList?.results || []}
+                        data={PeerAssessmentList?.results || []}
                         columns={SelfAssessmentFormColumns(fetchData)}
                         pagination={true}
-                        dataTotalSize={JobRotationList?.count || 0}
+                        dataTotalSize={PeerAssessmentList?.count || 0}
                         tableOptions={tableOptions}
                     />
                 )}

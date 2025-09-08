@@ -1,8 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { getEvaluationFormsList } from "app/hooks/performanceEdge";
-import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
+import { useState } from "react";
 import { Card } from "components/ui/card";
 import {
     Tabs,
@@ -13,123 +10,33 @@ import {
 import { Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
-import { GetDispatchStateList } from "utils/Lists";
 import {
-    EvaluationForm, AddUpdateEvaluationForm,
-    SelfAssessmentForm, AddSelfAssessmentForm,
+    EvaluationForm,
+    AddUpdateEvaluationForm,
+    SelfAssessmentForm,
+    AddSelfAssessmentForm,
     PeerAssessmentForm,
 } from 'app/modules/PerformanceEdge';
 const GenerateForm = ({ }) => {
     // permissions for tranfer
-    const isAdminView = HasAccess("VIEW_EMPLOYEE_TRANSFER");
-    const isBranchView = HasAccess("VIEW_BRANCH_EXIT");
-    const isDepartmentView = HasAccess("VIEW_DPT_EXIT");
-    // permissions for rotation
-    const isRAdminView = HasAccess("VIEW_JOB_ROTATION");
-    const isRBranchView = HasAccess("VIEW_BRN_JOB_ROTATION");
-    const isRDepartmentView = HasAccess("VIEW_DPT_JOB_ROTATION");
-    const {
-        id: user_id,
-        branch_id: user_branch,
-        department_name: user_department,
-    } = GetDispatchStateList("user_details", "emp") || {}
+    const isViewEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
+    const isViewSelfAssessmentFormPermitted = HasAccess("VIEW_SELF_ASSESSMENT_FORMS");
+    const isViewPeerAssessmentFormPermitted = HasAccess("VIEW_PEER_ASSESSMENT_FORMS");
+    const isCreateEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
+    const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
+    const isCreatePeerAssessmentFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
     const [OpenEvaluationForm, setOpenEvaluationForm] = useState(false);
     const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
     const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
     const [activeTab, setActiveTab] = useState("Employee Evaluation");
-    const [TransferStats, setTransferStats] = useState({});
-    const [RotationStats, setRotationStats] = useState({});
-    const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
-    const [permittedRotationViewFilterData, setPermittedRotationViewFilterData] = useState(null);
-
-    useEffect(() => {
-        let isMounted = true;
-        if (isMounted)
-            setPermittedRotationViewFilterData(() => {
-                if (isRAdminView) return {};
-                else if (isRBranchView) return { branch: user_branch };
-                else if (isRDepartmentView) return { department: user_department };
-            });
-        return () => {
-            isMounted = false;
-        };
-    }, [isRAdminView, isRBranchView, isRDepartmentView, user_branch, user_department, user_id]);
 
 
-    useEffect(() => {
-        let isMounted = true;
-        if (isMounted)
-            setPermittedViewFilterData(() => {
-                if (isAdminView) return {};
-                else if (isBranchView) return { branch: user_branch };
-                else if (isDepartmentView) return { department: user_department };
-            });
-        return () => {
-            isMounted = false;
-        };
-    }, [isAdminView, isBranchView, isDepartmentView, user_branch, user_department, user_id]);
+    const TabListArray = React.useMemo(() => [
+        ...(isViewEvaluatioFormPermitted ? ["Employee Evaluation"] : []),
+        ...(isViewSelfAssessmentFormPermitted ? ["Self Assessment"] : []),
+        ...(isViewPeerAssessmentFormPermitted ? ["Peer Assessment"] : []),
+    ], [isViewEvaluatioFormPermitted, isViewSelfAssessmentFormPermitted, isViewPeerAssessmentFormPermitted]);
 
-
-
-    useEffect(() => {
-        let isMounted = true;
-        const fetchData = async () => {
-            try {
-                const filter = { ...permittedViewFilterData };
-                const response = await getEvaluationFormsList({
-                    filterData: filter,
-                });
-
-                if (response) {
-                    setTransferStats(response);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
-        if (permittedViewFilterData) fetchData(isMounted);
-        return () => {
-            isMounted = false;
-        };
-    }, [permittedViewFilterData]);
-
-
-    useEffect(() => {
-        let isMounted = true;
-        const fetchData = async () => {
-            try {
-                const filter = { ...permittedRotationViewFilterData };
-                const response = await getEvaluationFormsList({
-                    filterData: filter,
-                });
-
-                if (response) {
-                    setRotationStats(response);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
-        if (permittedRotationViewFilterData) fetchData(isMounted);
-        return () => {
-            isMounted = false;
-        };
-    }, [permittedRotationViewFilterData]);
-
-
-    const TransferStatsData = React.useMemo(() => [
-        { label: "Total Tranfers", value: TransferStats.Total, icon: FolderInput },
-        { label: "Pending", value: TransferStats.Pending, icon: Loader },
-        { label: "Approved", value: TransferStats.Approved, icon: CircleCheckBig },
-        { label: "Rejected", value: TransferStats.Rejected, icon: CircleX },
-    ], [TransferStats]);
-
-    const RotationStatsData = React.useMemo(() => [
-        { label: "Total Rotations", value: RotationStats.Total, icon: FolderInput },
-        { label: "Pending", value: RotationStats.Pending, icon: Loader },
-        { label: "Approved", value: RotationStats.Approved, icon: CircleCheckBig },
-        { label: "Rejected", value: RotationStats.Rejected, icon: CircleX },
-    ], [RotationStats]);
 
     const handleRequestClick = (event) => {
         event.preventDefault();
@@ -151,17 +58,17 @@ const GenerateForm = ({ }) => {
             <Header
                 content={
                     <>
-                        {activeTab === "Employee Evaluation" && (
+                        {activeTab === "Employee Evaluation" && isCreateEvaluatioFormPermitted && (
                             <Button title='employee-evaluation' onClick={handleRequestClick}>
                                 Add Employee Evaluation Form
                             </Button>
                         )}
-                        {activeTab === "Self Assessment" && (
+                        {activeTab === "Self Assessment" && isCreateSelfAssessmentFormPermitted && (
                             <Button title="self-assessment" onClick={handleRequestClick}>
                                 Add Self Assessment Form
                             </Button>
                         )}
-                        {activeTab === "Peer Assessment" && (
+                        {activeTab === "Peer Assessment" && isCreatePeerAssessmentFormPermitted && (
                             <Button title="peer-assessment" onClick={handleRequestClick}>
                                 Add Peer Assessment Form
                             </Button>
@@ -175,10 +82,10 @@ const GenerateForm = ({ }) => {
                 onValueChange={(tab) => {
                     setActiveTab(tab);
                 }}
-                value={activeTab}
+                value={activeTab ?? TabListArray[0]}
             >
                 <TabsList>
-                    {["Employee Evaluation", "Self Assessment", "Peer Assessment"].map((tab) => (
+                    {TabListArray.map((tab) => (
                         <TabsTrigger key={tab} value={tab}>
                             {tab}
                         </TabsTrigger>
@@ -186,7 +93,7 @@ const GenerateForm = ({ }) => {
                 </TabsList>
                 <Card>
                     <TabsContent value="Employee Evaluation">
-                        <EvaluationForm permittedViewFilterData={permittedRotationViewFilterData} />
+                        <EvaluationForm />
                     </TabsContent>
                     <TabsContent value="Self Assessment">
                         <SelfAssessmentForm />

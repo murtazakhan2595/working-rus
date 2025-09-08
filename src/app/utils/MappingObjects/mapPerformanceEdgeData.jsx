@@ -1,5 +1,6 @@
 
 import { EvaluationForm, PerformanceCycle, EvaluationSubmission } from "app/utils/Types/PerformanceEdge";
+import { isArray } from "lodash";
 
 export function mapEvaluationPayloadData(data) {
     // Initialize an empty payload object
@@ -10,6 +11,10 @@ export function mapEvaluationPayloadData(data) {
         if (data.hasOwnProperty(key) && data[key]) {
             // Add the key and its value to the payload
             if (key === 'form_name') payload[key] = data[key].trim();
+            else if (["nationalities", "branches", "departments", "designation"].includes(key)) {
+                if (Array.isArray(data[key]))
+                    payload[key] = data[key].filter(Boolean);
+            }
             else payload[key] = data[key];
         }
     }
