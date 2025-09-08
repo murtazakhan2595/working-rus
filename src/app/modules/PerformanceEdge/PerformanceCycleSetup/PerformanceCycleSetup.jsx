@@ -12,7 +12,7 @@ import { TableCustom, PageLoader ,Header} from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { PerformanceCycleColumns } from "app/modules/PerformanceEdge/GenerateForm/Sections";
+import { PerformanceCycleColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
 const PerformanceCycleSetup = ({ reload, permittedViewFilterData }) => {

@@ -28,7 +28,7 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
 
     const FormSheetData = {
         triggerText: "",
-        title: `${isEditMode ? "Edit" : "Create"} Self Assessment Form`,
+        title: `${isEditMode ? "Edit" : "Create"} Performance Cycle`,
         description: null,
         footer: null,
     };
@@ -71,7 +71,8 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
             setIsLoading(true);
             const response = await getPerformanceCycleById(id);
             if (isMounted) {
-                setFormData({ ...response, });
+                setFormData(response);
+                setFormValues(response);
             }
         } catch (error) {
             console.error("Error fetching roles:", error);
