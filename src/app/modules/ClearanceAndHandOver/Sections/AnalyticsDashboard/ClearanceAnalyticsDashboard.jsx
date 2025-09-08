@@ -8,16 +8,16 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 // Import analytics components with better organization
-import AnalyticsStatusCards from "./AnalyticsDashboard/AnalyticsStatusCards";
-import AnalyticsCharts from "./AnalyticsDashboard/AnalyticsCharts";
-import AnalyticsFilters from "./AnalyticsDashboard/AnalyticsFilters";
-import { AnalyticsTableColumns } from "./AnalyticsDashboard/AnalyticsTableColumns";
+import AnalyticsStatusCards from "./AnalyticsStatusCards";
+import AnalyticsCharts from "./AnalyticsCharts";
+import AnalyticsFilters from "./AnalyticsFilters";
+import { AnalyticsTableColumns } from "./AnalyticsTableColumns";
 
 // Import utility functions with enhanced error handling
 import {
   applyFilters,
   enhanceClearanceData,
-} from "./AnalyticsDashboard/clearanceAnalyticsUtils";
+} from "./clearanceAnalyticsUtils";
 
 // Constants for better maintainability and performance optimization
 const ANALYTICS_CONFIG = {

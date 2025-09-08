@@ -165,6 +165,93 @@ export const getPerformanceCycleById = async (id) => {
   }
 };
 
+
+
+
+export const getDashboardMetrics = async (filterData = {}) => {
+  const URL = `/dashboard/matrics?search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching dashboard metrics:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+
+
+export const getBulkDashboardData = async (payload = {}) => {
+  const URL = `/BulkDataView`;
+  // const URL = `/Bulkdataview/?search=${encodeURIComponent(
+  //   JSON.stringify(payload)
+  // )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching bulk dashboard data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+
+export const exportPerformanceReports = async (params = {}) => {
+  try {
+    const response = await axios({
+      method: "GET",
+      url: `${baseUrl}/pendingHr/reports`,
+      // params: params, // Use params instead of data for GET request
+      headers: headers(),
+      responseType: "blob", // This is crucial for file downloads
+    });
+
+    if (response.status === 200 || response.status === 201) {
+      return response; // Return the entire response object
+    }
+  } catch (error) {
+    console.error("Error exporting performance reports:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getOrgStructure = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/org-structure/`, { 
+      headers: headers() 
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching org structure:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
 export const getMyPerformanceForms = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";

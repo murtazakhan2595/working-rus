@@ -11,6 +11,7 @@ import {
   mapDocumentAssignmentPayloadData,
   mapDocumentCategoryData,
   mapDocumentData,
+  mapLetterRequestPayloadData
 } from "app/utils/MappingObjects/mapHRDocumentData";
 import { HandleLogout } from "./general";
 
@@ -291,4 +292,87 @@ export const addUpdateDocumentcategory = async (payload, id = null) => {
     console.error("Error adding/updating LogTime:", error);
     return false;
   }
+};
+
+
+export const getLetterRequestData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/letter-request/${id}`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching letter request data:", error);
+  }
+  return null;
+};
+
+// Simplified API function - the mapping function handles FormData creation
+export const addUpdateLetterRequest = async (payload, id = null) => {
+  try {
+    const url = id
+      ? `${baseUrl}/letter-request/${id}/`
+      : `${baseUrl}/letter-request/`;
+
+    const finalPayload = mapLetterRequestPayloadData(payload);
+    const method = id ? "PUT" : "POST";
+
+    // Use appropriate headers based on payload type
+    const requestHeaders = finalPayload instanceof FormData 
+      ? formDataHeader() 
+      : headers();
+
+    console.log("API Request:", {
+      url,
+      method,
+      payloadType: finalPayload instanceof FormData ? "FormData" : "JSON",
+      originalPayload: payload
+    });
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: requestHeaders,
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating Letter Request:", error);
+    return false;
+  }
+};
+
+export const getLetterRequestList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/letter-request/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Letter Request data :", error);
+  }
+  return { results: [], count: 0 };
 };

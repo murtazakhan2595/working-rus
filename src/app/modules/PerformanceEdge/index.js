@@ -1,17 +1,27 @@
+// src/app/modules/PerformanceEdge/index.js
 import {
-    GenerateForm,
-    SelfAssessmentFormActions,
-    EvaluationForm,
-    AddSelfAssessmentForm,
-    PeerAssessmentForm,
-    AddUpdateEvaluationForm,
-    EvaluationFormActions,
-    SelfAssessmentForm
-} from './GenerateForm';
+  GenerateForm,
+  SelfAssessmentFormActions,
+  EvaluationForm,
+  AddSelfAssessmentForm,
+  PeerAssessmentForm,
+  AddUpdateEvaluationForm,
+  EvaluationFormActions,
+  SelfAssessmentForm,
+} from "./GenerateForm";
 import {
-    PerformanceCycleSetup,
-    CreateUpdateCycleForm,
-} from './PerformanceCycleSetup';
+  PerformanceCycleSetup,
+  CreateUpdateCycleForm,
+} from "./PerformanceCycleSetup";
+import {
+  PerformanceDashboard,
+  PerformanceStatsCards,
+  PerformanceCharts,
+  DepartmentRatingChart,
+  PerformanceTableColumns,
+  ExportPerformanceReports,
+} from "./PerformanceDashboard";
+
 
 import {
     MyPerformance,
@@ -23,16 +33,16 @@ import {
     EvaluationResultDetails
 } from './MyPerformance';
 export {
-    GenerateForm,
-    EvaluationForm,
-    AddUpdateEvaluationForm,
-    EvaluationFormActions,
-    SelfAssessmentForm,
-    AddSelfAssessmentForm,
-    SelfAssessmentFormActions,
-    PeerAssessmentForm,
-    PerformanceCycleSetup,
-    CreateUpdateCycleForm,
+  GenerateForm,
+  EvaluationForm,
+  AddUpdateEvaluationForm,
+  EvaluationFormActions,
+  SelfAssessmentForm,
+  AddSelfAssessmentForm,
+  SelfAssessmentFormActions,
+  PeerAssessmentForm,
+  PerformanceCycleSetup,
+  CreateUpdateCycleForm,
     MyPerformance,
     MyPerformanceActions,
     StartAssessmentForm,
@@ -41,4 +51,11 @@ export {
     EvaluationResultsActions,
     EvaluationResultDetails,
     
+  // Performance Dashboard Components
+  PerformanceDashboard,
+  PerformanceStatsCards,
+  PerformanceCharts,
+  DepartmentRatingChart,
+  PerformanceTableColumns,
+  ExportPerformanceReports,
 };
