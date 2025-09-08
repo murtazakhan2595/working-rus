@@ -110,6 +110,11 @@ const Config = {
   GENERATE_FORM: true,
   PERFORMANCE_CYCLE_SETUP: true,
   PERFORMANCE_DASHBOARD: true,
+
+  //--------------Reports-----------
+  REPORTS: true,
+  //Sub Modules
+  PROFILE_MANAGEMENT_REPORTS: true,
 };
 
 export const URLS = [
