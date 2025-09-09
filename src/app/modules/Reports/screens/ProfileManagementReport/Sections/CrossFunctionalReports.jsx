@@ -25,11 +25,15 @@ import {
   Pie,
   Cell,
   Legend,
+  LineChart,
+  Line,
+  ComposedChart,
 } from "recharts";
 import {
   getHeadcountStats,
   getDepartmentGenderNationalityReport,
   getOrgReport,
+  getWorkforceReport, // Add this import
 } from "app/hooks/reports";
 import {
   HeadcountColumns,
@@ -44,6 +48,7 @@ const CrossFunctionalReports = ({
   const [loading, setLoading] = useState(false);
   const [orgReportData, setOrgReportData] = useState(null);
   const [diversityData, setDiversityData] = useState({});
+  const [workforceData, setWorkforceData] = useState(null); // Add workforce data state
   const [activeSubTab, setActiveSubTab] = useState("headcount");
 
   // Chart colors
@@ -63,6 +68,10 @@ const CrossFunctionalReports = ({
         combinedFilters
       );
       if (diversityResponse) setDiversityData(diversityResponse);
+
+      // Fetch workforce report data
+      const workforceResponse = await getWorkforceReport(combinedFilters);
+      if (workforceResponse) setWorkforceData(workforceResponse);
     } catch (error) {
       console.error("Error fetching cross-functional data:", error);
     } finally {
@@ -149,6 +158,21 @@ const CrossFunctionalReports = ({
     totalLocations: orgReportData?.locationWise?.length || 0,
     totalBranches: orgReportData?.branchWise?.length || 0,
   };
+
+  // Calculate workforce summary stats
+  const workforceStats = React.useMemo(() => {
+    if (!workforceData?.summaryData) return null;
+
+    const summaryKey = Object.keys(workforceData.summaryData)[0]; // Get first summary key (e.g., "Total Q1-Q2")
+    const summary = workforceData.summaryData[summaryKey];
+
+    return {
+      totalJoiners: summary?.joiners || 0,
+      totalLeavers: summary?.leavers || 0,
+      netChange: summary?.net_change || 0,
+      avgTurnoverRate: summary?.turnover_rate || "0.0%",
+    };
+  }, [workforceData]);
 
   return (
     <div className="space-y-6">
@@ -307,6 +331,112 @@ const CrossFunctionalReports = ({
         </Card>
       </div>
 
+      {/* Workforce Trends Section */}
+      {workforceData && (
+        <>
+          {/* Workforce Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                title: "Total Joiners",
+                value: workforceStats?.totalJoiners || 0,
+                description: "New hires",
+                color: "text-green-600",
+              },
+              {
+                title: "Total Leavers",
+                value: workforceStats?.totalLeavers || 0,
+                description: "Departures",
+                color: "text-red-600",
+              },
+              {
+                title: "Net Change",
+                value: workforceStats?.netChange || 0,
+                description: "Growth/decline",
+                color: "text-blue-600",
+              },
+              {
+                title: "Avg Turnover Rate",
+                value: workforceStats?.avgTurnoverRate || "0.0%",
+                description: "Period average",
+                color: "text-purple-600",
+              },
+            ].map((stat, index) => (
+              <Card
+                key={index}
+                className="flex flex-col justify-center shadow-md border rounded-lg"
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-bold text-neutral-900">
+                    {stat.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className={`text-3xl font-medium ${stat.color}`}>
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-neutral-800 mt-1">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Joiners vs Leavers Trend Chart */}
+          <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-bold text-plum-900">
+                Workforce Trends - Joiners vs Leavers
+              </CardTitle>
+              <CardDescription>
+                Monthly employee movement trends showing joiners, leavers, and
+                net change
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart
+                  data={workforceData.monthlyData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                >
+                  <XAxis
+                    dataKey="month"
+                    tick={{ fontSize: 11 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ fontSize: "12px" }} />
+                  <Legend />
+                  <Bar
+                    dataKey="joiners"
+                    fill="#10B981"
+                    name="Joiners"
+                    barSize={20}
+                  />
+                  <Bar
+                    dataKey="leavers"
+                    fill="#EF4444"
+                    name="Leavers"
+                    barSize={20}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="net_change"
+                    stroke="#3B82F6"
+                    strokeWidth={3}
+                    name="Net Change"
+                    dot={{ fill: "#3B82F6", strokeWidth: 2, r: 4 }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
       {/* Sub-reports Tabs */}
       <Card>
         <CardHeader>
@@ -351,19 +481,6 @@ const CrossFunctionalReports = ({
           </Tabs>
         </CardContent>
       </Card>
-
-      {/* Placeholder for additional cross-functional reports */}
-        <Card className="border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-sm">Employee Turnover Report</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge variant="secondary">API Development Required</Badge>
-            <p className="text-xs text-neutral-800 mt-2">
-              Joiners vs Leavers trends, turnover rates by department
-            </p>
-          </CardContent>
-        </Card>
     </div>
   );
 };

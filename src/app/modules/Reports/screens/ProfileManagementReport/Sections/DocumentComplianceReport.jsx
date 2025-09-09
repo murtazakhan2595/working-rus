@@ -30,7 +30,11 @@ const DocumentComplianceReport = ({
     setLoading(true);
     try {
       const combinedFilters = { ...filterData, ...permittedViewFilterData };
-      const response = await getDocumentComplianceData(combinedFilters);
+      const response = await getDocumentComplianceData({
+        filterData: combinedFilters,
+        options,
+        ordering,
+      });
 
       if (response) {
         setComplianceData(response);
