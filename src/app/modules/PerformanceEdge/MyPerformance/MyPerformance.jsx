@@ -24,7 +24,7 @@ const MyPerformance = ({ }) => {
     const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
     const isViewFinalEvaluatioFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
     const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
-    const [reloadData, setReloadData] = useState(false);
+    const [reloadData, setReloadData] = useState({});
     const [activeTab, setActiveTab] = useState(null);
 
 

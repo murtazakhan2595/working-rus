@@ -16,6 +16,7 @@ import {
     SelfAssessmentForm,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
+    PeerAssessmentActions
 } from 'app/modules/PerformanceEdge';
 const GenerateForm = ({ }) => {
     // permissions for tranfer
@@ -29,6 +30,7 @@ const GenerateForm = ({ }) => {
     const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
     const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
     const [activeTab, setActiveTab] = useState("Employee Evaluation");
+    const [reloadData, setReloadData] = useState({});
 
 
     const TabListArray = React.useMemo(() => [
@@ -93,13 +95,13 @@ const GenerateForm = ({ }) => {
                 </TabsList>
                 <Card>
                     <TabsContent value="Employee Evaluation">
-                        <EvaluationForm />
+                        <EvaluationForm reload={reloadData['evaluation']} />
                     </TabsContent>
                     <TabsContent value="Self Assessment">
-                        <SelfAssessmentForm />
+                        <SelfAssessmentForm reload={reloadData['selft-assessment']} />
                     </TabsContent>
                     <TabsContent value="Peer Assessment">
-                        <PeerAssessmentForm />
+                        <PeerAssessmentForm reload={reloadData['peer-assessment']} />
                     </TabsContent>
                 </Card>
             </Tabs>
@@ -108,9 +110,13 @@ const GenerateForm = ({ }) => {
                     isOpen={OpenEvaluationForm}
                     setIsOpen={() => {
                         setOpenEvaluationForm(false);
-                        //fetchData(true);
+                        setReloadData((prev) => {
+                            return {
+                                ...prev,
+                                'evaluation': !prev["evaluation"],
+                            };
+                        })
                     }}
-                    initiator={'MANAGER'}
                 />
             )}
             {OpenSelfAssessmentForm && (
@@ -118,17 +124,27 @@ const GenerateForm = ({ }) => {
                     isOpen={OpenSelfAssessmentForm}
                     setIsOpen={() => {
                         setOpenSelfAssessmentForm(false);
-                        //fetchData(true);
+                        setReloadData((prev) => {
+                            return {
+                                ...prev,
+                                'selft-assessment': !prev["selft-assessment"],
+                            };
+                        });
                     }}
 
                 />
             )}
             {OpenPeerAssessmentForm && (
-                <AddSelfAssessmentForm
+                <PeerAssessmentActions
                     isOpen={OpenPeerAssessmentForm}
                     setIsOpen={() => {
                         setOpenPeerAssessmentForm(false);
-                        //fetchData(true);
+                        setReloadData((prev) => {
+                            return {
+                                ...prev,
+                                'peer-assessment': !prev["peer-assessment"],
+                            };
+                        });
                     }}
 
                 />

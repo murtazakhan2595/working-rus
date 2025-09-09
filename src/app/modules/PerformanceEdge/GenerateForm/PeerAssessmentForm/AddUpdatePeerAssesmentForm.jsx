@@ -18,7 +18,7 @@ import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
-const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
+const AddUpdatePeerAssesmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
     const Departments = GetDispatchStateList("departments", "common") || []
     const [formValues, setFormValues] = useState(null);
     const [FormList, setFormList] = useState([]);
@@ -30,7 +30,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
 
     const FormSheetData = {
         triggerText: "",
-        title: `${isEditMode ? "Edit" : "Add"} Employee Evaluation Form`,
+        title: `${isEditMode ? "Edit" : "Add"} Peer Assessment Form`,
         description: null,
         footer: null,
     };
@@ -94,13 +94,13 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, form_type: 'MnagerEvaluationForm' };
+            const payload = { ...values, form_type: 'PeerAssessmentForm' };
             const response = await saveEvaluationForm(payload, isDuplicate ? null : id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Employee Evaluation Form ${isEditMode ? 'Updated' : 'Created'} Submitted`,
+                    title: `Peer Assessment Form ${isEditMode ? 'Updated' : 'Created'} Submitted`,
                     description: ``,
                 }
             }
@@ -262,4 +262,4 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
     );
 };
 
-export default AddUpdateEvaluationForm;
+export default AddUpdatePeerAssesmentForm;

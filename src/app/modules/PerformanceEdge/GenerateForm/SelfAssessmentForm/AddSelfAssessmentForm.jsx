@@ -21,23 +21,19 @@ import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
 const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
-    const UserDetails = GetDispatchStateList('user_details', 'emp');
-    const Managers = GetDispatchStateList("reportingManagers", "emp") || []
     const Departments = GetDispatchStateList("departments", "common") || []
     const Branches = GetDispatchStateList("branches", "common") || []
     const Designations = GetDispatchStateList("designations", "common") || []
-    const [selectedEmployee, setSelectedEmployee] = useState({});
-    const [confirmSave, setConfirmSave] = useState(false);
     const [formValues, setFormValues] = useState(null);
     const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const isEditMode = Boolean(id);
+    const isEditMode = Boolean(id && !isDuplicate);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(EvaluationForm);
 
     const FormSheetData = {
         triggerText: "",
-        title:`${ isEditMode ? "Edit" : "Create"} Self Assessment Form`,
+        title: `${isEditMode ? "Edit" : "Create"} Self Assessment Form`,
         description: null,
         footer: null,
     };
@@ -47,7 +43,7 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
         const fetchFormData = async (isMounted) => {
             try {
                 setIsLoading(true);
-               const response = await getEvaluationFormsList();
+                const response = await getEvaluationFormsList();
                 if (response && isMounted) {
                     setFormList(response.results);
                 }
@@ -65,23 +61,24 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
         };
     }, []);
 
-    const fetchData = async (isMounted, id) => {
-        try {
-            setIsLoading(true);
-            const response = await getEvaluationFormById(id);
-            if (isMounted) {
-                setFormData({ ...response, ...(isDuplicate ? { form_name: '' } : {}) });
-                setFormValues({ ...response, ...(isDuplicate ? { form_name: '' } : {}) });
-            }
-        } catch (error) {
-            console.error("Error fetching roles:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     useEffect(() => {
         let isMounted = true;
+        const fetchData = async (isMounted, id) => {
+            try {
+                setIsLoading(true);
+                const response = await getEvaluationFormById(id);
+                if (isMounted) {
+                    setFormData({ ...response, ...(isDuplicate ? { form_name: '', id: null } : {}) });
+                    setFormValues({ ...response, ...(isDuplicate ? { form_name: '', id: null } : {}) });
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         if (id) fetchData(isMounted, id);
         return () => {
             isMounted = false;
@@ -97,13 +94,13 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
         setIsSubmittingForm(true);
         try {
             const payload = { ...values, form_type: 'SelfAssessmentForm' };
-            const response = await saveEvaluationForm(payload, id);
+            const response = await saveEvaluationForm(payload, isDuplicate ? null : id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Rotation Request Submitted`,
-                    description: `Rotation request for ${selectedEmployee?.name} is submitted successfully`,
+                    title: `Self Assessment Form ${isEditMode ? 'Updated' : 'Created'} Submitted`,
+                    description: ``,
                 }
             }
         } catch (error) {
@@ -114,7 +111,6 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                 `Failed to ${isEditMode ? "update" : "add"} role.`;
             toast.error(errorMessage);
         } finally {
-            setConfirmSave(false);
             setIsSubmittingForm(false);
         }
     };
@@ -159,7 +155,7 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                                 options: countriesList,
                                 SelectAllOption: true,
                             },
-                             {
+                            {
                                 InputField: SelectMultiInputComponent,
                                 name: "branches",
                                 label: "Branches",
@@ -173,7 +169,7 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                                 options: Departments,
                                 SelectAllOption: true,
                             },
-                             {
+                            {
                                 InputField: SelectMultiInputComponent,
                                 name: "designation",
                                 label: "Designations",

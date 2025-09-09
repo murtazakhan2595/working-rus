@@ -4,7 +4,8 @@ import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTabl
 import { StatusLabel } from "components";
 import {
     EvaluationResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
-    TeamGoalsActions
+    TeamGoalsActions,
+    PeerAssessmentActions,
 } from 'app/modules/PerformanceEdge';
 /**
  * EvaluationResultColumns
@@ -267,6 +268,96 @@ export const TeamGoalsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, dataList) => (
             <TeamGoalsActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+/**
+ * PeerAssessmentFormColumns
+ *
+ * Returns an array of column definitions for the PeerAssessmentFormColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const PeerAssessmentFormColumns = (reloadData) => [
+    {
+        dataField: "form_name",
+        text: "Form Name",
+        dataSort: true,
+    },
+    {
+        dataField: "nationalities",
+        text: "Nationalities",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Nationalities"
+                />
+            );
+        },
+    },
+    //  {
+    //     dataField: "branches",
+    //     text: "Branches",
+    //     formatter: (cell) => {
+    //         return (
+    //             <MultiStatusLabel
+    //                 statusList={cell}
+    //                 variant="info"
+    //                 fallBackText="All Branches"
+    //             />
+    //         );
+    //     },
+    // },
+    //  {
+    //     dataField: "departments",
+    //     text: "Departments",
+    //     formatter: (cell) => {
+    //         return (
+    //             <MultiStatusLabel
+    //                 statusList={cell}
+    //                 variant="info"
+    //                 fallBackText="All Departments"
+    //             />
+    //         );
+    //     },
+    // },
+    //  {
+    //     dataField: "designation",
+    //     text: "Designations",
+    //     formatter: (cell) => {
+    //         return (
+    //             <MultiStatusLabel
+    //                 statusList={cell}
+    //                 variant="info"
+    //                 fallBackText="All Designations"
+    //             />
+    //         );
+    //     },
+    // },
+    {
+        dataField: "status",
+        text: "Status",
+        dataSort: true,
+        formatter: (cell, row) => (
+            <StatusLabel status={cell}>{cell}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "status",
+        text: "Created On",
+        dataSort: true,
+        formatter: (cell, row) => (
+            <StatusLabel status={cell}>{cell}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <PeerAssessmentActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];

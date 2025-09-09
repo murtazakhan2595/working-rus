@@ -102,7 +102,7 @@ const EvaluationForm = ({ reload }) => {
                     filters={[
                         {
                             type: "search",
-                            name: "employee",
+                            name: "form_name",
                             placeholder: "Form Name",
                         },
                         // {

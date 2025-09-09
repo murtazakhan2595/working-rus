@@ -8,6 +8,8 @@ import {
     AddUpdateEvaluationForm,
     EvaluationFormActions,
     SelfAssessmentForm,
+    PeerAssessmentActions,
+    AddUpdatePeerAssesmentForm,
 } from "./GenerateForm";
 import {
     PerformanceCycleSetup,
@@ -70,7 +72,9 @@ export {
     TeamPerformanceEvaluation,
     PendingEvaluation,
     EvaluationSummary,
+    AddUpdatePeerAssesmentForm,
     AddUpdateMyGoals,
+    PeerAssessmentActions,
     MyGoalsActions,
     ViewMyGoalsDetails,
     MyGoals,
