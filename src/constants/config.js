@@ -116,6 +116,7 @@ const Config = {
   REPORTS: true,
   //Sub Modules
   PROFILE_MANAGEMENT_REPORTS: true,
+  EXIT_AND_CLEARANCE_REPORTS: true,
 };
 
 export const URLS = [
