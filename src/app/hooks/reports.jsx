@@ -599,3 +599,219 @@ export const getWorkforceReport = async (filterData = {}) => {
     return null;
   }
 };
+
+// Get resignation report data
+export const getResignationReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/ResignationReport/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching resignation report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get exit request report data (v1)
+export const getExitRequestReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/exit-request-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching exit request report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get v2 exit request report data (enhanced)
+export const getV2ExitRequestReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/v2-exit-request-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching v2 exit request report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get attrition retention report data
+export const getAttritionRetentionReportData = async (filterData = {}) => {
+  try {
+    const response = await axios.get(`${baseUrl}/AttritionRetentionReport/`, {
+      headers: headers(),
+      params: filterData,
+    });
+
+    if (response.data) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        next: response.data.next,
+        previous: response.data.previous,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching attrition retention data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Export exit and clearance reports
+export const exportExitClearanceReport = async (reportType, filterData = {}) => {
+  try {
+    let response, dataToExport, filename;
+
+    switch (reportType) {
+      case "resignation_report":
+        response = await getResignationReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Designation": item.designation,
+          "Resignation Date": renderDate(item.resignation_date),
+          "Notice Start Date": renderDate(item.notice_start_date),
+          "Notice End Date": renderDate(item.notice_end_date),
+          "Reason for Leaving": item.reason_for_leaving,
+          "Status": item.status,
+        }));
+        filename = "Resignation_Report";
+        break;
+
+      case "exit_request_report":
+        response = await getExitRequestReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Designation": item.designation,
+          "Exit Request Date": renderDate(item.exit_request_date),
+          "Last Working Day": renderDate(item.last_working_day),
+          "Reason for Exit": item.reason_for_exit,
+          "Status": item.status,
+        }));
+        filename = "Exit_Request_Report";
+        break;
+
+      case "v2_exit_request_report":
+        response = await getV2ExitRequestReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Exit Type": item.exit_type,
+          "Notice Start": renderDate(item.notice_start),
+          "Notice End": renderDate(item.notice_end),
+          "Nationality": item.nationality,
+        }));
+        filename = "Enhanced_Exit_Request_Report";
+        break;
+
+      case "attrition_retention_report":
+        response = await getAttritionRetentionReportData(filterData);
+        dataToExport = response.results.map((item) => ({
+          "Month": item.month,
+          "Department": item.department,
+          "Total Employees": item.total_employees,
+          "Exits": item.exits,
+          "Attrition %": item.attrition_percent,
+          "Retention %": item.retention_percent,
+        }));
+        filename = "Attrition_Retention_Report";
+        break;
+
+      default:
+        throw new Error("Invalid report type");
+    }
+
+    if (dataToExport && dataToExport.length > 0) {
+      exportRecordToExcel(dataToExport, "Exit & Clearance Reports", filename);
+      return true;
+    } else {
+      toast.error("No data available to export", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error exporting exit clearance report:", error);
+    toast.error("Failed to export report", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};

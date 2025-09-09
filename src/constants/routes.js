@@ -99,6 +99,7 @@ import AccessRevokedPage from "app/modules/ClearanceAndHandOver/AccessRevoked";
 import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sections/ManagerDashboard";
 import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
+import { ExitAndClearanceReports } from "app/modules/Reports";
 
 export const SidebarRoutes = [
   {
@@ -189,41 +190,41 @@ export const SidebarRoutes = [
           name: "MANAGER_CLEARANCE_DASHBOARD",
         },
 
-      Config.MY_PERFORMANCE && {
-        path: "/my-performance",
-        component: <MyPerformance />,
-        name: "MY_PERFORMANCE",
-      },
-    ].filter(Boolean) // Filter out undefined routes
+        Config.MY_PERFORMANCE && {
+          path: "/my-performance",
+          component: <MyPerformance />,
+          name: "MY_PERFORMANCE",
+        },
+      ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
     ? [
-      Config.TEAM_PROFILE && {
-        path: "/team-profile-management",
-        component: <Employee isTeamView={true} />,
-        name: "TEAM_PROFILE",
-      },
-      Config.TEAM_LEAVE_REQUEST && {
-        path: "/team-leave-tracker",
-        component: <LeaveTracker isTeamView={true} />,
-        name: "TEAM_LEAVE_REQUEST",
-      },
-      Config.TEAM_EXIT_CLEARANCE && {
-        path: "/team-exit-clearance",
-        component: <ExitAndClearance isTeamView={true} />,
-        name: "TEAM_EXIT_CLEARANCE",
-      },
-      Config.TEAM_ATTENDANCE && {
-        path: "/team-attendance",
-        component: <Attendance isTeamView={true} />,
-        name: "TEAM_ATTENDANCE",
-      },
-      Config.TEAM_PERFORMANCE_EVALUATION && {
-        path: "/team-performance-evaluation",
-        component: <TeamPerformanceEvaluation />,
-        name: "TEAM_ATTENDANCE",
-      },
-    ].filter(Boolean) // Filter out undefined route
+        Config.TEAM_PROFILE && {
+          path: "/team-profile-management",
+          component: <Employee isTeamView={true} />,
+          name: "TEAM_PROFILE",
+        },
+        Config.TEAM_LEAVE_REQUEST && {
+          path: "/team-leave-tracker",
+          component: <LeaveTracker isTeamView={true} />,
+          name: "TEAM_LEAVE_REQUEST",
+        },
+        Config.TEAM_EXIT_CLEARANCE && {
+          path: "/team-exit-clearance",
+          component: <ExitAndClearance isTeamView={true} />,
+          name: "TEAM_EXIT_CLEARANCE",
+        },
+        Config.TEAM_ATTENDANCE && {
+          path: "/team-attendance",
+          component: <Attendance isTeamView={true} />,
+          name: "TEAM_ATTENDANCE",
+        },
+        Config.TEAM_PERFORMANCE_EVALUATION && {
+          path: "/team-performance-evaluation",
+          component: <TeamPerformanceEvaluation />,
+          name: "TEAM_ATTENDANCE",
+        },
+      ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PEOPLE_TEAM
     ? [
@@ -387,6 +388,11 @@ export const SidebarRoutes = [
           path: "/profile-management-reports",
           component: <ProfileManagementReports />,
           name: "PROFILE_MANAGEMENT_REPORTS",
+        },
+        Config.EXIT_AND_CLEARANCE_REPORTS && {
+          path: "/exit-and-clearance-reports",
+          component: <ExitAndClearanceReports />,
+          name: "EXIT_AND_CLEARANCE_REPORTS",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
@@ -568,22 +574,22 @@ export const SidebarRoutes = [
     : []),
   ...(Config.PERFORMANCE_EDGE
     ? [
-      Config.PERFORMANCE_DASHBOARD && {
-        path: "/performance-dashboard",
-        component: <PerformanceDashboard />,
-        name: "PERFORMANCE_DASHBOARD",
-      },
-      Config.GENERATE_FORM && {
-        path: "/performance-forms",
-        component: <GenerateForm />,
-        name: "GENERATE_FORM",
-      },
-      Config.PERFORMANCE_CYCLE_SETUP && {
-        path: "/performance-cycle-setup",
-        component: <PerformanceCycleSetup />,
-        name: "PERFORMANCE_CYCLE_SETUP",
-      },
-    ].filter(Boolean) // Filter out undefined route
+        Config.PERFORMANCE_DASHBOARD && {
+          path: "/performance-dashboard",
+          component: <PerformanceDashboard />,
+          name: "PERFORMANCE_DASHBOARD",
+        },
+        Config.GENERATE_FORM && {
+          path: "/performance-forms",
+          component: <GenerateForm />,
+          name: "GENERATE_FORM",
+        },
+        Config.PERFORMANCE_CYCLE_SETUP && {
+          path: "/performance-cycle-setup",
+          component: <PerformanceCycleSetup />,
+          name: "PERFORMANCE_CYCLE_SETUP",
+        },
+      ].filter(Boolean) // Filter out undefined route
     : []),
   {
     path: "/change-password",
