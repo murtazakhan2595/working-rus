@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getManagerFinalEvaluation } from "app/hooks/performanceEdge";
+import { getEmployeeGoalsList } from "app/hooks/performanceEdge";
+import { CreateUpdateCycleForm } from "app/modules/PerformanceEdge";
 import {
     CardContent,
     CardHeader,
@@ -11,19 +12,16 @@ import { TableCustom, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { EvaluationResultColumns } from "app/modules/PerformanceEdge/Sections";
+import { MyGoalsColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
-const EvaluationResults = ({ reload, permittedViewFilterData }) => {
+const MyGoals = ({ reload, permittedViewFilterData }) => {
     const Designations = GetDispatchStateList("designations", "common") || [];
     const Departments = GetDispatchStateList("departments", "common") || [];
 
-    const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-    const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
-
     const [isLoading, setIsLoading] = useState(true);
     const [OpenCreateCycleForm, setOpenCreateCycleForm] = useState(false);
-    const [EvaluationResultList, setEvaluationResultList] = useState(null);
+    const [JobRotationList, setJobRotationList] = useState(null);
     const [filterData, setFilterData] = useState({});
 
     const [ordering, setOrdering] = useState("-id");
@@ -57,12 +55,12 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
                 ...filterData,
                 ...permittedViewFilterData,
             };
-            const response = await getManagerFinalEvaluation({
+            const response = await getEmployeeGoalsList({
                 filterData: filter,
                 options,
                 ordering,
             });
-            setEvaluationResultList(response);
+            setJobRotationList(response);
         } catch (e) {
             console.error(e);
         } finally {
@@ -100,7 +98,13 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
         });
     };
 
-    console.log(EvaluationResultList);
+
+    const safeDepartments = (Departments || []).filter(
+        (d) => d && typeof d.label === "string"
+    );
+    const safeDesignations = (Designations || []).filter(
+        (d) => d && typeof d.label === "string"
+    );
     const handleRequestClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -113,9 +117,9 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle>Evaluation Results</CardTitle>
+                <CardTitle>My Goals</CardTitle>
                 <CardDescription>
-
+                 Here you can create, manage, and track my personal goals
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -128,10 +132,10 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        data={EvaluationResultList?.results || []}
-                        columns={EvaluationResultColumns(fetchData)}
+                        data={JobRotationList?.results || []}
+                        columns={MyGoalsColumns(fetchData)}
                         pagination={true}
-                        dataTotalSize={EvaluationResultList?.count || 0}
+                        dataTotalSize={JobRotationList?.count || 0}
                         tableOptions={tableOptions}
                     />
                 )}
@@ -140,4 +144,4 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
     );
 };
 
-export default EvaluationResults;
+export default MyGoals;

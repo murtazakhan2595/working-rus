@@ -12,10 +12,10 @@ import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import {
     Evaluations,
-    AddUpdateEvaluationForm,
+    AddUpdateMyGoals,
     EvaluationResults,
     AddSelfAssessmentForm,
-    PeerAssessmentForm,
+    MyGoals,
 } from 'app/modules/PerformanceEdge';
 const MyPerformance = ({ }) => {
     // permissions for tranfer
@@ -23,51 +23,45 @@ const MyPerformance = ({ }) => {
     const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
     const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
     const isCreatePeerAssessmentFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
-    const [OpenEvaluationForm, setOpenEvaluationForm] = useState(false);
+    const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
     const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
     const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
-    const [activeTab, setActiveTab] = useState("Employee Evaluation");
+    const [activeTab, setActiveTab] = useState("Submit Evaluation");
 
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
         ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
-    ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
+        ...(isViewFinalEvaluatioFormPermitted ? ["My Goals"] : []),
+    ], [isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
-
-    const handleRequestClick = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        setOpenEvaluationForm(false);
-        setOpenSelfAssessmentForm(false);
-        setOpenPeerAssessmentForm(false);
-        const triggeredResquest = event.target.title;
-        if (triggeredResquest === 'employee-evaluation')
-            setOpenEvaluationForm(true);
-        else if (triggeredResquest === 'self-assessment')
-            setOpenSelfAssessmentForm(true);
-        else if (triggeredResquest === 'peer-assessment')
-            setOpenPeerAssessmentForm(true);
+    const HeaderButton = () => {
+        const handleRequestClick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setOpenMyGoalsForm(false);
+            setOpenSelfAssessmentForm(false);
+            setOpenPeerAssessmentForm(false);
+            const triggeredResquest = event.target.title;
+            if (triggeredResquest === 'my-goals')
+                setOpenMyGoalsForm(true);
+            else if (triggeredResquest === 'self-assessment')
+                setOpenSelfAssessmentForm(true);
+            else if (triggeredResquest === 'peer-assessment')
+                setOpenPeerAssessmentForm(true);
+        }
+        const activeButtonTab = activeTab ?? TabListArray[0];
+        if (activeButtonTab === "My Goals" && isCreateSelfAssessmentFormPermitted)
+            return (
+                <Button title="my-goals" onClick={handleRequestClick}>
+                    Add New Goal
+                </Button>
+            )
     }
 
     return (
         <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}        >
-            <Header
-                content={
-                    <>
-                        {activeTab === "Self Assessment" && isCreateSelfAssessmentFormPermitted && (
-                            <Button title="self-assessment" onClick={handleRequestClick}>
-                                Add Self Assessment Form
-                            </Button>
-                        )}
-                        {activeTab === "Peer Assessment" && isCreatePeerAssessmentFormPermitted && (
-                            <Button title="peer-assessment" onClick={handleRequestClick}>
-                                Add Peer Assessment Form
-                            </Button>
-                        )}
-                    </>
-                }
-            />
+            <Header content={<HeaderButton />} />
             <Tabs
                 defaultValue="Submit Evaluation"
                 className="w-full"
@@ -90,16 +84,16 @@ const MyPerformance = ({ }) => {
                     <TabsContent value="Final Evaluations">
                         <EvaluationResults />
                     </TabsContent>
-                    <TabsContent value="Peer Assessment">
-                        <PeerAssessmentForm />
+                    <TabsContent value="My Goals">
+                        <MyGoals />
                     </TabsContent>
                 </Card>
             </Tabs>
-            {OpenEvaluationForm && (
-                <AddUpdateEvaluationForm
-                    isOpen={OpenEvaluationForm}
+            {OpenMyGoalsForm && (
+                <AddUpdateMyGoals
+                    isOpen={OpenMyGoalsForm}
                     setIsOpen={() => {
-                        setOpenEvaluationForm(false);
+                        setOpenMyGoalsForm(false);
                         //fetchData(true);
                     }}
                     initiator={'MANAGER'}

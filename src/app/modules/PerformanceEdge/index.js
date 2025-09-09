@@ -32,12 +32,17 @@ import {
     Evaluations,
     EvaluationResults,
     EvaluationResultsActions,
-    EvaluationResultDetails
+    EvaluationResultDetails,
+    AddUpdateMyGoals,
+    MyGoals,
+    MyGoalsActions,
+    ViewMyGoalsDetails,
 } from './MyPerformance';
 
 import {
     TeamPerformanceEvaluation,
-    PendingEvaluation
+    PendingEvaluation,
+    EvaluationSummary,
 } from './TeamPerformanceEvaluation';
 
 export {
@@ -62,6 +67,11 @@ export {
     PerformanceCycleDetails,
     TeamPerformanceEvaluation,
     PendingEvaluation,
+    EvaluationSummary,
+    AddUpdateMyGoals,
+    MyGoalsActions,
+    ViewMyGoalsDetails,
+    MyGoals,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,

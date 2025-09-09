@@ -13,7 +13,7 @@ import { Button } from "components/ui/button";
 import {
     PendingEvaluation,
     AddUpdateEvaluationForm,
-    EvaluationResults,
+    EvaluationSummary,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
 } from 'app/modules/PerformanceEdge';
@@ -31,7 +31,7 @@ const TeamPerformanceEvaluation = ({ }) => {
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
-        // ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
     ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
 
@@ -87,8 +87,8 @@ const TeamPerformanceEvaluation = ({ }) => {
                     <TabsContent value="Pending Evaluation">
                         <PendingEvaluation />
                     </TabsContent>
-                    <TabsContent value="Final Evaluations">
-                        <EvaluationResults />
+                    <TabsContent value="Evaluation Summary">
+                        <EvaluationSummary />
                     </TabsContent>
                     <TabsContent value="Peer Assessment">
                         <PeerAssessmentForm />

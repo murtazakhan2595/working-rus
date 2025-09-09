@@ -42,3 +42,16 @@ export const EvaluationSubmission = {
     is_submitted: null,
     status: null,
 }
+
+export const MyGoals = {
+    id: null,
+    title:null,
+    description: null,
+    due_date: null,
+    status: null,
+    alignment: null,
+    is_submitted: null,
+    created_at: null,
+    key_results: null,
+    employee: null,
+}

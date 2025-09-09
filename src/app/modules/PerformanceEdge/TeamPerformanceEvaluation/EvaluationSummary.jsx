@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getManagerFinalEvaluation } from "app/hooks/performanceEdge";
+import { CreateUpdateCycleForm } from "app/modules/PerformanceEdge";
 import {
     CardContent,
     CardHeader,
@@ -11,10 +12,10 @@ import { TableCustom, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { EvaluationResultColumns } from "app/modules/PerformanceEdge/Sections";
+import { ManagerFinalEvaluationColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
-const EvaluationResults = ({ reload, permittedViewFilterData }) => {
+const EvaluationSummary = ({ reload }) => {
     const Designations = GetDispatchStateList("designations", "common") || [];
     const Departments = GetDispatchStateList("departments", "common") || [];
 
@@ -23,7 +24,7 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [OpenCreateCycleForm, setOpenCreateCycleForm] = useState(false);
-    const [EvaluationResultList, setEvaluationResultList] = useState(null);
+    const [PendingEvaluations, setPendingEvaluations] = useState(null);
     const [filterData, setFilterData] = useState({});
 
     const [ordering, setOrdering] = useState("-id");
@@ -55,14 +56,13 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
             setIsLoading(true);
             const filter = {
                 ...filterData,
-                ...permittedViewFilterData,
             };
             const response = await getManagerFinalEvaluation({
                 filterData: filter,
                 options,
                 ordering,
             });
-            setEvaluationResultList(response);
+            setPendingEvaluations(response);
         } catch (e) {
             console.error(e);
         } finally {
@@ -72,11 +72,11 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
 
     useEffect(() => {
         let isMounted = true;
-        if (permittedViewFilterData) fetchData(isMounted);
+        fetchData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering, permittedViewFilterData]);
+    }, [filterData, options, ordering]);
 
     useEffect(() => {
         let isMounted = true;
@@ -100,7 +100,13 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
         });
     };
 
-    console.log(EvaluationResultList);
+
+    const safeDepartments = (Departments || []).filter(
+        (d) => d && typeof d.label === "string"
+    );
+    const safeDesignations = (Designations || []).filter(
+        (d) => d && typeof d.label === "string"
+    );
     const handleRequestClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -113,9 +119,9 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle>Evaluation Results</CardTitle>
+                <CardTitle>Evaluation Summary</CardTitle>
                 <CardDescription>
-
+                    Here you can view the final evaluation summary of my team members (including their Self, Peer, and HR evaluations) to track the overall evaluation results, view detailed reports, and download performance records for reference or future discussions.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -128,10 +134,10 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        data={EvaluationResultList?.results || []}
-                        columns={EvaluationResultColumns(fetchData)}
+                        data={PendingEvaluations?.results || []}
+                        columns={ManagerFinalEvaluationColumns(fetchData)}
                         pagination={true}
-                        dataTotalSize={EvaluationResultList?.count || 0}
+                        dataTotalSize={PendingEvaluations?.count || 0}
                         tableOptions={tableOptions}
                     />
                 )}
@@ -140,4 +146,4 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
     );
 };
 
-export default EvaluationResults;
+export default EvaluationSummary;
