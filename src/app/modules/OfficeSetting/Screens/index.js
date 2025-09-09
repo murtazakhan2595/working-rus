@@ -7,6 +7,8 @@ import Shift from "./WorkingHours/Shift";
 import AddShiftForm from "./WorkingHours/Shift";
 import EvaluationType from "./EvaluationType";
 import AddEvaluationType from "./EvaluationType/AddEvaluationType";
+import AddRatingScaleSetup from "./RatingScaleSetup/AddRatingScaleSetup";
+import RatingScaleSetup from "./RatingScaleSetup";
 
 export {
   Departments,
@@ -17,5 +19,7 @@ export {
   Shift,
   AddShiftForm,
   EvaluationType,
-  AddEvaluationType
+  AddEvaluationType,
+  RatingScaleSetup,
+  AddRatingScaleSetup,
 };
