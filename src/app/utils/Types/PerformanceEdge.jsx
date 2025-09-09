@@ -45,7 +45,7 @@ export const EvaluationSubmission = {
 
 export const MyGoals = {
     id: null,
-    title:null,
+    title: null,
     description: null,
     due_date: null,
     status: null,
@@ -55,4 +55,12 @@ export const MyGoals = {
     key_results: null,
     employee: null,
     aprroval_status: 'Pending',
+}
+
+export const EmployeeFeedback = {
+    is_anonymous: null,
+    satisfaction_rating: null,
+    comments: null,
+    category: null
+
 }

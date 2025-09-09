@@ -49,6 +49,8 @@ import {
     TeamGoalsActions,
 } from './TeamPerformanceEvaluation';
 
+import { EmployeeFeedback, SubmitFeedBack } from './EmployeeFeedback';
+
 export {
     GenerateForm,
     EvaluationForm,
@@ -80,6 +82,8 @@ export {
     MyGoals,
     TeamGoals,
     TeamGoalsActions,
+    EmployeeFeedback,
+    SubmitFeedBack,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,

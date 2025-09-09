@@ -14,7 +14,7 @@ import {
     Evaluations,
     AddUpdateMyGoals,
     EvaluationResults,
-    AddSelfAssessmentForm,
+    SubmitFeedBack,
     MyGoals,
 } from 'app/modules/PerformanceEdge';
 const MyPerformance = ({ }) => {
@@ -24,6 +24,7 @@ const MyPerformance = ({ }) => {
     const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
     const isViewFinalEvaluatioFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
     const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
+    const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
     const [activeTab, setActiveTab] = useState(null);
 
@@ -39,17 +40,28 @@ const MyPerformance = ({ }) => {
             event.preventDefault();
             event.stopPropagation();
             setOpenMyGoalsForm(false);
+            setOpenFeedbackForm(false);
             const triggeredResquest = event.target.title;
             if (triggeredResquest === 'my-goals')
                 setOpenMyGoalsForm(true);
+            else if (triggeredResquest === 'feedback')
+                setOpenFeedbackForm(true);
         }
         const activeButtonTab = activeTab ?? TabListArray[0];
-        if (activeButtonTab === "My Goals" && isCreateGoalsPermitted)
+        if (activeButtonTab === "My Goals" && isCreateGoalsPermitted) {
             return (
                 <Button title="my-goals" onClick={handleRequestClick}>
                     Add New Goal
                 </Button>
             )
+        }
+        else {
+            return (
+                <Button title="feedback" onClick={handleRequestClick}>
+                    Submit Feedback
+                </Button>
+            )
+        }
     }
 
     return (
@@ -93,6 +105,14 @@ const MyPerformance = ({ }) => {
                                 'my-goals': !prev["my-goals"],
                             };
                         });
+                    }}
+                />
+            )}
+            {OpenFeedbackForm && (
+                <SubmitFeedBack
+                    isOpen={OpenFeedbackForm}
+                    setIsOpen={() => {
+                        setOpenFeedbackForm(false);
                     }}
                 />
             )}
