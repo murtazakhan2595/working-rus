@@ -317,36 +317,41 @@ export const DocumentComplianceColumns = () => [
     dataField: "passport_status",
     text: "Passport Status",
     dataSort: true,
-    formatter: (cell) => (
-      <Badge variant="secondary">{cell || "N/A - API Pending"}</Badge>
-    ),
+    formatter: (cell, row) => {
+      if (!row.is_passport_applicable) {
+        return <Badge variant="outline">Not Applicable</Badge>;
+      }
+      if (!row.passport_expiry_date) {
+        return <Badge variant="secondary">N/A</Badge>;
+      }
+      const isExpired = new Date(row.passport_expiry_date) < new Date();
+      return (
+        <Badge variant={isExpired ? "destructive" : "success"}>
+          {isExpired ? "Expired" : "Valid"}
+        </Badge>
+      );
+    },
   },
   {
     dataField: "visa_status",
     text: "Visa Status",
     dataSort: true,
-    formatter: (cell) => (
-      <Badge variant="secondary">{cell || "N/A - API Pending"}</Badge>
-    ),
-  },
-  {
-    dataField: "emirates_id_status",
-    text: "Emirates ID Status",
-    dataSort: true,
-    formatter: (cell) => (
-      <Badge variant="secondary">{cell || "N/A - API Pending"}</Badge>
-    ),
-  },
-  {
-    dataField: "compliance_status",
-    text: "Overall Compliance",
-    dataSort: true,
-    formatter: (cell) => (
-      <Badge variant="secondary">{cell || "N/A - API Pending"}</Badge>
-    ),
+    formatter: (cell, row) => {
+      if (!row.is_visa_applicable) {
+        return <Badge variant="outline">Not Applicable</Badge>;
+      }
+      if (!row.visa_expiry_date) {
+        return <Badge variant="secondary">N/A</Badge>;
+      }
+      const isExpired = new Date(row.visa_expiry_date) < new Date();
+      return (
+        <Badge variant={isExpired ? "destructive" : "success"}>
+          {isExpired ? "Expired" : "Valid"}
+        </Badge>
+      );
+    },
   },
 ];
-
 // Skills & Qualifications Report Columns
 export const SkillsQualificationsColumns = () => [
   {

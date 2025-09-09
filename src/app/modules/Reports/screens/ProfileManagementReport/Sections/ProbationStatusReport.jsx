@@ -55,19 +55,15 @@ const ProbationStatusReport = ({
     onSortChange: (sortName) => setOrdering(sortName),
   };
 
+  console.log("ProbationStatusReport employeeData", employeeData);
+
   // Calculate probation stats
   const probationStats = React.useMemo(() => {
-    const ongoing = employeeData.results.filter(
-      (emp) => emp.probation_status === "Ongoing"
-    ).length;
-    const completed = employeeData.results.filter(
-      (emp) => emp.probation_status === "Completed"
-    ).length;
-    const extended = employeeData.results.filter(
-      (emp) => emp.probation_status === "Extended"
-    ).length;
+    const ongoing = employeeData.on_probation_employees || 0;
+    const completed =
+      employeeData.ActiveEmployee - employeeData.on_probation_employees || 0;
 
-    return { ongoing, completed, extended, total: employeeData.count };
+    return { ongoing, completed, total: employeeData.count };
   }, [employeeData.results, employeeData.count]);
 
   return (
@@ -76,7 +72,7 @@ const ProbationStatusReport = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           {
-            title: "Total on Probation",
+            title: "Total employees",
             value: probationStats.total,
             color: "text-plum-900",
           },
