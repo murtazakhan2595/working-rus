@@ -3,11 +3,11 @@ import SheetComponent from "components/ui/SheetComponent";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewHolidayDetail, AddUpdateHolidays } from "app/modules/LeaveTracker";
-import { AddUpdateEvaluationForm } from "app/modules/PerformanceEdge";
+import { AddUpdatePeerAssesmentForm } from "app/modules/PerformanceEdge";
 import { toast } from "react-toastify";
 import { deleteRecord } from "app/hooks/general";
 
-const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) => {
+const PeerAssessmentActions = ({ data, reloadData = () => { }, DataList = [] }) => {
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [deleteDurationState, setDeleteDurationState] = useState(null);
@@ -72,7 +72,7 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
 
             {/* Edit Duration Sheet */}
             {edit && (
-                <AddUpdateEvaluationForm
+                <AddUpdatePeerAssesmentForm
                     isOpen={edit}
                     setIsOpen={setEdit}
                     id={data.id}
@@ -81,7 +81,7 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
             )}
             {/* Duplicate Sheet */}
             {duplicate && (
-                <AddUpdateEvaluationForm
+                <AddUpdatePeerAssesmentForm
                     isOpen={duplicate}
                     setIsOpen={setDuplicate}
                     id={data.id}
@@ -104,4 +104,4 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
     );
 };
 
-export default EvaluationFormActions;
+export default PeerAssessmentActions;

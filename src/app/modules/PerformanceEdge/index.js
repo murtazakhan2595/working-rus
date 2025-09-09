@@ -8,6 +8,8 @@ import {
     AddUpdateEvaluationForm,
     EvaluationFormActions,
     SelfAssessmentForm,
+    PeerAssessmentActions,
+    AddUpdatePeerAssesmentForm,
 } from "./GenerateForm";
 import {
     PerformanceCycleSetup,
@@ -47,6 +49,8 @@ import {
     TeamGoalsActions,
 } from './TeamPerformanceEvaluation';
 
+import { EmployeeFeedback, SubmitFeedBack } from './EmployeeFeedback';
+
 export {
     GenerateForm,
     EvaluationForm,
@@ -70,12 +74,16 @@ export {
     TeamPerformanceEvaluation,
     PendingEvaluation,
     EvaluationSummary,
+    AddUpdatePeerAssesmentForm,
     AddUpdateMyGoals,
+    PeerAssessmentActions,
     MyGoalsActions,
     ViewMyGoalsDetails,
     MyGoals,
     TeamGoals,
     TeamGoalsActions,
+    EmployeeFeedback,
+    SubmitFeedBack,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,

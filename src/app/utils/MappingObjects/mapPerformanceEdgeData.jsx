@@ -1,5 +1,5 @@
 
-import { EvaluationForm, PerformanceCycle, EvaluationSubmission, MyGoals } from "app/utils/Types/PerformanceEdge";
+import { EvaluationForm, PerformanceCycle, EvaluationSubmission, MyGoals, EmployeeFeedback } from "app/utils/Types/PerformanceEdge";
 
 export function mapEvaluationPayloadData(data) {
     // Initialize an empty payload object
@@ -119,6 +119,7 @@ export function mapEmployeeGoalsPayload(data) {
     return payload;
 }
 
+
 export async function mapEmployeeGoalsData(data, fetchApprovalDetails = true) {
     const RecordDetails = {};
     for (const key of Object.keys(MyGoals)) {
@@ -127,4 +128,19 @@ export async function mapEmployeeGoalsData(data, fetchApprovalDetails = true) {
     }
 
     return RecordDetails;
+}
+
+export function mapEmployeeFeedbackPayload(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Task object
+    for (const key in EmployeeFeedback) {
+        // Check if the key exists in the data object
+        if (data.hasOwnProperty(key) && data[key]) {
+            // Add the key and its value to the payload
+            if (key === 'comments') payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+    return payload;
 }

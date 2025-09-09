@@ -41,19 +41,19 @@ const AddUpdateMyGoals = ({ id, isOpen = true, setIsOpen = () => { }, reloadData
 
     useEffect(() => {
         const fetchData = async (isMounted, id) => {
-        try {
-            setIsLoading(true);
-            const response = await getEmployeeGoalsById(id);
-            if (isMounted) {
-                setFormData({ ...response });
-                setFormValues({ ...response });
+            try {
+                setIsLoading(true);
+                const response = await getEmployeeGoalsById(id);
+                if (isMounted) {
+                    setFormData({ ...response });
+                    setFormValues({ ...response });
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error("Error fetching roles:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        };
         let isMounted = true;
         if (id) fetchData(isMounted, id);
         return () => {

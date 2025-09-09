@@ -16,6 +16,7 @@ import { MyGoalsColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
 const MyGoals = ({ reload, permittedViewFilterData }) => {
+    const { id: user_id } = GetDispatchStateList('userProfile', 'user');
     const Designations = GetDispatchStateList("designations", "common") || [];
     const Departments = GetDispatchStateList("departments", "common") || [];
 
@@ -53,7 +54,7 @@ const MyGoals = ({ reload, permittedViewFilterData }) => {
             setIsLoading(true);
             const filter = {
                 ...filterData,
-                ...permittedViewFilterData,
+                employee: user_id,
             };
             const response = await getEmployeeGoalsList({
                 filterData: filter,
@@ -119,7 +120,7 @@ const MyGoals = ({ reload, permittedViewFilterData }) => {
             <CardHeader>
                 <CardTitle>My Goals</CardTitle>
                 <CardDescription>
-                 Here you can create, manage, and track my personal goals
+                    Here you can create, manage, and track my personal goals
                 </CardDescription>
             </CardHeader>
             <CardContent>

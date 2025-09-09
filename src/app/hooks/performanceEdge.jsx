@@ -12,6 +12,7 @@ import {
   mapEvaltaionResults,
   mapEmployeeGoalsPayload,
   mapEmployeeGoalsData,
+  mapEmployeeFeedbackPayload,
 } from 'app/utils/MappingObjects/mapPerformanceEdgeData'
 
 
@@ -490,6 +491,7 @@ export const saveEmployeeGoals = async (payload, id) => {
   }
 };
 
+
 export const getEmployeeGoalsById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/EmployeeGoal/${id}`, {
@@ -533,3 +535,33 @@ export const getEmployeeGoalsList = async (payload) => {
     return false;
   }
 }
+
+export const saveEmployeeFeedback = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapEmployeeFeedbackPayload(payload);
+
+    const url = ID
+      ? `${baseUrl}/FeedBack/${ID}/` // Use id if updating
+      : `${baseUrl}/FeedBack/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};

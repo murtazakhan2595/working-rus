@@ -1,7 +1,7 @@
 import GenerateForm from './GenerateForm';
 import { EvaluationForm, AddUpdateEvaluationForm, EvaluationFormActions } from './EvaluationForm';
 import { SelfAssessmentForm, AddSelfAssessmentForm, SelfAssessmentFormActions } from './SelfAssessmentForm';
-import { PeerAssessmentForm } from './PeerAssessmentForm';
+import { PeerAssessmentForm, PeerAssessmentActions,AddUpdatePeerAssesmentForm } from './PeerAssessmentForm';
 export {
     GenerateForm,
     EvaluationForm,
@@ -11,4 +11,6 @@ export {
     AddSelfAssessmentForm,
     SelfAssessmentFormActions,
     PeerAssessmentForm,
+    PeerAssessmentActions,
+    AddUpdatePeerAssesmentForm,
 };
