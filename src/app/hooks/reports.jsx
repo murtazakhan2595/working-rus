@@ -111,18 +111,19 @@ export const getAllAgeGroups = async (filterData = {}) => {
     });
 
     if (response.data) {
-      const ageGroupsData = response.data;
+      const responseData = response.data;
 
-      // Calculate total employees
-      const totalEmployees = Object.values(ageGroupsData).reduce(
+      // Calculate total employees from age groups
+      const totalEmployees = Object.values(responseData.age_groups || {}).reduce(
         (total, group) => total + (group.total || 0),
         0
       );
 
       return {
         totalEmployees,
-        ageGroups: ageGroupsData,
-        raw: ageGroupsData,
+        ageGroups: responseData.age_groups || {},
+        averageAge: responseData.average_age || 0, // Get average age from backend
+        raw: responseData,
       };
     }
     return null;

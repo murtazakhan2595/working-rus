@@ -82,6 +82,7 @@ const DemographicsReport = ({
       // Combine all demographics data
       const combinedStats = {
         totalEmployees: tableResponse?.count || 0,
+        averageAge: allAgeGroupsResponse?.averageAge || 0, // Use backend average age
         ageGroups: allAgeGroupsResponse?.ageGroups || {},
         uaeAgeGroups: uaeAgeGroupsResponse?.ageGroups || {},
         totalUAEEmployees: uaeAgeGroupsResponse?.totalUAEEmployees || 0,
@@ -211,14 +212,7 @@ const DemographicsReport = ({
   // Calculate summary stats
   const stats = {
     totalEmployees: demographicsStats?.totalEmployees || 0,
-    averageAge: React.useMemo(() => {
-      if (!employeeData.results.length) return 0;
-      const totalAge = employeeData.results.reduce(
-        (sum, emp) => sum + (parseInt(emp.age) || 0),
-        0
-      );
-      return Math.round(totalAge / employeeData.results.length);
-    }, [employeeData.results]),
+    averageAge: demographicsStats?.averageAge || 0, // Use backend average age
     malePercentage: React.useMemo(() => {
       if (!demographicsStats?.genderDistribution) return 0;
       const male = demographicsStats.genderDistribution.MALE || 0;
