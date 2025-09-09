@@ -192,7 +192,7 @@ export const SidebarRoutes = [
       Config.MY_PERFORMANCE && {
         path: "/my-performance",
         component: <MyPerformance />,
-        name: "EXIT",
+        name: "MY_PERFORMANCE",
       },
     ].filter(Boolean) // Filter out undefined routes
     : []),

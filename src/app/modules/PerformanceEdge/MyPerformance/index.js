@@ -2,6 +2,7 @@ import MyPerformance from './MyPerformance';
 import MyPerformanceActions from './MyPerformanceActions';
 import StartAssessmentForm from './StartAssessmentForm';
 import { Evaluations } from './Evaluations';
+import { AddUpdateMyGoals,MyGoals,MyGoalsActions,ViewMyGoalsDetails } from './MyGoals';
 import { EvaluationResults, EvaluationResultsActions ,EvaluationResultDetails} from './EvaluationResults';
 
 export {
@@ -12,4 +13,8 @@ export {
     EvaluationResults,
     EvaluationResultsActions,
     EvaluationResultDetails,
+    AddUpdateMyGoals,
+    MyGoals,
+    MyGoalsActions,
+    ViewMyGoalsDetails,
 };

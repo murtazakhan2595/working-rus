@@ -1,6 +1,5 @@
 
-import { EvaluationForm, PerformanceCycle, EvaluationSubmission } from "app/utils/Types/PerformanceEdge";
-import { isArray } from "lodash";
+import { EvaluationForm, PerformanceCycle, EvaluationSubmission, MyGoals } from "app/utils/Types/PerformanceEdge";
 
 export function mapEvaluationPayloadData(data) {
     // Initialize an empty payload object
@@ -31,6 +30,7 @@ export async function mapEvaluatoionData(data, fetchApprovalDetails = true) {
 
     return RecordDetails;
 }
+
 export async function mapPerformanceCycleData(data, fetchApprovalDetails = true) {
     const RecordDetails = {};
     for (const key of Object.keys(PerformanceCycle)) {
@@ -97,4 +97,34 @@ export async function mapEvaltaionResults(submissions, submissionanswers) {
         RecordList.push(RecordDetails);
     }
     return RecordList;
+
+}
+
+export function mapEmployeeGoalsPayload(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Task object
+    for (const key in MyGoals) {
+        // Check if the key exists in the data object
+        if (data.hasOwnProperty(key) && data[key]) {
+            // Add the key and its value to the payload
+            if (key === 'title' || key === 'description') payload[key] = data[key].trim();
+            // else if (["nationalities", "branches", "departments", "designation"].includes(key)) {
+            //     if (Array.isArray(data[key]))
+            //         payload[key] = data[key].filter(Boolean);
+            // }
+            else payload[key] = data[key];
+        }
+    }
+    return payload;
+}
+
+export async function mapEmployeeGoalsData(data, fetchApprovalDetails = true) {
+    const RecordDetails = {};
+    for (const key of Object.keys(MyGoals)) {
+        if (Object.prototype.hasOwnProperty.call(data, key))
+            RecordDetails[key] = data[key];
+    }
+
+    return RecordDetails;
 }
