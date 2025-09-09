@@ -43,6 +43,8 @@ import {
     TeamPerformanceEvaluation,
     PendingEvaluation,
     EvaluationSummary,
+    TeamGoals,
+    TeamGoalsActions,
 } from './TeamPerformanceEvaluation';
 
 export {
@@ -72,6 +74,8 @@ export {
     MyGoalsActions,
     ViewMyGoalsDetails,
     MyGoals,
+    TeamGoals,
+    TeamGoalsActions,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,

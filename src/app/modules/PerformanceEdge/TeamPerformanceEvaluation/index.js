@@ -1,5 +1,5 @@
 import TeamPerformanceEvaluation from './TeamPerformanceEvaluation';
 import PendingEvaluation from './PendingEvaluation';
 import EvaluationSummary from './EvaluationSummary';
-
-export { TeamPerformanceEvaluation, PendingEvaluation, EvaluationSummary };
+import { TeamGoals,TeamGoalsActions } from './TeamGoals';
+export { TeamPerformanceEvaluation, PendingEvaluation, EvaluationSummary, TeamGoals ,TeamGoalsActions};

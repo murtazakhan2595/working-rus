@@ -16,6 +16,7 @@ import {
     EvaluationSummary,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
+    TeamGoals
 } from 'app/modules/PerformanceEdge';
 const TeamPerformanceEvaluation = ({ }) => {
     // permissions for tranfer
@@ -32,6 +33,7 @@ const TeamPerformanceEvaluation = ({ }) => {
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
         ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Team Goals"] : []),
     ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
 
@@ -90,8 +92,8 @@ const TeamPerformanceEvaluation = ({ }) => {
                     <TabsContent value="Evaluation Summary">
                         <EvaluationSummary />
                     </TabsContent>
-                    <TabsContent value="Peer Assessment">
-                        <PeerAssessmentForm />
+                    <TabsContent value="Team Goals">
+                        <TeamGoals />
                     </TabsContent>
                 </Card>
             </Tabs>

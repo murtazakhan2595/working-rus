@@ -4,6 +4,7 @@ import {
     ManagerPendingEvaluationColumns,
     ManagerFinalEvaluationColumns,
     MyGoalsColumns,
+    TeamGoalsColumns,
 } from './TableColumn';
 
 export {
@@ -12,4 +13,5 @@ export {
     ManagerPendingEvaluationColumns,
     ManagerFinalEvaluationColumns,
     MyGoalsColumns,
+    TeamGoalsColumns,
 }

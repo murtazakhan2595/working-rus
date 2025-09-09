@@ -2,7 +2,10 @@ import { MultiStatusLabel, EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
-import { EvaluationResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions } from 'app/modules/PerformanceEdge';
+import {
+    EvaluationResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
+    TeamGoalsActions
+} from 'app/modules/PerformanceEdge';
 /**
  * EvaluationResultColumns
  *
@@ -219,6 +222,43 @@ export const MyGoalsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, dataList) => (
             <MyGoalsActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+export const TeamGoalsColumns = (reloadData) => [
+    {
+        dataField: "employee",
+        text: "Employee",
+        formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+    },
+    {
+        dataField: "title",
+        text: "Goal Title",
+    },
+    {
+        dataField: "due_date",
+        text: "Due Date",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "alignment",
+        text: "Alignment",
+        formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        dataSort: true,
+        formatter: (cell) => (
+            <StatusLabel status={cell}>{cell?.replace('_', ' ')?.toLowerCase()}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <TeamGoalsActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
