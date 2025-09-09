@@ -19,7 +19,7 @@ const ViewMyGoalsDetails = ({
     DataList = [],
     managerView = false,
 }) => {
-    const managePermitted = HasAccess("MANAGE_TIME_ADJ_REQUESTS");
+    const managePermitted = HasAccess("MANAGE_TEAM_GOAL");
     const { id: user_id, role: user_role } = useSelector(
         (state) => state.user.userProfile
     );
@@ -29,7 +29,7 @@ const ViewMyGoalsDetails = ({
         event.preventDefault();
         event.stopPropagation();
         try {
-            const response = await saveEmployeeGoals({ id: id });
+            const response = await saveEmployeeGoals({ id: id, aprroval_status: status });
             if (response) {
                 toast.success(`Goal ${status} Successfully!`);
                 setForceLoad(!forceLoad);
@@ -114,15 +114,12 @@ const ViewMyGoalsDetails = ({
             renderContent: (data) => {
                 if (!managerView) return <></>;
                 if (!managePermitted) return null;
-                if (!data || !data.status || data.status?.toLowerCase() !== "pending")
-                    return null;
-                if (!data.current_approver) return null;
-                if (data.current_approver.includes(user_id) || user_role.includes(1))
+                if (data && data.aprroval_status && data.aprroval_status?.toLowerCase() === "pending")
                     return (
                         <div className="flex flex-wrap justify-end gap-2 my-5">
                             <Button
                                 variant="success"
-                                onClick={(event) => handleClick(event, "Approved", data)}
+                                onClick={(event) => handleClick(event, "Active", data)}
                             >
                                 Approve
                             </Button>

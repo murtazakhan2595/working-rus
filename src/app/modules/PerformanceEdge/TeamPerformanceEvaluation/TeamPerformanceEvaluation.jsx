@@ -20,6 +20,7 @@ import {
 } from 'app/modules/PerformanceEdge';
 const TeamPerformanceEvaluation = ({ }) => {
     // permissions for tranfer
+    const isViewGoalsPermitted = HasAccess("VIEW_TEAM_GOALS");
     const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
     const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
     const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
@@ -33,8 +34,8 @@ const TeamPerformanceEvaluation = ({ }) => {
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
         ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
-        ...(isViewFinalEvaluatioFormPermitted ? ["Team Goals"] : []),
-    ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
+        ...(isViewGoalsPermitted ? ["Team Goals"] : []),
+    ], [isViewGoalsPermitted, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
 
     const handleRequestClick = (event) => {

@@ -210,6 +210,14 @@ export const MyGoalsColumns = (reloadData) => [
         formatter: (cell) => <div className="text-capitalize">{cell}</div>,
     },
     {
+        dataField: "aprroval_status",
+        text: "Approval Status",
+        dataSort: true,
+        formatter: (cell) => (
+            <StatusLabel status={cell}>{cell?.replace('_', ' ')?.toLowerCase()}</StatusLabel>
+        ),
+    },
+    {
         dataField: "status",
         text: "Status",
         dataSort: true,

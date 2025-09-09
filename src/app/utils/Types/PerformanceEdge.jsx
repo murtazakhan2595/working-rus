@@ -54,4 +54,5 @@ export const MyGoals = {
     created_at: null,
     key_results: null,
     employee: null,
+    aprroval_status: 'Pending',
 }
