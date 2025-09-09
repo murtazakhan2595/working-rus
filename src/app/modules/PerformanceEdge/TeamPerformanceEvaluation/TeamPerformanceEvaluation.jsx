@@ -13,9 +13,10 @@ import { Button } from "components/ui/button";
 import {
     PendingEvaluation,
     AddUpdateEvaluationForm,
-    EvaluationResults,
+    EvaluationSummary,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
+    TeamGoals
 } from 'app/modules/PerformanceEdge';
 const TeamPerformanceEvaluation = ({ }) => {
     // permissions for tranfer
@@ -31,7 +32,8 @@ const TeamPerformanceEvaluation = ({ }) => {
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
-        // ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Team Goals"] : []),
     ], [, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
 
@@ -87,11 +89,11 @@ const TeamPerformanceEvaluation = ({ }) => {
                     <TabsContent value="Pending Evaluation">
                         <PendingEvaluation />
                     </TabsContent>
-                    <TabsContent value="Final Evaluations">
-                        <EvaluationResults />
+                    <TabsContent value="Evaluation Summary">
+                        <EvaluationSummary />
                     </TabsContent>
-                    <TabsContent value="Peer Assessment">
-                        <PeerAssessmentForm />
+                    <TabsContent value="Team Goals">
+                        <TeamGoals />
                     </TabsContent>
                 </Card>
             </Tabs>

@@ -10,6 +10,8 @@ import {
   mapAssesmentForm,
   mapEvaluationSubmissionPayloadData,
   mapEvaltaionResults,
+  mapEmployeeGoalsPayload,
+  mapEmployeeGoalsData,
 } from 'app/utils/MappingObjects/mapPerformanceEdgeData'
 
 
@@ -386,7 +388,7 @@ export const getSubmissionAnswers = async (payload) => {
     return false;
   }
 }
-export const getEvaluationsResults = async (payload) => {
+export const getManagerFinalEvaluation = async (payload) => {
   try {
     const pageNo = payload?.options?.page ?? "";
     const pageSize = payload?.options?.sizePerPage ?? "";
@@ -413,7 +415,7 @@ export const getEvaluationsResults = async (payload) => {
     return false;
   }
 }
-export const getFinalEvaluationById = async (id) => {
+export const getManagerFinalEvaluationById = async (id) => {
   try {
     const URL = `/FinalEvaluation/${id}/`;
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -440,6 +442,80 @@ export const getManagerPendingEvaluation = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
   let URL = `/pendingForm/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation requests:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
+export const saveEmployeeGoals = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapEmployeeGoalsPayload(payload);
+
+    const url = ID
+      ? `${baseUrl}/EmployeeGoal/${ID}/` // Use id if updating
+      : `${baseUrl}/EmployeeGoal/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getEmployeeGoalsById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/EmployeeGoal/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapEmployeeGoalsData(Response);
+
+      return { ...ResponseData };
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getEmployeeGoalsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  const URL = `/EmployeeGoal/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;

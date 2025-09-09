@@ -3,7 +3,7 @@ import {
     NavigationSheetComponent,
     DetailContent,
 } from "components";
-import { getFinalEvaluationById } from 'app/hooks/performanceEdge';
+import { getManagerFinalEvaluationById } from 'app/hooks/performanceEdge';
 import { StatusLabel } from "components";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -138,7 +138,7 @@ const EvaluationResultDetails = ({
 
     const fetchData = async (id, isMounted) => {
         try {
-            const response = await getFinalEvaluationById(id);
+            const response = await getManagerFinalEvaluationById(id);
             if (isMounted) {
                 return response;
             }
