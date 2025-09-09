@@ -14,7 +14,9 @@ import {
   GraceTime,
   Designations,
   EvaluationType,
-  AddEvaluationType
+  AddEvaluationType,
+  RatingScaleSetup,
+  AddRatingScaleSetup,
 } from "app/modules/OfficeSetting/Screens";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
@@ -240,6 +242,11 @@ const OfficeSetting = () => {
       label: "Evaluation Type",
       permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
     },
+    {
+      value: "rating-scale-setup",
+      label: "Rating Scale Setup",
+      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    },
   ];
 
   // Filter tabs based on permissions
@@ -384,6 +391,21 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
+              ) : activeTab === "rating-scale-setup" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE}
+                >
+                  <AddRatingScaleSetup
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          'rating-scale-setup': !prev["rating-scale-setup"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
               ) : null
             }
           />
@@ -513,6 +535,9 @@ const OfficeSetting = () => {
               </TabsContent>
               <TabsContent value="evaluation-type">
                 <EvaluationType reload={reloadSettingData["evaluation-type"]} />
+              </TabsContent>
+              <TabsContent value="rating-scale-setup">
+                <RatingScaleSetup reload={reloadSettingData["rating-scale-setup"]} />
               </TabsContent>
               <TabsContent value="onboarding">
                 <OnboardingChecklist reload={reloadSettingData["onboarding"]} />

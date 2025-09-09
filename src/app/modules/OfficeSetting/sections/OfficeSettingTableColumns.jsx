@@ -1,6 +1,7 @@
 import BranchAction from "../Screens/Branches/BranchAction";
 import GraceTimeAction from "../Screens/GraceTime/GraceTimeAction";
 import EvaluationTypeAction from "../Screens/EvaluationType/EvaluationTypeAction";
+import RatingScaleSetupAction from "../Screens/RatingScaleSetup/RatingScaleSetupAction";
 import { ShiftActions } from "app/modules/OfficeSetting";
 import DepartmentAction from "../Screens/Departments/DepartmentAction";
 import DesignationAction from "../Screens/Designations/DesignationAction";
@@ -157,7 +158,7 @@ export const GraceTimeColumn = (reload) => [
     dataField: "id",
     text: "ID",
     dataSort: true,
-    formatter: (cell, row) => <FormatID value={cell} prefix={"GT-"} />,
+    formatter: (cell, row) => <FormatID value={cell} prefix={"RSS-"} />,
   },
   {
     dataField: "name",
@@ -212,7 +213,7 @@ export const EvaluationTypeColumn = (reload) => [
   {
     dataField: "description",
     text: "Description",
-    maxWidth:'200px'
+    maxWidth: '200px'
   },
   {
     dataField: "created_by",
@@ -237,6 +238,47 @@ export const EvaluationTypeColumn = (reload) => [
     text: "Action",
     formatter: (_, row, data_list) => (
       <EvaluationTypeAction reloadData={reload} data={row} DataList={data_list} />
+    ),
+    width: "80px",
+  },
+];
+
+export const RatingScaleSetupColumn = (reload) => [
+  {
+    dataField: "id",
+    text: "ID",
+    dataSort: true,
+    formatter: (cell) => <FormatID value={cell} prefix={"EVT-"} />,
+  },
+  {
+    dataField: "name",
+    dataSort: true,
+    text: "Name",
+  },
+  {
+    dataField: "scale_type",
+    text: "Scale Type",
+    dataSort: true,
+    formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+  },
+  {
+    dataField: "created_by",
+    text: "Created By",
+    formatter: (cell) => (
+      <div className="flex flex-col gap-1">
+        <span>
+          <EmployeeName value={cell} />
+        </span>
+        <span className="text-neutral-800 text-xs">
+          (<EmployeeUsername value={cell} fallBackText={"--"} />)
+        </span>
+      </div>
+    ),
+  },
+  {
+    text: "Action",
+    formatter: (_, row, data_list) => (
+      <RatingScaleSetupAction reloadData={reload} data={row} DataList={data_list} />
     ),
     width: "80px",
   },

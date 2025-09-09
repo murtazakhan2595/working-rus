@@ -98,5 +98,12 @@ export const useOfficeSettingPermissions = () => {
       canUpdate: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.UPDATE),
       canDelete: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.DELETE)
     },
+
+    ratingScale: {
+      canView: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.VIEW),
+      canCreate: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.CREATE),
+      canUpdate: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.UPDATE),
+      canDelete: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.DELETE)
+    },
   };
 }; 

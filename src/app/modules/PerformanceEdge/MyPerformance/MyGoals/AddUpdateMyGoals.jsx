@@ -1,26 +1,19 @@
-import { getEvaluationTypeList } from 'app/hooks/officeSetting';
-import { saveEmployeeGoals, getEmployeeGoalsById, getEvaluationFormsList } from 'app/hooks/performanceEdge';
+import { saveEmployeeGoals, getEmployeeGoalsById } from 'app/hooks/performanceEdge';
 import { MyGoals } from "app/utils/Types/PerformanceEdge";
-import { getEmployeeTenure } from "app/hooks/general";
 import {
     TextAreaInput,
     TextInput,
     SelectInputComponent,
-    RadioGroupInput,
     NumberInput,
     DateInput,
-    TextInputDropdown,
-    SelectMultiInputComponent,
 } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { errorClassName } from "components/FormControl";
-import AlertDialogue from "components/ui/AlertDialogue";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { EmployeeDetailUI, SheetUI } from "components";
-import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
-import { countriesList } from "data/Data";
-import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
+import { SheetUI } from "components";
+import { GetDispatchStateList } from "utils/Lists";
+
 const AddUpdateMyGoals = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, }) => {
     const UserDetails = GetDispatchStateList('user_details', 'emp');
     const [selectedEmployee, setSelectedEmployee] = useState({});

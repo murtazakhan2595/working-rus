@@ -47,3 +47,13 @@ export const EvaluationType = {
   created_at: null,
   created_by: null,
 }
+
+export const RatingScaleSetup = {
+  name: null,
+  scale_type: null,
+  is_default: null,
+  id: null,
+  rating_values: null,
+  id: null,
+ created_by :null,
+}
