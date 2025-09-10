@@ -92,84 +92,7 @@ export const ResignationReportColumns = () => [
   },
 ];
 
-// Exit Request Report Columns (v1)
-export const ExitRequestReportColumns = () => [
-  {
-    dataField: "employee_id",
-    text: "Employee ID",
-    dataSort: true,
-    formatter: (cell) => (
-      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
-    ),
-  },
-  {
-    dataField: "name",
-    text: "Employee Name",
-    dataSort: true,
-    formatter: (cell, row) => (
-      <div>
-        <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
-        <div className="text-xs text-neutral-800">
-          {row.department || "N/A"}
-        </div>
-      </div>
-    ),
-  },
-  {
-    dataField: "designation",
-    text: "Designation",
-    dataSort: true,
-    formatter: (cell) => (
-      <Badge variant="outline" className="text-xs">
-        {<DesignationName value={cell} />}
-      </Badge>
-    ),
-  },
-  {
-    dataField: "exit_request_date",
-    text: "Request Date",
-    dataSort: true,
-    formatter: (cell) => renderDate(cell),
-  },
-  {
-    dataField: "last_working_day",
-    text: "Last Working Day",
-    dataSort: true,
-    formatter: (cell) => renderDate(cell),
-  },
-  {
-    dataField: "reason_for_exit",
-    text: "Exit Reason",
-    dataSort: true,
-    formatter: (cell) => (
-      <Badge variant="secondary" className="text-xs">
-        {cell || "N/A"}
-      </Badge>
-    ),
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    dataSort: true,
-    formatter: (cell) => {
-      const variants = {
-        APPROVED: "success",
-        PENDING: "warning",
-        REJECTED: "error",
-      };
-      return (
-        <StatusLabel
-          status={cell}
-          variant={variants[cell?.toUpperCase()] || "neutral"}
-        >
-          {cell || "N/A"}
-        </StatusLabel>
-      );
-    },
-  },
-];
-
-// Enhanced Exit Request Report Columns (v2)
+// Enhanced Exit Request Report Columns (v2) - MATCHES API EXACTLY
 export const V2ExitRequestReportColumns = () => [
   {
     dataField: "employee_id",
@@ -320,199 +243,430 @@ export const AttritionRetentionReportColumns = () => [
   },
 ];
 
-// Placeholder columns for missing APIs
-
-// Termination Report Columns (Placeholder)
+// Termination Report Columns - MATCHES v2-termination-report API
 export const TerminationReportColumns = () => [
   {
     dataField: "employee_id",
     text: "Employee ID",
     dataSort: true,
+    formatter: (cell) => (
+      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
+    ),
   },
   {
     dataField: "name",
     text: "Employee Name",
     dataSort: true,
+    formatter: (cell, row) => (
+      <div>
+        <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
+        <div className="text-xs text-neutral-800">
+          {row.department || "N/A"}
+        </div>
+      </div>
+    ),
   },
   {
-    dataField: "department",
-    text: "Department",
+    dataField: "designation",
+    text: "Designation",
     dataSort: true,
+    formatter: (cell) => (
+      <Badge variant="outline" className="text-xs">
+        {cell || "N/A"}
+      </Badge>
+    ),
   },
   {
     dataField: "termination_date",
     text: "Termination Date",
     dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">
+        {cell === "N/A" ? "N/A" : renderDate(cell)}
+      </span>
+    ),
   },
   {
     dataField: "termination_type",
     text: "Type",
     dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        "Voluntary Resignation": "info",
+        Involuntary: "error",
+        Immediate: "error",
+        "With Notice": "warning",
+      };
+      return (
+        <Badge variant={variants[cell] || "neutral"} className="text-xs">
+          {cell || "N/A"}
+        </Badge>
+      );
+    },
+  },
+  {
+    dataField: "notice_period",
+    text: "Notice Period",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">{cell || "N/A"}</span>
+    ),
   },
   {
     dataField: "reason_for_termination",
     text: "Reason",
     dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">{cell || "N/A"}</span>
+    ),
   },
   {
     dataField: "status",
     text: "Status",
     dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        APPROVED: "success",
+        PENDING: "warning",
+        REJECTED: "error",
+      };
+      return (
+        <StatusLabel
+          status={cell}
+          variant={variants[cell?.toUpperCase()] || "neutral"}
+        >
+          {cell || "N/A"}
+        </StatusLabel>
+      );
+    },
   },
 ];
 
-// Clearance Pending Report Columns (Placeholder)
-export const ClearancePendingReportColumns = () => [
-  {
-    dataField: "employee_id",
-    text: "Employee ID",
-    dataSort: true,
-  },
-  {
-    dataField: "name",
-    text: "Employee Name",
-    dataSort: true,
-  },
-  {
-    dataField: "assets_pending",
-    text: "Assets Pending",
-    dataSort: false,
-  },
-  {
-    dataField: "payroll_pending",
-    text: "Payroll Pending",
-    dataSort: false,
-  },
-  {
-    dataField: "hr_docs_pending",
-    text: "HR Docs Pending",
-    dataSort: false,
-  },
-  {
-    dataField: "clearance_status",
-    text: "Clearance Status",
-    dataSort: true,
-  },
-];
-
-// Exit Interview Report Columns (Placeholder)
-export const ExitInterviewReportColumns = () => [
-  {
-    dataField: "employee_id",
-    text: "Employee ID",
-    dataSort: true,
-  },
-  {
-    dataField: "name",
-    text: "Employee Name",
-    dataSort: true,
-  },
-  {
-    dataField: "exit_date",
-    text: "Exit Date",
-    dataSort: true,
-  },
-  {
-    dataField: "exit_reason",
-    text: "Exit Reason",
-    dataSort: true,
-  },
-  {
-    dataField: "interviewer",
-    text: "Interviewer",
-    dataSort: true,
-  },
-  {
-    dataField: "rating",
-    text: "Rating (1-5)",
-    dataSort: true,
-  },
-  {
-    dataField: "feedback_summary",
-    text: "Feedback Summary",
-    dataSort: false,
-  },
-];
-
-// Notice Period Compliance Report Columns (Placeholder)
+// Notice Period Compliance Report Columns - MATCHES notice-period-compliance-report API
 export const NoticePeriodComplianceColumns = () => [
   {
     dataField: "employee_id",
     text: "Employee ID",
     dataSort: true,
+    formatter: (cell) => (
+      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
+    ),
   },
   {
     dataField: "name",
     text: "Employee Name",
     dataSort: true,
-  },
-  {
-    dataField: "department",
-    text: "Department",
-    dataSort: true,
-  },
-  {
-    dataField: "notice_start_date",
-    text: "Notice Start",
-    dataSort: true,
-  },
-  {
-    dataField: "notice_end_date",
-    text: "Notice End",
-    dataSort: true,
-  },
-  {
-    dataField: "total_notice_days",
-    text: "Required Days",
-    dataSort: true,
-  },
-  {
-    dataField: "served_days",
-    text: "Served Days",
-    dataSort: true,
-  },
-  {
-    dataField: "compliance_status",
-    text: "Compliance",
-    dataSort: true,
-  },
-];
-
-// Rehire Eligibility Report Columns (Placeholder)
-export const RehireEligibilityReportColumns = () => [
-  {
-    dataField: "employee_id",
-    text: "Employee ID",
-    dataSort: true,
-  },
-  {
-    dataField: "name",
-    text: "Employee Name",
-    dataSort: true,
+    formatter: (cell, row) => (
+      <div>
+        <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
+        <div className="text-xs text-neutral-800">
+          {row.department || "N/A"}
+        </div>
+      </div>
+    ),
   },
   {
     dataField: "exit_type",
     text: "Exit Type",
     dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Voluntary: "info",
+        Retirement: "secondary",
+        Others: "neutral",
+      };
+      return (
+        <Badge variant={variants[cell] || "neutral"} className="text-xs">
+          {cell || "N/A"}
+        </Badge>
+      );
+    },
+  },
+  {
+    dataField: "notice_start_date",
+    text: "Notice Start",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">
+        {cell === "N/A" ? "N/A" : renderDate(cell)}
+      </span>
+    ),
+  },
+  {
+    dataField: "notice_end_date",
+    text: "Notice End",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">
+        {cell === "N/A" ? "N/A" : renderDate(cell)}
+      </span>
+    ),
+  },
+  {
+    dataField: "total_notice_days",
+    text: "Required Days",
+    dataSort: true,
+    formatter: (cell) => (
+      <div className="text-center">
+        <span className="text-lg font-medium text-neutral-1200">
+          {cell || 0}
+        </span>
+      </div>
+    ),
+  },
+  {
+    dataField: "served_days",
+    text: "Served Days",
+    dataSort: true,
+    formatter: (cell) => (
+      <div className="text-center">
+        <span className="text-lg font-medium text-blue-600">{cell || 0}</span>
+      </div>
+    ),
+  },
+  {
+    dataField: "compliance_status",
+    text: "Compliance",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Compliant: "success",
+        "Non-Compliant": "error",
+        "N/A": "neutral",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "N/A"}
+        </StatusLabel>
+      );
+    },
+  },
+];
+
+// Exit Interview Report Columns - MATCHES Exit-Interview-Report API
+export const ExitInterviewReportColumns = () => [
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
+    ),
+  },
+  {
+    dataField: "name",
+    text: "Employee Name",
+    dataSort: true,
+    formatter: (cell) => (
+      <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
+    ),
   },
   {
     dataField: "exit_reason",
     text: "Exit Reason",
     dataSort: true,
+    formatter: (cell) => (
+      <Badge variant="secondary" className="text-xs">
+        {cell === "N/A" ? "Not Specified" : cell || "N/A"}
+      </Badge>
+    ),
+  },
+  {
+    dataField: "rehire_eligible",
+    text: "Rehire Eligible",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Yes: "success",
+        No: "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "N/A"}
+        </StatusLabel>
+      );
+    },
+  },
+  {
+    dataField: "nationality",
+    text: "Nationality",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">{cell || "N/A"}</span>
+    ),
+  },
+];
+
+// Rehire Eligibility Report Columns - MATCHES rehire-eligibility-report API
+export const RehireEligibilityReportColumns = () => [
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
+    ),
+  },
+  {
+    dataField: "name",
+    text: "Employee Name",
+    dataSort: true,
+    formatter: (cell) => (
+      <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
+    ),
+  },
+  {
+    dataField: "exit_type",
+    text: "Exit Type",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Voluntary: "info",
+        Retirement: "secondary",
+        Others: "neutral",
+      };
+      return (
+        <Badge variant={variants[cell] || "neutral"} className="text-xs">
+          {cell || "N/A"}
+        </Badge>
+      );
+    },
+  },
+  {
+    dataField: "exit_reason",
+    text: "Exit Reason",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">
+        {cell === "N/A" ? "Not Specified" : cell || "N/A"}
+      </span>
+    ),
   },
   {
     dataField: "hr_decision",
     text: "HR Decision",
     dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">
+        {cell === "N/A" ? "Pending" : cell || "N/A"}
+      </span>
+    ),
   },
   {
     dataField: "eligible_for_rehire",
     text: "Eligible for Rehire",
     dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Yes: "success",
+        No: "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "N/A"}
+        </StatusLabel>
+      );
+    },
   },
   {
     dataField: "notes",
     text: "Notes",
     dataSort: false,
+    formatter: (cell) => (
+      <div className="max-w-xs">
+        <span className="text-sm text-neutral-1000">
+          {cell === "N/A" ? "No notes" : cell || "N/A"}
+        </span>
+      </div>
+    ),
+  },
+];
+
+// Clearance Pending Report Columns - PLACEHOLDER (API not available yet)
+export const ClearancePendingReportColumns = () => [
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
+    ),
+  },
+  {
+    dataField: "name",
+    text: "Employee Name",
+    dataSort: true,
+    formatter: (cell) => (
+      <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
+    ),
+  },
+  {
+    dataField: "assets_status",
+    text: "Assets",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Completed: "success",
+        Pending: "warning",
+        Overdue: "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "Pending"}
+        </StatusLabel>
+      );
+    },
+  },
+  {
+    dataField: "payroll_status",
+    text: "Payroll",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Completed: "success",
+        Pending: "warning",
+        Issues: "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "Pending"}
+        </StatusLabel>
+      );
+    },
+  },
+  {
+    dataField: "hr_docs_status",
+    text: "HR Documents",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Completed: "success",
+        Pending: "warning",
+        Missing: "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "Pending"}
+        </StatusLabel>
+      );
+    },
+  },
+  {
+    dataField: "clearance_status",
+    text: "Overall Status",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        Cleared: "success",
+        Partial: "warning",
+        Pending: "info",
+        Blocked: "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "Pending"}
+        </StatusLabel>
+      );
+    },
   },
 ];
