@@ -6,6 +6,7 @@ import {
     MyGoalsColumns,
     TeamGoalsColumns,
     PeerAssessmentFormColumns,
+    MyPerformanceCycleColumns,
 } from './TableColumn';
 import PerformanceProccessBar from './PerformanceProccessBar';
 export {
@@ -17,4 +18,5 @@ export {
     TeamGoalsColumns,
     PeerAssessmentFormColumns,
     PerformanceProccessBar,
+    MyPerformanceCycleColumns,
 }

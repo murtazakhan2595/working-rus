@@ -97,7 +97,7 @@ const CreateUpdateCycleForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values };
+            const payload = { ...values, forms: [...values.forms, values.self_assement_form, values.peer_assessment_form].filter(Boolean) };
             const response = await savePerformanceCycle(payload, id);
             if (response) {
                 return {

@@ -96,7 +96,9 @@ export async function mapPerformanceCycleData(data, fetchApprovalDetails = true)
             RecordDetails[key] = `${data['review_start'] || undefined},${data['review_end'] || undefined}`;
         }
         if (Object.prototype.hasOwnProperty.call(data, key))
-            RecordDetails[key] = data[key];
+            if (key === 'forms' && Array.isArray(data[key]))
+                RecordDetails[key] = data[key].filter(Boolean);
+            else RecordDetails[key] = data[key];
     }
 
     return RecordDetails;

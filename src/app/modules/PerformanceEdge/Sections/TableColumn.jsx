@@ -61,6 +61,49 @@ export const EvaluationResultColumns = (reloadData) => [
     },
 ];
 
+/**
+ * MyPerformanceCycleColumns
+ *
+ * Returns an array of column definitions for the MyPerformanceCycleColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const MyPerformanceCycleColumns = (reloadData) => [
+    {
+        dataField: "name",
+        text: "Name",
+        dataSort: true,
+    },
+    {
+        dataField: "review_start",
+        text: "Review Period",
+        dataSort: true,
+        formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
+    },
+    {
+        dataField: "self_assessment_enabled",
+        text: "Self Assessment",
+        formatter: (cell, row) => (
+            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "peer_assessment_enabled",
+        text: "Peer Assessment",
+        formatter: (cell, row) => (
+            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+        ),
+    },
+
+
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <MyPerformanceActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
 
 /**
  * PerformanceCycleColumns
@@ -86,6 +129,20 @@ export const PerformanceCycleColumns = (reloadData) => [
         text: "Review Period",
         dataSort: true,
         formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
+    },
+    {
+        dataField: "self_assessment_enabled",
+        text: "Self Assessment",
+        formatter: (cell, row) => (
+            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+        ),
+    },
+    {
+        dataField: "peer_assessment_enabled",
+        text: "Peer Assessment",
+        formatter: (cell, row) => (
+            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+        ),
     },
     {
         dataField: "",
