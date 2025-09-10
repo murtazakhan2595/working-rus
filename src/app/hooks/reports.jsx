@@ -730,7 +730,7 @@ export const getAttritionRetentionReportData = async (filterData = {}) => {
   }
 };
 
-// Update export function to include new report types
+// Update export function to include clearance pending reports
 export const exportExitClearanceReport = async (reportType, filterData = {}) => {
   try {
     let response, dataToExport, filename;
@@ -835,6 +835,34 @@ export const exportExitClearanceReport = async (reportType, filterData = {}) => 
           "Retention %": item.retention_percent,
         }));
         filename = "Attrition_Retention_Report";
+        break;
+
+      case "clearance_pending_report":
+        response = await getV2ClearancePendingReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Payroll Status": item.payroll,
+          "Assets Status": item.assets,
+          "HR Documents Status": item.hr_docs,
+          "Nationality": item.nationality,
+        }));
+        filename = "Clearance_Pending_Report";
+        break;
+
+      case "detailed_clearance_pending_report":
+        response = await getClearancePendingReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Assets Pending": Array.isArray(item.assets_pending) 
+            ? item.assets_pending.filter(asset => asset !== null).join(", ") || "None"
+            : "None",
+          "Payroll Pending": item.payroll_pending,
+          "HR Documents Pending": item.hr_docs_pending,
+          "Clearance Status": item.clearance_status,
+        }));
+        filename = "Detailed_Clearance_Pending_Report";
         break;
 
       default:
@@ -1024,6 +1052,75 @@ export const getV2AttritionRehireEligibilityData = async (payload) => {
     return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching v2 attrition rehire eligibility data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+
+// Get clearance pending report data (detailed version)
+export const getClearancePendingReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/Clearance-Pending-Report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching clearance pending data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get v2 clearance pending report data (simplified version)
+export const getV2ClearancePendingReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/v2-Clearance-Pending-Report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching v2 clearance pending data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }

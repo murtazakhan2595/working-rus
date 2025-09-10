@@ -582,7 +582,8 @@ export const RehireEligibilityReportColumns = () => [
   },
 ];
 
-// Clearance Pending Report Columns - PLACEHOLDER (API not available yet)
+
+// Clearance Pending Report Columns - MATCHES v2-Clearance-Pending-Report API
 export const ClearancePendingReportColumns = () => [
   {
     dataField: "employee_id",
@@ -601,31 +602,14 @@ export const ClearancePendingReportColumns = () => [
     ),
   },
   {
-    dataField: "assets_status",
-    text: "Assets",
-    dataSort: true,
-    formatter: (cell) => {
-      const variants = {
-        Completed: "success",
-        Pending: "warning",
-        Overdue: "error",
-      };
-      return (
-        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
-          {cell || "Pending"}
-        </StatusLabel>
-      );
-    },
-  },
-  {
-    dataField: "payroll_status",
+    dataField: "payroll",
     text: "Payroll",
     dataSort: true,
     formatter: (cell) => {
       const variants = {
-        Completed: "success",
-        Pending: "warning",
-        Issues: "error",
+        "Completed": "success",
+        "Pending": "warning",
+        "Issues": "error",
       };
       return (
         <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
@@ -635,19 +619,124 @@ export const ClearancePendingReportColumns = () => [
     },
   },
   {
-    dataField: "hr_docs_status",
-    text: "HR Documents",
+    dataField: "assets",
+    text: "Assets",
     dataSort: true,
     formatter: (cell) => {
       const variants = {
-        Completed: "success",
-        Pending: "warning",
-        Missing: "error",
+        "Completed": "success",
+        "Pending": "warning",
+        "Overdue": "error",
       };
       return (
         <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
           {cell || "Pending"}
         </StatusLabel>
+      );
+    },
+  },
+  {
+    dataField: "hr_docs",
+    text: "HR Documents",
+    dataSort: true,
+    formatter: (cell) => {
+      const variants = {
+        "Completed": "success",
+        "Pending": "warning",
+        "Missing": "error",
+      };
+      return (
+        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
+          {cell || "Pending"}
+        </StatusLabel>
+      );
+    },
+  },
+  {
+    dataField: "nationality",
+    text: "Nationality",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="text-sm text-neutral-1000">{cell || "N/A"}</span>
+    ),
+  },
+];
+
+// Detailed Clearance Pending Report Columns - MATCHES Clearance-Pending-Report API
+export const DetailedClearancePendingReportColumns = () => [
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    dataSort: true,
+    formatter: (cell) => (
+      <span className="font-medium text-neutral-1200">{cell || "N/A"}</span>
+    ),
+  },
+  {
+    dataField: "name",
+    text: "Employee Name",
+    dataSort: true,
+    formatter: (cell) => (
+      <div className="font-medium text-neutral-1200">{cell || "N/A"}</div>
+    ),
+  },
+  {
+    dataField: "assets_pending",
+    text: "Assets Pending",
+    dataSort: false,
+    formatter: (cell) => {
+      if (!Array.isArray(cell)) return <span className="text-sm text-neutral-1000">None</span>;
+      
+      const validAssets = cell.filter(asset => asset !== null && asset !== undefined);
+      
+      if (validAssets.length === 0) {
+        return <span className="text-sm text-green-600 font-medium">✓ No pending assets</span>;
+      }
+      
+      return (
+        <div className="max-w-xs">
+          <div className="text-sm text-red-600 font-medium mb-1">
+            {validAssets.length} items pending:
+          </div>
+          <div className="text-xs text-neutral-800 space-y-1">
+            {validAssets.slice(0, 3).map((asset, index) => (
+              <div key={index} className="truncate">• {asset}</div>
+            ))}
+            {validAssets.length > 3 && (
+              <div className="text-neutral-600">... +{validAssets.length - 3} more</div>
+            )}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    dataField: "payroll_pending",
+    text: "Payroll Pending",
+    dataSort: true,
+    formatter: (cell) => {
+      if (cell === "N/A") {
+        return <span className="text-sm text-green-600 font-medium">✓ Cleared</span>;
+      }
+      return (
+        <Badge variant="warning" className="text-xs">
+          {cell || "Final Settlement"}
+        </Badge>
+      );
+    },
+  },
+  {
+    dataField: "hr_docs_pending",
+    text: "HR Documents Pending",
+    dataSort: true,
+    formatter: (cell) => {
+      if (cell === "N/A") {
+        return <span className="text-sm text-green-600 font-medium">✓ Cleared</span>;
+      }
+      return (
+        <Badge variant="warning" className="text-xs">
+          {cell || "Exit Form"}
+        </Badge>
       );
     },
   },
@@ -657,14 +746,14 @@ export const ClearancePendingReportColumns = () => [
     dataSort: true,
     formatter: (cell) => {
       const variants = {
-        Cleared: "success",
-        Partial: "warning",
-        Pending: "info",
-        Blocked: "error",
+        "COMPLETED": "success",
+        "INITIATED": "info",
+        "PENDING": "warning",
+        "BLOCKED": "error",
       };
       return (
-        <StatusLabel status={cell} variant={variants[cell] || "neutral"}>
-          {cell || "Pending"}
+        <StatusLabel status={cell} variant={variants[cell?.toUpperCase()] || "neutral"}>
+          {cell || "PENDING"}
         </StatusLabel>
       );
     },
