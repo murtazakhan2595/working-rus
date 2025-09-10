@@ -73,19 +73,15 @@ const ExitRequestsResignationsReport = ({
 
   // Fetch resignation data
   const fetchResignationData = async () => {
-    console.log("🔄 Fetching resignation data...");
     setLoading(true);
     try {
       const payload = { filterData, options, ordering };
-      console.log("📤 Resignation payload:", payload);
       const response = await getResignationReportData(payload);
-      console.log("📥 Resignation response:", response);
       if (response) {
         setResignationData(response);
-        console.log("✅ Resignation data set:", response);
       }
     } catch (error) {
-      console.error("❌ Error fetching resignation data:", error);
+      console.error("Error fetching resignation data:", error);
     } finally {
       setLoading(false);
     }
@@ -93,19 +89,15 @@ const ExitRequestsResignationsReport = ({
 
   // Fetch exit request data
   const fetchExitRequestData = async () => {
-    console.log("🔄 Fetching exit request data...");
     setLoading(true);
     try {
       const payload = { filterData, options, ordering: "-notice_start" };
-      console.log("📤 Exit request payload:", payload);
       const response = await getV2ExitRequestReportData(payload);
-      console.log("📥 Exit request response:", response);
       if (response) {
         setExitRequestData(response);
-        console.log("✅ Exit request data set:", response);
       }
     } catch (error) {
-      console.error("❌ Error fetching exit request data:", error);
+      console.error("Error fetching exit request data:", error);
     } finally {
       setLoading(false);
     }
@@ -147,10 +139,6 @@ const ExitRequestsResignationsReport = ({
 
   // Calculate resignation statistics from aggregated_stats
   const resignationStats = React.useMemo(() => {
-    console.log(
-      "🔄 Calculating resignation stats:",
-      resignationData.aggregated_stats
-    );
     if (!resignationData.aggregated_stats) {
       return {
         totalResignations: resignationData.count || 0,
@@ -169,16 +157,11 @@ const ExitRequestsResignationsReport = ({
       completed: stats.status_breakdown?.COMPLETED || 0,
       inProgress: stats.status_breakdown?.["IN PROGRESS"] || 0,
     };
-    console.log("📊 Resignation stats result:", result);
     return result;
   }, [resignationData]);
 
   // Calculate exit request statistics from aggregated_stats
   const exitRequestStats = React.useMemo(() => {
-    console.log(
-      "🔄 Calculating exit request stats:",
-      exitRequestData.aggregated_stats
-    );
     if (!exitRequestData.aggregated_stats) {
       return {
         totalExitRequests: exitRequestData.count || 0,
@@ -197,18 +180,12 @@ const ExitRequestsResignationsReport = ({
       termination: stats.exit_type_breakdown?.termination || 0,
       others: stats.exit_type_breakdown?.others || 0,
     };
-    console.log("📊 Exit request stats result:", result);
     return result;
   }, [exitRequestData]);
 
   // Prepare resignation reasons chart data from aggregated_stats
   const resignationReasonsData = React.useMemo(() => {
-    console.log(
-      "📈 Calculating resignation reasons chart data:",
-      resignationData.aggregated_stats?.reason_breakdown
-    );
     if (!resignationData.aggregated_stats?.reason_breakdown) {
-      console.log("❌ No resignation reason breakdown data");
       return [];
     }
 
@@ -221,18 +198,12 @@ const ExitRequestsResignationsReport = ({
         (count / resignationStats.totalResignations) * 100
       ),
     }));
-    console.log("📈 Resignation reasons chart result:", result);
     return result;
   }, [resignationData.aggregated_stats, resignationStats.totalResignations]);
 
   // Prepare exit types chart data from aggregated_stats
   const exitTypesData = React.useMemo(() => {
-    console.log(
-      "📈 Calculating exit types chart data:",
-      exitRequestData.aggregated_stats?.exit_type_breakdown
-    );
     if (!exitRequestData.aggregated_stats?.exit_type_breakdown) {
-      console.log("❌ No exit type breakdown data");
       return [];
     }
 
@@ -251,18 +222,12 @@ const ExitRequestsResignationsReport = ({
         count,
       }))
       .filter((item) => item.count > 0);
-    console.log("📈 Exit types chart result:", result);
     return result;
   }, [exitRequestData.aggregated_stats]);
 
   // Prepare nationality distribution from aggregated_stats
   const nationalityData = React.useMemo(() => {
-    console.log(
-      "📈 Calculating nationality chart data:",
-      exitRequestData.aggregated_stats?.nationality_breakdown
-    );
     if (!exitRequestData.aggregated_stats?.nationality_breakdown) {
-      console.log("❌ No nationality breakdown data");
       return [];
     }
 
@@ -275,7 +240,6 @@ const ExitRequestsResignationsReport = ({
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 8); // Top 8 nationalities
-    console.log("📈 Nationality chart result:", result);
     return result;
   }, [exitRequestData.aggregated_stats]);
 

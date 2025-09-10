@@ -730,7 +730,7 @@ export const getAttritionRetentionReportData = async (filterData = {}) => {
   }
 };
 
-// Export exit and clearance reports
+// Update export function to include new report types
 export const exportExitClearanceReport = async (reportType, filterData = {}) => {
   try {
     let response, dataToExport, filename;
@@ -752,21 +752,6 @@ export const exportExitClearanceReport = async (reportType, filterData = {}) => 
         filename = "Resignation_Report";
         break;
 
-      case "exit_request_report":
-        response = await getExitRequestReportData({ filterData });
-        dataToExport = response.results.map((item) => ({
-          "Employee ID": item.employee_id,
-          "Name": item.name,
-          "Department": item.department,
-          "Designation": item.designation,
-          "Exit Request Date": renderDate(item.exit_request_date),
-          "Last Working Day": renderDate(item.last_working_day),
-          "Reason for Exit": item.reason_for_exit,
-          "Status": item.status,
-        }));
-        filename = "Exit_Request_Report";
-        break;
-
       case "v2_exit_request_report":
         response = await getV2ExitRequestReportData({ filterData });
         dataToExport = response.results.map((item) => ({
@@ -779,6 +764,64 @@ export const exportExitClearanceReport = async (reportType, filterData = {}) => 
           "Nationality": item.nationality,
         }));
         filename = "Enhanced_Exit_Request_Report";
+        break;
+
+      case "termination_report":
+        response = await getTerminationReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Designation": item.designation,
+          "Termination Date": item.termination_date,
+          "Termination Type": item.termination_type,
+          "Notice Period": item.notice_period,
+          "Reason": item.reason_for_termination,
+          "Status": item.status,
+        }));
+        filename = "Termination_Report";
+        break;
+
+      case "notice_period_compliance":
+        response = await getNoticePeriodComplianceData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Exit Type": item.exit_type,
+          "Notice Start": item.notice_start_date,
+          "Notice End": item.notice_end_date,
+          "Total Days": item.total_notice_days,
+          "Served Days": item.served_days,
+          "Compliance": item.compliance_status,
+        }));
+        filename = "Notice_Period_Compliance_Report";
+        break;
+
+      case "exit_interview_report":
+        response = await getExitInterviewReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Exit Reason": item.exit_reason,
+          "Rehire Eligible": item.rehire_eligible,
+          "Nationality": item.nationality,
+        }));
+        filename = "Exit_Interview_Report";
+        break;
+
+      case "rehire_eligibility_report":
+        response = await getRehireEligibilityReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Exit Type": item.exit_type,
+          "Exit Reason": item.exit_reason,
+          "HR Decision": item.hr_decision,
+          "Eligible for Rehire": item.eligible_for_rehire,
+          "Notes": item.notes,
+        }));
+        filename = "Rehire_Eligibility_Report";
         break;
 
       case "attrition_retention_report":
@@ -813,5 +856,177 @@ export const exportExitClearanceReport = async (reportType, filterData = {}) => 
       position: toast.POSITION.TOP_RIGHT,
     });
     return false;
+  }
+};
+
+
+// Get termination report data
+export const getTerminationReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/v2-termination-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching termination report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get notice period compliance report data
+export const getNoticePeriodComplianceData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/notice-period-compliance-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching notice period compliance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get exit interview report data
+export const getExitInterviewReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/Exit-Interview-Report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching exit interview data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get rehire eligibility report data
+export const getRehireEligibilityReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/rehire-eligibility-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching rehire eligibility data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get v2 attrition rehire eligibility report data
+export const getV2AttritionRehireEligibilityData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    
+    const URL = `/v2-attrition-rehire-eligibility-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching v2 attrition rehire eligibility data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
   }
 };
