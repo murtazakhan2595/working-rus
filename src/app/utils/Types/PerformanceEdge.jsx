@@ -1,6 +1,7 @@
 export const EvaluationForm = {
     form_name: null,
-    evaluation_type: 4,
+    evaluation_type: null,
+    evaluation_type_name: null,
     departments: null,
     designation: null,
     nationalities: null,

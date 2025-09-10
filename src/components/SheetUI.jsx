@@ -46,6 +46,7 @@ const SheetUI = forwardRef(
       handleSubmit,
       validateFormSchema,
       submitButtonText = "Submit",
+      additionalButtonConfig = [],
       cancelButtonText,
       formFields,
       renderUpdatedFormValues = () => { },
@@ -58,7 +59,10 @@ const SheetUI = forwardRef(
       customFooter = null, // NEW: Custom footer function
     } = formConfig;
 
-    const handleClose = () => {
+    const handleClose = (event) => {
+
+      event.preventDefault();
+      event.stopPropagation();
       setIsCloseConfirmationOpen(true);
     };
 
@@ -354,13 +358,34 @@ const SheetUI = forwardRef(
                           {cancelButtonText}
                         </Button>
                       )}
+                      {additionalButtonConfig.map(({ buttonText, variant, onButtonClick, disabled, loadingText }, index) =>
+                        <Button
+                          size="lg"
+                          variant={variant}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onButtonClick(props.values);
+                          }}
+                          key={`${buttonText}-${index}`}
+                          disabled={disableSubmit || isSubmittingForm || disabled}
+                        >
+                          {isSubmittingForm
+                            ? loadingText
+                            : (disableSubmit || disabled) && loadingMessage
+                              ? loadingText
+                              : buttonText}
+                        </Button>
+                      )}
                       {submitButtonText && (
                         <Button
                           type="submit"
                           size="lg"
                           variant="default"
                           onClick={(event) => {
+
                             event.preventDefault();
+                            event.stopPropagation();
                             onSubmitClick(props.values);
                             props.handleSubmit();
                           }}
@@ -373,6 +398,7 @@ const SheetUI = forwardRef(
                               : submitButtonText}
                         </Button>
                       )}
+
                     </div>
                   )}
                 </div>

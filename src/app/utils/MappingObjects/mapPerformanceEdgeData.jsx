@@ -1,24 +1,82 @@
 
-import { EvaluationForm, PerformanceCycle, EvaluationSubmission, MyGoals, EmployeeFeedback } from "app/utils/Types/PerformanceEdge";
+import {
+    EvaluationForm,
+    PerformanceCycle,
+    EvaluationSubmission,
+    MyGoals,
+    EmployeeFeedback,
+    EvaluationSection,
+    EvaluationSectionField
+} from "app/utils/Types/PerformanceEdge";
 
 export function mapEvaluationPayloadData(data) {
-    // Initialize an empty payload object
     const payload = {};
-    // Iterate over the keys in the Task object
+
+    // Loop over expected keys defined in EvaluationForm
     for (const key in EvaluationForm) {
-        // Check if the key exists in the data object
-        if (data.hasOwnProperty(key) && data[key]) {
-            // Add the key and its value to the payload
-            if (key === 'form_name') payload[key] = data[key].trim();
-            else if (["nationalities", "branches", "departments", "designation"].includes(key)) {
-                if (Array.isArray(data[key]))
+        if (!Object.prototype.hasOwnProperty.call(data, key) || !data[key]) continue;
+
+        switch (key) {
+            // Trim string for form_name
+            case "form_name":
+                payload[key] = data[key].trim();
+                break;
+
+            // Arrays: filter out falsy values (null, undefined, "")
+            case "nationalities":
+            case "branches":
+            case "departments":
+            case "designation":
+                if (Array.isArray(data[key])) {
                     payload[key] = data[key].filter(Boolean);
-            }
-            else payload[key] = data[key];
+                }
+                break;
+
+            // Handle sections → each section can contain fields
+            case "sections":
+                if (Array.isArray(data.sections)) {
+                    payload.sections = data.sections.map((section) => {
+                        const formattedSection = {};
+
+                        // Map allowed section keys
+                        for (const sectionKey in EvaluationSection) {
+                            if (!Object.prototype.hasOwnProperty.call(section, sectionKey)) continue;
+
+                            if (sectionKey === "fields" && Array.isArray(section.fields)) {
+                                // Process fields inside the section
+                                formattedSection.fields = section.fields.map((field) => {
+                                    const formattedField = {};
+
+                                    for (const fieldKey in EvaluationSectionField) {
+                                        if (Object.prototype.hasOwnProperty.call(field, fieldKey)) {
+                                            if (field[fieldKey] !== null && field[fieldKey] !== undefined)
+                                                formattedField[fieldKey] = field[fieldKey];
+                                        }
+                                    }
+
+                                    return formattedField;
+                                });
+                            } else {
+                                // Copy other section-level keys
+                                if (section[sectionKey] !== null && section[sectionKey] !== undefined)
+                                    formattedSection[sectionKey] = section[sectionKey];
+                            }
+                        }
+
+                        return formattedSection;
+                    });
+                }
+                break;
+
+            // Default: copy as is
+            default:
+                payload[key] = data[key];
         }
     }
+
     return payload;
 }
+
 
 
 export async function mapEvaluatoionData(data, fetchApprovalDetails = true) {

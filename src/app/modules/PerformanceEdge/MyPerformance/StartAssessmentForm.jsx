@@ -1,5 +1,5 @@
 import { getEvaluationTypeList } from 'app/hooks/officeSetting';
-import { saveEvaluationForm, getMyPerformanceFormsById, getEvaluationFormsList, saveEvaluationSubmission, saveEvaluationSubmissionAnswers } from 'app/hooks/performanceEdge';
+import { saveEvaluationForm, getEvaluationFormById, getEvaluationFormsList, saveEvaluationSubmission, saveEvaluationSubmissionAnswers } from 'app/hooks/performanceEdge';
 import { EvaluationForm } from "app/utils/Types/PerformanceEdge";
 import { getEmployeeTenure } from "app/hooks/general";
 import {
@@ -18,25 +18,34 @@ import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { DisplaySection, DisplaySectionField } from 'app/modules/PerformanceEdge/MyPerformance/Sections';
-const StartAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { } }) => {
+
+
+const StartAssessmentForm = ({
+    FormDetails = null,
+    id,
+    isOpen = true,
+    setIsOpen = () => { },
+    reloadData = () => { },
+    PreviewOnly = false,
+}) => {
     const [selectedEmployee, setSelectedEmployee] = useState({});
     const [confirmSave, setConfirmSave] = useState(false);
-    const [formValues, setFormValues] = useState(null);
+    const [formValues, setFormValues] = useState(FormDetails || null);
     const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-    const [formData, setFormData] = useState(EvaluationForm);
+    const [formData, setFormData] = useState(FormDetails ?? EvaluationForm);
     const [EvaluationTypes, setEvaluationTypes] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
-        title: isEditMode ? "Edit Job Rotation" : "Add New Job Rotation",
+        title: `${PreviewOnly ? 'Preview' : 'Start'} Assessment`,
         description: null,
         footer: null,
     };
     // Initialize form data with role values if in edit mode
-
+    console.log(formData, formValues, FormDetails)
     useEffect(() => {
         const fetchFormData = async (isMounted) => {
             try {
@@ -64,22 +73,23 @@ const StartAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadD
         };
     }, []);
 
-    const fetchData = async (isMounted, id) => {
-        try {
-            setIsLoading(true);
-            const response = await getMyPerformanceFormsById(id);
-            if (isMounted) {
-                setFormData({ ...response, });
-                setFormValues({ ...response, });
-            }
-        } catch (error) {
-            console.error("Error fetching roles:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+
 
     useEffect(() => {
+        const fetchData = async (isMounted, id) => {
+            try {
+                setIsLoading(true);
+                const response = await getEvaluationFormById(id);
+                if (isMounted) {
+                    setFormData({ ...response, });
+                    setFormValues({ ...response, });
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
         let isMounted = true;
         if (id) fetchData(isMounted, id);
         return () => {
@@ -155,9 +165,9 @@ const StartAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadD
                     const errors = {};
                     return errors;
                 },
-                submitButtonText: "Submit",
-                cancelButtonText: "Cancel",
-                columns: 2,
+                submitButtonText: !PreviewOnly ? "Submit" : null,
+                cancelButtonText: !PreviewOnly ? "Cancel" : null,
+                columns: 1,
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
@@ -169,7 +179,7 @@ const StartAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadD
                         InputFields: [
                             {
                                 InputField: TextInput,
-                                name: "name",
+                                name: "form_name",
                                 disabled: true,
                                 label: "Name",
                             },
@@ -181,18 +191,10 @@ const StartAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadD
                             sheetCardExtension: true,
                             sheetCardTitle: `${section.name} Section`,
                             InputFields: [
-                                {
-                                    InputField: DisplaySection,
-                                    section: section,
-                                    colsSpan: 2,
-                                },
                                 ...(section.fields
                                     ? section.fields.map((field, fieldIndex) => ([
                                         {
-                                            InputField: DisplaySectionField,
-                                            field: field,
-                                            colsSpan: 2,
-                                            fieldNumber: fieldIndex
+                                            InputField: () => <div className='font-semiBold'>{fieldIndex + 1}. {field.question}</div>,
                                         },
                                         ...(field.evaluation_type === 'radio'
                                             ? [{
@@ -203,8 +205,33 @@ const StartAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadD
                                                 options: [
                                                     { label: '1', value: '1' },
                                                     { label: '2', value: '2' },
-                                                    { label: '3', value: '3' }
+                                                    { label: '3', value: '3' },
+                                                    { label: '4', value: '4' },
+                                                    { label: '5', value: '5' }
                                                 ]
+                                            }]
+                                            : []),
+                                        ...(field.evaluation_type === 'dropdown'
+                                            ? [{
+                                                InputField: SelectInputComponent,
+                                                name: `sections[${index}].fields[${fieldIndex}].rating`,
+                                                label: "",
+                                                value: field.rating,
+                                                options: [
+                                                    { label: '1', value: '1' },
+                                                    { label: '2', value: '2' },
+                                                    { label: '3', value: '3' },
+                                                    { label: '4', value: '4' },
+                                                    { label: '5', value: '5' }
+                                                ]
+                                            }]
+                                            : []),
+                                        ...(field.evaluation_type === 'text'
+                                            ? [{
+                                                InputField: TextAreaInput,
+                                                name: `sections[${index}].fields[${fieldIndex}].rating`,
+                                                label: "",
+                                                value: field.rating,
                                             }]
                                             : []),
                                     ])).flat()

@@ -2,7 +2,7 @@ import { MultiStatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
-import { EvaluationFormActions, MyPerformanceActions } from 'app/modules/PerformanceEdge';
+import { EvaluationFormActions, MyPerformanceActions, SelfAssessmentFormActions } from 'app/modules/PerformanceEdge';
 /**
  * EmployeeEvaluationFormColumns
  *
@@ -17,7 +17,7 @@ export const EmployeeEvaluationFormColumns = (reloadData) => [
         dataSort: true,
     },
     {
-        dataField: "evaluation_type",
+        dataField: "evaluation_type_name",
         text: "Evaluation Type",
         dataSort: true,
     },
@@ -85,51 +85,51 @@ export const SelfAssessmentFormColumns = (reloadData) => [
             );
         },
     },
-    //  {
-    //     dataField: "branches",
-    //     text: "Branches",
-    //     formatter: (cell) => {
-    //         return (
-    //             <MultiStatusLabel
-    //                 statusList={cell}
-    //                 variant="info"
-    //                 fallBackText="All Branches"
-    //             />
-    //         );
-    //     },
-    // },
-    //  {
-    //     dataField: "departments",
-    //     text: "Departments",
-    //     formatter: (cell) => {
-    //         return (
-    //             <MultiStatusLabel
-    //                 statusList={cell}
-    //                 variant="info"
-    //                 fallBackText="All Departments"
-    //             />
-    //         );
-    //     },
-    // },
-    //  {
-    //     dataField: "designation",
-    //     text: "Designations",
-    //     formatter: (cell) => {
-    //         return (
-    //             <MultiStatusLabel
-    //                 statusList={cell}
-    //                 variant="info"
-    //                 fallBackText="All Designations"
-    //             />
-    //         );
-    //     },
-    // },
+    {
+        dataField: "branches",
+        text: "Branches",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Branches"
+                />
+            );
+        },
+    },
+    {
+        dataField: "departments",
+        text: "Departments",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Departments"
+                />
+            );
+        },
+    },
+    {
+        dataField: "designation",
+        text: "Designations",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Designations"
+                />
+            );
+        },
+    },
     {
         dataField: "status",
         text: "Status",
         dataSort: true,
-        formatter: (cell, row) => (
-            <StatusLabel status={cell}>{cell}</StatusLabel>
+        formatter: (cell) => (
+            <StatusLabel status={cell}>{cell === 'Active' ? 'published' : 'draft'}</StatusLabel>
         ),
     },
     {
@@ -144,7 +144,7 @@ export const SelfAssessmentFormColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <EvaluationFormActions DataList={dataList} data={row} reloadData={reloadData} />
+            <SelfAssessmentFormActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
