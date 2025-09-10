@@ -298,45 +298,45 @@ export const PeerAssessmentFormColumns = (reloadData) => [
             );
         },
     },
-    //  {
-    //     dataField: "branches",
-    //     text: "Branches",
-    //     formatter: (cell) => {
-    //         return (
-    //             <MultiStatusLabel
-    //                 statusList={cell}
-    //                 variant="info"
-    //                 fallBackText="All Branches"
-    //             />
-    //         );
-    //     },
-    // },
-    //  {
-    //     dataField: "departments",
-    //     text: "Departments",
-    //     formatter: (cell) => {
-    //         return (
-    //             <MultiStatusLabel
-    //                 statusList={cell}
-    //                 variant="info"
-    //                 fallBackText="All Departments"
-    //             />
-    //         );
-    //     },
-    // },
-    //  {
-    //     dataField: "designation",
-    //     text: "Designations",
-    //     formatter: (cell) => {
-    //         return (
-    //             <MultiStatusLabel
-    //                 statusList={cell}
-    //                 variant="info"
-    //                 fallBackText="All Designations"
-    //             />
-    //         );
-    //     },
-    // },
+    {
+        dataField: "branches",
+        text: "Branches",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Branches"
+                />
+            );
+        },
+    },
+    {
+        dataField: "departments",
+        text: "Departments",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Departments"
+                />
+            );
+        },
+    },
+    {
+        dataField: "designation",
+        text: "Designations",
+        formatter: (cell) => {
+            return (
+                <MultiStatusLabel
+                    statusList={cell}
+                    variant="info"
+                    fallBackText="All Designations"
+                />
+            );
+        },
+    },
     {
         dataField: "status",
         text: "Status",

@@ -22,6 +22,8 @@ import { GetDateRange } from "utils/renderValues";
 import DateRangeInput from "./DateRangeInput";
 import DateRangeFilter from "./DateRangeFilter";
 import { GetDispatchStateList } from "utils/Lists";
+import { countriesList } from "data/Data";
+
 
 const FilterInput = ({
   filters,
@@ -29,7 +31,8 @@ const FilterInput = ({
   className = "",
   filterValues = {},
 }) => {
-  const Departments = GetDispatchStateList("departments", "common") || []
+  const Departments = GetDispatchStateList("departments", "common") || [];
+  const Designations = GetDispatchStateList("designations", "common") || [];
   // const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
   const Branches = GetDispatchStateList("branches", "common") || []
   const classNamesStyle = "";
@@ -167,8 +170,9 @@ const FilterInput = ({
                     typeof options === 'string' ?
                       options.toLowerCase() === 'departments' ? Departments || [] :
                         options.toLowerCase() === 'branches' ? Branches || [] :
-                          // options.toLowerCase() === 'managers' ? Managers || [] :
-                            [] : [];
+                          options.toLowerCase() === 'designations' ? Designations || [] :
+                            options.toLowerCase() === 'nationalities' ? countriesList || [] :
+                              [] : [];
               return (
                 <RenderSelectInputField
                   className={FilterClassName}

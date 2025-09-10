@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import SheetComponent from "components/ui/SheetComponent";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { ViewHolidayDetail, AddUpdateHolidays } from "app/modules/LeaveTracker";
-import { AddUpdatePeerAssesmentForm } from "app/modules/PerformanceEdge";
-import { toast } from "react-toastify";
+import { AddUpdatePeerAssesmentForm, StartAssessmentForm } from "app/modules/PerformanceEdge";
 import { deleteRecord } from "app/hooks/general";
 
 const PeerAssessmentActions = ({ data, reloadData = () => { }, DataList = [] }) => {
@@ -51,7 +48,7 @@ const PeerAssessmentActions = ({ data, reloadData = () => { }, DataList = [] }) 
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                viewText="View Form"
+                viewText="Preview Form"
                 editText="Edit Form"
                 deleteText="Delete Form"
                 menuTooltip="Form Actions"
@@ -92,12 +89,11 @@ const PeerAssessmentActions = ({ data, reloadData = () => { }, DataList = [] }) 
 
             {/* View Duration - Direct component usage like ViewUserRole */}
             {view && (
-                <ViewHolidayDetail
+                <StartAssessmentForm
                     isOpen={view}
                     setIsOpen={setView}
-                    currentId={data.id}
-                    reloadData={reloadData}
-                    DataList={DataList}
+                    id={data.id}
+                    PreviewOnly={true}
                 />
             )}
         </>

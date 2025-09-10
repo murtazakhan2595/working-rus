@@ -194,7 +194,7 @@ const StartAssessmentForm = ({
                                 ...(section.fields
                                     ? section.fields.map((field, fieldIndex) => ([
                                         {
-                                            InputField: () => <div className='font-semiBold'>{fieldIndex + 1}. {field.question}</div>,
+                                            InputField: () => <div className='font-semibold'>{fieldIndex + 1}. {field.question}</div>,
                                         },
                                         ...(field.evaluation_type === 'radio'
                                             ? [{
@@ -203,11 +203,8 @@ const StartAssessmentForm = ({
                                                 label: "",
                                                 value: field.rating,
                                                 options: [
-                                                    { label: '1', value: '1' },
-                                                    { label: '2', value: '2' },
-                                                    { label: '3', value: '3' },
-                                                    { label: '4', value: '4' },
-                                                    { label: '5', value: '5' }
+                                                    { label: 'Yes', value: 'Yes' },
+                                                    { label: 'No', value: 'No' },
                                                 ]
                                             }]
                                             : []),

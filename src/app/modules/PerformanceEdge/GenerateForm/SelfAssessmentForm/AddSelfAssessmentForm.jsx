@@ -1,23 +1,15 @@
-import { getEvaluationTypeList } from 'app/hooks/officeSetting';
 import { saveEvaluationForm, getEvaluationFormById, getEvaluationFormsList } from 'app/hooks/performanceEdge';
 import { EvaluationForm } from "app/utils/Types/PerformanceEdge";
-import { getEmployeeTenure } from "app/hooks/general";
 import {
-    TextAreaInput,
     TextInput,
     SelectInputComponent,
-    RadioGroupInput,
-    NumberInput,
-    DateInput,
-    TextInputDropdown,
     SelectMultiInputComponent,
 } from "components/FormControl";
 import { validateAssessmentFormSchema } from "app/utils/FormSchema/PerformanceEdgeFormSchema";
-import AlertDialogue from "components/ui/AlertDialogue";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { EmployeeDetailUI, SheetUI } from "components";
-import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
+import { SheetUI } from "components";
+import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
 import { StartAssessmentForm } from 'app/modules/PerformanceEdge';

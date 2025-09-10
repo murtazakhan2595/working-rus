@@ -95,9 +95,6 @@ const SelfAssessmentFormActions = ({ data, reloadData = () => { }, DataList = []
                 <StartAssessmentForm
                     isOpen={view}
                     setIsOpen={setView}
-                    currentId={data.id}
-                    reloadData={reloadData}
-                    DataList={DataList}
                     id={data.id}
                     PreviewOnly={true}
                 />
