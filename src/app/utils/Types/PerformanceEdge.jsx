@@ -62,5 +62,4 @@ export const EmployeeFeedback = {
     satisfaction_rating: null,
     comments: null,
     category: null
-
 }

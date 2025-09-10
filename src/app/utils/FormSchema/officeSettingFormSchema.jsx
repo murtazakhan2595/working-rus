@@ -19,7 +19,7 @@ export const validateGraceTimeFormSchema = (values) => {
 
 export const validateRatingScaleFormSchema = (values) => {
   const errors = {};
-  if (!values.rating_values || values.rating_values.length === 0);
-  errors.rating_values = "Atleast one rating value is required";
-return errors;
+  if (!values.rating_values || values.rating_values.length === 0)
+    errors.rating_values = "Atleast one rating value is required";
+  return errors;
 };

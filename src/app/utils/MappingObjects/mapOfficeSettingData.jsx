@@ -1,4 +1,4 @@
-import { Branch, GraceTime, EvaluationType, RatingScaleSetup } from "app/utils/Types/OfficeSetting";
+import { Branch, GraceTime, EvaluationType, RatingScaleSetup, RatingScaleValue } from "app/utils/Types/OfficeSetting";
 
 export async function mapBranchList(data) {
   const branchList = await data?.map((branch) => {
@@ -179,6 +179,25 @@ export function mapRatingScaleSetupPayloadData(data, id) {
       data[key] !== undefined
     ) {
       if (key === "name") payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+export function mapRatingScaleValuePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in RatingScaleValue) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "description") payload[key] = data[key].trim();
       else payload[key] = data[key];
     }
   }

@@ -55,5 +55,15 @@ export const RatingScaleSetup = {
   id: null,
   rating_values: null,
   id: null,
- created_by :null,
+  created_by: null,
+}
+
+export const RatingScaleValue = {
+  min_score: null,
+  max_score: null,
+  value: null,
+  description: null,
+  has_score: null,
+  rating_scale: null,
+  id: null,
 }
