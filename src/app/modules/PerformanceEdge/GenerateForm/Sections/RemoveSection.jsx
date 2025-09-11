@@ -5,7 +5,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 
 
 const RemoveSection = React.memo(
-    ({ name, onChange = () => { }, value = [], section, index }) => {
+    ({ name, onChange = () => { }, value = [], index }) => {
         const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
         const handleClick = (event) => {
             event.preventDefault();
@@ -14,15 +14,15 @@ const RemoveSection = React.memo(
         };
         const confirmDelete = async () => {
             try {
-                if (!section) return;
-                const remaining_levels = value.filter(
-                    (levels) => levels.level_number !== section.level_number
-                );
-                onChange(name, remaining_levels || []);
+                if (!index) return;
+                const remaining = value.filter((_, objIndex) => objIndex !== index);
+                setOpenDeleteConfirm(false);
+                onChange(name, remaining || []);
             } catch (error) {
                 console.error("ERROR", error);
             } finally {
                 setOpenDeleteConfirm(false);
+                return null;
             }
         };
         return (
@@ -36,7 +36,7 @@ const RemoveSection = React.memo(
                 </Button>
                 {openDeleteConfirm && (
                     <AlertDialogue
-                        title="Confirm Delete?"
+                        title={`Confirm Delete?${index}`}
                         description={`This action can't be undone. All information associated with this level will be lost.`}
                         isOpen={openDeleteConfirm}
                         setIsOpen={() => setOpenDeleteConfirm(false)}

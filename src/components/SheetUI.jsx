@@ -16,7 +16,7 @@ const SheetUI = forwardRef(
   (
     {
       isOpen = true,
-      setIsOpen = () => {},
+      setIsOpen = () => { },
       children,
       className,
       variant = "modal", // Determines if the component is a 'modal' or 'sheet'
@@ -46,19 +46,23 @@ const SheetUI = forwardRef(
       handleSubmit,
       validateFormSchema,
       submitButtonText = "Submit",
+      additionalButtonConfig = [],
       cancelButtonText,
       formFields,
-      renderUpdatedFormValues = () => {},
+      renderUpdatedFormValues = () => { },
       columns,
       onFormChange,
       disableSubmit = false,
       loadingMessage,
-      onSubmitClick = () => {},
+      onSubmitClick = () => { },
       DataList = [],
       customFooter = null, // NEW: Custom footer function
     } = formConfig;
 
-    const handleClose = () => {
+    const handleClose = (event) => {
+
+      event.preventDefault();
+      event.stopPropagation();
       setIsCloseConfirmationOpen(true);
     };
 
@@ -208,7 +212,7 @@ const SheetUI = forwardRef(
                   }
                 }
               }
-
+              console.log('Values', values, 'Error', errors)
               return errors;
             }}
           >
@@ -267,16 +271,15 @@ const SheetUI = forwardRef(
                             if (customComponent) {
                               return (
                                 <div
-                                  className={`space-y-4 ${
-                                    colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                  }`}
+                                  className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""
+                                    }`}
                                   key={name || `custom-${index}`}
                                 >
                                   {typeof customComponent === "function"
                                     ? customComponent({
-                                        field: fieldsConfig,
-                                        form: props,
-                                      })
+                                      field: fieldsConfig,
+                                      form: props,
+                                    })
                                     : customComponent}
                                 </div>
                               );
@@ -297,12 +300,7 @@ const SheetUI = forwardRef(
 
                             const error = get(props.errors, name);
                             return (
-                              <div
-                                className={`space-y-4 ${
-                                  colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                }`}
-                                key={name || index}
-                              >
+                              <div className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""}`} key={`${name}-${index}`}>
                                 <InputField
                                   error={typeof error === "string" ? error : ""}
                                   touch={get(props?.touched, name)}
@@ -360,13 +358,34 @@ const SheetUI = forwardRef(
                           {cancelButtonText}
                         </Button>
                       )}
+                      {additionalButtonConfig.map(({ buttonText, variant, onButtonClick, disabled, loadingText }, index) =>
+                        <Button
+                          size="lg"
+                          variant={variant}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onButtonClick(props.values);
+                          }}
+                          key={`${buttonText}-${index}`}
+                          disabled={disableSubmit || isSubmittingForm || disabled}
+                        >
+                          {isSubmittingForm
+                            ? loadingText
+                            : (disableSubmit || disabled) && loadingMessage
+                              ? loadingText
+                              : buttonText}
+                        </Button>
+                      )}
                       {submitButtonText && (
                         <Button
                           type="submit"
                           size="lg"
                           variant="default"
                           onClick={(event) => {
+
                             event.preventDefault();
+                            event.stopPropagation();
                             onSubmitClick(props.values);
                             props.handleSubmit();
                           }}
@@ -375,10 +394,11 @@ const SheetUI = forwardRef(
                           {isSubmittingForm
                             ? "Submitting Form..."
                             : disableSubmit && loadingMessage
-                            ? loadingMessage
-                            : submitButtonText}
+                              ? loadingMessage
+                              : submitButtonText}
                         </Button>
                       )}
+
                     </div>
                   )}
                 </div>
@@ -399,9 +419,8 @@ const FormBody = ({
   columns,
   description,
 }) => {
-  const className = `grid grid-cols-1 gap-4 lg:grid-cols-${
-    columns || 1
-  } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
+  const className = `grid grid-cols-1 gap-4 lg:grid-cols-${columns || 1
+    } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
 
   return sheetCardExtension ? (
     <SheetCardExtension
@@ -425,8 +444,8 @@ const SheetVariant = ({
   children,
   isOpen = true,
   className,
-  setIsOpen = () => {},
-  setIsCloseConfirmationOpen = () => {},
+  setIsOpen = () => { },
+  setIsCloseConfirmationOpen = () => { },
   isCloseConfirmationOpen = false,
   variant = "modal", // Can be 'modal' or 'sheet'
   sheetConfig = {

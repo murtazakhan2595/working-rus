@@ -68,8 +68,6 @@ const OfficeSetting = () => {
   // The permissions are already strings (permission codes), not objects
   const userPermissions = userPermissionsRaw.filter(Boolean); // Remove any undefined/null values
 
-  console.log("User Permissions:", userPermissions);
-
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
 
   const [countryData, setCountryData] = useState({});

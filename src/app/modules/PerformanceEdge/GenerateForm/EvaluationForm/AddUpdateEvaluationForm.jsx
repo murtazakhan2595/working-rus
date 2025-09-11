@@ -11,13 +11,16 @@ import {
     TextInputDropdown,
     SelectMultiInputComponent,
 } from "components/FormControl";
-import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
+import { validatePerformanceFormSchema } from "app/utils/FormSchema/PerformanceEdgeFormSchema";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
+import { PerformanceProccessBar } from 'app/modules/PerformanceEdge/Sections';
+
+
 const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
     const Departments = GetDispatchStateList("departments", "common") || []
     const [formValues, setFormValues] = useState(null);
@@ -126,13 +129,10 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                 initialValues: formData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: (values) => {
-                    const errors = {};
-                    return errors;
-                },
+                validateFormSchema: validatePerformanceFormSchema,
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
-                columns: 3,
+                columns: 2,
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
@@ -170,6 +170,13 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                 options: Departments,
                                 SelectAllOption: true,
                             },
+                            {
+                                InputField: PerformanceProccessBar,
+                                list: formValues?.sections || [],
+                                label: "weightage",
+                                colsSpan: 2,
+                                name: 'section_weightage',
+                            },
 
                         ],
                     },
@@ -179,34 +186,49 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                             sheetCardExtension: true,
                             sheetCardTitle: `Weightage Section ${index + 1}`,
                             InputFields: [
-
+                                {
+                                    InputField: RemoveSection,
+                                    name: "sections",
+                                    colsSpan: 2,
+                                    section: section,
+                                    index: index,
+                                },
                                 {
                                     InputField: TextInput,
                                     name: `sections[${index}].name`,
                                     label: "Name",
+                                    required: true,
                                     value: section.name,
-                                    // onFieldUpdate: async (_, __, ___, handleChange) => {
-                                    //     handleChange(`levels[${index}].designation`, null);
-                                    // },
                                 },
 
                                 {
                                     InputField: NumberInput,
                                     name: `sections[${index}].weightage`,
                                     label: "Weightage",
+                                    required: true,
                                     value: section.weightage,
-                                    // onFieldUpdate: async (_, __, ___, handleChange) => {
-                                    //     handleChange(`levels[${index}].designation`, null);
-                                    // },
                                 },
                                 {
-                                    InputField: RemoveSection,
-                                    name: "sections",
-                                    section: section,
+                                    InputField: PerformanceProccessBar,
+                                    list: section.fields || [],
+                                    label: "weightage",
+                                    title: 'Field Weigtage',
+                                    description: 'Section field weightage total must not exceed the section’s weightage.',
+                                    colsSpan: 2,
+                                    name: `sections[${index}].field_weightage`,
                                 },
 
                                 ...(section.fields
                                     ? section.fields.map((field, fieldIndex) => ([
+                                        {
+                                            InputField: () => { return <div key={`sections[${index}]`} className='font-bold'>Section Field {fieldIndex + 1}</div> },
+                                        },
+                                        {
+                                            InputField: RemoveSection,
+                                            name: `sections[${index}].fields`,
+                                            section: field,
+                                            index: fieldIndex,
+                                        },
                                         {
                                             InputField: TextInput,
                                             name: `sections[${index}].fields[${fieldIndex}].question`,
@@ -227,18 +249,14 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                             label: "Weightage",
                                             value: field.weightage,
                                         },
-                                        {
-                                            InputField: RemoveSection,
-                                            name: `sections[${index}].fields`,
-                                            section: field,
-                                        },
+
                                     ])).flat()
                                     : []
                                 ),
                                 {
                                     InputField: AddNewSectionField,
                                     name: `sections[${index}].fields`,
-                                    colsSpan: 3,
+                                    colsSpan: 2,
                                     value: section.fields,
                                 },
                             ],
@@ -251,7 +269,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                             {
                                 InputField: AddNewSection,
                                 name: "sections",
-                                colsSpan: 3,
+                                colsSpan: 2,
                             },
                         ],
                     },

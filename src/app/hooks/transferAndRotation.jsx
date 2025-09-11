@@ -184,6 +184,36 @@ export const getJobRotationReasons = async (payload) => {
   }
 }
 
+export const saveRotationReasons = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = payload;
+
+    const url = ID
+      ? `${baseUrl}/rotation-reasons/${ID}/` // Use id if updating
+      : `${baseUrl}/rotation-reasons/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
 export const addUpdateEmpTransferDetails = async (payload, id = null) => {
   try {
     const finalPayload = mapEmployeeTransferPayloadData(payload);

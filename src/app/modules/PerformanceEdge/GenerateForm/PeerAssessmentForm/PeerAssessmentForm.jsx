@@ -106,8 +106,38 @@ const PeerAssessmentForm = ({ reload }) => {
                     filters={[
                         {
                             type: "search",
-                            name: "form_name",
+                            name: "employee",
                             placeholder: "Form Name",
+                        },
+                        {
+                            type: "select",
+                            name: "departments",
+                            placeholder: "Department",
+                            options: 'departments'
+                        },
+                        {
+                            type: "select",
+                            name: "branches",
+                            placeholder: "Branch",
+                            options: 'branches'
+                        },
+                        {
+                            type: "select",
+                            name: "designation",
+                            placeholder: "Designation",
+                            options: 'designations'
+                        },
+                        {
+                            type: "select",
+                            name: "nationalities",
+                            placeholder: "Nationality",
+                            options: 'nationalities'
+                        },
+                        {
+                            type: "select",
+                            name: "status",
+                            placeholder: "Status",
+                            options: [{ label: 'Published', value: 'Active' }, { label: 'Draft', value: 'Inactive'}]
                         },
                     ]}
                     onChange={handleFilterChange}

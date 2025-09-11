@@ -21,7 +21,6 @@ const MenuList = ({ isOpen }) => {
   const menuList = useMemo(() => {
     return getMenuList(pathname, PermittedModuleList) || [];
   }, [pathname, PermittedModuleList]);
-  console.log(menuList)
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">

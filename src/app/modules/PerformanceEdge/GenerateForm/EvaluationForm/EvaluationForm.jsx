@@ -95,6 +95,7 @@ const EvaluationForm = ({ reload }) => {
             <CardHeader>
                 <CardTitle>Employee Evaluation Forms</CardTitle>
                 <CardDescription>
+                   Here you can create, edit, and delete employee evaluation forms with dynamic sections and fields, So that the evaluation process is standardized, flexible, and aligned with our organization's structure and requirements.
                 </CardDescription>
             </CardHeader>
             <CardContent>

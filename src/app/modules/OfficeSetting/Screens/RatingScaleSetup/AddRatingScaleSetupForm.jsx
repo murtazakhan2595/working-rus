@@ -1,5 +1,5 @@
-import { saveUpdateRatingScaleSetup } from "app/hooks/officeSetting";
-import { RatingScaleSetup } from "app/utils/Types/OfficeSetting";
+import { saveUpdateRatingScaleSetup, saveUpdateRatingScaleValue } from "app/hooks/officeSetting";
+import { RatingScaleSetup, RatingScaleValue } from "app/utils/Types/OfficeSetting";
 import { SheetUI } from "components";
 import { getRatingScaleSetupList, getRatingScaleSetupData } from "app/hooks/officeSetting";
 import { validateRatingScaleFormSchema } from "app/utils/FormSchema/officeSettingFormSchema";
@@ -70,6 +70,7 @@ const AddRatingScaleSetupForm = ({
         setIsLoading(true);
         const response = await getRatingScaleSetupData(id);
         if (isMounted) {
+          console.log(response);
           setFormData(response);
           setFormValues(response);
         }
@@ -96,8 +97,14 @@ const AddRatingScaleSetupForm = ({
       setIsSubmittingForm(true);
       const response = await saveUpdateRatingScaleSetup(values, id);
       if (response) {
+        if (response.id) {
+          const RatingValues = values.rating_values;
+          for (const rating_value of RatingValues) {
+            await saveUpdateRatingScaleValue({ ...rating_value, rating_scale: response.id }, rating_value.id)
+          }
+        }
         toast.success(
-          `Evaluation Type ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          `Rating Scale ${isEditMode ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
@@ -169,6 +176,13 @@ const AddRatingScaleSetupForm = ({
                   colsSpan: 2
                 },
                 {
+                  InputField: TextInput,
+                  name: `rating_values[${index}].value`,
+                  label: "Rating Value",
+                  value: rating_value.value,
+                  required: true,
+                },
+                {
                   InputField: TextAreaInput,
                   name: `rating_values[${index}].description`,
                   label: "Description/Label",
@@ -223,17 +237,7 @@ const AddNewRatingValue = React.memo(
     const handleClick = (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const updatedSections = [
-        ...(value || []),
-        {
-          min_score: null,
-          max_score: null,
-          value: null,
-          description: null,
-          has_score: null,
-          rating_scale: null,
-        },
-      ];
+      const updatedSections = [...(value || []), RatingScaleValue];
       onChange(name, updatedSections);
     };
     return (
