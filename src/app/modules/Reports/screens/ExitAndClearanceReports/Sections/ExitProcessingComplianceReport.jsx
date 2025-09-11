@@ -30,6 +30,7 @@ import {
 import {
   getNoticePeriodComplianceData,
   getExitInterviewReportData,
+  getV2ClearancePendingReportData,
   exportExitClearanceReport,
 } from "app/hooks/reports";
 import {
@@ -51,6 +52,10 @@ const ExitProcessingComplianceReport = ({
     count: 0,
   });
   const [exitInterviewData, setExitInterviewData] = useState({
+    results: [],
+    count: 0,
+  });
+  const [clearanceData, setClearanceData] = useState({
     results: [],
     count: 0,
   });
@@ -94,12 +99,30 @@ const ExitProcessingComplianceReport = ({
     }
   };
 
+  // Fetch clearance pending data
+  const fetchClearanceData = async () => {
+    setLoading(true);
+    try {
+      const payload = { filterData, options, ordering };
+      const response = await getV2ClearancePendingReportData(payload);
+      if (response) {
+        setClearanceData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching clearance data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isReady) {
       if (activeSubTab === "notice_compliance") {
         fetchNoticePeriodData();
       } else if (activeSubTab === "exit_interviews") {
         fetchExitInterviewData();
+      } else if (activeSubTab === "clearance_pending") {
+        fetchClearanceData();
       }
     }
   }, [filterData, isReady, activeSubTab, options, ordering]);
@@ -171,6 +194,49 @@ const ExitProcessingComplianceReport = ({
     };
   }, [exitInterviewData]);
 
+  // Calculate clearance stats
+  const clearanceStats = React.useMemo(() => {
+    if (!clearanceData.results || clearanceData.results.length === 0) {
+      return {
+        totalClearances: 0,
+        payrollCompleted: 0,
+        payrollPending: 0,
+        assetsCompleted: 0,
+        assetsPending: 0,
+        hrDocsCompleted: 0,
+        hrDocsPending: 0,
+      };
+    }
+
+    const stats = clearanceData.results.reduce(
+      (acc, item) => {
+        if (item.payroll === "Completed") acc.payrollCompleted++;
+        else acc.payrollPending++;
+
+        if (item.assets === "Completed") acc.assetsCompleted++;
+        else acc.assetsPending++;
+
+        if (item.hr_docs === "Completed") acc.hrDocsCompleted++;
+        else acc.hrDocsPending++;
+
+        return acc;
+      },
+      {
+        payrollCompleted: 0,
+        payrollPending: 0,
+        assetsCompleted: 0,
+        assetsPending: 0,
+        hrDocsCompleted: 0,
+        hrDocsPending: 0,
+      }
+    );
+
+    return {
+      totalClearances: clearanceData.count || 0,
+      ...stats,
+    };
+  }, [clearanceData]);
+
   // Prepare compliance chart data
   const complianceChartData = React.useMemo(() => {
     return [
@@ -197,6 +263,51 @@ const ExitProcessingComplianceReport = ({
     }));
   }, [noticePeriodData.results]);
 
+  // Prepare clearance status distribution
+  const clearanceStatusData = React.useMemo(() => {
+    if (!clearanceData.results || clearanceData.results.length === 0) return [];
+
+    const statusMap = { completed: 0, pending: 0 };
+    clearanceData.results.forEach((item) => {
+      // Check if all three areas are completed
+      if (
+        item.payroll === "Completed" &&
+        item.assets === "Completed" &&
+        item.hr_docs === "Completed"
+      ) {
+        statusMap.completed++;
+      } else {
+        statusMap.pending++;
+      }
+    });
+
+    return [
+      { status: "Fully Cleared", count: statusMap.completed },
+      { status: "Pending Items", count: statusMap.pending },
+    ].filter((item) => item.count > 0);
+  }, [clearanceData.results]);
+
+  // Prepare clearance breakdown data
+  const clearanceBreakdownData = React.useMemo(() => {
+    return [
+      {
+        category: "Payroll",
+        completed: clearanceStats.payrollCompleted,
+        pending: clearanceStats.payrollPending,
+      },
+      {
+        category: "Assets",
+        completed: clearanceStats.assetsCompleted,
+        pending: clearanceStats.assetsPending,
+      },
+      {
+        category: "HR Docs",
+        completed: clearanceStats.hrDocsCompleted,
+        pending: clearanceStats.hrDocsPending,
+      },
+    ];
+  }, [clearanceStats]);
+
   // Export function
   const handleExportTable = async () => {
     setIsExporting(true);
@@ -206,6 +317,8 @@ const ExitProcessingComplianceReport = ({
         exportType = "notice_period_compliance";
       } else if (activeSubTab === "exit_interviews") {
         exportType = "exit_interview_report";
+      } else if (activeSubTab === "clearance_pending") {
+        exportType = "clearance_pending_report";
       }
 
       const success = await exportExitClearanceReport(exportType, filterData);
@@ -246,7 +359,7 @@ const ExitProcessingComplianceReport = ({
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-4">
         {[
           {
             title: "Notice Period Records",
@@ -284,6 +397,18 @@ const ExitProcessingComplianceReport = ({
             description: "Not eligible for rehire",
             color: "text-orange-600",
           },
+          {
+            title: "Clearance Records",
+            value: clearanceStats.totalClearances,
+            description: "Total clearance tracking",
+            color: "text-indigo-600",
+          },
+          {
+            title: "Assets Pending",
+            value: clearanceStats.assetsPending,
+            description: "Pending asset returns",
+            color: "text-yellow-600",
+          },
         ].map((stat, index) => (
           <Card
             key={index}
@@ -307,7 +432,7 @@ const ExitProcessingComplianceReport = ({
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Notice Period Compliance Distribution */}
         {complianceChartData.length > 0 && (
           <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
@@ -391,6 +516,93 @@ const ExitProcessingComplianceReport = ({
             </CardContent>
           </Card>
         )}
+
+        {/* Clearance Status Distribution */}
+        {clearanceStatusData.length > 0 && (
+          <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-bold text-plum-900">
+                Clearance Status
+              </CardTitle>
+              <CardDescription>
+                Overall clearance completion status
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex justify-center items-center h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={clearanceStatusData}
+                    dataKey="count"
+                    nameKey="status"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    paddingAngle={2}
+                    stroke="none"
+                  >
+                    {clearanceStatusData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={colors[index % colors.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name) => [`${value} employees`, name]}
+                    contentStyle={{ fontSize: "12px" }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    wrapperStyle={{ fontSize: "12px", paddingTop: "20px" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Clearance Breakdown */}
+        {clearanceBreakdownData.length > 0 && (
+          <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-bold text-plum-900">
+                Clearance Breakdown
+              </CardTitle>
+              <CardDescription>
+                Completed vs pending by category
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={clearanceBreakdownData}
+                  margin={{ top: 20, right: 30, left: 0, bottom: 60 }}
+                >
+                  <XAxis
+                    dataKey="category"
+                    tick={{ fontSize: 11 }}
+                    height={60}
+                  />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ fontSize: "12px" }} />
+                  <Bar
+                    dataKey="completed"
+                    fill="#10B981"
+                    name="Completed"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="pending"
+                    fill="#F59E0B"
+                    name="Pending"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Multi-Table Section */}
@@ -401,12 +613,12 @@ const ExitProcessingComplianceReport = ({
               <CardTitle>Exit Processing & Compliance Tracking</CardTitle>
               <CardDescription>
                 Comprehensive exit process management including notice period
-                compliance and exit interviews.
+                compliance, exit interviews, and clearance tracking.
               </CardDescription>
             </div>
             <Button
               onClick={handleExportTable}
-              disabled={isExporting || activeSubTab === "clearance_pending"}
+              disabled={isExporting}
               variant="outline"
               size="sm"
             >
@@ -417,7 +629,7 @@ const ExitProcessingComplianceReport = ({
                       ? "Notice Compliance"
                       : activeSubTab === "exit_interviews"
                       ? "Exit Interviews"
-                      : "Clearance"
+                      : "Clearance Report"
                   }`}
             </Button>
           </div>
@@ -430,7 +642,7 @@ const ExitProcessingComplianceReport = ({
               </TabsTrigger>
               <TabsTrigger value="exit_interviews">Exit Interviews</TabsTrigger>
               <TabsTrigger value="clearance_pending">
-                Clearance Pending
+                Clearance Tracking
               </TabsTrigger>
             </TabsList>
 
@@ -465,23 +677,18 @@ const ExitProcessingComplianceReport = ({
             </TabsContent>
 
             <TabsContent value="clearance_pending">
-              <div className="space-y-4">
-                <div className="text-sm text-orange-600 bg-orange-50 p-3 rounded-lg">
-                  <strong>Clearance Pending API Still Pending:</strong>
-                  <p className="mt-2">
-                    The clearance pending report API is still under development.
-                    This will track asset returns, payroll settlements, and HR
-                    documentation completion.
-                  </p>
-                </div>
-
+              {loading ? (
+                <PageLoader />
+              ) : (
                 <TableCustom
                   columns={ClearancePendingReportColumns()}
-                  data={[]}
-                  pagination={false}
-                  fallbackText="Clearance Pending API is still in development."
+                  data={clearanceData.results}
+                  pagination={true}
+                  dataTotalSize={clearanceData.count}
+                  tableOptions={tableOptions}
+                  fallbackText="No clearance pending data found"
                 />
-              </div>
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>
