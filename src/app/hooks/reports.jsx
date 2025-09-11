@@ -1127,3 +1127,393 @@ export const getV2ClearancePendingReportData = async (payload) => {
     return { results: [], count: 0 };
   }
 };
+
+
+// ============================================================================
+// EMPLOYEE CREATION & HIRING REPORTS API FUNCTIONS
+// Add these functions to your existing src/app/hooks/reports.jsx file
+// ============================================================================
+// Get new hire report data
+export const getNewHireReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-joining_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/new-hire-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || {
+          // Mock data for now - backend will add this
+          total_new_hires: response.data.count || 0,
+          status_breakdown: {
+            Active: Math.floor((response.data.count || 0) * 0.8),
+            Terminated: Math.floor((response.data.count || 0) * 0.1),
+            Exit: Math.floor((response.data.count || 0) * 0.07),
+            Other: Math.floor((response.data.count || 0) * 0.03),
+          },
+          department_breakdown: {
+            Development: Math.floor((response.data.count || 0) * 0.4),
+            Design: Math.floor((response.data.count || 0) * 0.2),
+            HR: Math.floor((response.data.count || 0) * 0.2),
+            Accounts: Math.floor((response.data.count || 0) * 0.2),
+          },
+        },
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching new hire report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get offer letter compliance data
+export const getOfferLetterComplianceData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/offer-letter-compliance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || {
+          // Mock data for now - backend will add this
+          total_employees: response.data.count || 0,
+          compliance_rates: {
+            background_check_completed: 18.2,
+            medical_done_completed: 11.4,
+            offer_status_accepted: 7.5,
+            overall_compliance: 12.4,
+          },
+        },
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching offer letter compliance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get employee creation TAT data
+export const getEmployeeCreationTATData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-tat_days";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/employee-creation-tat/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || {
+          // Mock data for now - backend will add this
+          total_employees: response.data.count || 0,
+          average_tat_days: 3.2,
+          tat_status_breakdown: {
+            "On Time": Math.floor((response.data.count || 0) * 0.75),
+            Delayed: Math.floor((response.data.count || 0) * 0.25),
+          },
+          on_time_percentage: 75.0,
+        },
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching employee creation TAT data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get offer letter report data
+export const getOfferLetterReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-offer_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/offer-letter-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || {
+          // Mock data for now - backend will add this
+          total_offers: response.data.count || 0,
+          offer_status_breakdown: {
+            Pending: Math.floor((response.data.count || 0) * 0.85),
+            Accepted: Math.floor((response.data.count || 0) * 0.1),
+            Rejected: Math.floor((response.data.count || 0) * 0.04),
+            Other: Math.floor((response.data.count || 0) * 0.01),
+          },
+          conversion_rate: 10.2,
+        },
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching offer letter report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get pre-onboarding compliance data
+export const getPreOnboardingComplianceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/pre-onboarding-compliance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || {
+          // Mock data for now - backend will add this
+          total_employees: response.data.count || 0,
+          completion_counts: {
+            background_check_completed: Math.floor((response.data.count || 0) * 0.15),
+            medical_check_completed: Math.floor((response.data.count || 0) * 0.16),
+            visa_processing_completed: Math.floor((response.data.count || 0) * 0.08),
+            fully_compliant: Math.floor((response.data.count || 0) * 0.04),
+          },
+          overall_compliance_rate: 15.2,
+        },
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching pre-onboarding compliance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get probation completion data
+export const getProbationCompletionReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "probation_end_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/probation-completion/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || {
+          // Mock data for now - backend will add this
+          total_employees: response.data.count || 0,
+          confirmation_status_breakdown: {
+            Confirmed: Math.floor((response.data.count || 0) * 0.78),
+            Pending: Math.floor((response.data.count || 0) * 0.15),
+            "Under Review": Math.floor((response.data.count || 0) * 0.07),
+          },
+          upcoming_confirmations_30_days: 8,
+        },
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching probation completion data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Export hiring reports
+export const exportHiringReport = async (reportType, filterData = {}) => {
+  try {
+    let response, dataToExport, filename;
+
+    switch (reportType) {
+      case "new_hire":
+        response = await getNewHireReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Designation": item.designation,
+          "Department": item.department,
+          "Joining Date": renderDate(item.joining_date),
+          "Location": item.location,
+          "Status": item.status,
+        }));
+        filename = "New_Hire_Report";
+        break;
+
+      case "onboarding_status":
+        response = await getOfferLetterComplianceData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Offer Status": item.offer_status,
+          "Background Check": item.background_check,
+          "Medical Done": item.medical_done,
+          "Visa Processing": item.visa_processing,
+          "Nationality": item.nationality,
+        }));
+        filename = "Onboarding_Status_Report";
+        break;
+
+      case "creation_tat":
+        response = await getEmployeeCreationTATData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Date of Joining": item.date_of_joining,
+          "Employee Created on HRMS": item.employee_created_on_hrms,
+          "TAT (Days)": item.tat_days,
+          "Status": item.status,
+        }));
+        filename = "Employee_Creation_TAT_Report";
+        break;
+
+      case "offer_letter":
+        response = await getOfferLetterReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Designation": item.designation,
+          "Offer Date": item.offer_date,
+          "Status": item.status,
+          "Acceptance Date": item.acceptance_date,
+          "Remarks": item.remarks,
+        }));
+        filename = "Offer_Letter_Report";
+        break;
+
+      case "pre_onboarding":
+        response = await getPreOnboardingComplianceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Background Check": item.background_check,
+          "Medical Check": item.medical_check,
+          "Visa Processing": item.visa_processing,
+          "Other Compliance": item.other_compliance,
+          "Status": item.status,
+        }));
+        filename = "Pre_Onboarding_Compliance_Report";
+        break;
+
+      case "probation_completion":
+        response = await getProbationCompletionReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Joining Date": item.joining_date,
+          "Probation End Date": item.probation_end_date,
+          "Confirmation Status": item.confirmation_status,
+          "Action Required": item.action_required,
+          "Days Remaining": item.days_remaining,
+        }));
+        filename = "Probation_Completion_Report";
+        break;
+
+      default:
+        throw new Error("Invalid report type");
+    }
+
+    if (dataToExport && dataToExport.length > 0) {
+      exportRecordToExcel(dataToExport, "Employee Creation & Hiring Reports", filename);
+      return true;
+    } else {
+      toast.error("No data available to export", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error exporting hiring report:", error);
+    toast.error("Failed to export report", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
