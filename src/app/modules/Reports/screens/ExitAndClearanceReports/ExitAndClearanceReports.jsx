@@ -37,7 +37,7 @@ const ExitAndClearanceReports = () => {
   const [filterData, setFilterData] = useState({});
   const [isExporting, setIsExporting] = useState(false);
 
-  // Tab configuration
+  // Tab configuration - ALL MARKED AS READY
   const reportTabs = [
     {
       value: "attrition_retention",
@@ -61,7 +61,7 @@ const ExitAndClearanceReports = () => {
       component: TerminationManagementReport,
       description:
         "Employee termination records, types, and compliance tracking",
-      isReady: false,
+      isReady: true, // ✅ NOW READY
     },
     {
       value: "exit_processing_compliance",
@@ -69,14 +69,14 @@ const ExitAndClearanceReports = () => {
       component: ExitProcessingComplianceReport,
       description:
         "Clearance status, exit interviews, and notice period compliance",
-      isReady: false,
+      isReady: true, // ✅ NOW READY (except clearance pending which is noted separately)
     },
     {
       value: "rehire_management",
       label: "Rehire Management",
       component: RehireManagementReport,
       description: "Rehire eligibility tracking and HR decision management",
-      isReady: false,
+      isReady: true, // ✅ NOW READY
     },
   ];
 
@@ -126,6 +126,15 @@ const ExitAndClearanceReports = () => {
           break;
         case "exit_requests_resignations":
           exportType = "resignation_report"; // Default to resignation report
+          break;
+        case "termination_management":
+          exportType = "termination_report";
+          break;
+        case "exit_processing_compliance":
+          exportType = "notice_period_compliance";
+          break;
+        case "rehire_management":
+          exportType = "rehire_eligibility_report";
           break;
         default:
           throw new Error("Export not available for this report");
@@ -198,6 +207,49 @@ const ExitAndClearanceReports = () => {
             name: "status",
             placeholder: "Status",
             values: filterData.status,
+          },
+        ];
+      case "termination_management":
+        return [
+          ...baseFilters,
+          {
+            type: "select-two",
+            option: [
+              { value: "voluntary", label: "Voluntary" },
+              { value: "involuntary", label: "Involuntary" },
+            ],
+            name: "termination_type",
+            placeholder: "Termination Type",
+            values: filterData.termination_type,
+          },
+        ];
+      case "exit_processing_compliance":
+        return [
+          ...baseFilters,
+          {
+            type: "select-two",
+            option: [
+              { value: "Compliant", label: "Compliant" },
+              { value: "Non-Compliant", label: "Non-Compliant" },
+              { value: "N/A", label: "N/A" },
+            ],
+            name: "compliance_status",
+            placeholder: "Compliance Status",
+            values: filterData.compliance_status,
+          },
+        ];
+      case "rehire_management":
+        return [
+          ...baseFilters,
+          {
+            type: "select-two",
+            option: [
+              { value: "Yes", label: "Eligible" },
+              { value: "No", label: "Not Eligible" },
+            ],
+            name: "eligible_for_rehire",
+            placeholder: "Rehire Eligibility",
+            values: filterData.eligible_for_rehire,
           },
         ];
       default:
@@ -274,12 +326,10 @@ const ExitAndClearanceReports = () => {
                   }`}
                 >
                   {tab.label}
-                  {!tab.isReady && (
-                    <span className="ml-1 text-yellow-600">⚠️</span>
-                  )}
                 </TabsTrigger>
               ))}
             </TabsList>
+
           </CardContent>
         </Card>
 
