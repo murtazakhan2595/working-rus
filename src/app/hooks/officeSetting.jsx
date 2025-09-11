@@ -605,7 +605,7 @@ export const getRatingScaleSetupData = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const RatingValues = await getRatingScaleValueList({ filterData: { rating_scale: Response.id } });
-      const ResponseData = mapRatingScaleSetupData({ ...Response, rating_values: RatingValues });
+      const ResponseData = mapRatingScaleSetupData({ ...Response, rating_values: RatingValues.results });
       return ResponseData;
     }
   } catch (error) {
@@ -703,8 +703,9 @@ export const getRatingScaleValueList = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseDataList = await mapRatingScaleSetupList(ResponseData.results);
-      return { results: ResponseDataList, count: ResponseData.count };
+      // const ResponseDataList = await mapRatingScaleSetupList(ResponseData.results);
+      // return { results: ResponseDataList, count: ResponseData.count };
+      return ResponseData;
     }
   } catch (error) {
     console.error("Error getting regions list:", error);

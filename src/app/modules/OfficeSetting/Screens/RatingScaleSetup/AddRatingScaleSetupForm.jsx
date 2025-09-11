@@ -70,6 +70,7 @@ const AddRatingScaleSetupForm = ({
         setIsLoading(true);
         const response = await getRatingScaleSetupData(id);
         if (isMounted) {
+          console.log(response);
           setFormData(response);
           setFormValues(response);
         }

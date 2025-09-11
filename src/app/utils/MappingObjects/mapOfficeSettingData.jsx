@@ -144,6 +144,7 @@ export function mapEvaluationTypePayloadData(data, id) {
 //-------------Rating Scale Setup ---------------
 
 export function mapRatingScaleSetupData(data) {
+
   const Details = Object.keys(RatingScaleSetup).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
       if (key === "name") acc[key] = data[key].trim()
@@ -151,7 +152,6 @@ export function mapRatingScaleSetupData(data) {
     }
     return acc;
   }, {});
-
   return Details;
 }
 export async function mapRatingScaleSetupList(data) {
