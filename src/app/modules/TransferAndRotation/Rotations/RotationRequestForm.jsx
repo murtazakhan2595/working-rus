@@ -139,10 +139,11 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
         try {
             const payload = { ...values, created_by: isEmployee ? "employee" : "manager" };
             const response = await saveJobRotation(payload, id);
+            debugger
             if (response) {
                 const reason = values.custom_reason?.trim().toLowerCase();
                 if (reason) {
-                    const exists = RotationReasons.some(obj => obj.name.trim().toLowerCase() === reason);
+                    const exists = RotationReasons.some(obj => obj.value.trim().toLowerCase() === reason);
                     if (!exists) {
                         await saveRotationReasons({ name: reason });
                     }

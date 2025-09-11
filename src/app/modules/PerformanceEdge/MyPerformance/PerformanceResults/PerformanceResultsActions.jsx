@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import SheetComponent from "components/ui/SheetComponent";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { EvaluationResultDetails } from "app/modules/PerformanceEdge";
+import { PerformanceResultDetails } from "app/modules/PerformanceEdge";
 import { toast } from "react-toastify";
 import { deleteRecord } from "app/hooks/general";
 
-const EvaluationResultsActions = ({ data, reloadData = () => { }, DataList = [] }) => {
+const PerformanceResultsActions = ({ data, reloadData = () => { }, DataList = [] }) => {
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [deleteDurationState, setDeleteDurationState] = useState(null);
@@ -30,7 +30,7 @@ const EvaluationResultsActions = ({ data, reloadData = () => { }, DataList = [] 
 
             {/* View Duration - Direct component usage like ViewUserRole */}
             {view && (
-                <EvaluationResultDetails
+                <PerformanceResultDetails
                     isOpen={view}
                     setIsOpen={setView}
                     currentId={data.id}
@@ -42,4 +42,4 @@ const EvaluationResultsActions = ({ data, reloadData = () => { }, DataList = [] 
     );
 };
 
-export default EvaluationResultsActions;
+export default PerformanceResultsActions;

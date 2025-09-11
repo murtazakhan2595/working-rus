@@ -13,7 +13,7 @@ import { Button } from "components/ui/button";
 import {
     Evaluations,
     AddUpdateMyGoals,
-    EvaluationResults,
+    PerformanceResults,
     SubmitFeedBack,
     MyGoals,
 } from 'app/modules/PerformanceEdge';
@@ -31,7 +31,7 @@ const MyPerformance = ({ }) => {
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
-        ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
+        ...(isViewFinalEvaluatioFormPermitted ? ["Performance Results"] : []),
         ...(!isViewGoalsPermitted ? ["My Goals"] : []),
     ], [isViewGoalsPermitted, isSubmitEvaluatioFormPermitted]);
 
@@ -86,8 +86,8 @@ const MyPerformance = ({ }) => {
                     <TabsContent value="Submit Evaluation">
                         <Evaluations />
                     </TabsContent>
-                    <TabsContent value="Final Evaluations">
-                        <EvaluationResults />
+                    <TabsContent value="Performance Results">
+                        <PerformanceResults />
                     </TabsContent>
                     <TabsContent value="My Goals">
                         <MyGoals reload={reloadData['my-goals']} />
