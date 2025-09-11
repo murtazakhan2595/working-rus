@@ -387,7 +387,7 @@ export const SidebarRoutes = [
         },
         Config.EXIT_AND_CLEARANCE_REPORTS && {
           path: "/exit-and-clearance-reports",
-          component: <EmployeeCreationAndHiringReports />,
+          component: <ExitAndClearanceReports />,
           name: "EXIT_AND_CLEARANCE_REPORTS",
         },
         Config.EMPLOYEE_CREATION_AND_HIRING && {

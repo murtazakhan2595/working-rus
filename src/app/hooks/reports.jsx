@@ -1155,22 +1155,7 @@ export const getNewHireReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
-        aggregated_stats: response.data.aggregated_stats || {
-          // Mock data for now - backend will add this
-          total_new_hires: response.data.count || 0,
-          status_breakdown: {
-            Active: Math.floor((response.data.count || 0) * 0.8),
-            Terminated: Math.floor((response.data.count || 0) * 0.1),
-            Exit: Math.floor((response.data.count || 0) * 0.07),
-            Other: Math.floor((response.data.count || 0) * 0.03),
-          },
-          department_breakdown: {
-            Development: Math.floor((response.data.count || 0) * 0.4),
-            Design: Math.floor((response.data.count || 0) * 0.2),
-            HR: Math.floor((response.data.count || 0) * 0.2),
-            Accounts: Math.floor((response.data.count || 0) * 0.2),
-          },
-        },
+        aggregated_stats: response.data.aggregated_stats || null,
       };
     }
     return { results: [], count: 0, aggregated_stats: null };
@@ -1205,16 +1190,7 @@ export const getOfferLetterComplianceData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
-        aggregated_stats: response.data.aggregated_stats || {
-          // Mock data for now - backend will add this
-          total_employees: response.data.count || 0,
-          compliance_rates: {
-            background_check_completed: 18.2,
-            medical_done_completed: 11.4,
-            offer_status_accepted: 7.5,
-            overall_compliance: 12.4,
-          },
-        },
+        aggregated_stats: response.data.aggregated_stats || null,
       };
     }
     return { results: [], count: 0, aggregated_stats: null };
@@ -1249,16 +1225,7 @@ export const getEmployeeCreationTATData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
-        aggregated_stats: response.data.aggregated_stats || {
-          // Mock data for now - backend will add this
-          total_employees: response.data.count || 0,
-          average_tat_days: 3.2,
-          tat_status_breakdown: {
-            "On Time": Math.floor((response.data.count || 0) * 0.75),
-            Delayed: Math.floor((response.data.count || 0) * 0.25),
-          },
-          on_time_percentage: 75.0,
-        },
+        aggregated_stats: response.data.aggregated_stats || null,
       };
     }
     return { results: [], count: 0, aggregated_stats: null };
@@ -1293,17 +1260,7 @@ export const getOfferLetterReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
-        aggregated_stats: response.data.aggregated_stats || {
-          // Mock data for now - backend will add this
-          total_offers: response.data.count || 0,
-          offer_status_breakdown: {
-            Pending: Math.floor((response.data.count || 0) * 0.85),
-            Accepted: Math.floor((response.data.count || 0) * 0.1),
-            Rejected: Math.floor((response.data.count || 0) * 0.04),
-            Other: Math.floor((response.data.count || 0) * 0.01),
-          },
-          conversion_rate: 10.2,
-        },
+        aggregated_stats: response.data.aggregated_stats || null,
       };
     }
     return { results: [], count: 0, aggregated_stats: null };
@@ -1338,17 +1295,7 @@ export const getPreOnboardingComplianceReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
-        aggregated_stats: response.data.aggregated_stats || {
-          // Mock data for now - backend will add this
-          total_employees: response.data.count || 0,
-          completion_counts: {
-            background_check_completed: Math.floor((response.data.count || 0) * 0.15),
-            medical_check_completed: Math.floor((response.data.count || 0) * 0.16),
-            visa_processing_completed: Math.floor((response.data.count || 0) * 0.08),
-            fully_compliant: Math.floor((response.data.count || 0) * 0.04),
-          },
-          overall_compliance_rate: 15.2,
-        },
+        aggregated_stats: response.data.aggregated_stats || null,
       };
     }
     return { results: [], count: 0, aggregated_stats: null };
@@ -1383,16 +1330,7 @@ export const getProbationCompletionReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
-        aggregated_stats: response.data.aggregated_stats || {
-          // Mock data for now - backend will add this
-          total_employees: response.data.count || 0,
-          confirmation_status_breakdown: {
-            Confirmed: Math.floor((response.data.count || 0) * 0.78),
-            Pending: Math.floor((response.data.count || 0) * 0.15),
-            "Under Review": Math.floor((response.data.count || 0) * 0.07),
-          },
-          upcoming_confirmations_30_days: 8,
-        },
+        aggregated_stats: response.data.aggregated_stats || null,
       };
     }
     return { results: [], count: 0, aggregated_stats: null };
