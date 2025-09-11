@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { EmployeeName } from "utils/getValuesFromTables";
 
 
-const EvaluationResultDetails = ({
+const PerformanceResultDetails = ({
     isOpen,
     setIsOpen,
     currentId,
@@ -167,4 +167,4 @@ const EvaluationResultDetails = ({
     );
 };
 
-export default EvaluationResultDetails;
+export default PerformanceResultDetails;

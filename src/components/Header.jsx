@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 const pathNames = () => {
   return {
     "people-team": "People Team",
+    "manpower-planning": "Manpower Planning",
     "team-profile-management": "Team Managment",
     "self-service": "Self Service",
     "talent-sphere": "Talent Sphere",

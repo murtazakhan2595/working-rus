@@ -11,10 +11,10 @@ import { TableCustom, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { EvaluationResultColumns } from "app/modules/PerformanceEdge/Sections";
+import { PerformanceResultColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
-const EvaluationResults = ({ reload, permittedViewFilterData }) => {
+const PerformanceResults = ({ reload, permittedViewFilterData }) => {
     const Designations = GetDispatchStateList("designations", "common") || [];
     const Departments = GetDispatchStateList("departments", "common") || [];
 
@@ -23,7 +23,7 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [OpenCreateCycleForm, setOpenCreateCycleForm] = useState(false);
-    const [EvaluationResultList, setEvaluationResultList] = useState(null);
+    const [PerformanceResultList, setPerformanceResultList] = useState(null);
     const [filterData, setFilterData] = useState({});
 
     const [ordering, setOrdering] = useState("-id");
@@ -62,7 +62,7 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
                 options,
                 ordering,
             });
-            setEvaluationResultList(response);
+            setPerformanceResultList(response);
         } catch (e) {
             console.error(e);
         } finally {
@@ -100,7 +100,7 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
         });
     };
 
-    console.log(EvaluationResultList);
+    console.log(PerformanceResultList);
     const handleRequestClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -128,10 +128,10 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        data={EvaluationResultList?.results || []}
-                        columns={EvaluationResultColumns(fetchData)}
+                        data={PerformanceResultList?.results || []}
+                        columns={PerformanceResultColumns(fetchData)}
                         pagination={true}
-                        dataTotalSize={EvaluationResultList?.count || 0}
+                        dataTotalSize={PerformanceResultList?.count || 0}
                         tableOptions={tableOptions}
                     />
                 )}
@@ -140,4 +140,4 @@ const EvaluationResults = ({ reload, permittedViewFilterData }) => {
     );
 };
 
-export default EvaluationResults;
+export default PerformanceResults;

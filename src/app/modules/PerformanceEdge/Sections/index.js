@@ -1,5 +1,5 @@
 import {
-    EvaluationResultColumns,
+    PerformanceResultColumns,
     PerformanceCycleColumns,
     ManagerPendingEvaluationColumns,
     ManagerFinalEvaluationColumns,
@@ -10,7 +10,7 @@ import {
 } from './TableColumn';
 import PerformanceProccessBar from './PerformanceProccessBar';
 export {
-    EvaluationResultColumns,
+    PerformanceResultColumns,
     PerformanceCycleColumns,
     ManagerPendingEvaluationColumns,
     ManagerFinalEvaluationColumns,

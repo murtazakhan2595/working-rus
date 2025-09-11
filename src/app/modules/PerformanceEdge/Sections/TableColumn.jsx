@@ -3,18 +3,18 @@ import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import {
-    EvaluationResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
+    PerformanceResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
     TeamGoalsActions,
     PeerAssessmentActions,
 } from 'app/modules/PerformanceEdge';
 /**
- * EvaluationResultColumns
+ * PerformanceResultColumns
  *
- * Returns an array of column definitions for the EvaluationResultColumns table.
+ * Returns an array of column definitions for the PerformanceResultColumns table.
  *
  * @returns {array} An array of column definitions.
  */
-export const EvaluationResultColumns = (reloadData) => [
+export const PerformanceResultColumns = (reloadData) => [
     {
         dataField: "form_name",
         text: "Evaluation Type",
@@ -56,7 +56,7 @@ export const EvaluationResultColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <EvaluationResultsActions DataList={dataList} data={row} reloadData={reloadData} />
+            <PerformanceResultsActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
@@ -241,7 +241,7 @@ export const ManagerFinalEvaluationColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <EvaluationResultsActions DataList={dataList} data={row} reloadData={reloadData} />
+            <PerformanceResultsActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
