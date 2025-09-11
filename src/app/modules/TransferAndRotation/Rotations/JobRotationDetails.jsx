@@ -41,6 +41,7 @@ const JobRotationDetails = ({
     currentId,
     reloadData = () => { },
     DataList = [],
+    ViewOnly=false,
 }) => {
     const managePermitted = HasAccess("MANAGE_ATTENDANCE_ADJ_REQUESTS");
     const { id: user_id, role: user_role } = useSelector(
@@ -246,7 +247,7 @@ const JobRotationDetails = ({
         {
             customContent: true,
             renderContent: (data) => {
-                console.log(data)
+                if(ViewOnly) return null;
                 if (!managePermitted) return null;
                 if (!data || !data.status || data.status?.toLowerCase() !== "pending")
                     return null;
@@ -292,7 +293,7 @@ const JobRotationDetails = ({
                 title="Job Rotation Details"
                 currentItem_Id={currentId}
                 ForceItemLoad={forceLoad}
-                dataList={fetchData}
+                dataList={DataList}
                 reloadData={reloadData}
                 allowEdit={false}
                 allowDelete={false}

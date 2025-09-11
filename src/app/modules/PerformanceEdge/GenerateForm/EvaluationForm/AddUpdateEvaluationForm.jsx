@@ -1,7 +1,6 @@
 import { getEvaluationTypeList } from 'app/hooks/officeSetting';
 import { saveEvaluationForm, getEvaluationFormById, getEvaluationFormsList } from 'app/hooks/performanceEdge';
 import { EvaluationForm } from "app/utils/Types/PerformanceEdge";
-import { getEmployeeTenure } from "app/hooks/general";
 import {
     TextAreaInput,
     TextInput,
@@ -12,33 +11,29 @@ import {
     TextInputDropdown,
     SelectMultiInputComponent,
 } from "components/FormControl";
-import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
-import AlertDialogue from "components/ui/AlertDialogue";
+import { validatePerformanceFormSchema } from "app/utils/FormSchema/PerformanceEdgeFormSchema";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/PerformanceEdge/GenerateForm/Sections';
+import { PerformanceProccessBar } from 'app/modules/PerformanceEdge/Sections';
+
+
 const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
-    const UserDetails = GetDispatchStateList('user_details', 'emp');
-    const Managers = GetDispatchStateList("reportingManagers", "emp") || []
     const Departments = GetDispatchStateList("departments", "common") || []
-    const Branches = GetDispatchStateList("branches", "common") || []
-    const Designations = GetDispatchStateList("designations", "common") || []
-    const [selectedEmployee, setSelectedEmployee] = useState({});
-    const [confirmSave, setConfirmSave] = useState(false);
     const [formValues, setFormValues] = useState(null);
     const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const isEditMode = Boolean(id);
+    const isEditMode = Boolean(id && !isDuplicate);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(EvaluationForm);
     const [EvaluationTypes, setEvaluationTypes] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
-        title: isEditMode ? "Edit Job Rotation" : "Add New Job Rotation",
+        title: `${isEditMode ? "Edit" : "Add"} Employee Evaluation Form`,
         description: null,
         footer: null,
     };
@@ -71,23 +66,23 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
         };
     }, []);
 
-    const fetchData = async (isMounted, id) => {
-        try {
-            setIsLoading(true);
-            const response = await getEvaluationFormById(id);
-            if (isMounted) {
-                setFormData({ ...response, ...(isDuplicate ? { form_name: '' } : {}) });
-                setFormValues({ ...response, ...(isDuplicate ? { form_name: '' } : {}) });
-            }
-        } catch (error) {
-            console.error("Error fetching roles:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     useEffect(() => {
         let isMounted = true;
+        const fetchData = async (isMounted, id) => {
+            try {
+                setIsLoading(true);
+                const response = await getEvaluationFormById(id);
+                if (isMounted) {
+                    setFormData({ ...response, ...(isDuplicate ? { form_name: '', id: null } : {}) });
+                    setFormValues({ ...response, ...(isDuplicate ? { form_name: '', id: null } : {}) });
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
         if (id) fetchData(isMounted, id);
         return () => {
             isMounted = false;
@@ -99,27 +94,17 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
         reloadData(true);
     };
 
-    const getBranchTenure = async (employee_id, branch_id) => {
-        try {
-            const response = await getEmployeeTenure(employee_id);
-            const branchTenure = response.find(obj => obj.branch_id === branch_id);
-            console.log(response, UserDetails, branchTenure)
-            return `${branchTenure?.months || 0} months`;
-        } catch (error) { console.log(error); }
-        return '0 months';
-    }
-
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
             const payload = { ...values, form_type: 'MnagerEvaluationForm' };
-            const response = await saveEvaluationForm(payload, id);
+            const response = await saveEvaluationForm(payload, isDuplicate ? null : id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Rotation Request Submitted`,
-                    description: `Rotation request for ${selectedEmployee?.name} is submitted successfully`,
+                    title: `Employee Evaluation Form ${isEditMode ? 'Updated' : 'Created'} Submitted`,
+                    description: ``,
                 }
             }
         } catch (error) {
@@ -130,7 +115,6 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                 `Failed to ${isEditMode ? "update" : "add"} role.`;
             toast.error(errorMessage);
         } finally {
-            setConfirmSave(false);
             setIsSubmittingForm(false);
         }
     };
@@ -145,13 +129,10 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                 initialValues: formData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: (values) => {
-                    const errors = {};
-                    return errors;
-                },
+                validateFormSchema: validatePerformanceFormSchema,
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
-                columns: 3,
+                columns: 2,
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
@@ -189,6 +170,13 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                 options: Departments,
                                 SelectAllOption: true,
                             },
+                            {
+                                InputField: PerformanceProccessBar,
+                                list: formValues?.sections || [],
+                                label: "weightage",
+                                colsSpan: 2,
+                                name: 'section_weightage',
+                            },
 
                         ],
                     },
@@ -198,34 +186,49 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                             sheetCardExtension: true,
                             sheetCardTitle: `Weightage Section ${index + 1}`,
                             InputFields: [
-
+                                {
+                                    InputField: RemoveSection,
+                                    name: "sections",
+                                    colsSpan: 2,
+                                    section: section,
+                                    index: index,
+                                },
                                 {
                                     InputField: TextInput,
                                     name: `sections[${index}].name`,
                                     label: "Name",
+                                    required: true,
                                     value: section.name,
-                                    // onFieldUpdate: async (_, __, ___, handleChange) => {
-                                    //     handleChange(`levels[${index}].designation`, null);
-                                    // },
                                 },
 
                                 {
                                     InputField: NumberInput,
                                     name: `sections[${index}].weightage`,
                                     label: "Weightage",
+                                    required: true,
                                     value: section.weightage,
-                                    // onFieldUpdate: async (_, __, ___, handleChange) => {
-                                    //     handleChange(`levels[${index}].designation`, null);
-                                    // },
                                 },
                                 {
-                                    InputField: RemoveSection,
-                                    name: "sections",
-                                    section: section,
+                                    InputField: PerformanceProccessBar,
+                                    list: section.fields || [],
+                                    label: "weightage",
+                                    title: 'Field Weigtage',
+                                    description: 'Section field weightage total must not exceed the section’s weightage.',
+                                    colsSpan: 2,
+                                    name: `sections[${index}].field_weightage`,
                                 },
 
                                 ...(section.fields
                                     ? section.fields.map((field, fieldIndex) => ([
+                                        {
+                                            InputField: () => { return <div key={`sections[${index}]`} className='font-bold'>Section Field {fieldIndex + 1}</div> },
+                                        },
+                                        {
+                                            InputField: RemoveSection,
+                                            name: `sections[${index}].fields`,
+                                            section: field,
+                                            index: fieldIndex,
+                                        },
                                         {
                                             InputField: TextInput,
                                             name: `sections[${index}].fields[${fieldIndex}].question`,
@@ -246,18 +249,14 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                                             label: "Weightage",
                                             value: field.weightage,
                                         },
-                                        {
-                                            InputField: RemoveSection,
-                                            name: `sections[${index}].fields`,
-                                            section: field,
-                                        },
+
                                     ])).flat()
                                     : []
                                 ),
                                 {
                                     InputField: AddNewSectionField,
                                     name: `sections[${index}].fields`,
-                                    colsSpan: 3,
+                                    colsSpan: 2,
                                     value: section.fields,
                                 },
                             ],
@@ -270,7 +269,7 @@ const AddUpdateEvaluationForm = ({ id, isOpen = true, setIsOpen = () => { }, rel
                             {
                                 InputField: AddNewSection,
                                 name: "sections",
-                                colsSpan: 3,
+                                colsSpan: 2,
                             },
                         ],
                     },

@@ -161,7 +161,7 @@ const MultiStatusLabel = React.forwardRef(
                   status={status}
                   className={cn("font-normal", className)}
                 >
-                  {status ? status?.toLowerCase() : ""}
+                  {status ? typeof status === 'string' ? status?.toLowerCase() : status : ""}
                 </StatusLabel>
               );
             })}
@@ -220,7 +220,7 @@ export const StatusButtons = ({
   status,
   current_approver,
   request_id,
-  setResponse = () => {},
+  setResponse = () => { },
 
   // 🚀 NEW: Custom approval flow props
   onApprove = null, // Custom approve handler - if provided, skips default API call

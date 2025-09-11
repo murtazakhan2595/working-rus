@@ -17,9 +17,7 @@ const SelfAssessmentForm = ({ reload }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [SelfAssessmentList, setSelfAssessmentList] = useState(null);
     const [filterData, setFilterData] = useState({});
-
     const [ordering, setOrdering] = useState("-id");
-
     const [options, setOptions] = useState({
         page: 1,
         sizePerPage: 10,
@@ -106,6 +104,36 @@ const SelfAssessmentForm = ({ reload }) => {
                             type: "search",
                             name: "employee",
                             placeholder: "Form Name",
+                        },
+                        {
+                            type: "select",
+                            name: "departments",
+                            placeholder: "Department",
+                            options: 'departments'
+                        },
+                        {
+                            type: "select",
+                            name: "branches",
+                            placeholder: "Branch",
+                            options: 'branches'
+                        },
+                        {
+                            type: "select",
+                            name: "designation",
+                            placeholder: "Designation",
+                            options: 'designations'
+                        },
+                        {
+                            type: "select",
+                            name: "nationalities",
+                            placeholder: "Nationality",
+                            options: 'nationalities'
+                        },
+                        {
+                            type: "select",
+                            name: "status",
+                            placeholder: "Status",
+                            options: [{ label: 'Published', value: 'Active' }, { label: 'Draft', value: 'Inactive'}]
                         },
                     ]}
                     onChange={handleFilterChange}

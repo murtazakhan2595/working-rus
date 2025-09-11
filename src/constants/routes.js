@@ -250,12 +250,7 @@ export const SidebarRoutes = [
           component: <TransferAndRotation />,
           name: "EMPLOYEE_TRANSFER",
         },
-        Config.VIEW_JOB_ROTATION && {
-          path: "/job-rotation-calendar",
-          component: <JobRotationCalendar />,
-          name: "VIEW_JOB_ROTATION",
-        },
-        Config.VIEW_JOB_ROTATION && {
+        Config.EMPLOYEE_TRANSFER && {
           path: "/user-job-rotations",
           component: <UserJobRotations />,
           name: "VIEW_JOB_ROTATION",

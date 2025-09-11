@@ -7,6 +7,10 @@ import {
   mapEvaluationTypeList,
   mapEvaluationTypeData,
   mapEvaluationTypePayloadData,
+  mapRatingScaleSetupList,
+  mapRatingScaleSetupData,
+  mapRatingScaleSetupPayloadData,
+  mapRatingScaleValuePayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -78,9 +82,8 @@ const getRegionsList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/regions?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/regions?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -100,9 +103,8 @@ const getCitiesList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/cities?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/cities?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -256,11 +258,10 @@ const getOnboardingDocument = async (payload) => {
     const ordering = payload?.ordering ?? "-id";
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
-    const URL = `/onboardingdoc/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+    const URL = `/onboardingdoc/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
@@ -297,11 +298,10 @@ export const getGraceTimeList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "id";
-  const URL = `/grace-times/?${ordering ? `ordering=${ordering}&` : ""}${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/grace-times/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -379,11 +379,9 @@ export const getClearanceChecklistList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "id";
-  const URL = `/clearance-checklists/?${
-    ordering ? `ordering=${ordering}&` : ""
-  }${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/clearance-checklists/?${ordering ? `ordering=${ordering}&` : ""
+    }${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -497,11 +495,10 @@ export const getEvaluationTypeList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "id";
-  const URL = `/evaluation-types/?${ordering ? `ordering=${ordering}&` : ""}${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/evaluation-types/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -570,6 +567,152 @@ export const saveUpdateEvaluationType = async (payload, id) => {
     }
     renderErrorMessages(error?.response?.data);
     return false; // To be caught and handled in UI/component
+  }
+};
+
+export const getRatingScaleSetupList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/RatingScale/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapRatingScaleSetupList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getRatingScaleSetupData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/RatingScale/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const RatingValues = await getRatingScaleValueList({ filterData: { rating_scale: Response.id } });
+      const ResponseData = mapRatingScaleSetupData({ ...Response, rating_values: RatingValues.results });
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateRatingScaleSetup = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/RatingScale/${id}/`
+      : `${baseUrl}/RatingScale/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapRatingScaleSetupPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+export const saveUpdateRatingScaleValue = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/RatingValue/${id}/`
+      : `${baseUrl}/RatingValue/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapRatingScaleValuePayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+export const getRatingScaleValueList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/RatingValue/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      // const ResponseDataList = await mapRatingScaleSetupList(ResponseData.results);
+      // return { results: ResponseDataList, count: ResponseData.count };
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
   }
 };
 

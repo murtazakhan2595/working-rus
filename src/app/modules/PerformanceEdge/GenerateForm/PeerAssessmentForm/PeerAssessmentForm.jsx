@@ -11,7 +11,7 @@ import { TableCustom, PageLoader } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { SelfAssessmentFormColumns } from "app/modules/PerformanceEdge/GenerateForm/Sections";
+import { PeerAssessmentFormColumns } from "app/modules/PerformanceEdge/Sections";
 
 const PeerAssessmentForm = ({ reload }) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -109,6 +109,36 @@ const PeerAssessmentForm = ({ reload }) => {
                             name: "employee",
                             placeholder: "Form Name",
                         },
+                        {
+                            type: "select",
+                            name: "departments",
+                            placeholder: "Department",
+                            options: 'departments'
+                        },
+                        {
+                            type: "select",
+                            name: "branches",
+                            placeholder: "Branch",
+                            options: 'branches'
+                        },
+                        {
+                            type: "select",
+                            name: "designation",
+                            placeholder: "Designation",
+                            options: 'designations'
+                        },
+                        {
+                            type: "select",
+                            name: "nationalities",
+                            placeholder: "Nationality",
+                            options: 'nationalities'
+                        },
+                        {
+                            type: "select",
+                            name: "status",
+                            placeholder: "Status",
+                            options: [{ label: 'Published', value: 'Active' }, { label: 'Draft', value: 'Inactive'}]
+                        },
                     ]}
                     onChange={handleFilterChange}
                     className="justify-end mb-4"
@@ -118,7 +148,7 @@ const PeerAssessmentForm = ({ reload }) => {
                 ) : (
                     <TableCustom
                         data={PeerAssessmentList?.results || []}
-                        columns={SelfAssessmentFormColumns(fetchData)}
+                        columns={PeerAssessmentFormColumns(fetchData)}
                         pagination={true}
                         dataTotalSize={PeerAssessmentList?.count || 0}
                         tableOptions={tableOptions}

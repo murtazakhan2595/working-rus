@@ -16,6 +16,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { GetEmployeeFilteredList, GetDispatchStateList } from "utils/Lists";
+import { getDropdownList } from 'utils/Lists';
+import { saveRotationReasons } from 'app/hooks/transferAndRotation';
 
 const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdminView, isBranchView, isDepartmentView, isEmployee = false }) => {
     const Employees = GetEmployeeFilteredList(
@@ -53,7 +55,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
             // Add organizationId to filter if available
             const rotationResonsResponse = await getJobRotationReasons();
             if (rotationResonsResponse && isMounted) {
-                setRotationReasons(rotationResonsResponse.results);
+                setRotationReasons(getDropdownList(rotationResonsResponse.results, 'name', 'name'));
             }
             const response = await getJobRotationRequests();
             if (response && isMounted) {
@@ -135,9 +137,17 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, created_by: "manager" };
+            const payload = { ...values, created_by: isEmployee ? "employee" : "manager" };
             const response = await saveJobRotation(payload, id);
             if (response) {
+                const reason = values.custom_reason?.trim().toLowerCase();
+                if (reason) {
+                    const exists = RotationReasons.some(obj => obj.name.trim().toLowerCase() === reason);
+                    if (!exists) {
+                        await saveRotationReasons({ name: reason });
+                    }
+                }
+
                 return {
                     status: true,
                     messageType: "SUCCESS",

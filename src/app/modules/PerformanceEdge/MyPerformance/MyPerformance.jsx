@@ -14,49 +14,54 @@ import {
     Evaluations,
     AddUpdateMyGoals,
     EvaluationResults,
-    AddSelfAssessmentForm,
+    SubmitFeedBack,
     MyGoals,
 } from 'app/modules/PerformanceEdge';
 const MyPerformance = ({ }) => {
     // permissions for tranfer
-    const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
-    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
-    const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
-    const isCreatePeerAssessmentFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
+    const isViewGoalsPermitted = HasAccess("VIEW_MY_GOALS");
+    const isCreateGoalsPermitted = HasAccess("CREATE_GOAL");
+    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
+    const isViewFinalEvaluatioFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
     const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
-    const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
-    const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
-    const [activeTab, setActiveTab] = useState("Submit Evaluation");
+    const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
+    const [reloadData, setReloadData] = useState({});
+    const [activeTab, setActiveTab] = useState(null);
 
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
         ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
-        ...(isViewFinalEvaluatioFormPermitted ? ["My Goals"] : []),
-    ], [isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
+        ...(!isViewGoalsPermitted ? ["My Goals"] : []),
+    ], [isViewGoalsPermitted, isSubmitEvaluatioFormPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
             event.preventDefault();
             event.stopPropagation();
             setOpenMyGoalsForm(false);
-            setOpenSelfAssessmentForm(false);
-            setOpenPeerAssessmentForm(false);
+            setOpenFeedbackForm(false);
             const triggeredResquest = event.target.title;
             if (triggeredResquest === 'my-goals')
                 setOpenMyGoalsForm(true);
-            else if (triggeredResquest === 'self-assessment')
-                setOpenSelfAssessmentForm(true);
-            else if (triggeredResquest === 'peer-assessment')
-                setOpenPeerAssessmentForm(true);
+            else if (triggeredResquest === 'feedback')
+                setOpenFeedbackForm(true);
         }
         const activeButtonTab = activeTab ?? TabListArray[0];
-        if (activeButtonTab === "My Goals" && isCreateSelfAssessmentFormPermitted)
+        if (activeButtonTab === "My Goals" && isCreateGoalsPermitted) {
             return (
                 <Button title="my-goals" onClick={handleRequestClick}>
                     Add New Goal
                 </Button>
             )
+        }
+        else {
+            return (
+                <Button title="feedback" onClick={handleRequestClick}>
+                    Submit Feedback
+                </Button>
+            )
+        }
     }
 
     return (
@@ -85,7 +90,7 @@ const MyPerformance = ({ }) => {
                         <EvaluationResults />
                     </TabsContent>
                     <TabsContent value="My Goals">
-                        <MyGoals />
+                        <MyGoals reload={reloadData['my-goals']} />
                     </TabsContent>
                 </Card>
             </Tabs>
@@ -94,29 +99,21 @@ const MyPerformance = ({ }) => {
                     isOpen={OpenMyGoalsForm}
                     setIsOpen={() => {
                         setOpenMyGoalsForm(false);
-                        //fetchData(true);
+                        setReloadData((prev) => {
+                            return {
+                                ...prev,
+                                'my-goals': !prev["my-goals"],
+                            };
+                        });
                     }}
-                    initiator={'MANAGER'}
                 />
             )}
-            {OpenSelfAssessmentForm && (
-                <AddSelfAssessmentForm
-                    isOpen={OpenSelfAssessmentForm}
+            {OpenFeedbackForm && (
+                <SubmitFeedBack
+                    isOpen={OpenFeedbackForm}
                     setIsOpen={() => {
-                        setOpenSelfAssessmentForm(false);
-                        //fetchData(true);
+                        setOpenFeedbackForm(false);
                     }}
-
-                />
-            )}
-            {OpenPeerAssessmentForm && (
-                <AddSelfAssessmentForm
-                    isOpen={OpenPeerAssessmentForm}
-                    setIsOpen={() => {
-                        setOpenPeerAssessmentForm(false);
-                        //fetchData(true);
-                    }}
-
                 />
             )}
         </div>

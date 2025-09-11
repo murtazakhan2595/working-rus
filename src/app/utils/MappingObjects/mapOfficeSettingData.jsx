@@ -1,4 +1,4 @@
-import { Branch, GraceTime, EvaluationType } from "app/utils/Types/OfficeSetting";
+import { Branch, GraceTime, EvaluationType, RatingScaleSetup, RatingScaleValue } from "app/utils/Types/OfficeSetting";
 
 export async function mapBranchList(data) {
   const branchList = await data?.map((branch) => {
@@ -133,6 +133,71 @@ export function mapEvaluationTypePayloadData(data, id) {
       data[key] !== undefined
     ) {
       if (key === "name" || key === 'description') payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+//-------------Rating Scale Setup ---------------
+
+export function mapRatingScaleSetupData(data) {
+
+  const Details = Object.keys(RatingScaleSetup).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "name") acc[key] = data[key].trim()
+      else acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+  return Details;
+}
+export async function mapRatingScaleSetupList(data) {
+  const DataList = await data?.map((obj) => {
+    const Details = mapRatingScaleSetupData(obj);
+    return {
+      value: Details.id,
+      label: Details.name,
+      ...Details,
+    };
+  });
+
+  return DataList;
+}
+
+export function mapRatingScaleSetupPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in RatingScaleSetup) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "name") payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+export function mapRatingScaleValuePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in RatingScaleValue) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "description") payload[key] = data[key].trim();
       else payload[key] = data[key];
     }
   }

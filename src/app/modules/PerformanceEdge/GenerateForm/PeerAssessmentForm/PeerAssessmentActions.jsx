@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import SheetComponent from "components/ui/SheetComponent";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { ViewHolidayDetail, AddUpdateHolidays } from "app/modules/LeaveTracker";
-import { AddUpdateEvaluationForm } from "app/modules/PerformanceEdge";
-import { toast } from "react-toastify";
+import { AddUpdatePeerAssesmentForm, StartAssessmentForm } from "app/modules/PerformanceEdge";
 import { deleteRecord } from "app/hooks/general";
 
-const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) => {
+const PeerAssessmentActions = ({ data, reloadData = () => { }, DataList = [] }) => {
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [deleteDurationState, setDeleteDurationState] = useState(null);
@@ -51,7 +48,7 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                viewText="View Form"
+                viewText="Preview Form"
                 editText="Edit Form"
                 deleteText="Delete Form"
                 menuTooltip="Form Actions"
@@ -72,7 +69,7 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
 
             {/* Edit Duration Sheet */}
             {edit && (
-                <AddUpdateEvaluationForm
+                <AddUpdatePeerAssesmentForm
                     isOpen={edit}
                     setIsOpen={setEdit}
                     id={data.id}
@@ -81,7 +78,7 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
             )}
             {/* Duplicate Sheet */}
             {duplicate && (
-                <AddUpdateEvaluationForm
+                <AddUpdatePeerAssesmentForm
                     isOpen={duplicate}
                     setIsOpen={setDuplicate}
                     id={data.id}
@@ -92,16 +89,15 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
 
             {/* View Duration - Direct component usage like ViewUserRole */}
             {view && (
-                <ViewHolidayDetail
+                <StartAssessmentForm
                     isOpen={view}
                     setIsOpen={setView}
-                    currentId={data.id}
-                    reloadData={reloadData}
-                    DataList={DataList}
+                    id={data.id}
+                    PreviewOnly={true}
                 />
             )}
         </>
     );
 };
 
-export default EvaluationFormActions;
+export default PeerAssessmentActions;

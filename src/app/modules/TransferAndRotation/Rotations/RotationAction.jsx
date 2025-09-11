@@ -9,11 +9,11 @@ const RotationAction = ({
     RecordView = false,
     reloadData = () => { },
     DataList = [],
+    ViewOnly = false,
 }) => {
     const [view, setView] = useState(null);
     const navigate = useNavigate();
     const handleView = () => {
-        console.log(data)
         if (RecordView)
             navigate(`/user-job-rotations`, {
                 state: {
@@ -41,6 +41,7 @@ const RotationAction = ({
                     reloadData={reloadData}
                     DataList={DataList}
                     currentId={data?.id}
+                    ViewOnly={ViewOnly}
                 />
             )}
         </>

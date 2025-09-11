@@ -235,7 +235,7 @@ export const UserJobRotationColumns = (realoadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <RotationAction DataList={dataList} data={row} />
+            <RotationAction DataList={dataList} data={row} ViewOnly={true} />
         ),
     },
 ];

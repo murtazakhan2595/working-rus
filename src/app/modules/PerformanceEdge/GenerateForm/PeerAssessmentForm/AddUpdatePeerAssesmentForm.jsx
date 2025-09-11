@@ -15,7 +15,7 @@ import { AddNewSection, RemoveSection, AddNewSectionField } from 'app/modules/Pe
 import { StartAssessmentForm } from 'app/modules/PerformanceEdge';
 
 
-const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
+const AddUpdatePeerAssesmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, isDuplicate = false }) => {
     const Departments = GetDispatchStateList("departments", "common") || []
     const Branches = GetDispatchStateList("branches", "common") || []
     const Designations = GetDispatchStateList("designations", "common") || []
@@ -28,7 +28,7 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
     const [PreviewForm, setPreviewForm] = useState(false);
     const FormSheetData = {
         triggerText: "",
-        title: `${isEditMode ? "Edit" : "Create"} Self Assessment Form`,
+        title: `${isEditMode ? "Edit" : "Create"} Peer Assessment Form`,
         description: null,
         footer: null,
     };
@@ -88,13 +88,13 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
     const handleSubmit = async (values, save_mode) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, form_type: 'SelfAssessmentForm', ...(save_mode === 'draft' ? { status: 'Inactive' } : { status: 'Active' }) };
+            const payload = { ...values, form_type: 'PeerAssessmentForm', ...(save_mode === 'draft' ? { status: 'Inactive' } : { status: 'Active' }) };
             const response = await saveEvaluationForm(payload, isDuplicate ? null : id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Self Assessment Form ${isEditMode ? 'Updated' : 'Created'} Submitted`,
+                    title: `Peer Assessment Form ${isEditMode ? 'Updated' : 'Created'} Submitted`,
                     description: ``,
                 }
             }
@@ -109,7 +109,6 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
             setIsSubmittingForm(false);
         }
     };
-    console.log(formValues);
 
     return (
         <>
@@ -260,4 +259,4 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
     );
 };
 
-export default AddSelfAssessmentForm;
+export default AddUpdatePeerAssesmentForm;

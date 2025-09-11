@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import SheetComponent from "components/ui/SheetComponent";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { ViewHolidayDetail, AddUpdateHolidays } from "app/modules/LeaveTracker";
-import { AddUpdateEvaluationForm } from "app/modules/PerformanceEdge";
+import { AddSelfAssessmentForm, StartAssessmentForm } from "app/modules/PerformanceEdge";
 import { toast } from "react-toastify";
 import { deleteRecord } from "app/hooks/general";
 
@@ -11,6 +10,7 @@ const SelfAssessmentFormActions = ({ data, reloadData = () => { }, DataList = []
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [deleteDurationState, setDeleteDurationState] = useState(null);
+    const [duplicate, setDuplicate] = useState(null);
 
     // Handle opening the view dialog
     const handleView = () => {
@@ -30,6 +30,9 @@ const SelfAssessmentFormActions = ({ data, reloadData = () => { }, DataList = []
         });
     };
 
+    const handleDuplicate = () => {
+        setDuplicate(true);
+    };
     const confirmDelete = async () => {
         try {
             await deleteRecord(`/evaluation-forms/${data.id}`, `${data.form_name}`);
@@ -47,10 +50,11 @@ const SelfAssessmentFormActions = ({ data, reloadData = () => { }, DataList = []
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                viewText="View Form"
+                viewText="Preview Form"
                 editText="Edit Form"
                 deleteText="Delete Form"
                 menuTooltip="Form Actions"
+                additionalOptionsConfig={[{ text: 'Duplicate Form', action: handleDuplicate }]}
             />
 
             {deleteDurationState?.open && (
@@ -65,9 +69,20 @@ const SelfAssessmentFormActions = ({ data, reloadData = () => { }, DataList = []
                 />
             )}
 
+            {/* Duplicate Sheet */}
+            {duplicate && (
+                <AddSelfAssessmentForm
+                    isOpen={duplicate}
+                    setIsOpen={setDuplicate}
+                    id={data.id}
+                    reloadData={reloadData}
+                    isDuplicate={true}
+                />
+            )}
+
             {/* Edit Duration Sheet */}
             {edit && (
-                <AddUpdateEvaluationForm
+                <AddSelfAssessmentForm
                     isOpen={edit}
                     setIsOpen={setEdit}
                     id={data.id}
@@ -77,12 +92,11 @@ const SelfAssessmentFormActions = ({ data, reloadData = () => { }, DataList = []
 
             {/* View Duration - Direct component usage like ViewUserRole */}
             {view && (
-                <ViewHolidayDetail
+                <StartAssessmentForm
                     isOpen={view}
                     setIsOpen={setView}
-                    currentId={data.id}
-                    reloadData={reloadData}
-                    DataList={DataList}
+                    id={data.id}
+                    PreviewOnly={true}
                 />
             )}
         </>

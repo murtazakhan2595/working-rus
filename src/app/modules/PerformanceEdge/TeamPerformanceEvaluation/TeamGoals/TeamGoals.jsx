@@ -14,9 +14,6 @@ import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
 import { getEmployeeGoalsList } from "app/hooks/performanceEdge";
 
 const TeamGoals = ({ activeView = "Pending Goals" }) => {
-    const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-    const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
-    const isDepartmentView = HasAccess("VIEW_DPT_LEAVE_REQUEST");
     const Employees = GetEmployeeFilteredList(true,);
     const Departments = GetDispatchStateList("departments", "common") || [];
     const Branches = GetDispatchStateList("branches", "common") || [];
