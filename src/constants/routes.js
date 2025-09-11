@@ -100,6 +100,7 @@ import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sect
 import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
 import { ExitAndClearanceReports } from "app/modules/Reports";
+import {EmployeeCreationAndHiringReports} from "app/modules/Reports";
 
 export const SidebarRoutes = [
   {
@@ -386,8 +387,13 @@ export const SidebarRoutes = [
         },
         Config.EXIT_AND_CLEARANCE_REPORTS && {
           path: "/exit-and-clearance-reports",
-          component: <ExitAndClearanceReports />,
+          component: <EmployeeCreationAndHiringReports />,
           name: "EXIT_AND_CLEARANCE_REPORTS",
+        },
+        Config.EMPLOYEE_CREATION_AND_HIRING && {
+          path: "/employee-creation-and-hiring",
+          component: <EmployeeCreationAndHiringReports />,
+          name: "EMPLOYEE_CREATION_AND_HIRING",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
