@@ -97,7 +97,6 @@ const AddRatingScaleSetupForm = ({
       const response = await saveUpdateRatingScaleSetup(values, id);
       if (response) {
         if (response.id) {
-          debugger
           const RatingValues = values.rating_values;
           for (const rating_value of RatingValues) {
             await saveUpdateRatingScaleValue({ ...rating_value, rating_scale: response.id }, rating_value.id)
@@ -174,6 +173,13 @@ const AddRatingScaleSetupForm = ({
                   name: "rating_values",
                   value: rating_value,
                   colsSpan: 2
+                },
+                {
+                  InputField: TextInput,
+                  name: `rating_values[${index}].value`,
+                  label: "Rating Value",
+                  value: rating_value.value,
+                  required: true,
                 },
                 {
                   InputField: TextAreaInput,
