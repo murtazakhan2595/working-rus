@@ -101,6 +101,7 @@ import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
 import { ExitAndClearanceReports } from "app/modules/Reports";
 import {EmployeeCreationAndHiringReports} from "app/modules/Reports";
+import { HRDocumentsReports } from "app/modules/Reports";
 
 export const SidebarRoutes = [
   {
@@ -394,6 +395,11 @@ export const SidebarRoutes = [
           path: "/employee-creation-and-hiring",
           component: <EmployeeCreationAndHiringReports />,
           name: "EMPLOYEE_CREATION_AND_HIRING",
+        },
+        Config.HR_DOCUMENTS && {
+          path: "/hr-documents-reports",
+          component: <HRDocumentsReports />,
+          name: "HR_DOCUMENTS",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),

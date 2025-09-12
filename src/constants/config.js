@@ -117,6 +117,8 @@ const Config = {
   PROFILE_MANAGEMENT_REPORTS: true,
   EXIT_AND_CLEARANCE_REPORTS: true,
   EMPLOYEE_CREATION_AND_HIRING: true,
+  // HR_DOCUMENTS: true,
+  TRANSFER_AND_ROTATIONS: true,
 };
 
 export const URLS = [
