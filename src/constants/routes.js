@@ -3,7 +3,6 @@ import Dashboard from "app/modules/Dashboard";
 import Login from "app/modules/Login";
 import {
   Applications,
-  Jobs,
   CreateUpdateJob,
   JobDescription,
   JobApplicationForm,
@@ -29,7 +28,6 @@ import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import {
   TransferAndRotation,
-  JobRotationCalendar,
   MyJobRotations,
   MyTransfers,
   UserJobRotations,
@@ -79,7 +77,7 @@ import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import { OrganizationalTree } from "app/modules/OrganizationalChart";
-import { GenerateForm, PerformanceCycleSetup, MyPerformance, TeamPerformanceEvaluation } from "app/modules/PerformanceEdge";
+import { GenerateForm, PerformanceCycleSetup, MyPerformance, TeamPerformanceEvaluation, PerformanceEvaluation } from "app/modules/PerformanceEdge";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
@@ -226,7 +224,7 @@ export const SidebarRoutes = [
       Config.TEAM_PERFORMANCE_EVALUATION && {
         path: "/team-performance-evaluation",
         component: <TeamPerformanceEvaluation />,
-        name: "TEAM_ATTENDANCE",
+        name: "TEAM_PERFORMANCE_EVALUATION",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),
@@ -592,6 +590,11 @@ export const SidebarRoutes = [
         path: "/performance-cycle-setup",
         component: <PerformanceCycleSetup />,
         name: "PERFORMANCE_CYCLE_SETUP",
+      },
+      Config.PERFORMANCE_EVALUATION && {
+        path: "/performance-evaluation",
+        component: <PerformanceEvaluation />,
+        name: "PERFORMANCE_EVALUATION",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),
