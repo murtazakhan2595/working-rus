@@ -401,11 +401,11 @@ export const SidebarRoutes = [
           component: <HRDocumentsReports />,
           name: "HR_DOCUMENT_REPORTS",
         },
-        Config.TRANSFER_AND_ROTATIONS && {
-          path: "/hr-documents-reports",
-          component: <HRDocumentsReports />,
-          name: "TRANSFER_AND_ROTATIONS",
-        },
+        // Config.TRANSFER_AND_ROTATIONS && {
+        //   path: "/hr-documents-reports",
+        //   component: <HRDocumentsReports />,
+        //   name: "TRANSFER_AND_ROTATIONS",
+        // },
       ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ATTENDANCE
