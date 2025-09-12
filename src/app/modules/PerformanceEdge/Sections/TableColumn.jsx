@@ -218,7 +218,7 @@ export const ManagerFinalEvaluationColumns = (reloadData) => [
         text: "Peer-Evaluation Score",
     },
     {
-        dataField: "HrRemarks",
+        dataField: "final_score",
         text: "HR Evaluation Score",
         dataSort: true,
         formatter: (cell, row) => renderDate(cell),
@@ -415,6 +415,62 @@ export const PeerAssessmentFormColumns = (reloadData) => [
         text: "",
         formatter: (_, row, dataList) => (
             <PeerAssessmentActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+
+/**
+ * PendingEvaluationColumns
+ *
+ * Returns an array of column definitions for the PendingEvaluationColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const PendingEvaluationColumns = (reloadData) => [
+    {
+        dataField: "emp_id",
+        text: "Employee",
+        // formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+    },
+    {
+        dataField: "Evaluation_Period",
+        text: "Evaluation Period",
+        // formatter: (cell) => `${renderDate(cell.start_date)} to ${renderDate(cell.end_date)}`,
+    },
+    {
+        dataField: "Peer_Evaluation_Status",
+        text: "Peer Assessment Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "Self_Assessment_Status",
+        text: "Self Assessment Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "Manager_Evaluation_Status",
+        text: "Manager Evaluation Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "Evaluation_Status",
+        text: "Evaluation Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "HR_Final_Remarks",
+        text: "HR Final Remarks",
+    },
+    {
+        dataField: "Final_Submission_Date",
+        text: "Final Submission Date",
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <PerformanceCycleActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];

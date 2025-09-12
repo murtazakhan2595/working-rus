@@ -11,14 +11,14 @@ import { Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import {
-    TeamPendingEvaluation,
+    PendingEvaluation,
     AddUpdateEvaluationForm,
     EvaluationSummary,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
     TeamGoals
 } from 'app/modules/PerformanceEdge';
-const TeamPerformanceEvaluation = ({ }) => {
+const PerformanceEvaluation = ({ }) => {
     // permissions for tranfer
     const isViewGoalsPermitted = HasAccess("VIEW_TEAM_GOALS");
     const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
@@ -33,8 +33,8 @@ const TeamPerformanceEvaluation = ({ }) => {
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
-        ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
-        ...(isViewGoalsPermitted ? ["Team Goals"] : []),
+        // ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
+        // ...(isViewGoalsPermitted ? ["Team Goals"] : []),
     ], [isViewGoalsPermitted, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
 
@@ -88,7 +88,7 @@ const TeamPerformanceEvaluation = ({ }) => {
                 </TabsList>
                 <Card>
                     <TabsContent value="Pending Evaluation">
-                        <TeamPendingEvaluation />
+                        <PendingEvaluation />
                     </TabsContent>
                     <TabsContent value="Evaluation Summary">
                         <EvaluationSummary />
@@ -132,4 +132,4 @@ const TeamPerformanceEvaluation = ({ }) => {
     );
 };
 
-export default TeamPerformanceEvaluation
+export default PerformanceEvaluation

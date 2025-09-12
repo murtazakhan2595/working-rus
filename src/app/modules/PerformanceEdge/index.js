@@ -43,13 +43,15 @@ import {
 
 import {
     TeamPerformanceEvaluation,
-    PendingEvaluation,
+    TeamPendingEvaluation,
     EvaluationSummary,
     TeamGoals,
     TeamGoalsActions,
 } from './TeamPerformanceEvaluation';
 
 import { EmployeeFeedback, SubmitFeedBack } from './EmployeeFeedback';
+
+import { PerformanceEvaluation, PendingEvaluation } from './PerformanceEvaluation';
 
 export {
     GenerateForm,
@@ -72,7 +74,7 @@ export {
     PerformanceCycleActions,
     PerformanceCycleDetails,
     TeamPerformanceEvaluation,
-    PendingEvaluation,
+    TeamPendingEvaluation,
     EvaluationSummary,
     AddUpdatePeerAssesmentForm,
     AddUpdateMyGoals,
@@ -84,6 +86,8 @@ export {
     TeamGoalsActions,
     EmployeeFeedback,
     SubmitFeedBack,
+    PerformanceEvaluation,
+    PendingEvaluation,
     // Performance Dashboard Components
     PerformanceDashboard,
     PerformanceStatsCards,

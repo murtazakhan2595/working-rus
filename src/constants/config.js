@@ -110,6 +110,7 @@ const Config = {
   GENERATE_FORM: true,
   PERFORMANCE_CYCLE_SETUP: true,
   PERFORMANCE_DASHBOARD: true,
+  PERFORMANCE_EVALUATION: true,
 
   //--------------Reports-----------
   REPORTS: true,
