@@ -13,6 +13,7 @@ import {
   mapEmployeeGoalsPayload,
   mapEmployeeGoalsData,
   mapEmployeeFeedbackPayload,
+  mapCalibrationPayloadData,
 } from 'app/utils/MappingObjects/mapPerformanceEdgeData'
 
 
@@ -589,3 +590,33 @@ export const getPendingEvaluation = async (payload) => {
     return false;
   }
 }
+
+export const saveCalibration = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+     const finalPayload = mapCalibrationPayloadData(payload);
+
+    const url = ID
+      ? `${baseUrl}/Calibration/${ID}/` // Use id if updating
+      : `${baseUrl}/Calibration/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};

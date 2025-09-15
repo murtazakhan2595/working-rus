@@ -13,7 +13,7 @@ import { Button } from "components/ui/button";
 import {
     PendingEvaluation,
     AddUpdateEvaluationForm,
-    EvaluationSummary,
+    CalibrationPanel,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
     TeamGoals
@@ -33,7 +33,7 @@ const PerformanceEvaluation = ({ }) => {
 
     const TabListArray = React.useMemo(() => [
         ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
-        // ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
+         ...(isSubmitEvaluatioFormPermitted ? ["Calibration Panel"] : []),
         // ...(isViewGoalsPermitted ? ["Team Goals"] : []),
     ], [isViewGoalsPermitted, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
 
@@ -90,8 +90,8 @@ const PerformanceEvaluation = ({ }) => {
                     <TabsContent value="Pending Evaluation">
                         <PendingEvaluation />
                     </TabsContent>
-                    <TabsContent value="Evaluation Summary">
-                        <EvaluationSummary />
+                    <TabsContent value="Calibration Panel">
+                        <CalibrationPanel />
                     </TabsContent>
                     <TabsContent value="Team Goals">
                         <TeamGoals />

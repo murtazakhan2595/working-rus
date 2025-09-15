@@ -6,7 +6,8 @@ import {
     MyGoals,
     EmployeeFeedback,
     EvaluationSection,
-    EvaluationSectionField
+    EvaluationSectionField,
+    CalibrationPanel
 } from "app/utils/Types/PerformanceEdge";
 
 export function mapEvaluationPayloadData(data) {
@@ -199,6 +200,21 @@ export function mapEmployeeFeedbackPayload(data) {
         if (data.hasOwnProperty(key) && data[key]) {
             // Add the key and its value to the payload
             if (key === 'comments') payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+    return payload;
+}
+
+export function mapCalibrationPayloadData(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Task object
+    for (const key in CalibrationPanel) {
+        // Check if the key exists in the data object
+        if (data.hasOwnProperty(key) && data[key]) {
+            // Add the key and its value to the payload
+            if (key === 'justification' || key === 'new_score') payload[key] = data[key].trim();
             else payload[key] = data[key];
         }
     }

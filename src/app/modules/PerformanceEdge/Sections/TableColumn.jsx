@@ -6,6 +6,7 @@ import {
     PerformanceResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
     TeamGoalsActions,
     PeerAssessmentActions,
+    CalibrationPanelActions,
 } from 'app/modules/PerformanceEdge';
 /**
  * PerformanceResultColumns
@@ -471,6 +472,47 @@ export const PendingEvaluationColumns = (reloadData) => [
         text: "",
         formatter: (_, row, dataList) => (
             <PerformanceCycleActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+/**
+ * CalibrationPanelColumns
+ *
+ * Returns an array of column definitions for the CalibrationPanelColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const CalibrationPanelColumns = (reloadData) => [
+    {
+        dataField: "employee",
+        text: "Employee",
+        formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+
+    },
+    {
+        dataField: "evaluated_by",
+        text: "Evaluated By",
+        formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+    },
+    {
+        dataField: "final_score",
+        text: "Final Score",
+    },
+    {
+        dataField: "final_rating",
+        text: "Final Rating",
+    },
+    {
+        dataField: "is_locked",
+        text: "Lock Evaluation",
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>,
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <CalibrationPanelActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
