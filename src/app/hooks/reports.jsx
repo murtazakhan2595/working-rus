@@ -1783,3 +1783,497 @@ export const exportHRDocumentReport = async (reportType, filterData = {}) => {
     return false;
   }
 };
+
+
+
+// ============================================================================
+// TRANSFER & ROTATION REPORTS API FUNCTIONS
+// Add these functions to your existing src/app/hooks/reports.jsx file
+// ============================================================================
+
+// Get transfer report data
+export const getTransferReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-transfer_request_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/reports/transfers/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching transfer report data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get job rotation history data
+export const getJobRotationHistoryData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-rotation_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/reports/job-rotation-history/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching job rotation history data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get pending transfer approvals data
+export const getPendingTransferApprovalsData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-request_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/pending-transfer-approvals/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching pending transfer approvals data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get transfer cost impact data
+export const getTransferCostImpactData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-total_cost";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/reports/transfer-cost-impact-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching transfer cost impact data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get rotation compliance data
+export const getRotationComplianceData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-rotation_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/reports/rotation-compilance-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching rotation compliance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get transfer rejection data
+export const getTransferRejectionData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-rejection_date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/transfer-rejection-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching transfer rejection data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get rotation skill gap data
+export const getRotationSkillGapData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "employee_name";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/rotation-skill-gap-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching rotation skill gap data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get employee rotation frequency data
+export const getEmployeeRotationFrequencyData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-total_rotations";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/employee-rotation-frequency-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching employee rotation frequency data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get transfer approval timeline data
+export const getTransferApprovalTimelineData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/transfer-approval-timeline-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching transfer approval timeline data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get cross department transfer data
+export const getCrossDepartmentTransferData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/reports/cross-department-transfers/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching cross department transfer data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get transfer rotation dashboard data
+export const getTransferRotationDashboardData = async (filterData = {}) => {
+  try {
+    const response = await axios.get(`${baseUrl}/transfer-rotation-dashboard/`, {
+      headers: headers(),
+      params: filterData,
+    });
+
+    if (response.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching transfer rotation dashboard data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+// Export transfer rotation reports
+export const exportTransferRotationReport = async (reportType, filterData = {}) => {
+  try {
+    let response, dataToExport, filename;
+
+    switch (reportType) {
+      case "transfer_reports":
+        response = await getTransferReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Current Department": item.current_department,
+          "New Department": item.new_department,
+          "Transfer Type": item.transfer_type,
+          "Request Date": item.transfer_request_date,
+          "Effective Date": item.effective_date,
+          "Status": item.status,
+        }));
+        filename = "Transfer_Reports";
+        break;
+
+      case "job_rotation_history":
+        response = await getJobRotationHistoryData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department History": item.department_history,
+          "Designation History": item.designation_history,
+          "Rotation Date": item.rotation_date,
+          "Duration in Previous Role": item.duration_in_previous_role,
+          "Reason for Rotation": item.reason_for_rotation,
+        }));
+        filename = "Job_Rotation_History";
+        break;
+
+      case "pending_approvals":
+        response = await getPendingTransferApprovalsData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Transfer Type": item.transfer_type,
+          "Request Date": item.request_date,
+          "Requested By": item.requested_by,
+          "Approver": item.approver,
+          "Status": item.status,
+        }));
+        filename = "Pending_Transfer_Approvals";
+        break;
+
+      case "cost_impact":
+        response = await getTransferCostImpactData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Transfer Type": item.transfer_type,
+          "Relocation Cost": item.relocation_cost,
+          "Training Cost": item.training_cost,
+          "Onboarding Cost": item.onboarding_cost,
+          "Total Cost": item.total_cost,
+          "Notes": item.notes,
+        }));
+        filename = "Transfer_Cost_Impact";
+        break;
+
+      case "rotation_compliance":
+        response = await getRotationComplianceData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.name,
+          "Department": item.department,
+          "Designation": item.designation,
+          "Rotation Date": item.rotation_date,
+          "Last Rotation Date": item.last_rotation_date,
+          "Rotation Interval (Months)": item.rotation_interval_months,
+          "Compliance Status": item.compliance_status,
+          "Notes": item.notes,
+        }));
+        filename = "Rotation_Compliance";
+        break;
+
+      case "skill_gap_analysis":
+        response = await getRotationSkillGapData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Name": item.employee_name,
+          "Current Role": item.current_role,
+          "Rotated Role": item.rotated_role,
+          "Required Skills": item.required_skills,
+          "Employee Skills": item.employee_skills,
+          "Skill Gap": item.skill_gap,
+          "Training Required": item.training_required,
+        }));
+        filename = "Rotation_Skill_Gap_Analysis";
+        break;
+
+      default:
+        throw new Error("Invalid report type");
+    }
+
+    if (dataToExport && dataToExport.length > 0) {
+      exportRecordToExcel(dataToExport, "Transfer & Rotation Reports", filename);
+      return true;
+    } else {
+      toast.error("No data available to export", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error exporting transfer rotation report:", error);
+    toast.error("Failed to export report", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
