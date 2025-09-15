@@ -1455,3 +1455,331 @@ export const exportHiringReport = async (reportType, filterData = {}) => {
     return false;
   }
 };
+
+
+// ============================================================================
+// HR DOCUMENTS REPORTS API FUNCTIONS
+// Add these functions to your existing src/app/hooks/reports.jsx file
+// ============================================================================
+
+// Get document expiry data
+export const getDocumentExpiryData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-days_remaining";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/document-expiry/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching document expiry data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get missing documents data
+export const getMissingDocumentsData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/missing-documents/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching missing documents data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get document access data
+export const getDocumentAccessData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/document-access/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching document access data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Get visa & work permit expiry data
+export const getVisaPermitExpiryData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-days_remaining";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/visa-permit/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching visa permit data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get contract renewal data
+export const getContractRenewalData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-days_remaining";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/contract-renewal/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching contract renewal data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get policy acknowledgement data
+export const getPolicyAcknowledgementData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/policy-acknowledgement/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+      };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching policy acknowledgement data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// Export HR document reports
+export const exportHRDocumentReport = async (reportType, filterData = {}) => {
+  try {
+    let response, dataToExport, filename;
+
+    switch (reportType) {
+      case "document_expiry":
+        response = await getDocumentExpiryData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Department": item.department,
+          "Document Type": item.document_type,
+          "Document Number": item.document_number,
+          "Issue Date": item.issue_date,
+          "Expiry Date": item.expiry_date,
+          "Days Remaining": item.days_remaining,
+          "Status": item.status,
+        }));
+        filename = "Document_Expiry_Report";
+        break;
+
+      case "missing_documents":
+        response = await getMissingDocumentsData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Department": item.department,
+          "Missing Documents": item.missing_documents,
+          "Status": item.status,
+        }));
+        filename = "Missing_Documents_Report";
+        break;
+
+      case "document_access":
+        response = await getDocumentAccessData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "ID": item.id,
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Document Name": item.document_name,
+          "Expiry Date": item.expiry_date || "N/A",
+          "Has Expiry Date": item.has_expiry_date ? "Yes" : "No",
+          "Is Active": item.is_active ? "Yes" : "No",
+        }));
+        filename = "Document_Access_Report";
+        break;
+
+      case "visa_permit_expiry":
+        response = await getVisaPermitExpiryData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Country": item.country,
+          "Visa Type": item.visa_type,
+          "Visa Number": item.visa_number || "N/A",
+          "Issue Date": item.issue_date || "N/A",
+          "Expiry Date": item.expiry_date || "N/A",
+          "Days Remaining": item.days_remaining || "N/A",
+          "Status": item.status,
+        }));
+        filename = "Visa_Permit_Expiry_Report";
+        break;
+
+      case "contract_renewal":
+        response = await getContractRenewalData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Department": item.department,
+          "Contract Type": item.contract_type,
+          "Start Date": item.start_date,
+          "End Date": item.end_date,
+          "Days Remaining": item.days_remaining,
+          "Renewal Status": item.renewal_status,
+        }));
+        filename = "Contract_Renewal_Report";
+        break;
+
+      case "policy_acknowledgement":
+        response = await getPolicyAcknowledgementData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Policy Name": item.policy_name || "N/A",
+          "Acknowledged": item.acknowledged,
+          "Acknowledgement Date": item.acknowledgement_date || "N/A",
+          "Status": item.status,
+        }));
+        filename = "Policy_Acknowledgement_Report";
+        break;
+
+      default:
+        throw new Error("Invalid report type");
+    }
+
+    if (dataToExport && dataToExport.length > 0) {
+      exportRecordToExcel(dataToExport, "HR Documents Reports", filename);
+      return true;
+    } else {
+      toast.error("No data available to export", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error exporting HR document report:", error);
+    toast.error("Failed to export report", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
