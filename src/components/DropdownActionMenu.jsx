@@ -97,9 +97,9 @@ const DropdownActionMenu = ({
           </DropdownMenuItem>
         )}
         {additionalOptionsConfig &&
-          additionalOptionsConfig.map(({action=()=>{},text}, index) => (
+          additionalOptionsConfig.map(({ action = () => { }, text }, index) => (
             <DropdownMenuItem
-              key={index}
+              key={`${text}-${index}`}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

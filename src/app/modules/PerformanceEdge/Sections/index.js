@@ -8,6 +8,7 @@ import {
     PeerAssessmentFormColumns,
     MyPerformanceCycleColumns,
     PendingEvaluationColumns,
+    CalibrationPanelColumns,
 } from './TableColumn';
 import PerformanceProccessBar from './PerformanceProccessBar';
 export {
@@ -20,5 +21,6 @@ export {
     PeerAssessmentFormColumns,
     PerformanceProccessBar,
     MyPerformanceCycleColumns,
+    CalibrationPanelColumns,
     PendingEvaluationColumns
 }

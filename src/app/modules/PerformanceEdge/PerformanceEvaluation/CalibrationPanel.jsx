@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getMyPerformanceForms } from "app/hooks/performanceEdge";
+import { getManagerFinalEvaluation } from "app/hooks/performanceEdge";
 import { CreateUpdateCycleForm } from "app/modules/PerformanceEdge";
 import {
     CardContent,
@@ -12,19 +12,15 @@ import { TableCustom, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
-import { MyPerformanceCycleColumns } from "app/modules/PerformanceEdge/Sections";
+import { CalibrationPanelColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
-const Evaluations = ({ reload }) => {
+const CalibrationPanel = ({ reload }) => {
     const Designations = GetDispatchStateList("designations", "common") || [];
     const Departments = GetDispatchStateList("departments", "common") || [];
-
-    const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-    const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
-
     const [isLoading, setIsLoading] = useState(true);
     const [OpenCreateCycleForm, setOpenCreateCycleForm] = useState(false);
-    const [JobRotationList, setJobRotationList] = useState(null);
+    const [PendingEvaluations, setPendingEvaluations] = useState(null);
     const [filterData, setFilterData] = useState({});
 
     const [ordering, setOrdering] = useState("-id");
@@ -55,13 +51,14 @@ const Evaluations = ({ reload }) => {
         try {
             setIsLoading(true);
             const filter = {
-                ...filterData            };
-            const response = await getMyPerformanceForms({
+                ...filterData,
+            };
+            const response = await getManagerFinalEvaluation({
                 filterData: filter,
                 options,
                 ordering,
             });
-            setJobRotationList(response);
+            setPendingEvaluations(response);
         } catch (e) {
             console.error(e);
         } finally {
@@ -118,9 +115,9 @@ const Evaluations = ({ reload }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle>My Performance</CardTitle>
+                <CardTitle>Pending Evaluations</CardTitle>
                 <CardDescription>
-                    Here you can view and complete my self and peer assessment forms to participate in the evaluation process within the assigned timeframe.
+                    Here you view the pending evaluation of your team members
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -133,10 +130,10 @@ const Evaluations = ({ reload }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        data={JobRotationList?.results || []}
-                        columns={MyPerformanceCycleColumns(fetchData)}
+                        data={PendingEvaluations?.results || []}
+                        columns={CalibrationPanelColumns(fetchData)}
                         pagination={true}
-                        dataTotalSize={JobRotationList?.count || 0}
+                        dataTotalSize={PendingEvaluations?.count || 0}
                         tableOptions={tableOptions}
                     />
                 )}
@@ -145,4 +142,4 @@ const Evaluations = ({ reload }) => {
     );
 };
 
-export default Evaluations;
+export default CalibrationPanel;

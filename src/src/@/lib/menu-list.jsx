@@ -118,7 +118,6 @@ export function getMenuList(pathname, userRole) {
         Config[name] && generateMenuItems(name, icon, moduleTree)
     )
     .filter(Boolean);
-
   return [...commonMenus, ...configMenus];
 }
 

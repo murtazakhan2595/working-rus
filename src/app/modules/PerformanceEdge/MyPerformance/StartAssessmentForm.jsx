@@ -1,5 +1,5 @@
 import { getEvaluationTypeList } from 'app/hooks/officeSetting';
-import { saveEvaluationForm, getEvaluationFormById, getEvaluationFormsList, saveEvaluationSubmission, saveEvaluationSubmissionAnswers } from 'app/hooks/performanceEdge';
+import { getPeersList, getFormQuestions, getEvaluationSubmission, saveEvaluationSubmission, saveEvaluationSubmissionAnswers } from 'app/hooks/performanceEdge';
 import { EvaluationForm } from "app/utils/Types/PerformanceEdge";
 import { getEmployeeTenure } from "app/hooks/general";
 import {
@@ -7,12 +7,12 @@ import {
     TextInput,
     SelectInputComponent,
     RadioGroupInput,
-    NumberInput,
+    DateRangeInput,
     DateInput,
     TextInputDropdown,
     SelectMultiInputComponent,
 } from "components/FormControl";
-import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
+import { validateSubmitAssessmentFormSchema } from "app/utils/FormSchema/PerformanceEdgeFormSchema";
 import AlertDialogue from "components/ui/AlertDialogue";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -22,21 +22,19 @@ import { DisplaySection, DisplaySectionField } from 'app/modules/PerformanceEdge
 
 const StartAssessmentForm = ({
     FormDetails = null,
-    id,
+    form_id,
     isOpen = true,
     setIsOpen = () => { },
     reloadData = () => { },
     PreviewOnly = false,
+    cycle_id = null,
+    isPeerAssessment = false,
 }) => {
-    const [selectedEmployee, setSelectedEmployee] = useState({});
-    const [confirmSave, setConfirmSave] = useState(false);
     const [formValues, setFormValues] = useState(FormDetails || null);
-    const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(FormDetails ?? EvaluationForm);
-    const [EvaluationTypes, setEvaluationTypes] = useState([]);
+    const [PeersList, setPeersList] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
@@ -44,20 +42,14 @@ const StartAssessmentForm = ({
         description: null,
         footer: null,
     };
-    // Initialize form data with role values if in edit mode
-    console.log(formData, formValues, FormDetails)
+
     useEffect(() => {
         const fetchFormData = async (isMounted) => {
             try {
                 setIsLoading(true);
-                const typeResponse = await getEvaluationTypeList();
+                const typeResponse = await getPeersList(cycle_id);
                 if (typeResponse && isMounted) {
-                    setEvaluationTypes(typeResponse.results);
-                }
-
-                const response = await getEvaluationFormsList();
-                if (response && isMounted) {
-                    setFormList(response.results);
+                    setPeersList(typeResponse.results);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -67,19 +59,17 @@ const StartAssessmentForm = ({
         };
 
         let isMounted = true;
-        fetchFormData(isMounted);
+        if (isPeerAssessment) fetchFormData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, []);
-
-
+    }, [isPeerAssessment]);
 
     useEffect(() => {
-        const fetchData = async (isMounted, id) => {
+        const fetchData = async (isMounted, form_id) => {
             try {
                 setIsLoading(true);
-                const response = await getEvaluationFormById(id);
+                const response = await getFormQuestions(form_id, cycle_id);
                 if (isMounted) {
                     setFormData({ ...response, });
                     setFormValues({ ...response, });
@@ -91,62 +81,60 @@ const StartAssessmentForm = ({
             }
         };
         let isMounted = true;
-        if (id) fetchData(isMounted, id);
+        if (form_id) fetchData(isMounted, form_id);
         return () => {
             isMounted = false;
         };
-    }, [id]);
+    }, [form_id, cycle_id]);
 
     const handleClose = () => {
         setIsOpen(false);
         reloadData(true);
     };
 
-    const handleSubmit = async (values) => {
-        setIsSubmittingForm(true);
+    const submitAnswers = async (sections, submissionId) => {
         try {
-            debugger
-            if (!values.submissions || values.submissions.length === 0) {
-                const submission = await saveEvaluationSubmission({
-                    form: 3,
-                    cycle: values.id,
-                    status: 'draft',
-                });
-            } else {
-                for (const form of values.forms) {
-                    const sections = form.sections;
-                    for (const section of sections) {
-                        const fields = section.fields;
-                        for (const field of fields) {
-                            const anwsers = saveEvaluationSubmissionAnswers({
-                                submission: values.submissions[0].submission_id,
-                                field: field.id,
-                                rating: field.rating,
-                            });
-                        }
-
-                    }
+            if (!submissionId) return null;
+            for (const section of sections) {
+                for (const field of section.fields) {
+                    await saveEvaluationSubmissionAnswers({
+                        submission: submissionId,
+                        field: field.id,
+                        answer_text: field.answer_text,
+                        answer_choice: field.answer_choice,
+                        rating: field.rating,
+                    }, field.answer_id);
                 }
             }
-            const payload = { ...values, form_type: 'EmployeeEvaluationForm' };
-            const response = await saveEvaluationForm(payload, id);
-            if (response) {
+
+        } catch (error) {
+            console.error(error)
+        } finally {
+            return 0;
+        }
+    };
+
+    const handleSubmit = async (values, saveStatus) => {
+        setIsSubmittingForm(true);
+        try {
+            const submission = await saveEvaluationSubmission({
+                form: form_id,
+                cycle: cycle_id,
+                status: saveStatus === 'draft' ? 'draft' : 'submitted',
+                is_submitted: saveStatus === 'draft' ? false : true,
+            }, values.submissions.id);
+            if (submission) {
+                submitAnswers(values.sections, submission.id)
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Rotation Request Submitted`,
-                    description: `Rotation request for ${selectedEmployee?.name} is submitted successfully`,
+                    title: `Assessment Submitted Successfully`,
+                    description: `Your assessment has been submitted successfully`,
                 }
             }
         } catch (error) {
-            // Show error message
-            const errorMessage =
-                error?.response?.data?.message ||
-                error.message ||
-                `Failed to ${isEditMode ? "update" : "add"} role.`;
-            toast.error(errorMessage);
+            console.error(error)
         } finally {
-            setConfirmSave(false);
             setIsSubmittingForm(false);
         }
     };
@@ -161,17 +149,16 @@ const StartAssessmentForm = ({
                 initialValues: formData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: (values) => {
-                    const errors = {};
-                    return errors;
-                },
+                validateFormSchema: validateSubmitAssessmentFormSchema,
                 submitButtonText: !PreviewOnly ? "Submit" : null,
                 cancelButtonText: !PreviewOnly ? "Cancel" : null,
+                additionalButtonConfig: [
+                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, 'draft'), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
+                ],
                 columns: 1,
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-                DataList: FormList,
                 formFields: [
                     {
                         sheetCardExtension: true,
@@ -179,10 +166,22 @@ const StartAssessmentForm = ({
                         InputFields: [
                             {
                                 InputField: TextInput,
-                                name: "form_name",
+                                name: "name",
                                 disabled: true,
                                 label: "Name",
                             },
+                            {
+                                InputField: DateRangeInput,
+                                name: "review_period",
+                                disabled: true,
+                                label: "Evaluation Period",
+                            },
+                            ...(isPeerAssessment ? [{
+                                InputField: SelectInputComponent,
+                                name: "employee",
+                                label: "Peer",
+                                options: PeersList,
+                            }] : []),
                         ],
                     },
                     // Conditionally render levels from formValues.level
@@ -190,18 +189,17 @@ const StartAssessmentForm = ({
                         ? formValues.sections.map((section, index) => ({
                             sheetCardExtension: true,
                             sheetCardTitle: `${section.name} Section`,
+                            sheetCardName: `sections[${index}]`,
                             InputFields: [
                                 ...(section.fields
                                     ? section.fields.map((field, fieldIndex) => ([
-                                        {
-                                            InputField: () => <div className='font-semibold'>{fieldIndex + 1}. {field.question}</div>,
-                                        },
                                         ...(field.evaluation_type === 'radio'
                                             ? [{
                                                 InputField: RadioGroupInput,
-                                                name: `sections[${index}].fields[${fieldIndex}].rating`,
-                                                label: "",
-                                                value: field.rating,
+                                                name: `sections[${index}].fields[${fieldIndex}].answer_choice`,
+                                                label: `${fieldIndex + 1}. ${field.question}`,
+                                                value: field.answer_choice,
+                                                required: true,
                                                 options: [
                                                     { label: 'Yes', value: 'Yes' },
                                                     { label: 'No', value: 'No' },
@@ -212,23 +210,25 @@ const StartAssessmentForm = ({
                                             ? [{
                                                 InputField: SelectInputComponent,
                                                 name: `sections[${index}].fields[${fieldIndex}].rating`,
-                                                label: "",
+                                                label: `${fieldIndex + 1}. ${field.question}`,
+                                                required: true,
                                                 value: field.rating,
                                                 options: [
-                                                    { label: '1', value: '1' },
-                                                    { label: '2', value: '2' },
-                                                    { label: '3', value: '3' },
-                                                    { label: '4', value: '4' },
-                                                    { label: '5', value: '5' }
+                                                    { label: '1', value: 1 },
+                                                    { label: '2', value: 2 },
+                                                    { label: '3', value: 3 },
+                                                    { label: '4', value: 4 },
+                                                    { label: '5', value: 5 }
                                                 ]
                                             }]
                                             : []),
                                         ...(field.evaluation_type === 'text'
                                             ? [{
                                                 InputField: TextAreaInput,
-                                                name: `sections[${index}].fields[${fieldIndex}].rating`,
-                                                label: "",
-                                                value: field.rating,
+                                                name: `sections[${index}].fields[${fieldIndex}].answer_text`,
+                                                label: `${fieldIndex + 1}. ${field.question}`,
+                                                required: true,
+                                                value: field.answer_text,
                                             }]
                                             : []),
                                     ])).flat()

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getManagerFinalEvaluation } from "app/hooks/performanceEdge";
+import { getMyPerformanceForms } from "app/hooks/performanceEdge";
 import {
     CardContent,
     CardHeader,
@@ -57,7 +57,7 @@ const PerformanceResults = ({ reload, permittedViewFilterData }) => {
                 ...filterData,
                 ...permittedViewFilterData,
             };
-            const response = await getManagerFinalEvaluation({
+            const response = await getMyPerformanceForms({
                 filterData: filter,
                 options,
                 ordering,
@@ -113,7 +113,7 @@ const PerformanceResults = ({ reload, permittedViewFilterData }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle>Evaluation Results</CardTitle>
+                <CardTitle>Performance Results</CardTitle>
                 <CardDescription>
 
                 </CardDescription>
