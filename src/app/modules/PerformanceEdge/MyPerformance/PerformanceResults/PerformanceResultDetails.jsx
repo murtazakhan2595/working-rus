@@ -3,7 +3,7 @@ import {
     NavigationSheetComponent,
     DetailContent,
 } from "components";
-import { getManagerFinalEvaluationById } from 'app/hooks/performanceEdge';
+import { getMyPerformanceFormsById } from 'app/hooks/performanceEdge';
 import { StatusLabel } from "components";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -18,8 +18,8 @@ const PerformanceResultDetails = ({
     reloadData = () => { },
     DataList = [],
 }) => {
-    const { id: user_id } = useSelector(        (state) => state.user.userProfile    );
-  
+    const { id: user_id } = useSelector((state) => state.user.userProfile);
+
     // Define the fields to display
     const fields = [
         {
@@ -138,7 +138,7 @@ const PerformanceResultDetails = ({
 
     const fetchData = async (id, isMounted) => {
         try {
-            const response = await getManagerFinalEvaluationById(id);
+            const response = await getMyPerformanceFormsById(id);
             if (isMounted) {
                 return response;
             }

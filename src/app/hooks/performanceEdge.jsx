@@ -14,6 +14,7 @@ import {
   mapEmployeeGoalsData,
   mapEmployeeFeedbackPayload,
   mapCalibrationPayloadData,
+  mapFormQuestionsData,
 } from 'app/utils/MappingObjects/mapPerformanceEdgeData'
 
 
@@ -62,6 +63,7 @@ export const getEvaluationFormById = async (id) => {
     return false;
   }
 };
+
 
 export const saveEvaluationForm = async (payload, id) => {
   const ID = id || payload?.id;
@@ -263,11 +265,9 @@ export const getMyPerformanceForms = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
   let URL = `/my-performance/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}`;
-  // let URL = `/cycles/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
-  //   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-  //     JSON.stringify(filterData)
-  //   )}`;
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
@@ -297,6 +297,30 @@ export const getMyPerformanceFormsById = async (id) => {
     }
   } catch (error) {
     console.error("Error fetching job rotation by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
+export const getEvaluationSubmission = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/submissions/?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation requests:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
@@ -407,7 +431,7 @@ export const getManagerFinalEvaluation = async (payload) => {
       const Response = response.data;
       const ResponseData = await mapEvaltaionResults(Response.results, []);
 
-      return { count: Response.count, results: ResponseData };
+      return { count: Response.count, results: Response.results };
     }
   } catch (error) {
     console.error("Error fetching job rotation by ID:", error);
@@ -594,7 +618,7 @@ export const getPendingEvaluation = async (payload) => {
 export const saveCalibration = async (payload, id) => {
   const ID = id || payload?.id;
   try {
-     const finalPayload = mapCalibrationPayloadData(payload);
+    const finalPayload = mapCalibrationPayloadData(payload);
 
     const url = ID
       ? `${baseUrl}/Calibration/${ID}/` // Use id if updating
@@ -620,3 +644,42 @@ export const saveCalibration = async (payload, id) => {
     return false;
   }
 };
+
+export const getFormQuestions = async (form_id, cycle_id) => {
+  try {
+    debugger
+    const response = await getEvaluationFormById(form_id)
+    const cycleResponse = await getPerformanceCycleById(cycle_id);
+    const submissionReponse = await getEvaluationSubmission({ filterData: { form: form_id, cycle: cycle_id } })
+    const submission = (submissionReponse.results || []).find((obj) => obj.form === form_id);
+    const answerReponse = submission ? await getSubmissionAnswers({ filterData: { submission: submission?.id } }) : [];
+    if (response) {
+      const ResponseData = await mapFormQuestionsData(cycleResponse, response, submission || {}, answerReponse.results || []);
+      return { ...ResponseData };
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+
+export const getPeersList = async (cycle_id) => {
+  let URL = `/peers/?cycle_id=${cycle_id}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching job rotation requests:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}

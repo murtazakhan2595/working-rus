@@ -39,6 +39,7 @@ import {
     MyGoals,
     MyGoalsActions,
     ViewMyGoalsDetails,
+    ViewSelfAssessment,
 } from './MyPerformance';
 
 import {
@@ -64,6 +65,7 @@ export {
     AddSelfAssessmentForm,
     SelfAssessmentFormActions,
     PeerAssessmentForm,
+    ViewSelfAssessment,
     PerformanceCycleSetup,
     CreateUpdateCycleForm,
     MyPerformance,

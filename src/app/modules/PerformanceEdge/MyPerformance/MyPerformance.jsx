@@ -22,7 +22,7 @@ const MyPerformance = ({ }) => {
     const isViewGoalsPermitted = HasAccess("VIEW_MY_GOALS");
     const isCreateGoalsPermitted = HasAccess("CREATE_GOAL");
     const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
-    const isViewFinalEvaluatioFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
+    const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_RESULT");
     const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
     const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
@@ -30,10 +30,10 @@ const MyPerformance = ({ }) => {
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
+        ...(isSubmitEvaluatioFormPermitted ? ["My Performance"] : []),
         ...(isViewFinalEvaluatioFormPermitted ? ["Performance Results"] : []),
         ...(!isViewGoalsPermitted ? ["My Goals"] : []),
-    ], [isViewGoalsPermitted, isSubmitEvaluatioFormPermitted]);
+    ], [isViewGoalsPermitted, isSubmitEvaluatioFormPermitted, isViewFinalEvaluatioFormPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
@@ -68,7 +68,7 @@ const MyPerformance = ({ }) => {
         <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}        >
             <Header content={<HeaderButton />} />
             <Tabs
-                defaultValue="Submit Evaluation"
+                defaultValue="My Performance"
                 className="w-full"
                 onValueChange={(tab) => {
                     setActiveTab(tab);
@@ -83,7 +83,7 @@ const MyPerformance = ({ }) => {
                     ))}
                 </TabsList>
                 <Card>
-                    <TabsContent value="Submit Evaluation">
+                    <TabsContent value="My Performance">
                         <Evaluations />
                     </TabsContent>
                     <TabsContent value="Performance Results">

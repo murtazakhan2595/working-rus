@@ -17,40 +17,32 @@ import {
  */
 export const PerformanceResultColumns = (reloadData) => [
     {
-        dataField: "form_name",
+        dataField: "name",
         text: "Evaluation Type",
         dataSort: true,
     },
     {
-        dataField: "evaluation_type",
+        dataField: "review_start",
         text: "Evaluation Period",
+        formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
         dataSort: true,
     },
     {
-        dataField: "final_rating",
+        dataField: "Final_Ratng",
         text: "Final Rating",
-        // formatter: (cell) => {
-        //     return (
-        //         <MultiStatusLabel
-        //             statusList={cell}
-        //             variant="info"
-        //             fallBackText="All Nationalities"
-        //         />
-        //     );
-        // },
+        formatter: (cell) => cell.final_rating
     },
     {
-        dataField: "resolved_on",
+        dataField: "Final_Ratng",
         text: "HR Approval Date",
         dataSort: true,
-        formatter: (cell, row) => renderDate(cell),
+        formatter: (cell, row) => renderDate(cell.hr_approval_date, '--'),
     },
     {
-        dataField: "status",
+        dataField: "Final_Ratng",
         text: "Status",
-        dataSort: true,
-        formatter: (cell, row) => (
-            <StatusLabel status={cell}>{cell}</StatusLabel>
+        formatter: (cell) => (
+            <StatusLabel status={cell.status}>{cell.status}</StatusLabel>
         ),
     },
     {
@@ -82,17 +74,17 @@ export const MyPerformanceCycleColumns = (reloadData) => [
         formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
     },
     {
-        dataField: "self_assessment_enabled",
+        dataField: "self_assessment_status",
         text: "Self Assessment",
         formatter: (cell, row) => (
-            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+            <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
         ),
     },
     {
-        dataField: "peer_assessment_enabled",
+        dataField: "peer_assessment_status",
         text: "Peer Assessment",
-        formatter: (cell, row) => (
-            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+        formatter: (cell) => (
+            <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
         ),
     },
 

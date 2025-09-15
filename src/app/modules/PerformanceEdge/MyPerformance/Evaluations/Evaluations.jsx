@@ -15,7 +15,7 @@ import { FilterInput } from "components/FormControl";
 import { MyPerformanceCycleColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 
-const Evaluations = ({ reload, permittedViewFilterData }) => {
+const Evaluations = ({ reload }) => {
     const Designations = GetDispatchStateList("designations", "common") || [];
     const Departments = GetDispatchStateList("departments", "common") || [];
 
@@ -55,9 +55,7 @@ const Evaluations = ({ reload, permittedViewFilterData }) => {
         try {
             setIsLoading(true);
             const filter = {
-                ...filterData,
-                ...permittedViewFilterData,
-            };
+                ...filterData            };
             const response = await getMyPerformanceForms({
                 filterData: filter,
                 options,
@@ -73,11 +71,11 @@ const Evaluations = ({ reload, permittedViewFilterData }) => {
 
     useEffect(() => {
         let isMounted = true;
-        if (permittedViewFilterData) fetchData(isMounted);
+        fetchData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering, permittedViewFilterData]);
+    }, [filterData, options, ordering]);
 
     useEffect(() => {
         let isMounted = true;
@@ -120,9 +118,9 @@ const Evaluations = ({ reload, permittedViewFilterData }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle>Evaluations</CardTitle>
+                <CardTitle>My Performance</CardTitle>
                 <CardDescription>
-                    Here you can submit the self assessment and peer assessment
+                    Here you can view and complete my self and peer assessment forms to participate in the evaluation process within the assigned timeframe.
                 </CardDescription>
             </CardHeader>
             <CardContent>

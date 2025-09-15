@@ -220,3 +220,40 @@ export function mapCalibrationPayloadData(data) {
     }
     return payload;
 }
+
+export async function mapFormQuestionsData(cycleData, formData, formSubmissions, submissionAnswers) {
+    const RecordDetails = {
+        form_id: formData.id,
+        name: cycleData.name,
+        review_end: cycleData.review_end,
+        review_start: cycleData.review_start,
+        review_period: `${cycleData.review_start},${cycleData.review_end}`,
+        form_name: formData.form_name,
+        submissions: formSubmissions,
+        sections: [] // ✅ initialize sections array
+    };
+
+    for (const section of formData.sections) {
+        const fields = [];
+
+        for (const field of section.fields) {
+            const fieldAnswer = submissionAnswers.find(obj => obj.field === field.id);
+
+            fields.push({
+                ...field,       // ✅ spread field properties (not fields array)
+                answer_choice: fieldAnswer?.answer_choice,
+                answer_text: fieldAnswer?.answer_text,
+                rating: fieldAnswer?.rating,
+                answer_id: fieldAnswer?.id,
+            });
+        }
+
+        RecordDetails.sections.push({
+            ...section,
+            fields
+        });
+    }
+
+    console.log("RecordDetails", RecordDetails);
+    return RecordDetails;
+}

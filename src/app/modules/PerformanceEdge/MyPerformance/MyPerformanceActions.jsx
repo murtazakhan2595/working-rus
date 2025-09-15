@@ -1,67 +1,66 @@
 import React, { useState } from "react";
-import SheetComponent from "components/ui/SheetComponent";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import AlertDialogue from "components/ui/AlertDialogue";
-import { ViewHolidayDetail, AddUpdateHolidays } from "app/modules/LeaveTracker";
-import { StartAssessmentForm } from "app/modules/PerformanceEdge";
-import { toast } from "react-toastify";
-import { deleteRecord } from "app/hooks/general";
+import { StartAssessmentForm,ViewSelfAssessment } from "app/modules/PerformanceEdge";
 
 const MyPerformanceActions = ({ data, reloadData = () => { }, DataList = [] }) => {
-    const [view, setView] = useState(null);
-    const [edit, setEdit] = useState(null);
-    const [deleteDurationState, setDeleteDurationState] = useState(null);
+    const [startSelfAssessment, setStartSelfAssessment] = useState(null);
+    const [viewSelfAssessment, setViewSelfAssessment] = useState(null);
+    const [startPeerAssessment, setStartPeerAssessment] = useState(null);
+    const [viewPeerAssessment, setViewPeerAssessment] = useState(null);
 
-    // Handle opening the view dialog
-    const handleView = () => {
-        setView(true);
+    const handleStartSelfAssessment = () => {
+        setStartSelfAssessment(true);
     };
 
-    // Handle opening the edit form
-    const handleEdit = () => {
-        setEdit(true);
+    const handleViewSelfAssessment = () => {
+        setViewSelfAssessment(true);
+    };
+    const handleStartPeerAssessment = () => {
+        setStartPeerAssessment(true);
     };
 
-
-    const confirmDelete = async () => {
-        try {
-            await deleteRecord(`/evaluation-forms/${data.id}`, `${data.form_name}`);
-            setDeleteDurationState(null);
-            // Ensure table is reloaded by calling reload function
-            reloadData(true);
-        } catch (error) {
-            console.error("ERROR", error);
-        }
+    const handleViewPeerAssessment = () => {
+        setViewPeerAssessment(true);
     };
-
-    const isAssessmentComplted = data.status === 'completed';
 
     return (
         <>
             <DropdownActionMenu
-                onView={isAssessmentComplted ? handleView : handleEdit}
-                viewText={isAssessmentComplted ? 'View Assessment' : 'Start Assessment'}
                 menuTooltip="Perfotmance Actions"
+                additionalOptionsConfig={[
+                    ...(data?.self_assessment_status?.toLowerCase() === 'pending' ? [{ text: 'Start Self Assessment', action: handleStartSelfAssessment }] : []),
+                    ...(data?.self_assessment_status?.toLowerCase() === 'completed' ? [{ text: 'View Self Assessment', action: handleViewSelfAssessment }] : []),
+                    ...(data?.peer_assessment_status?.toLowerCase() === 'pending' ? [{ text: 'Start Peer Assessment', action: handleStartPeerAssessment }] : []),
+                    ...(data?.peer_assessment_status?.toLowerCase() === 'completed' ? [{ text: 'View Peer Assessment', action: handleViewPeerAssessment }] : []),
+                ]}
             />
 
-            {/* Edit Duration Sheet */}
-            {edit && (
+            {startSelfAssessment && (
                 <StartAssessmentForm
-                    isOpen={edit}
-                    setIsOpen={setEdit}
-                    id={data.id}
+                    isOpen={startSelfAssessment}
+                    setIsOpen={setStartSelfAssessment}
+                    form_id={data?.self_assesment_id?.form_id}
                     reloadData={reloadData}
+                    cycle_id={data.id}
                 />
             )}
-
-            {/* View Duration - Direct component usage like ViewUserRole */}
-            {view && (
-                <ViewHolidayDetail
-                    isOpen={view}
-                    setIsOpen={setView}
-                    currentId={data.id}
+            {startPeerAssessment && (
+                <StartAssessmentForm
+                    isOpen={startPeerAssessment}
+                    setIsOpen={setStartPeerAssessment}
+                    form_id={data?.peer_assesment_id?.form_id}
                     reloadData={reloadData}
-                    DataList={DataList}
+                    cycle_id={data.id}
+                    isPeerAssessment={true}
+                />
+            )}
+            {viewSelfAssessment && (
+                <ViewSelfAssessment
+                    isOpen={viewSelfAssessment}
+                    setIsOpen={setViewSelfAssessment}
+                    form_id={data?.self_assesment_id?.form_id}
+                    reloadData={reloadData}
+                    cycle_id={data.id}
                 />
             )}
         </>
