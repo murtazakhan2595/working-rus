@@ -3,3 +3,4 @@ export { default as ExitAndClearanceReports } from "./screens/ExitAndClearanceRe
 export { default as EmployeeCreationAndHiringReports } from "./screens/EmployeeCreationAndHiring";
 export { default as HRDocumentsReports } from "./screens/HRDocuments";
 export { default as TransferAndRotationReports } from "./screens/TransferAndRotationReports";
+export { default as AttendanceAndShiftReports } from "./screens/AttendanceAndShiftReports";
