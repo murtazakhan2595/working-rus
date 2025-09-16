@@ -19,8 +19,9 @@ import { FilterInput } from "components/FormControl";
 import { JobRotationRecordsColumns } from "../Sections/TableColumns";
 
 const RotationRecords = ({ reload, permittedViewFilterData }) => {
-  const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-  const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
+  const isAdminView = HasAccess("VIEW_JOB_ROTATION");
+  const isBranchView = HasAccess("VIEW_BRN_JOB_ROTATION");
+  const isDptView = HasAccess("VIEW_DPT_JOB_ROTATION");
 
   const [isLoading, setIsLoading] = useState(true);
   const [JobRotationList, setJobRotationList] = useState(null);
@@ -110,52 +111,30 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
           },
           ...(isAdminView || isBranchView
             ? [
-                {
-                  type: "select",
-                  options: "Departments",
-                  name: "department",
-                  placeholder: "Department",
-                },
-              ]
+              {
+                type: "select",
+                options: "Departments",
+                name: "department",
+                placeholder: "Department",
+              },
+            ]
             : []),
-
-          // ...(isAdminView || !isBranchView
-          //   ? [
-          //     {
-          //       type: "select",
-          //       options: Branches,
-          //       name: "branch",
-          //       placeholder: "Branch",
-          //     },
-          //   ]
-          //   : []),
-          // {
-          //   type: "select",
-          //   options: leaveTypesData || [],
-          //   name: "leave_type",
-          //   placeholder: "Leave Type",
-          // },
-          // {
-          //   type: "date-range",
-          //   name: "date_range",
-          //   placeholder: "Leave Period",
-          // },
-          // ...(activeTab === "Records"
-          //   ? [
-          //     {
-          //       type: "select",
-          //       options: [
-          //         ...GlobalStatusOptions(false),
-          //         {
-          //           label: "Cancelled",
-          //           value: "cancelled_by_employee",
-          //         },
-          //       ],
-          //       name: "status",
-          //       placeholder: "Status",
-          //     },
-          //   ]
-          //   : []),
+          ...(isAdminView || !isDptView
+            ? [
+              {
+                type: "select",
+                options: 'Branches',
+                name: "branch",
+                placeholder: "Branch",
+              },
+            ]
+            : []),
+          {
+            type: "select",
+            options: 'Designations',
+            name: "branch",
+            placeholder: "Designation",
+          },
         ]}
         onChange={handleFilterChange}
         className="justify-end mb-4"

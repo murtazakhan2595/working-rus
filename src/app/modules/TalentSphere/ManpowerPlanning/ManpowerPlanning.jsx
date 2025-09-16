@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
-import { RotationRequestForm } from "app/modules/TransferAndRotation";
+import { AddUpdateManpower } from "app/modules/TalentSphere";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
 import { getJobRotationRequests, getRotationStats } from "app/hooks/transferAndRotation";
@@ -19,7 +19,7 @@ export default function ManpowerPlanning() {
   });
   const [OpenRotationForm, setOpenRotationForm] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
+  const [OpenManpowerForm, setOpenManpowerForm] = useState(false);
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({ employee_id: userId });
@@ -35,9 +35,6 @@ export default function ManpowerPlanning() {
     onPageChange: onPageChange,
     onSortChange: (sortName) => {
       setOrdering(sortName);
-    },
-    onRowClick: (row) => {
-      setOpenTransferDetailID(row.id);
     },
   };
 
@@ -94,22 +91,28 @@ export default function ManpowerPlanning() {
     { label: "Rejected", value: statsData.Rejected, icon: CircleX },
   ], [statsData]);
 
+  const HeaderButton = () => {
+    const handleRequestClick = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setOpenManpowerForm(false);
+      const triggeredResquest = event.target.title;
+      if (triggeredResquest === 'manpower')
+        setOpenManpowerForm(true);
+    }
+    return (
+      <Button title="manpower" onClick={handleRequestClick}>
+        Add Manpower
+      </Button>
+    )
+  }
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
-        content={
-          <Button
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setOpenRotationForm(true);
-            }}
-          >
-            Request Rotation
-          </Button>
-        }
+        content={<HeaderButton />}
       />
       <Stats stats={TransferStatsData} />
       <Card>
@@ -127,11 +130,11 @@ export default function ManpowerPlanning() {
           />
         </CardContent>
       </Card>
-      {OpenRotationForm && (
-        <RotationRequestForm
-          isOpen={OpenRotationForm}
+      {OpenManpowerForm && (
+        <AddUpdateManpower
+          isOpen={OpenManpowerForm}
           setIsOpen={() => {
-            setOpenRotationForm(false);
+            setOpenManpowerForm(false);
             fetchData(true);
           }}
           isAdminView={true}

@@ -21,8 +21,8 @@ const MyPerformance = ({ }) => {
     // permissions for tranfer
     const isViewGoalsPermitted = HasAccess("VIEW_MY_GOALS");
     const isCreateGoalsPermitted = HasAccess("CREATE_GOAL");
-    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
-    const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_RESULT");
+    const isSubmitViewAssessmentPermitted = HasAccess("VIEW_SUBMIT_ASSESSMENTS");
+    const isViewEvaluatioResultPermitted = HasAccess("VIEW_EVALUATION_RESULT");
     const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
     const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
@@ -30,10 +30,10 @@ const MyPerformance = ({ }) => {
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isSubmitEvaluatioFormPermitted ? ["My Performance"] : []),
-        ...(isViewFinalEvaluatioFormPermitted ? ["Performance Results"] : []),
+        ...(isSubmitViewAssessmentPermitted ? ["My Performance"] : []),
+        ...(isViewEvaluatioResultPermitted ? ["Performance Results"] : []),
         ...(!isViewGoalsPermitted ? ["My Goals"] : []),
-    ], [isViewGoalsPermitted, isSubmitEvaluatioFormPermitted, isViewFinalEvaluatioFormPermitted]);
+    ], [isViewGoalsPermitted, isSubmitViewAssessmentPermitted, isViewEvaluatioResultPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {

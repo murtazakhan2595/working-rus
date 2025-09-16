@@ -3,10 +3,14 @@ import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import {
-    PerformanceResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
+    PerformanceResultsActions,
+    MyPerformanceActions,
+    PerformanceCycleActions,
+    MyGoalsActions,
     TeamGoalsActions,
     PeerAssessmentActions,
     CalibrationPanelActions,
+    TeamEvaluationActions
 } from 'app/modules/PerformanceEdge';
 /**
  * PerformanceResultColumns
@@ -184,7 +188,7 @@ export const ManagerPendingEvaluationColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <PerformanceCycleActions DataList={dataList} data={row} reloadData={reloadData} />
+            <TeamEvaluationActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
@@ -234,7 +238,7 @@ export const ManagerFinalEvaluationColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <PerformanceResultsActions DataList={dataList} data={row} reloadData={reloadData} />
+            <TeamEvaluationActions DataList={dataList} data={row} reloadData={reloadData} ViewFinalEvaluation={true}/>
         ),
     },
 ];

@@ -75,7 +75,7 @@ const Config = {
   //-------------TALENT_SPHERE-----------
   TALENT_SPHERE: true,
   //Sub Modules
-  JOBS: true,
+  MANPOWER_PLANNINGS: true,
   APPLICANTS: true,
 
   //-------------ASSET_MANAGEMENT-----------

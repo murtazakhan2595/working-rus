@@ -77,7 +77,14 @@ import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import { OrganizationalTree } from "app/modules/OrganizationalChart";
-import { GenerateForm, PerformanceCycleSetup, MyPerformance, TeamPerformanceEvaluation, PerformanceEvaluation } from "app/modules/PerformanceEdge";
+import {
+  GenerateForm,
+  PerformanceCycleSetup,
+  MyPerformance,
+  TeamPerformanceEvaluation,
+  PerformanceEvaluation,
+  EvaluationSummaryDetails
+} from "app/modules/PerformanceEdge";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
@@ -101,7 +108,7 @@ import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sect
 import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
 import { ExitAndClearanceReports } from "app/modules/Reports";
-import {EmployeeCreationAndHiringReports} from "app/modules/Reports";
+import { EmployeeCreationAndHiringReports } from "app/modules/Reports";
 import { HRDocumentsReports } from "app/modules/Reports";
 import { TransferAndRotationReports } from "app/modules/Reports";
 import { AttendanceAndShiftReports } from "app/modules/Reports";
@@ -341,10 +348,10 @@ export const SidebarRoutes = [
     : []),
   ...(Config.TALENT_SPHERE
     ? [
-      Config.JOBS && {
+      Config.MANPOWER_PLANNINGS && {
         path: "/manpower-planning",
         component: <ManpowerPlanning />,
-        name: "JOBS",
+        name: "MANPOWER_PLANNINGS",
       },
       Config.JOBS && {
         path: "/job-post",
@@ -612,6 +619,11 @@ export const SidebarRoutes = [
       Config.PERFORMANCE_EVALUATION && {
         path: "/performance-evaluation",
         component: <PerformanceEvaluation />,
+        name: "PERFORMANCE_EVALUATION",
+      },
+      Config.PERFORMANCE_EVALUATION && {
+        path: "/evaluatoin-summary/:id",
+        component: <EvaluationSummaryDetails />,
         name: "PERFORMANCE_EVALUATION",
       },
     ].filter(Boolean) // Filter out undefined route
