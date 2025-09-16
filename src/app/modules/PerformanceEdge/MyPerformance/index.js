@@ -1,6 +1,7 @@
 import MyPerformance from './MyPerformance';
 import MyPerformanceActions from './MyPerformanceActions';
 import StartAssessmentForm from './StartAssessmentForm';
+import StartPeerAssessmentForm from './StartPeerAssessmentForm';
 import ViewSelfAssessment from './ViewSelfAssessment';
 import { Evaluations } from './Evaluations';
 import { AddUpdateMyGoals, MyGoals, MyGoalsActions, ViewMyGoalsDetails } from './MyGoals';
@@ -23,4 +24,5 @@ export {
     MyGoalsActions,
     ViewMyGoalsDetails,
     ViewSelfAssessment,
+    StartPeerAssessmentForm,
 };

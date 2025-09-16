@@ -17,6 +17,7 @@ const pathNames = () => {
     "personal-development": "Personal Development",
     "leave-tracker": "Leave Tracker",
     'performance-cycle-setup': 'Performance Cycle',
+    'evaluatoin-summary': 'Evaluation Details',
     'team-performance-evaluation': 'Team Performance',
     performance: "Performance",
     reports: "Reports",

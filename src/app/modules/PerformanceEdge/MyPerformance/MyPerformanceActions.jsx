@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { StartAssessmentForm,ViewSelfAssessment } from "app/modules/PerformanceEdge";
+import { StartAssessmentForm, ViewSelfAssessment, StartPeerAssessmentForm } from "app/modules/PerformanceEdge";
 
 const MyPerformanceActions = ({ data, reloadData = () => { }, DataList = [] }) => {
     const [startSelfAssessment, setStartSelfAssessment] = useState(null);
@@ -45,7 +45,7 @@ const MyPerformanceActions = ({ data, reloadData = () => { }, DataList = [] }) =
                 />
             )}
             {startPeerAssessment && (
-                <StartAssessmentForm
+                <StartPeerAssessmentForm
                     isOpen={startPeerAssessment}
                     setIsOpen={setStartPeerAssessment}
                     form_id={data?.peer_assesment_id?.form_id}

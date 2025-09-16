@@ -40,6 +40,7 @@ import {
     MyGoalsActions,
     ViewMyGoalsDetails,
     ViewSelfAssessment,
+    StartPeerAssessmentForm,
 } from './MyPerformance';
 
 import {
@@ -48,11 +49,15 @@ import {
     EvaluationSummary,
     TeamGoals,
     TeamGoalsActions,
+    TeamEvaluationActions,
+    SubmitTeamEvaluation,
+    EvaluationSummaryDetails,
 } from './TeamPerformanceEvaluation';
 
 import { EmployeeFeedback, SubmitFeedBack } from './EmployeeFeedback';
 
-import { PerformanceEvaluation, PendingEvaluation, CalibrationPanel, CalibrationPanelActions ,
+import {
+    PerformanceEvaluation, PendingEvaluation, CalibrationPanel, CalibrationPanelActions,
     AdjustScoreForm,
 } from './PerformanceEvaluation';
 
@@ -78,17 +83,21 @@ export {
     PerformanceCycleActions,
     PerformanceCycleDetails,
     TeamPerformanceEvaluation,
+    EvaluationSummaryDetails,
     TeamPendingEvaluation,
     EvaluationSummary,
     AddUpdatePeerAssesmentForm,
+    SubmitTeamEvaluation,
     AddUpdateMyGoals,
     PeerAssessmentActions,
     MyGoalsActions,
     ViewMyGoalsDetails,
+    StartPeerAssessmentForm,
     CalibrationPanel,
     CalibrationPanelActions,
     MyGoals,
     TeamGoals,
+    TeamEvaluationActions,
     TeamGoalsActions,
     EmployeeFeedback,
     AdjustScoreForm,

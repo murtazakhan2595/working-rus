@@ -77,7 +77,14 @@ import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import { OrganizationalTree } from "app/modules/OrganizationalChart";
-import { GenerateForm, PerformanceCycleSetup, MyPerformance, TeamPerformanceEvaluation, PerformanceEvaluation } from "app/modules/PerformanceEdge";
+import {
+  GenerateForm,
+  PerformanceCycleSetup,
+  MyPerformance,
+  TeamPerformanceEvaluation,
+  PerformanceEvaluation,
+  EvaluationSummaryDetails
+} from "app/modules/PerformanceEdge";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
@@ -101,7 +108,7 @@ import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sect
 import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
 import { ExitAndClearanceReports } from "app/modules/Reports";
-import {EmployeeCreationAndHiringReports} from "app/modules/Reports";
+import { EmployeeCreationAndHiringReports } from "app/modules/Reports";
 import { HRDocumentsReports } from "app/modules/Reports";
 
 export const SidebarRoutes = [
@@ -382,32 +389,32 @@ export const SidebarRoutes = [
     : []),
   ...(Config.REPORTS
     ? [
-        Config.PROFILE_MANAGEMENT_REPORTS && {
-          path: "/profile-management-reports",
-          component: <ProfileManagementReports />,
-          name: "PROFILE_MANAGEMENT_REPORTS",
-        },
-        Config.EXIT_AND_CLEARANCE_REPORTS && {
-          path: "/exit-and-clearance-reports",
-          component: <ExitAndClearanceReports />,
-          name: "EXIT_AND_CLEARANCE_REPORTS",
-        },
-        Config.EMPLOYEE_CREATION_AND_HIRING && {
-          path: "/employee-creation-and-hiring",
-          component: <EmployeeCreationAndHiringReports />,
-          name: "EMPLOYEE_CREATION_AND_HIRING",
-        },
-        Config.HR_DOCUMENT_REPORTS && {
-          path: "/hr-documents-reports",
-          component: <HRDocumentsReports />,
-          name: "HR_DOCUMENT_REPORTS",
-        },
-        // Config.TRANSFER_AND_ROTATIONS && {
-        //   path: "/hr-documents-reports",
-        //   component: <HRDocumentsReports />,
-        //   name: "TRANSFER_AND_ROTATIONS",
-        // },
-      ].filter(Boolean) // Filter out undefined route
+      Config.PROFILE_MANAGEMENT_REPORTS && {
+        path: "/profile-management-reports",
+        component: <ProfileManagementReports />,
+        name: "PROFILE_MANAGEMENT_REPORTS",
+      },
+      Config.EXIT_AND_CLEARANCE_REPORTS && {
+        path: "/exit-and-clearance-reports",
+        component: <ExitAndClearanceReports />,
+        name: "EXIT_AND_CLEARANCE_REPORTS",
+      },
+      Config.EMPLOYEE_CREATION_AND_HIRING && {
+        path: "/employee-creation-and-hiring",
+        component: <EmployeeCreationAndHiringReports />,
+        name: "EMPLOYEE_CREATION_AND_HIRING",
+      },
+      Config.HR_DOCUMENT_REPORTS && {
+        path: "/hr-documents-reports",
+        component: <HRDocumentsReports />,
+        name: "HR_DOCUMENT_REPORTS",
+      },
+      // Config.TRANSFER_AND_ROTATIONS && {
+      //   path: "/hr-documents-reports",
+      //   component: <HRDocumentsReports />,
+      //   name: "TRANSFER_AND_ROTATIONS",
+      // },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ATTENDANCE
     ? [
@@ -605,6 +612,11 @@ export const SidebarRoutes = [
       Config.PERFORMANCE_EVALUATION && {
         path: "/performance-evaluation",
         component: <PerformanceEvaluation />,
+        name: "PERFORMANCE_EVALUATION",
+      },
+      Config.PERFORMANCE_EVALUATION && {
+        path: "/evaluatoin-summary/:id",
+        component: <EvaluationSummaryDetails />,
         name: "PERFORMANCE_EVALUATION",
       },
     ].filter(Boolean) // Filter out undefined route

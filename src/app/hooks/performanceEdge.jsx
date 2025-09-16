@@ -15,6 +15,7 @@ import {
   mapEmployeeFeedbackPayload,
   mapCalibrationPayloadData,
   mapFormQuestionsData,
+  mapEvaluationSummaryDetails,
 } from 'app/utils/MappingObjects/mapPerformanceEdgeData'
 
 
@@ -290,10 +291,10 @@ export const getMyPerformanceFormsById = async (id) => {
     });
     if (response.status === 200) {
       const Response = response.data;
-      const formData = await getEvaluationFormById(3);
-      const ResponseData = await mapAssesmentForm({ ...Response, forms: [formData] });
+      // const formData = await getEvaluationFormById(3);
+      // const ResponseData = await mapAssesmentForm({ ...Response, forms: [formData] });
 
-      return { ...ResponseData };
+      return { ...Response };
     }
   } catch (error) {
     console.error("Error fetching job rotation by ID:", error);
@@ -441,7 +442,7 @@ export const getManagerFinalEvaluation = async (payload) => {
     return false;
   }
 }
-export const getManagerFinalEvaluationById = async (id) => {
+export const getEvaluationSummaryDetails = async (id) => {
   try {
     const URL = `/FinalEvaluation/${id}/`;
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -449,8 +450,11 @@ export const getManagerFinalEvaluationById = async (id) => {
     });
     if (response.status === 200) {
       const Response = response.data;
-
-      return Response;
+      const cycleDetails = await getPerformanceCycleById(Response.cycle);
+      const selfAssesmentResult = cycleDetails.self_assement_form ? await getFormQuestions(cycleDetails.self_assement_form, Response.cycle) : null;
+      const peerAssesmentResult = cycleDetails.peer_assessment_form ? await getFormQuestions(cycleDetails.peer_assessment_form, Response.cycle) : null;
+      const ResponseData = await mapEvaluationSummaryDetails(Response, cycleDetails, selfAssesmentResult, peerAssesmentResult);
+      return ResponseData;
     }
   } catch (error) {
     console.error("Error fetching job rotation by ID:", error);
@@ -647,7 +651,6 @@ export const saveCalibration = async (payload, id) => {
 
 export const getFormQuestions = async (form_id, cycle_id) => {
   try {
-    debugger
     const response = await getEvaluationFormById(form_id)
     const cycleResponse = await getPerformanceCycleById(cycle_id);
     const submissionReponse = await getEvaluationSubmission({ filterData: { form: form_id, cycle: cycle_id } })

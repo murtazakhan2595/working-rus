@@ -253,7 +253,41 @@ export async function mapFormQuestionsData(cycleData, formData, formSubmissions,
             fields
         });
     }
+    return RecordDetails;
+}
+export async function mapEvaluationSummaryDetails(evaluationData, cycleData, selfAssesmentResult, peerAssesmentResult, submissionAnswers) {
+    const RecordDetails = {
+        employee: evaluationData.employee,
+        cycle_name: cycleData.name,
+        cycle_issuance_date: cycleData.issuance_date,
+        cycle_review_end: cycleData.review_end,
+        cycle_review_start: cycleData.review_start,
+        cycle_review_period: `${cycleData.review_start},${cycleData.review_end}`,
+        self_assessment: selfAssesmentResult ? { sections: selfAssesmentResult.sections } : null,
+        peer_assessment: peerAssesmentResult ? { sections: peerAssesmentResult.sections } : null,
+    };
 
-    console.log("RecordDetails", RecordDetails);
+    // for (const section of formData.sections) {
+    //     const fields = [];
+
+    //     for (const field of section.fields) {
+    //         const fieldAnswer = submissionAnswers.find(obj => obj.field === field.id);
+
+    //         fields.push({
+    //             ...field,       // ✅ spread field properties (not fields array)
+    //             answer_choice: fieldAnswer?.answer_choice,
+    //             answer_text: fieldAnswer?.answer_text,
+    //             rating: fieldAnswer?.rating,
+    //             answer_id: fieldAnswer?.id,
+    //         });
+    //     }
+
+    //     RecordDetails.sections.push({
+    //         ...section,
+    //         fields
+    //     });
+    // }
+
+    console.log("RecordDetails", RecordDetails, evaluationData, cycleData, selfAssesmentResult);
     return RecordDetails;
 }

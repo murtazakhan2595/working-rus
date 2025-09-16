@@ -12,7 +12,7 @@ const NavigationSheetComponent = ({
   title,
   currentItem_Id,
   dataList = [],
-  reloadData = () => {},
+  reloadData = () => { },
   allowEdit = true,
   allowDelete = true,
   ForceItemLoad = false, //forceLoad  the Item in case of updation
@@ -25,7 +25,7 @@ const NavigationSheetComponent = ({
   apiEndpoint,
 
   // Data functions
-  fetchCurrentItemDetails = async () => {},
+  fetchCurrentItemDetails = async () => { },
 
   // Labels and text
   deleteItemName = "item",
@@ -40,7 +40,6 @@ const NavigationSheetComponent = ({
   const [editMode, setEditMode] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
   const [currentItemId, setCurrentItemId] = useState(currentItem_Id);
-  console.log(fetchCurrentItemDetails())
   // Reset to original data when sheet opens
   useEffect(() => {
     if (isOpen && currentItemId) {
@@ -99,8 +98,10 @@ const NavigationSheetComponent = ({
   const ReloadCurrentItemDetails = async (id, isMounted = true) => {
     try {
       setIsLoading(true);
-      const currentItem = await fetchCurrentItemDetails(id, isMounted);
-      setCurrentItem(currentItem);
+      if (id) {
+        const currentItem = await fetchCurrentItemDetails(id, isMounted);
+        setCurrentItem(currentItem);
+      }
     } catch (error) {
       console.log(error);
     } finally {

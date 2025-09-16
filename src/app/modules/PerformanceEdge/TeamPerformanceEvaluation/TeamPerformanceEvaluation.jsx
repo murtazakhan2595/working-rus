@@ -22,20 +22,20 @@ const TeamPerformanceEvaluation = ({ }) => {
     // permissions for tranfer
     const isViewGoalsPermitted = HasAccess("VIEW_TEAM_GOALS");
     const isViewFinalEvaluatioFormPermitted = HasAccess("VIEW_EVALUATION_FORMS");
-    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_EVALUATION_FORM");
+    const isViewPendingEvaluationsPermitted = HasAccess("VIEW_TEAM_PENDING_EVALUATION");
     const isCreateSelfAssessmentFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
     const isCreatePeerAssessmentFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
     const [OpenEvaluationForm, setOpenEvaluationForm] = useState(false);
     const [OpenSelfAssessmentForm, setOpenSelfAssessmentForm] = useState(false);
     const [OpenPeerAssessmentForm, setOpenPeerAssessmentForm] = useState(false);
-    const [activeTab, setActiveTab] = useState("Pending Evaluation");
+    const [activeTab, setActiveTab] = useState(null);
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isSubmitEvaluatioFormPermitted ? ["Pending Evaluation"] : []),
+        ...(isViewPendingEvaluationsPermitted ? ["Pending Evaluation"] : []),
         ...(isViewFinalEvaluatioFormPermitted ? ["Evaluation Summary"] : []),
         ...(isViewGoalsPermitted ? ["Team Goals"] : []),
-    ], [isViewGoalsPermitted, isViewFinalEvaluatioFormPermitted, isSubmitEvaluatioFormPermitted]);
+    ], [isViewGoalsPermitted, isViewFinalEvaluatioFormPermitted, isViewPendingEvaluationsPermitted]);
 
 
     const handleRequestClick = (event) => {
