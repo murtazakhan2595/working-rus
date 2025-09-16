@@ -119,6 +119,7 @@ const Config = {
   EMPLOYEE_CREATION_AND_HIRING: true,
   HR_DOCUMENT_REPORTS: true,
   TRANSFER_AND_ROTATIONS: true,
+  ATTENDANCE_AND_SHIFT_REPORTS: true,
 };
 
 export const URLS = [

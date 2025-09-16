@@ -103,6 +103,7 @@ import { ExitAndClearanceReports } from "app/modules/Reports";
 import {EmployeeCreationAndHiringReports} from "app/modules/Reports";
 import { HRDocumentsReports } from "app/modules/Reports";
 import { TransferAndRotationReports } from "app/modules/Reports";
+import { AttendanceAndShiftReports } from "app/modules/Reports";
 
 export const SidebarRoutes = [
   {
@@ -406,6 +407,11 @@ export const SidebarRoutes = [
           path: "/transfer-and-rotation-reports",
           component: <TransferAndRotationReports />,
           name: "TRANSFER_AND_ROTATIONS",
+        },
+        Config.ATTENDANCE_AND_SHIFT_REPORTS && {
+          path: "/attendance-and-shift-reports",
+          component: <AttendanceAndShiftReports />,
+          name: "ATTENDANCE_AND_SHIFT_REPORTS",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
