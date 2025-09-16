@@ -346,10 +346,10 @@ export const SidebarRoutes = [
     : []),
   ...(Config.TALENT_SPHERE
     ? [
-      Config.JOBS && {
+      Config.MANPOWER_PLANNINGS && {
         path: "/manpower-planning",
         component: <ManpowerPlanning />,
-        name: "JOBS",
+        name: "MANPOWER_PLANNINGS",
       },
       Config.JOBS && {
         path: "/job-post",

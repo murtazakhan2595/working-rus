@@ -1,3 +1,9 @@
-import { ManpowerPlanning } from './ManpowerPlanning';
+import {
+    ManpowerPlanning,
+    AddUpdateManpower
+} from './ManpowerPlanning';
 
-export { ManpowerPlanning };
+export {
+    ManpowerPlanning,
+    AddUpdateManpower
+};

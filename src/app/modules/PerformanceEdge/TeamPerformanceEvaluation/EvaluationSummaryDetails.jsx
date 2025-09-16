@@ -11,7 +11,6 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { EmployeeOverview, PageLoader, Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
-import { FilterInput } from "components/FormControl";
 import { ManagerFinalEvaluationColumns } from "app/modules/PerformanceEdge/Sections";
 import { Button } from "components/ui/button";
 import { renderDate } from "utils/renderValues";
@@ -74,7 +73,6 @@ const EvaluationSummaryDetails = ({ reload }) => {
                         value={renderDate(EvaluationDetails.cycle_review_period)}
                     />
                 </CardContent>
-
             </Card>
             <Card>
                 <CardHeader>
