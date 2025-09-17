@@ -3174,3 +3174,254 @@ export const exportAttendanceShiftReport = async (reportType, filterData = {}) =
     return false;
   }
 };
+
+// ============================================================================
+// TIME ADJUSTMENT REPORTS API FUNCTIONS
+// Add these to your src/app/hooks/reports.jsx file
+// ============================================================================
+
+// Get time adjustment request report data
+export const getTimeAdjustmentReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-Request_ID";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/time-adjustment-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+        period: response.data.period || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null, period: null };
+  } catch (error) {
+    console.error("Error fetching time adjustment data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null, period: null };
+  }
+};
+
+// Get time adjustment status report data
+export const getTimeAdjustmentStatusReportData = async (payload) => {
+  try {
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/time-adjustment-status/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching time adjustment status data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get reason analysis report data
+export const getReasonAnalysisReportData = async (payload) => {
+  try {
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/reason-analysis-report/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.Report || [],
+        period: response.data.Period || null,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], period: null, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching reason analysis data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], period: null, aggregated_stats: null };
+  }
+};
+
+// Get manager approval report data
+export const getManagerApprovalReportData = async (payload) => {
+  try {
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/manager-approval-report/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.Report || [],
+        period: response.data.Period || null,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], period: null, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching manager approval data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], period: null, aggregated_stats: null };
+  }
+};
+
+// Get repeat adjustment report data
+export const getRepeatAdjustmentReportData = async (payload) => {
+  try {
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/repeat-adjustment-report/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.Report || [],
+        period: response.data.Period || null,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], period: null, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching repeat adjustment data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], period: null, aggregated_stats: null };
+  }
+};
+
+export const exportTimeAdjustmentReport = async (
+  reportType,
+  filterData = {}
+) => {
+  try {
+    let response, dataToExport, filename;
+
+    switch (reportType) {
+      case "time_adjustment_request_report":
+        response = await getTimeAdjustmentReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Request ID": item.Request_ID,
+          Employee: item.Employee,
+          Department: item.Dept,
+          Date: item.Date,
+          "Requested Change": item.Requested_Change,
+          Reason: item.Reason,
+          Status: item.Status,
+        }));
+        filename = "Time_Adjustment_Request_Report";
+        break;
+
+      case "adjustment_status_report":
+        response = await getTimeAdjustmentStatusReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          Status: item.Status,
+          Count: item.Count,
+          "Percentage of Total": item["% of Total"],
+        }));
+        filename = "Time_Adjustment_Status_Report";
+        break;
+
+      case "reason_analysis_report":
+        response = await getReasonAnalysisReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Reason Type": item["Reason Type"],
+          "Number of Requests": item["No. of Requests"],
+          "Share Percentage": item["% Share"],
+          "Example Employee": item["Example Employee"],
+        }));
+        filename = "Time_Adjustment_Reason_Analysis_Report";
+        break;
+
+      case "manager_approval_report":
+        response = await getManagerApprovalReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          Manager: item.Manager,
+          "Requests Reviewed": item.Requests_Reviewed,
+          Approved: item.Approved,
+          Rejected: item.Rejected,
+          Pending: item.Pending,
+          "Approval Rate": item.Approval_Rate,
+        }));
+        filename = "Manager_Approval_Report";
+        break;
+
+      case "repeat_adjustment_report":
+        response = await getRepeatAdjustmentReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          Employee: item.Employee,
+          Department: item["Dept."],
+          "Number of Requests": item["No. of Requests"],
+          "Common Reason": item["Common Reason"],
+          "Risk Level": item["Risk Level"],
+        }));
+        filename = "Repeat_Adjustment_Report";
+        break;
+
+      default:
+        throw new Error("Invalid time adjustment report type");
+    }
+
+    if (dataToExport && dataToExport.length > 0) {
+      exportRecordToExcel(dataToExport, "Time Adjustment Reports", filename);
+      return true;
+    } else {
+      toast.error("No data available to export", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error exporting time adjustment report:", error);
+    toast.error("Failed to export report", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
