@@ -122,9 +122,13 @@ export function numberToWords(number) {
 
 export function renderDate(date, fallbackValue = "N/A", variant = "date", joiningText = ' to ') {
   if (!date) return fallbackValue;
-
+  // Ensure the date is a string before calling split
+  const dateString = moment(date).isValid() ? moment(date).toString() : date;
   // Handle multiple comma-separated dates
-  const dateList = date.split(",").map(d => d.trim()).filter(Boolean);
+  const dateList = dateString
+    .split(",")
+    .map((d) => d.trim())
+    .filter(Boolean);
 
   if (dateList.length === 0) return fallbackValue;
 
@@ -132,16 +136,18 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date", joinin
     variant === "month-day"
       ? "MMM D"
       : variant === "month"
-        ? "MMMM YYYY"
-        : variant === "date-time"
-          ? "MMM DD, YYYY hh:mm A"
-          : variant === "time"
-            ? "hh:mm A"
-            : "MMM DD, YYYY";
+      ? "MMMM YYYY"
+      : variant === "date-time"
+      ? "MMM DD, YYYY hh:mm A"
+      : variant === "time"
+      ? "hh:mm A"
+      : "MMM DD, YYYY";
 
   const formattedDates = dateList
-    .map(d => (moment(d).isValid() ? moment(d).format(format) : fallbackValue))
-    .filter(val => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
+    .map((d) =>
+      moment(d).isValid() ? moment(d).format(format) : fallbackValue
+    )
+    .filter((val) => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
 
   return formattedDates.join(joiningText);
 }
