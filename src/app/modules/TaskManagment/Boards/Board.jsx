@@ -13,11 +13,10 @@ import {
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import ActionAlert from "components/ui/ActionAlert";
-import { useSelector , useDispatch} from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import Err404 from "app/modules/Error/Err404";
 import { AddNewListModel } from "./Sections";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
-
 
 const Board = () => {
   const { projectId, taskId, boardId } = useParams();
@@ -35,7 +34,7 @@ const Board = () => {
   const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] = useState(false);
 
   const previousFilters = React.useMemo(() => {
-    const stored = window.localStorage.getItem("project-filters");
+    const stored = window.localStorage.getItem(`project-filters-${projectId}`);
     return stored ? JSON.parse(stored) : null;
   }, []);
 
@@ -49,8 +48,7 @@ const Board = () => {
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
-    dispatch(fetchTaskLabels(projectId));
-    
+     dispatch(fetchTaskLabels(projectId));
     return () => {
       isMounted = false;
     };

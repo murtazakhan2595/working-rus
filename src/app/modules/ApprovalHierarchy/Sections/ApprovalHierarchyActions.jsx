@@ -63,10 +63,10 @@ const ApprovalHierarchyActions = ({
             : null
         }
         onEdit={isEditHierarchyPermitted ? handleEdit : null}
-        onDelete={isDeleteHierarchyPermitted ? handleDelete : null}
+        // onDelete={isDeleteHierarchyPermitted ? handleDelete : null}
         viewText="View Hierarchy Detail"
         editText="Edit Hierarchy"
-        deleteText="Delete Hierarchy"
+        // deleteText="Delete Hierarchy"
         menuTooltip="Hierarchy Actions"
         additionalOptionsConfig={
           isAddHierarchyPermitted || isEditHierarchyPermitted
