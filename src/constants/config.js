@@ -75,7 +75,7 @@ const Config = {
   //-------------TALENT_SPHERE-----------
   TALENT_SPHERE: true,
   //Sub Modules
-  JOBS: true,
+  MANPOWER_PLANNINGS: true,
   APPLICANTS: true,
 
   //-------------ASSET_MANAGEMENT-----------
@@ -110,6 +110,7 @@ const Config = {
   GENERATE_FORM: true,
   PERFORMANCE_CYCLE_SETUP: true,
   PERFORMANCE_DASHBOARD: true,
+  PERFORMANCE_EVALUATION: true,
 
   //--------------Reports-----------
   REPORTS: true,

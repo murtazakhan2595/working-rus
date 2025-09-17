@@ -3,7 +3,7 @@ import {
     NavigationSheetComponent,
     DetailContent,
 } from "components";
-import { getManagerFinalEvaluationById } from 'app/hooks/performanceEdge';
+import { getMyPerformanceFormsById } from 'app/hooks/performanceEdge';
 import { StatusLabel } from "components";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -11,15 +11,15 @@ import { useSelector } from "react-redux";
 import { EmployeeName } from "utils/getValuesFromTables";
 
 
-const EvaluationResultDetails = ({
+const PerformanceResultDetails = ({
     isOpen,
     setIsOpen,
     currentId,
     reloadData = () => { },
     DataList = [],
 }) => {
-    const { id: user_id } = useSelector(        (state) => state.user.userProfile    );
-  
+    const { id: user_id } = useSelector((state) => state.user.userProfile);
+
     // Define the fields to display
     const fields = [
         {
@@ -34,7 +34,7 @@ const EvaluationResultDetails = ({
                             avatarSize={16}
                         />
                         <StatusLabel className="ml-10" status={data.status}>
-                            {data?.status?.toLowerCase()}
+                            {data?.Final_Ratng?.status?.toLowerCase()}
                         </StatusLabel>
                     </div>
                 );
@@ -46,12 +46,13 @@ const EvaluationResultDetails = ({
             // footerField: "created_at",
             field: [
                 {
-                    key: "new_department",
+                    key: "name",
                     label: "Evaluation Type",
                 },
                 {
-                    key: "new_designation",
+                    key: "review_start",
                     label: "Evaluation Period",
+                    formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
                 },
                 {
                     key: "evaluated_by",
@@ -59,14 +60,19 @@ const EvaluationResultDetails = ({
                     formatter: (cell) => <EmployeeName value={cell} />
                 },
                 {
-                    key: "new_reporting_manager",
+                    key: "Final_Ratng",
                     label: "Approval Date",
-                    formatter: (cell) => renderDate(cell),
+                    formatter: (cell) => renderDate(cell?.hr_approval_date),
                 },
                 {
-                    key: "rotation_cap_time",
-                    label: "Final Rating & Score",
-                    formatter: (cell) => `${cell} Day('s)`,
+                    key: "Final_Ratng",
+                    label: "Final Rating",
+                    formatter: (cell) => cell?.final_rating,
+                },
+                {
+                    key: "Final_Ratng",
+                    label: "Final Score",
+                    formatter: (cell) => cell?.final_score,
                 },
             ],
         },
@@ -108,12 +114,14 @@ const EvaluationResultDetails = ({
             title: "Manager Assessment",
             field: [
                 {
-                    key: "",
-                    label: 'Scores'
+                    key: "Final_Ratng",
+                    label: 'Scores',
+                    formatter: (cell) => cell?.manager_assessment?.score,
                 },
                 {
-                    key: "",
-                    label: 'Manager Comments'
+                    key: "Final_Ratng",
+                    label: 'Manager Comments',
+                    formatter: (cell) => cell?.manager_assessment?.final_comments,
                 },
             ],
         },
@@ -121,16 +129,19 @@ const EvaluationResultDetails = ({
             title: "Overall Summary",
             field: [
                 {
-                    key: "",
-                    label: 'Final Rating'
+                    key: "Final_Ratng",
+                    label: 'Final Rating',
+                    formatter: (cell) => cell?.overall_summary?.system_generated_rating,
                 },
                 {
-                    key: "",
-                    label: 'Weightage applied'
+                    key: "Final_Ratng",
+                    label: 'Weightage applied',
+                    formatter: (cell) => cell?.overall_summary?.final_comments,
                 },
                 {
-                    key: "",
-                    label: 'HR remarks'
+                    key: "Final_Ratng",
+                    label: 'HR remarks',
+                    formatter: (cell) => cell?.overall_summary?.hr_remarks,
                 },
             ],
         },
@@ -138,7 +149,7 @@ const EvaluationResultDetails = ({
 
     const fetchData = async (id, isMounted) => {
         try {
-            const response = await getManagerFinalEvaluationById(id);
+            const response = await getMyPerformanceFormsById(id);
             if (isMounted) {
                 return response;
             }
@@ -167,4 +178,4 @@ const EvaluationResultDetails = ({
     );
 };
 
-export default EvaluationResultDetails;
+export default PerformanceResultDetails;

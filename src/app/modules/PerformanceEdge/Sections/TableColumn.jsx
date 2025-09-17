@@ -3,60 +3,57 @@ import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import {
-    EvaluationResultsActions, MyPerformanceActions, PerformanceCycleActions, MyGoalsActions,
+    PerformanceResultsActions,
+    MyPerformanceActions,
+    PerformanceCycleActions,
+    MyGoalsActions,
     TeamGoalsActions,
     PeerAssessmentActions,
+    CalibrationPanelActions,
+    TeamEvaluationActions
 } from 'app/modules/PerformanceEdge';
 /**
- * EvaluationResultColumns
+ * PerformanceResultColumns
  *
- * Returns an array of column definitions for the EvaluationResultColumns table.
+ * Returns an array of column definitions for the PerformanceResultColumns table.
  *
  * @returns {array} An array of column definitions.
  */
-export const EvaluationResultColumns = (reloadData) => [
+export const PerformanceResultColumns = (reloadData) => [
     {
-        dataField: "form_name",
+        dataField: "name",
         text: "Evaluation Type",
         dataSort: true,
     },
     {
-        dataField: "evaluation_type",
+        dataField: "review_start",
         text: "Evaluation Period",
+        formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
         dataSort: true,
     },
     {
-        dataField: "final_rating",
+        dataField: "Final_Ratng",
         text: "Final Rating",
-        // formatter: (cell) => {
-        //     return (
-        //         <MultiStatusLabel
-        //             statusList={cell}
-        //             variant="info"
-        //             fallBackText="All Nationalities"
-        //         />
-        //     );
-        // },
+        formatter: (cell) => cell.final_rating
     },
     {
-        dataField: "resolved_on",
+        dataField: "Final_Ratng",
         text: "HR Approval Date",
         dataSort: true,
-        formatter: (cell, row) => renderDate(cell),
+        formatter: (cell, row) => renderDate(cell.hr_approval_date, '--'),
     },
     {
-        dataField: "status",
+        dataField: "Final_Ratng",
         text: "Status",
-        dataSort: true,
-        formatter: (cell, row) => (
-            <StatusLabel status={cell}>{cell}</StatusLabel>
+        formatter: (cell) => (
+            <StatusLabel status={cell.status}>{cell.status}</StatusLabel>
         ),
     },
     {
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <EvaluationResultsActions DataList={dataList} data={row} reloadData={reloadData} />
+            <PerformanceResultsActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
@@ -81,17 +78,17 @@ export const MyPerformanceCycleColumns = (reloadData) => [
         formatter: (cell, row) => (<div><span>{renderDate(cell, '--')}</span> to <span>{renderDate(row.review_end, '--')}</span> </div>),
     },
     {
-        dataField: "self_assessment_enabled",
+        dataField: "self_assessment_status",
         text: "Self Assessment",
         formatter: (cell, row) => (
-            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+            <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
         ),
     },
     {
-        dataField: "peer_assessment_enabled",
+        dataField: "peer_assessment_status",
         text: "Peer Assessment",
-        formatter: (cell, row) => (
-            <StatusLabel status={`${cell ? 'Yes' : 'No'}`}>{cell ? 'Yes' : 'No'}</StatusLabel>
+        formatter: (cell) => (
+            <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
         ),
     },
 
@@ -191,7 +188,7 @@ export const ManagerPendingEvaluationColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <PerformanceCycleActions DataList={dataList} data={row} reloadData={reloadData} />
+            <TeamEvaluationActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];
@@ -218,7 +215,7 @@ export const ManagerFinalEvaluationColumns = (reloadData) => [
         text: "Peer-Evaluation Score",
     },
     {
-        dataField: "HrRemarks",
+        dataField: "final_score",
         text: "HR Evaluation Score",
         dataSort: true,
         formatter: (cell, row) => renderDate(cell),
@@ -241,7 +238,7 @@ export const ManagerFinalEvaluationColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, dataList) => (
-            <EvaluationResultsActions DataList={dataList} data={row} reloadData={reloadData} />
+            <TeamEvaluationActions DataList={dataList} data={row} reloadData={reloadData} ViewFinalEvaluation={true}/>
         ),
     },
 ];
@@ -415,6 +412,103 @@ export const PeerAssessmentFormColumns = (reloadData) => [
         text: "",
         formatter: (_, row, dataList) => (
             <PeerAssessmentActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+
+/**
+ * PendingEvaluationColumns
+ *
+ * Returns an array of column definitions for the PendingEvaluationColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const PendingEvaluationColumns = (reloadData) => [
+    {
+        dataField: "emp_id",
+        text: "Employee",
+        // formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+    },
+    {
+        dataField: "Evaluation_Period",
+        text: "Evaluation Period",
+        // formatter: (cell) => `${renderDate(cell.start_date)} to ${renderDate(cell.end_date)}`,
+    },
+    {
+        dataField: "Peer_Evaluation_Status",
+        text: "Peer Assessment Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "Self_Assessment_Status",
+        text: "Self Assessment Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "Manager_Evaluation_Status",
+        text: "Manager Evaluation Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "Evaluation_Status",
+        text: "Evaluation Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.replace('_', ' ').toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "HR_Final_Remarks",
+        text: "HR Final Remarks",
+    },
+    {
+        dataField: "Final_Submission_Date",
+        text: "Final Submission Date",
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <PerformanceCycleActions DataList={dataList} data={row} reloadData={reloadData} />
+        ),
+    },
+];
+
+/**
+ * CalibrationPanelColumns
+ *
+ * Returns an array of column definitions for the CalibrationPanelColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const CalibrationPanelColumns = (reloadData) => [
+    {
+        dataField: "employee",
+        text: "Employee",
+        formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+
+    },
+    {
+        dataField: "evaluated_by",
+        text: "Evaluated By",
+        formatter: (cell) => <EmployeeOverview id={cell} showId={true} showDepartment={true} showPosition={true} />,
+    },
+    {
+        dataField: "final_score",
+        text: "Final Score",
+    },
+    {
+        dataField: "final_rating",
+        text: "Final Rating",
+    },
+    {
+        dataField: "is_locked",
+        text: "Lock Evaluation",
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>,
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, dataList) => (
+            <CalibrationPanelActions DataList={dataList} data={row} reloadData={reloadData} />
         ),
     },
 ];

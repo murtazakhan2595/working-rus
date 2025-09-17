@@ -56,7 +56,7 @@ const JobRotationDetails = ({
             employee,
             id,
             rejection_reason,
-            request_id,
+            hierarchy_request,
             requested_checkout,
             requested_checkin,
             is_second_shift,
@@ -64,36 +64,10 @@ const JobRotationDetails = ({
         }
     ) => {
         try {
-            const response = await handleRequest(request_id, status === "Approved");
+            const response = await handleRequest(hierarchy_request, status === "Approved");
             // return
             if (response) {
                 toast.success(`Request ${status} Successfully!`);
-                if (status === "Rejected") {
-                    await saveUpdateAttendanceAdjustment(
-                        { rejection_reason: rejection_reason },
-                        id
-                    );
-                }
-                const { status: updatedStatus, attendance } = await fetchData(id, true);
-                if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
-                    const attendanceData = attendance
-                        ? await getAttendanceData(attendance)
-                        : {};
-                    const shiftData = await getActiveShiftData(employee, attendance_date);
-                    const payload = {
-                        ...attendanceData,
-                        date: attendance_date,
-                        id: attendance,
-                        ...(is_second_shift
-                            ? { second_checkin: requested_checkin }
-                            : { checkin: requested_checkin }),
-                        ...(is_second_shift
-                            ? { second_checkout: requested_checkout }
-                            : { checkout: requested_checkout }),
-                        employee_id: employee,
-                    };
-                    await saveAttendance(payload, shiftData, attendance);
-                }
                 setForceLoad(!forceLoad);
                 setOpenRejectModal(false);
                 setRejectData(null);

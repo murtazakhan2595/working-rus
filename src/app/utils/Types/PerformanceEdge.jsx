@@ -64,3 +64,11 @@ export const EmployeeFeedback = {
     comments: null,
     category: null
 }
+
+
+export const CalibrationPanel = {
+    final_evaluation: null,
+    calibrated_by: null,
+    new_score: null,
+    justification: null,
+}

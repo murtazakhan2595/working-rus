@@ -1,5 +1,5 @@
 import {
-    EvaluationResultColumns,
+    PerformanceResultColumns,
     PerformanceCycleColumns,
     ManagerPendingEvaluationColumns,
     ManagerFinalEvaluationColumns,
@@ -7,10 +7,12 @@ import {
     TeamGoalsColumns,
     PeerAssessmentFormColumns,
     MyPerformanceCycleColumns,
+    PendingEvaluationColumns,
+    CalibrationPanelColumns,
 } from './TableColumn';
 import PerformanceProccessBar from './PerformanceProccessBar';
 export {
-    EvaluationResultColumns,
+    PerformanceResultColumns,
     PerformanceCycleColumns,
     ManagerPendingEvaluationColumns,
     ManagerFinalEvaluationColumns,
@@ -19,4 +21,6 @@ export {
     PeerAssessmentFormColumns,
     PerformanceProccessBar,
     MyPerformanceCycleColumns,
+    CalibrationPanelColumns,
+    PendingEvaluationColumns
 }

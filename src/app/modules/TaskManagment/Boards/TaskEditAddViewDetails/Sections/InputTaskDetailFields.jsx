@@ -98,7 +98,7 @@ const InputTaskDetailFields = React.memo(
 
           <Labels
             labelsSelected={taskData.label || []}
-            projectId={projectDetail?.id}
+             projectId={projectDetail?.id}
             onSelectedLabelsChange={(value) => {
               onChange("label", value);
             }}

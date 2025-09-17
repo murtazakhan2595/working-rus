@@ -222,6 +222,9 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                                                 value: field.evaluation_type,
                                                 options: [{ label: 'Radio', value: 'radio' }, { label: 'Dropdown', value: 'dropdown' }, { label: 'Text', value: 'text' }]
                                             },
+                                             {
+                                                InputField: () => { return <div key={`sections[${index}]-fill-empty`}></div> },
+                                            },
                                         ])).flat()
                                         : []
                                     ),

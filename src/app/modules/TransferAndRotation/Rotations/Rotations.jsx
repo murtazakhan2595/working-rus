@@ -36,7 +36,7 @@ const Rotations = ({ reload, permittedViewFilterData }) => {
       <CardHeader>
         <CardTitle>Rotation {activeTab}</CardTitle>
         <CardDescription>
-          Here you can manage and {activeTab.toLowerCase()} requests of
+          Here you can manage and rotation {activeTab.toLowerCase()} of
           employees.
         </CardDescription>
       </CardHeader>

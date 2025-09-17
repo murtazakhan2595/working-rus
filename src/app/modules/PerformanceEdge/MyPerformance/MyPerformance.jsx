@@ -13,7 +13,7 @@ import { Button } from "components/ui/button";
 import {
     Evaluations,
     AddUpdateMyGoals,
-    EvaluationResults,
+    PerformanceResults,
     SubmitFeedBack,
     MyGoals,
 } from 'app/modules/PerformanceEdge';
@@ -21,8 +21,8 @@ const MyPerformance = ({ }) => {
     // permissions for tranfer
     const isViewGoalsPermitted = HasAccess("VIEW_MY_GOALS");
     const isCreateGoalsPermitted = HasAccess("CREATE_GOAL");
-    const isSubmitEvaluatioFormPermitted = HasAccess("CREATE_SELF_ASSESSMENT_FORM");
-    const isViewFinalEvaluatioFormPermitted = HasAccess("CREATE_PEER_ASSESSMENT_FORM");
+    const isSubmitViewAssessmentPermitted = HasAccess("VIEW_SUBMIT_ASSESSMENTS");
+    const isViewEvaluatioResultPermitted = HasAccess("VIEW_EVALUATION_RESULT");
     const [OpenMyGoalsForm, setOpenMyGoalsForm] = useState(false);
     const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
@@ -30,10 +30,10 @@ const MyPerformance = ({ }) => {
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isSubmitEvaluatioFormPermitted ? ["Submit Evaluation"] : []),
-        ...(isViewFinalEvaluatioFormPermitted ? ["Final Evaluations"] : []),
+        ...(isSubmitViewAssessmentPermitted ? ["My Performance"] : []),
+        ...(isViewEvaluatioResultPermitted ? ["Performance Results"] : []),
         ...(!isViewGoalsPermitted ? ["My Goals"] : []),
-    ], [isViewGoalsPermitted, isSubmitEvaluatioFormPermitted]);
+    ], [isViewGoalsPermitted, isSubmitViewAssessmentPermitted, isViewEvaluatioResultPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
@@ -68,7 +68,7 @@ const MyPerformance = ({ }) => {
         <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}        >
             <Header content={<HeaderButton />} />
             <Tabs
-                defaultValue="Submit Evaluation"
+                defaultValue="My Performance"
                 className="w-full"
                 onValueChange={(tab) => {
                     setActiveTab(tab);
@@ -83,11 +83,11 @@ const MyPerformance = ({ }) => {
                     ))}
                 </TabsList>
                 <Card>
-                    <TabsContent value="Submit Evaluation">
+                    <TabsContent value="My Performance">
                         <Evaluations />
                     </TabsContent>
-                    <TabsContent value="Final Evaluations">
-                        <EvaluationResults />
+                    <TabsContent value="Performance Results">
+                        <PerformanceResults />
                     </TabsContent>
                     <TabsContent value="My Goals">
                         <MyGoals reload={reloadData['my-goals']} />
