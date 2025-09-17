@@ -179,12 +179,10 @@ export const getAllLabels = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/TaskLabel?project_id=${payload}`;
-  // /?ordering=-name&${
-  //   pageNo ? `page=${pageNo}&` : ""
-  // }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-  //   JSON.stringify(filterData)
-  // )}`;
+  const URL = `/TaskLabel?ordering=-name&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -192,7 +190,7 @@ export const getAllLabels = async (payload) => {
 
     if (response.status === 200) {
       const data = response.data?.results || [];
-      return data.filter(dta => dta?.project_id != null);
+      return data.filter(dta => dta?.project_id !== null);
     } else {
       return [];
     }

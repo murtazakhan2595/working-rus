@@ -814,22 +814,15 @@ export const handleUpdateProfile = async (dispatch, data) => {
   const ModuleList = await dispatch(fetchModules());
   const MyPermissions = await dispatch(fetchMyPermissions());
   await dispatch(fetchUser(userprofile.id));
-  await dispatch(
-    fetchUserPermittedModules({
-      modules: ModuleList.payload,
-      permissions: MyPermissions.payload,
-    })
-  );
-  await dispatch(fetchEmployees());
+  await dispatch(fetchUserPermittedModules({ modules: ModuleList.payload, permissions: MyPermissions.payload, }));
+  dispatch(fetchEmployees());
   dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
-  await dispatch(fetchCalendarHoliday(userprofile.id));
-  await dispatch(fetchDocumentCategory());
-  await dispatch(fetchUserRoles());
+  dispatch(fetchCalendarHoliday(userprofile.id));
+  dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
-  await dispatch(fetchUserAttendanceDetails(userprofile.id));
-  dispatch(fetchTaskLabels());
-  await dispatch(fetchProjects(userprofile));
+  dispatch(fetchUserAttendanceDetails(userprofile.id));
+  dispatch(fetchProjects(userprofile));
 };

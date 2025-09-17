@@ -1,5 +1,6 @@
-import { saveEmployeeGoals, getEmployeeGoalsById } from 'app/hooks/performanceEdge';
-import { MyGoals } from "app/utils/Types/PerformanceEdge";
+import { saveManpowerPanning, getManpowerById } from 'app/hooks/talentSphere';
+import { getEmployeeList } from 'app/hooks/general';
+import { ManpowerPlanning } from "app/utils/Types/TalentSphere";
 import {
     TextAreaInput,
     TextInput,
@@ -20,13 +21,13 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
     const [selectedEmployee, setSelectedEmployee] = useState({});
-    const [formValues, setFormValues] = useState(null);
+    const [FormValues, setFormValues] = useState(ManpowerPlanning);
     const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-    const [formData, setFormData] = useState(MyGoals);
-    const [EvaluationTypes, setEvaluationTypes] = useState([]);
+    const [formData, setFormData] = useState(ManpowerPlanning);
+    const [ExistingHeadcount, setExistingHeadcount] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
@@ -41,7 +42,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
         const fetchData = async (isMounted, id) => {
             try {
                 setIsLoading(true);
-                const response = await getEmployeeGoalsById(id);
+                const response = await getManpowerById(id);
                 if (isMounted) {
                     setFormData({ ...response });
                     setFormValues({ ...response });
@@ -67,25 +68,34 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, employee: UserDetails.id };
-            const response = await saveEmployeeGoals(payload, id);
+            const payload = { ...values,};
+            const response = await saveManpowerPanning(payload, id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `My Goals Submitted Successfully`,
-                    description: `My goals is submitted successfully`,
+                    title: `Manpower Submitted Successfully!`,
+                    description: `Manpower planing has been submitted successfully.`,
                 }
             }
         } catch (error) {
             // Show error message
-            const errorMessage =
-                error?.response?.data?.message ||
-                error.message ||
-                `Failed to ${isEditMode ? "update" : "add"} goals.`;
-            toast.error(errorMessage);
+            console.log(error)
         } finally {
             setIsSubmittingForm(false);
+        }
+    };
+
+    const getExistingHeadCount = async (branch, department) => {
+        try {
+            const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
+            const response = await getEmployeeList({ filterData });
+            if (response) {
+                setExistingHeadcount(response.count);
+            }
+        } catch (error) {
+            // Show error message
+            console.error(error)
         }
     };
 
@@ -117,110 +127,58 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                         InputFields: [
                             {
                                 InputField: SelectInputComponent,
-                                name: "title",
+                                name: "fiscal_year",
                                 required: true,
                                 label: "Fiscal Year",
                                 options: YearsDropdown,
                             },
                             {
                                 InputField: SelectInputComponent,
-                                name: "title",
+                                name: "branch",
                                 required: true,
                                 label: "Branch",
                                 options: Branches,
+                                onFieldUpdate: async (_, value) => {
+                                    await getExistingHeadCount(value, FormValues?.department);
+                                },
                             },
                             {
                                 InputField: SelectInputComponent,
-                                name: "title",
+                                name: "department",
                                 required: true,
                                 label: "Department",
                                 options: Departments,
+                                onFieldUpdate: async (_, value) => {
+                                    await getExistingHeadCount(FormValues?.branch, value);
+                                },
                             },
                             {
                                 InputField: NumberInput,
-                                name: ``,
+                                name: `planned_headcount`,
                                 label: "Planned Headcount",
-                            },
-                            {
-                                InputField: SelectInputComponent,
-                                name: "alignment",
-                                label: "Alignment",
-                                options: [
-                                    { value: "company", label: "Company Objective" },
-                                    { value: "department", label: 'Departmental Objective' },
-                                    { value: "none", label: 'None' },
-                                ],
-                            },
-
-                            {
-                                InputField: DateInput,
-                                name: "due_date",
-                                label: "Due Date",
                                 required: true,
                             },
                             {
-                                InputField: SelectInputComponent,
-                                name: "status",
-                                label: "Status",
-                                options: [{ value: "not_started", label: "No Started" },
-                                { value: "in_progress", label: 'In Progress' },
-                                { value: "completed", label: 'Completed' },
-                                { value: "on_hold", label: 'On Hold' },
-                                { value: "canceled", label: "Cancelled" }],
+                                InputField: NumberInput,
+                                name: `existing_headcount`,
+                                label: "Existing Headcount",
+                                value: ExistingHeadcount,
+                                disabled: true,
+                            },
+                            {
+                                InputField: NumberInput,
+                                name: `total_allocated_budget`,
+                                label: "Total Allocated Budget",
+                                required: true,
                             },
                             {
                                 InputField: TextAreaInput,
-                                name: "description",
+                                name: "justification",
                                 required: true,
-                                label: "Description",
+                                label: "Justification",
                                 colsSpan: 2,
                             },
 
-                        ],
-                    },
-                    // Conditionally render levels from formValues.level
-                    ...(formValues?.key_results
-                        ? formValues.key_results.map((key_result, index) => ({
-                            sheetCardExtension: true,
-                            sheetCardTitle: `Key Result ${index + 1}`,
-                            InputFields: [
-                                // {
-                                //     InputField: RemoveSection,
-                                //     name: "key_results",
-                                //     value: key_result,
-                                //     colsSpan: 2,
-                                // },
-                                {
-                                    InputField: TextAreaInput,
-                                    name: `key_results[${index}].description`,
-                                    label: "Description",
-                                    value: key_result.description,
-                                    colsSpan: 2,
-                                },
-
-
-                                {
-                                    InputField: NumberInput,
-                                    name: `key_results[${index}].current_value`,
-                                    label: "Current Value",
-                                    value: key_result.current_value,
-                                    // onFieldUpdate: async (_, __, ___, handleChange) => {
-                                    //     handleChange(`levels[${index}].designation`, null);
-                                    // },
-                                },
-
-                            ],
-                        }))
-                        : []),
-                    {
-                        sheetCardExtension: false,
-                        sheetCardTitle: `Key Results`,
-                        InputFields: [
-                            {
-                                InputField: AddNewKeyResult,
-                                name: "key_results",
-                                colsSpan: 3,
-                            },
                         ],
                     },
                 ],

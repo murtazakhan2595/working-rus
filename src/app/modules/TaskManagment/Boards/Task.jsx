@@ -30,8 +30,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const TaskCard = ({
   task,
-  reloadData = () => {},
-  onDragStart = () => {},
+  reloadData = () => { },
+  onDragStart = () => { },
   showMembers = true,
   showDueDate = true,
 }) => {
@@ -99,8 +99,8 @@ const TaskDetails = ({
   task,
   showMembers = true,
   showDueDate = true,
-  reloadData = () => {},
-  setOpenSubtaskDetails = () => {},
+  reloadData = () => { },
+  setOpenSubtaskDetails = () => { },
   openSubtaskDetails = false,
   isSubtask = false,
   parentTaskId = null,
@@ -164,9 +164,9 @@ const TaskDetails = ({
           <div className="flex justify-start items-start py-0.5">
             {task?.label && task?.label.length > 0 && (
               <Labels
-                projectId={projectId} 
+                projectId={projectId}
                 labelsSelected={task.label || []}
-                onSelectedLabelsChange={() => {}}
+                onSelectedLabelsChange={() => { }}
                 editMode={false}
               />
             )}
