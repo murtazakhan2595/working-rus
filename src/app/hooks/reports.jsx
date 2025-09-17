@@ -2279,10 +2279,9 @@ export const exportTransferRotationReport = async (reportType, filterData = {}) 
 };
 
 
-
 // ============================================================================
-// ATTENDANCE & SHIFT REPORTS API FUNCTIONS
-// Add these functions to your existing src/app/hooks/reports.jsx file
+// ATTENDANCE & SHIFT REPORTS API FUNCTIONS - UPDATED WITH AGGREGATED STATS
+// Replace the existing functions in your src/app/hooks/reports.jsx file
 // ============================================================================
 
 // ============================================================================
@@ -2311,15 +2310,16 @@ export const getDailyAttendanceData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching daily attendance data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2345,15 +2345,16 @@ export const getMonthlyAttendanceData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching monthly attendance data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2379,15 +2380,16 @@ export const getYearlyAttendanceData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching yearly attendance data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2417,15 +2419,16 @@ export const getAbsenteeismReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching absenteeism data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2451,15 +2454,16 @@ export const getLateArrivalReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching late arrival data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2485,15 +2489,16 @@ export const getEarlyDepartureReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching early departure data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2519,15 +2524,16 @@ export const getNoPunchReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching no punch data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2557,15 +2563,16 @@ export const getOvertimeReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching overtime data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2591,15 +2598,16 @@ export const getIdleUndertimeReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching idle undertime data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2625,15 +2633,16 @@ export const getAttendanceVsLeaveReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching attendance vs leave data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2663,15 +2672,16 @@ export const getShiftAllocationReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching shift allocation data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2697,15 +2707,16 @@ export const getShiftVsActualAttendanceData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching shift vs actual attendance data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2731,15 +2742,16 @@ export const getShiftComplianceReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching shift compliance data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2765,15 +2777,16 @@ export const getShiftCoverageReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching shift coverage data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2799,15 +2812,16 @@ export const getShiftSwappingReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching shift swapping data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
@@ -2828,15 +2842,16 @@ export const getWeeklyShiftCalendarData = async (payload) => {
       return {
         week_period: response.data.week_period,
         schedule: response.data.schedule || [],
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { week_period: "", schedule: [] };
+    return { week_period: "", schedule: [], aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching weekly shift calendar data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { week_period: "", schedule: [] };
+    return { week_period: "", schedule: [], aggregated_stats: null };
   }
 };
 
@@ -2857,15 +2872,16 @@ export const getHolidaySpecialShiftReportData = async (payload) => {
       return {
         month: response.data.month,
         results: response.data.results || [],
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { month: "", results: [] };
+    return { month: "", results: [], aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching holiday special shift data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { month: "", results: [] };
+    return { month: "", results: [], aggregated_stats: null };
   }
 };
 
@@ -2891,20 +2907,21 @@ export const getWeekendWorkReportData = async (payload) => {
       return {
         results: response.data.results || [],
         count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null, // ✅ ADDED
       };
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   } catch (error) {
     console.error("Error fetching weekend work data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return { results: [], count: 0 };
+    return { results: [], count: 0, aggregated_stats: null };
   }
 };
 
 // ============================================================================
-// EXCEL EXPORT FUNCTIONALITY
+// EXCEL EXPORT FUNCTIONALITY - UNCHANGED
 // ============================================================================
 
 // Export attendance and shift reports
