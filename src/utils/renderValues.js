@@ -149,10 +149,7 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date", joinin
     )
     .filter((val) => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
 
-    return formattedDates.join(joiningText);
-  } else if (moment(date).isValid()) {
-    return moment(date).format(format);
-  } else return fallbackValue;
+  return formattedDates.join(joiningText);
 }
 
 
