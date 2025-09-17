@@ -122,6 +122,7 @@ export function numberToWords(number) {
 
 
 export function renderDate(date, fallbackValue = "N/A", variant = "date", joiningText = ' to ') {
+  console.log("date in renderddate->", date)
   if (!date) return fallbackValue;
   const format =
     variant === "month-day"
