@@ -7,6 +7,19 @@ import {
   CardDescription,
 } from "components/ui/card";
 import { TableCustom, PageLoader } from "components";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 // ============================================================================
 // HOLIDAY SPECIAL SHIFT REPORT COMPONENT
 // ============================================================================
@@ -22,7 +35,11 @@ export const HolidaySpecialShiftReport = ({
   const [holidaySpecialData, setHolidaySpecialData] = useState({
     month: "",
     results: [],
+    aggregated_stats: null,
   });
+
+  // Chart colors
+  const typeColors = ["#3B82F6", "#8B5CF6"];
 
   const fetchHolidaySpecialData = async () => {
     setLoading(true);
@@ -49,37 +66,53 @@ export const HolidaySpecialShiftReport = ({
     }
   }, [filterData, permittedViewFilterData]);
 
-  const stats = React.useMemo(() => {
-    const resultsData = holidaySpecialData.results || [];
+  // Calculate stats from aggregated data only
+  const stats = {
+    month: holidaySpecialData.month || "N/A",
+    totalSpecialShifts: holidaySpecialData.aggregated_stats?.total_special_shifts || 0,
+    uniqueStaffAssigned: holidaySpecialData.aggregated_stats?.unique_staff_assigned || 0,
+    holidayShifts: holidaySpecialData.aggregated_stats?.by_type?.Holiday || 0,
+    specialAssignments: holidaySpecialData.aggregated_stats?.by_type?.["Special Assignment"] || 0,
+    totalHolidayHours: holidaySpecialData.aggregated_stats?.total_holiday_hours || 0,
+  };
 
-    const totalHolidayShifts = resultsData.length;
+  // Shift type distribution chart data
+  const shiftTypeChartData = React.useMemo(() => {
+    if (!holidaySpecialData.aggregated_stats?.by_type) return [];
 
-    const specialAssignments = resultsData.filter((item) =>
-      item["Holiday/Special"]?.includes("Special")
-    ).length;
+    return Object.entries(holidaySpecialData.aggregated_stats.by_type)
+      .map(([type, count]) => ({
+        type,
+        count,
+        percentage: stats.totalSpecialShifts > 0 ? Math.round((count / stats.totalSpecialShifts) * 100) : 0,
+      }))
+      .filter(item => item.count > 0);
+  }, [holidaySpecialData.aggregated_stats, stats.totalSpecialShifts]);
 
-    const holidayAssignments = resultsData.filter(
-      (item) =>
-        item["Holiday/Special"]?.includes("Holiday") ||
-        item["Holiday/Special"]?.includes("Day")
-    ).length;
+  // Staff assignment analysis
+  const staffAssignmentData = React.useMemo(() => {
+    if (!holidaySpecialData.aggregated_stats) return [];
 
-    const uniqueStaff = new Set(resultsData.map((item) => item.Assigned_Staff))
-      .size;
-
-    return {
-      month: holidaySpecialData.month || "N/A",
-      totalHolidayShifts,
-      specialAssignments,
-      holidayAssignments,
-      uniqueStaff,
-    };
-  }, [holidaySpecialData]);
+    return [
+      {
+        metric: "Total Shifts",
+        value: stats.totalSpecialShifts,
+      },
+      {
+        metric: "Unique Staff",
+        value: stats.uniqueStaffAssigned,
+      },
+      {
+        metric: "Avg Shifts per Staff",
+        value: stats.uniqueStaffAssigned > 0 ? (stats.totalSpecialShifts / stats.uniqueStaffAssigned).toFixed(1) : 0,
+      },
+    ];
+  }, [holidaySpecialData.aggregated_stats, stats]);
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* Enhanced Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {[
           {
             title: "Report Month",
@@ -89,27 +122,33 @@ export const HolidaySpecialShiftReport = ({
           },
           {
             title: "Total Shifts",
-            value: stats.totalHolidayShifts,
+            value: stats.totalSpecialShifts.toLocaleString(),
             description: "Holiday/special shifts",
             color: "text-blue-600",
           },
           {
             title: "Special Assignments",
-            value: stats.specialAssignments,
+            value: stats.specialAssignments.toLocaleString(),
             description: "Special duty shifts",
             color: "text-purple-600",
           },
           {
-            title: "Holiday Assignments",
-            value: stats.holidayAssignments,
+            title: "Holiday Shifts",
+            value: stats.holidayShifts.toLocaleString(),
             description: "Holiday shifts",
             color: "text-orange-600",
           },
           {
             title: "Unique Staff",
-            value: stats.uniqueStaff,
+            value: stats.uniqueStaffAssigned.toLocaleString(),
             description: "Staff assigned",
             color: "text-green-600",
+          },
+          {
+            title: "Total Hours",
+            value: `${stats.totalHolidayHours.toLocaleString()}h`,
+            description: "Holiday hours worked",
+            color: "text-red-600",
           },
         ].map((stat, index) => (
           <Card
@@ -131,6 +170,98 @@ export const HolidaySpecialShiftReport = ({
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Shift Type Distribution */}
+        <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-bold text-plum-900">
+              Shift Type Distribution
+            </CardTitle>
+            <CardDescription>
+              Breakdown of holiday and special assignment shifts
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center items-center h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={shiftTypeChartData}
+                  dataKey="count"
+                  nameKey="type"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  paddingAngle={2}
+                  stroke="none"
+                >
+                  {shiftTypeChartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={typeColors[index % typeColors.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name) => [
+                    `${value.toLocaleString()} shifts (${
+                      shiftTypeChartData.find((d) => d.type === name)?.percentage
+                    }%)`,
+                    name,
+                  ]}
+                  contentStyle={{ fontSize: "12px" }}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  wrapperStyle={{ fontSize: "12px", paddingTop: "20px" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Staff Assignment Analysis */}
+        <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-bold text-plum-900">
+              Staff Assignment Overview
+            </CardTitle>
+            <CardDescription>
+              Analysis of staff allocation for special shifts
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={staffAssignmentData}
+                margin={{ top: 20, right: 20, left: 0, bottom: 60 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="metric"
+                  tick={{ fontSize: 11 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{ fontSize: "12px" }}
+                  formatter={(value, name) => [value, "Value"]}
+                />
+                <Bar
+                  dataKey="value"
+                  fill="#8B5CF6"
+                  name="Count"
+                  barSize={60}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Holiday Special Shift Table */}
