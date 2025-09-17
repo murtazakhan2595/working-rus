@@ -3,24 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "compo
 import { AddUpdateManpower } from "app/modules/TalentSphere";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
 import { Header } from "components";
-import { getJobRotationRequests, getRotationStats } from "app/hooks/transferAndRotation";
+import { getManpowerPlanningList } from "app/hooks/talentSphere";
 import Stats from "components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
-import { JobRotationColumns } from "app/modules/TransferAndRotation/Sections";
+import { ManpowerPlanningColumns } from "app/modules/TalentSphere/Sections";
 
 export default function ManpowerPlanning() {
-  const userRole = useSelector((state) => state.user.userProfile.role);
   const userId = useSelector((state) => state.user.userProfile.id);
-  const [MyTransferData, setMyTransferData] = useState({
+  const [ManpowerPlanningList, setManpowerPlanningList] = useState({
     results: [],
     count: 0,
   });
-  const [OpenRotationForm, setOpenRotationForm] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [OpenManpowerForm, setOpenManpowerForm] = useState(false);
-  const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({ employee_id: userId });
   const [statsData, setStatsData] = useState({});
@@ -38,37 +35,15 @@ export default function ManpowerPlanning() {
     },
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchStatData = async () => {
-      try {
-        const filter = { employee_id: userId };
-        const response = await getRotationStats({
-          filterData: filter,
-        });
-
-        if (response) {
-          setStatsData(response);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    if (userId) fetchStatData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [userId]);
-
   const fetchData = async (isMounted) => {
     try {
-      const data = await getJobRotationRequests({
+      const data = await getManpowerPlanningList({
         options,
         filterData,
         ordering,
       });
       if (isMounted) {
-        setMyTransferData(data);
+        setManpowerPlanningList(data);
       }
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -122,10 +97,10 @@ export default function ManpowerPlanning() {
         </CardHeader>
         <CardContent>
           <TableCustom
-            data={MyTransferData.results}
-            columns={JobRotationColumns(fetchData)}
+            data={ManpowerPlanningList.results}
+            columns={ManpowerPlanningColumns(fetchData)}
             pagination={true}
-            dataTotalSize={MyTransferData.count || 0}
+            dataTotalSize={ManpowerPlanningList.count || 0}
             tableOptions={tableOptions}
           />
         </CardContent>

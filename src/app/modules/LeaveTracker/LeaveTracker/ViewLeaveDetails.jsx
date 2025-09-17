@@ -5,7 +5,7 @@ import {
   StatusList,
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
-import { StatusLabel, SheetUI, EmployeeDetailUI } from "components";
+import { StatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import { getLeaveData } from "app/hooks/leaveTracker";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -19,7 +19,7 @@ const ViewLeaveDetails = ({
   isOpen,
   setIsOpen,
   currentId,
-  reloadData = () => {},
+  reloadData = () => { },
   DataList = [],
 }) => {
   const managePermitted = HasAccess("MANAGE_LEAVE_REQUEST");
@@ -156,28 +156,21 @@ const ViewLeaveDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        if (!managePermitted) return null;
-        if (!data || !data.status || data.status?.toLowerCase() !== "pending")
-          return null;
-        if (!data.current_approver) return null;
-        if (data.current_approver.includes(user_id) || user_role.includes(1))
-          return (
-            <div className="flex flex-wrap justify-end gap-2 my-5">
-              <Button
-                variant="success"
-                onClick={(event) => handleClick(event, "Approved", data)}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={(event) => handleClick(event, "Rejected", data)}
-              >
-                Reject
-              </Button>
-            </div>
-          );
-        return null;
+        return (
+          <StatusButtons
+            permissionKey={'MANAGE_LEAVE_REQUEST'}
+            status={data?.status}
+            current_approver={data.current_approver}
+            final_approver={data.final_approvers}
+            request_id={data.request_id}
+            setResponse={(response, status) => {
+              if (response) {
+                toast.success(`Request ${status} Successfully!`);
+                setForceLoad(!forceLoad);
+              }
+            }}
+          />
+        );
       },
     },
   ];
