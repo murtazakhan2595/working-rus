@@ -21,6 +21,8 @@ import {
   CartesianGrid,
   LineChart,
   Line,
+  RadialBarChart,
+  RadialBar,
 } from "recharts";
 import { getYearlyAttendanceData } from "app/hooks/reports";
 import { YearlyAttendanceColumns } from "../TableColumns/AttendanceShiftTableColumns";
@@ -41,13 +43,6 @@ const YearlyAttendanceReport = ({
 
   // Chart colors
   const performanceColors = ["#10B981", "#F59E0B", "#EF4444"];
-  const departmentColors = [
-    "#3B82F6",
-    "#8B5CF6",
-    "#10B981",
-    "#F59E0B",
-    "#EF4444",
-  ];
 
   // Fetch yearly attendance data
   const fetchYearlyAttendanceData = async () => {
@@ -93,7 +88,7 @@ const YearlyAttendanceReport = ({
     },
   };
 
-  // Calculate stats from aggregated data
+  // Calculate stats from aggregated data only
   const stats = {
     totalEmployees:
       attendanceData.aggregated_stats?.total_employees ||
@@ -114,7 +109,7 @@ const YearlyAttendanceReport = ({
         ?.needs_improvement_below_85 || 0,
   };
 
-  // Performance distribution chart data
+  // Performance distribution chart data from aggregated stats
   const performanceChartData = React.useMemo(() => {
     if (!attendanceData.aggregated_stats?.by_attendance_range) return [];
 
@@ -148,77 +143,47 @@ const YearlyAttendanceReport = ({
     ].filter((item) => item.count > 0);
   }, [attendanceData.aggregated_stats, stats]);
 
-  // Department-wise attendance analysis (from current page data)
-  const departmentChartData = React.useMemo(() => {
-    if (!attendanceData.results?.length) return [];
+  // Yearly overview metrics
+  const yearlyOverviewData = React.useMemo(() => {
+    if (!attendanceData.aggregated_stats) return [];
 
-    const deptData = {};
+    return [
+      {
+        metric: "Working Days",
+        value: stats.totalWorkingDays,
+        color: "#3B82F6",
+      },
+      {
+        metric: "Present Days",
+        value: stats.totalPresentDays,
+        color: "#10B981",
+      },
+      {
+        metric: "Remote Days",
+        value: stats.totalRemoteDays,
+        color: "#8B5CF6",
+      },
+      {
+        metric: "Excellent Performers",
+        value: stats.excellentPerformers,
+        color: "#F59E0B",
+      },
+    ];
+  }, [attendanceData.aggregated_stats, stats]);
 
-    attendanceData.results.forEach((emp) => {
-      const dept = emp.Department || "Unknown";
-      const workingDays = parseInt(emp.WorkingDays) || 0;
-      const presentDays = parseInt(emp.PresentDays) || 0;
-      const attendanceRate =
-        workingDays > 0 ? Math.round((presentDays / workingDays) * 100) : 0;
-
-      if (!deptData[dept]) {
-        deptData[dept] = {
-          department: dept.length > 15 ? dept.substring(0, 15) + "..." : dept,
-          fullName: dept,
-          totalWorkingDays: 0,
-          totalPresentDays: 0,
-          employeeCount: 0,
-          avgAttendance: 0,
-        };
-      }
-
-      deptData[dept].totalWorkingDays += workingDays;
-      deptData[dept].totalPresentDays += presentDays;
-      deptData[dept].employeeCount += 1;
-    });
-
-    // Calculate average attendance for each department
-    return Object.values(deptData)
-      .map((dept) => ({
-        ...dept,
-        avgAttendance:
-          dept.totalWorkingDays > 0
-            ? Math.round((dept.totalPresentDays / dept.totalWorkingDays) * 100)
-            : 0,
-      }))
-      .sort((a, b) => b.avgAttendance - a.avgAttendance)
-      .slice(0, 8); // Top 8 departments
-  }, [attendanceData.results]);
-
-  // Year-over-year trend analysis using actual data
-  const trendChartData = React.useMemo(() => {
-    if (!attendanceData.results?.length) return [];
-
-    // Group by year and calculate average attendance for trend
-    const yearData = {};
-
-    attendanceData.results.forEach((emp) => {
-      const year = emp.Year || new Date().getFullYear();
-      const attendanceRate = parseFloat(
-        emp.AttendancePercentage?.replace("%", "") || 0
-      );
-
-      if (!yearData[year]) {
-        yearData[year] = { totalRate: 0, count: 0 };
-      }
-
-      yearData[year].totalRate += attendanceRate;
-      yearData[year].count += 1;
-    });
-
-    return Object.entries(yearData)
-      .map(([year, data]) => ({
-        year: year.toString(),
-        attendance:
-          data.count > 0 ? Math.round(data.totalRate / data.count) : 0,
-      }))
-      .sort((a, b) => a.year - b.year);
-  }, [attendanceData.results]);
+  // Overall attendance gauge data
+  const gaugeData = [
+    {
+      name: "Attendance",
+      value: stats.overallAttendancePercentage,
+      fill:
+        stats.overallAttendancePercentage >= 95
+          ? "#10B981"
+          : stats.overallAttendancePercentage >= 85
+          ? "#F59E0B"
+          : "#EF4444",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -334,91 +299,91 @@ const YearlyAttendanceReport = ({
           </CardContent>
         </Card>
 
-        {/* Department Performance */}
+        {/* Overall Attendance Gauge */}
         <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
           <CardHeader className="pb-4">
             <CardTitle className="text-xl font-bold text-plum-900">
-              Top Performing Departments
+              Overall Attendance Rate
             </CardTitle>
             <CardDescription>
-              Average attendance by department (current page)
+              Organization-wide annual attendance performance
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center items-center h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart
+                cx="50%"
+                cy="50%"
+                innerRadius="60%"
+                outerRadius="90%"
+                data={gaugeData}
+                startAngle={90}
+                endAngle={-270}
+              >
+                <RadialBar
+                  dataKey="value"
+                  cornerRadius={10}
+                  fill={gaugeData[0]?.fill}
+                />
+                <text
+                  x="50%"
+                  y="50%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="text-3xl font-bold fill-current"
+                  fill={gaugeData[0]?.fill}
+                >
+                  {stats.overallAttendancePercentage.toFixed(1)}%
+                </text>
+                <Tooltip
+                  formatter={(value) => [
+                    `${value.toFixed(1)}%`,
+                    "Attendance Rate",
+                  ]}
+                  contentStyle={{ fontSize: "12px" }}
+                />
+              </RadialBarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Yearly Overview Metrics */}
+        <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-bold text-plum-900">
+              Yearly Overview Metrics
+            </CardTitle>
+            <CardDescription>
+              Key annual attendance and performance indicators
             </CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={departmentChartData}
+                data={yearlyOverviewData}
                 margin={{ top: 20, right: 20, left: 0, bottom: 80 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis
-                  dataKey="department"
+                  dataKey="metric"
                   tick={{ fontSize: 10 }}
                   angle={-45}
                   textAnchor="end"
                   height={80}
                 />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  domain={[0, 100]}
-                  tickFormatter={(value) => `${value}%`}
-                />
+                <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
                   contentStyle={{ fontSize: "12px" }}
-                  formatter={(value) => [`${value}%`, "Attendance Rate"]}
-                  labelFormatter={(label) =>
-                    departmentChartData.find((d) => d.department === label)
-                      ?.fullName || label
-                  }
+                  formatter={(value) => [value.toLocaleString(), "Count"]}
                 />
                 <Bar
-                  dataKey="avgAttendance"
-                  fill="#3B82F6"
-                  name="Attendance %"
+                  dataKey="value"
+                  name="Value"
                   barSize={30}
                   radius={[4, 4, 0, 0]}
+                  fill={(entry) => entry.color || "#3B82F6"}
                 />
               </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Year-over-Year Trend */}
-        <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-bold text-plum-900">
-              Year-over-Year Attendance Trend
-            </CardTitle>
-            <CardDescription>
-              Average attendance percentage by year
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={trendChartData}
-                margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="year" tick={{ fontSize: 12 }} />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  domain={[0, 100]}
-                  tickFormatter={(value) => `${value}%`}
-                />
-                <Tooltip
-                  contentStyle={{ fontSize: "12px" }}
-                  formatter={(value) => [`${value}%`, "Attendance"]}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="attendance"
-                  stroke="#10B981"
-                  strokeWidth={3}
-                  dot={{ fill: "#10B981", strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: "#10B981", strokeWidth: 2 }}
-                />
-              </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
