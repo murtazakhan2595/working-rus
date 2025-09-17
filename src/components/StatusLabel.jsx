@@ -19,6 +19,7 @@ import statusPendingIcon from "assets/images/status-pending.svg";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { handleRequest } from "app/hooks/general";
+import { toast } from "react-toastify";
 
 const statusVariants = cva("", {
   variants: {
@@ -219,7 +220,7 @@ export const StatusButtons = ({
   permissionLogic = "OR", // "OR" or "AND" logic for multiple permissions
   status,
   current_approver,
-  final_approver=[],
+  final_approver = [],
   request_id,
   setResponse = () => { },
 
@@ -270,6 +271,7 @@ export const StatusButtons = ({
       try {
         const response = await handleRequest(request_id, status === "Approved");
         if (response) {
+          toast.success(`Request ${status} Successfully!`);
           setResponse(true, status);
         } else {
           setResponse(false, status);

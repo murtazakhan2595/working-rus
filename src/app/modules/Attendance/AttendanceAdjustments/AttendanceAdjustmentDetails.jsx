@@ -32,7 +32,7 @@ const AttendanceAdjustmentDetails = ({
   isOpen,
   setIsOpen,
   currentId,
-  reloadData = () => {},
+  reloadData = () => { },
   DataList = [],
 }) => {
   const managePermitted = HasAccess("MANAGE_ATTENDANCE_ADJ_REQUESTS");
@@ -177,7 +177,7 @@ const AttendanceAdjustmentDetails = ({
         if (!data || !data.status || data.status?.toLowerCase() !== "pending")
           return null;
         if (!data.current_approver) return null;
-        if (data.current_approver.includes(user_id) || user_role.includes(1))
+        if (data.current_approver.includes(user_id) || user_role.includes(1) || data.final_approvers.includes(user_id))
           return (
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button

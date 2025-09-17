@@ -32,6 +32,9 @@ export const validatePerformanceFormSchema = (values) => {
         }
     });
 
+    if (errors.sections && errors.sections.length === 0)
+        delete errors.sections;
+
     return errors;
 };
 
