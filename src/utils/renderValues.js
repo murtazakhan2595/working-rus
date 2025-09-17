@@ -122,12 +122,7 @@ export function numberToWords(number) {
 
 export function renderDate(date, fallbackValue = "N/A", variant = "date", joiningText = ' to ') {
   if (!date) return fallbackValue;
-
-  // Handle multiple comma-separated dates
-  const dateList = date.split(",").map(d => d.trim()).filter(Boolean);
-
-  if (dateList.length === 0) return fallbackValue;
-
+  console.log(date, 'cbjhdsvjhbsdhvsj')
   const format =
     variant === "month-day"
       ? "MMM D"
@@ -138,12 +133,18 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date", joinin
           : variant === "time"
             ? "hh:mm A"
             : "MMM DD, YYYY";
+  if (typeof date === 'string') {  // Handle multiple comma-separated dates
+    const dateList = date.split(",").map(d => d.trim()).filter(Boolean);
 
-  const formattedDates = dateList
-    .map(d => (moment(d).isValid() ? moment(d).format(format) : fallbackValue))
-    .filter(val => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
+    if (dateList.length === 0) return fallbackValue;
+    const formattedDates = dateList
+      .map(d => (moment(d).isValid() ? moment(d).format(format) : fallbackValue))
+      .filter(val => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
 
-  return formattedDates.join(joiningText);
+    return formattedDates.join(joiningText);
+  } else if (moment(date).isValid()) {
+    return moment(date).format(format);
+  } else return fallbackValue;
 }
 
 

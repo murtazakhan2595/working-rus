@@ -219,6 +219,7 @@ export const StatusButtons = ({
   permissionLogic = "OR", // "OR" or "AND" logic for multiple permissions
   status,
   current_approver,
+  final_approver=[],
   request_id,
   setResponse = () => { },
 
@@ -263,7 +264,7 @@ export const StatusButtons = ({
   if (!status || status?.toLowerCase() !== "pending") return null;
   if (!current_approver && !user_role.includes(1)) return null;
 
-  if (current_approver.includes(user_id) || user_role.includes(1)) {
+  if (current_approver.includes(user_id) || user_role.includes(1) || final_approver.includes(user_id)) {
     // 🚀 UPDATED: Default API-based approval flow
     const handleDefaultSubmit = async (status) => {
       try {
