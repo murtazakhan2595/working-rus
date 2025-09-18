@@ -40,6 +40,7 @@ const FilterInput = ({
   const Designations = GetDispatchStateList("designations", "common") || [];
   // const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
   const Branches = GetDispatchStateList("branches", "common") || []
+  const Employees = GetDispatchStateList("employees", "emp") || []
   const classNamesStyle = "";
   const DefaultWidth = "w-56";
   const DefaultHeight = "h-[38px]";
@@ -179,7 +180,8 @@ const FilterInput = ({
                         options.toLowerCase() === 'branches' ? Branches || [] :
                           options.toLowerCase() === 'designations' ? Designations || [] :
                             options.toLowerCase() === 'nationalities' ? countriesList || [] :
-                              [] : [];
+                              options.toLowerCase() === 'employees' ? Employees || [] :
+                                [] : [];
               return (
                 <RenderSelectInputField
                   className={FilterClassName}
@@ -400,7 +402,7 @@ const RenderDateRangeFilterField = React.memo(
       return () => {
         isMounted = false;
       };
-    }, [resetField]);
+    }, [resetField, handleInputChange, name]);
     return (
       <div className={`${className} ${height} w-fit relative`}>
         <DateRangeFilter

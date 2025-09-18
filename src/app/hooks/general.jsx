@@ -790,7 +790,7 @@ export const getCurrentRequestApprover = async (request_id) => {
   return {};
 };
 
-export const handleRequest = async (request_id, approve) => {
+export const handleRequest = async (request_id, approve, data) => {
   try {
     const url = `${baseUrl}/requests/${request_id}/${approve ? "approve" : "reject"
       }/`;
@@ -801,6 +801,7 @@ export const handleRequest = async (request_id, approve) => {
       method,
       url,
       headers: headers(),
+      data: data,
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;

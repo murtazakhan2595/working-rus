@@ -302,6 +302,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 name: 'rotation_expiry_date',
                                 required: formValues?.rotation_type === 'temporary',
                                 renderCondition: formValues?.rotation_type === 'temporary',
+                                minDate: formValues?.effective_date || new Date(),
                             },
                             {
                                 InputField: NumberInput,

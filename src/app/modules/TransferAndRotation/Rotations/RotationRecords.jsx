@@ -148,7 +148,7 @@ const RotationRecords = ({ reload }) => {
           {
             type: "select",
             options: 'Designations',
-            name: "department_position",
+            name: "designation",
             placeholder: "Designation",
           },
         ]}
