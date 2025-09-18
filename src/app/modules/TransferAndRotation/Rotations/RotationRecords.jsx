@@ -18,11 +18,16 @@ import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
 import { JobRotationRecordsColumns } from "../Sections/TableColumns";
 
-const RotationRecords = ({ reload, permittedViewFilterData }) => {
+const RotationRecords = ({ reload }) => {
+  const {
+    id: user_id,
+    branch_id: user_branch,
+    department_name: user_department,
+  } = GetDispatchStateList("user_details", "emp") || {}
   const isAdminView = HasAccess("VIEW_JOB_ROTATION");
   const isBranchView = HasAccess("VIEW_BRN_JOB_ROTATION");
-  const isDptView = HasAccess("VIEW_DPT_JOB_ROTATION");
-
+  const isDepartmentView = HasAccess("VIEW_DPT_JOB_ROTATION");
+  const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [JobRotationList, setJobRotationList] = useState(null);
   const [filterData, setFilterData] = useState({ request_status: "PENDING" });
@@ -49,20 +54,31 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
     },
   };
 
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setPermittedViewFilterData(() => {
+        if (isAdminView) return {};
+        else if (isBranchView) return { branch: user_branch };
+        else if (isDepartmentView) return { department: user_department };
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdminView, isBranchView, isDepartmentView, user_branch, user_department, user_id]);
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
       const filter = {
         ...filterData,
         ...permittedViewFilterData,
-        request_status: "PENDING",
       };
       const response = await getJobRotationRecords({
         filterData: filter,
         options,
         ordering,
       });
-      console.log(response);
       setJobRotationList(response);
     } catch (e) {
       console.error(e);
@@ -106,7 +122,7 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
         filters={[
           {
             type: "search",
-            name: "employee",
+            name: "employee_id_or_name",
             placeholder: "Employee ID/Name",
           },
           ...(isAdminView || isBranchView
@@ -114,17 +130,17 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
               {
                 type: "select",
                 options: "Departments",
-                name: "department",
+                name: "department_name",
                 placeholder: "Department",
               },
             ]
             : []),
-          ...(isAdminView || !isDptView
+          ...(isAdminView || !isDepartmentView
             ? [
               {
                 type: "select",
                 options: 'Branches',
-                name: "branch",
+                name: "branch_id",
                 placeholder: "Branch",
               },
             ]
@@ -132,7 +148,7 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
           {
             type: "select",
             options: 'Designations',
-            name: "branch",
+            name: "department_position",
             placeholder: "Designation",
           },
         ]}
@@ -143,10 +159,10 @@ const RotationRecords = ({ reload, permittedViewFilterData }) => {
         <PageLoader />
       ) : (
         <TableCustom
-          data={JobRotationList}
+          data={JobRotationList.results}
           columns={JobRotationRecordsColumns}
           pagination={true}
-          dataTotalSize={JobRotationList.length || 0}
+          dataTotalSize={JobRotationList.count || 0}
           tableOptions={tableOptions}
         />
       )}

@@ -168,6 +168,12 @@ export const JobRotationRecordsColumns = [
         minWidth: "120px",
     },
     {
+        dataField: "branch_id",
+        text: "Branch",
+        formatter: (cell) => <BranchName value={cell} />,
+        minWidth: "120px",
+    },
+    {
         dataField: "number_of_rotations",
         text: "No of Rotation",
     },

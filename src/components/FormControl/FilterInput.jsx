@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import { Button } from "components/ui/button";
@@ -8,7 +8,7 @@ import {
   PopoverContent,
 } from "src/@/components/ui/popover";
 import TextInput from "components/FormControl/TextInput";
-import { ChevronsUpDown, Check, SearchIcon } from "lucide-react";
+import { ChevronsUpDown, Check, SearchIcon, RefreshCcw } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -23,7 +23,12 @@ import DateRangeInput from "./DateRangeInput";
 import DateRangeFilter from "./DateRangeFilter";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 
 const FilterInput = ({
   filters,
@@ -42,6 +47,7 @@ const FilterInput = ({
   const [openFilterFour, setOpenFilterFour] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
+  const [resetFields, setResetFields] = useState(false);
 
   const handleInputChange = (field, value) => {
     onChange(field, value);
@@ -161,6 +167,7 @@ const FilterInput = ({
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
                   value={filterValues[name] || null}
+                  resetField={resetFields}
                 />
               );
             case "select":
@@ -183,6 +190,7 @@ const FilterInput = ({
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
                   value={filterValues[name] || null}
+                  resetField={resetFields}
                 />
               );
             case "select-one":
@@ -218,6 +226,7 @@ const FilterInput = ({
                   name={name}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
+                  resetField={resetFields}
                   value={filterValues[name] || null}
                   handleInputChange={handleInputChange}
                 />
@@ -229,6 +238,7 @@ const FilterInput = ({
                   name={name}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
+                  resetField={resetFields}
                   value={filterValues[name] || null}
                   handleInputChange={handleInputChange}
                 />
@@ -237,6 +247,7 @@ const FilterInput = ({
               return <div key={index}></div>;
           }
         })}
+      <RenderResetFilter handleInputChange={handleInputChange} filtersList={filters} resetAllFields={() => { setResetFields(!resetFields) }} />
     </div>
   );
 };
@@ -250,9 +261,18 @@ const RenderInputField = React.memo(
     height = "",
     handleInputChange = () => { },
     value,
+    resetField,
   }) => {
     const [inputValue, setInputValue] = useState(value);
-
+    useEffect(() => {
+      let isMounted = true;
+      if (isMounted) {
+        setInputValue(null);
+      }
+      return () => {
+        isMounted = false;
+      };
+    }, [resetField]);
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <TextInput
@@ -283,13 +303,24 @@ const RenderSelectInputField = React.memo(
     height = "",
     handleInputChange = () => { },
     options = [],
-    value, }) => {
+    resetField,
+    value,
+  }) => {
     const [inputValue, setInputValue] = useState(value);
     // Add "All" option to the options array if it exists
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
+    useEffect(() => {
+      let isMounted = true;
+      if (isMounted) {
+        setInputValue(null);
+      }
+      return () => {
+        isMounted = false;
+      };
+    }, [resetField]);
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <SelectInputComponent
@@ -299,7 +330,7 @@ const RenderSelectInputField = React.memo(
           name={name}
           value={inputValue || ""}
           onChange={(field, value) => {
-            setInputValue(value);
+            setInputValue(value ? (value === "All" ? "" : value) : "");
             handleInputChange(
               field,
               value ? (value === "All" ? "" : value) : ""
@@ -319,10 +350,20 @@ const RenderDateRangeInputField = React.memo(
     name,
     placeholder,
     height = "",
+    resetField,
     handleInputChange = () => { },
-    value }) => {
+    value
+  }) => {
     const [inputValue, setInputValue] = useState(value);
-
+    useEffect(() => {
+      let isMounted = true;
+      if (isMounted) {
+        setInputValue(null);
+      }
+      return () => {
+        isMounted = false;
+      };
+    }, [resetField]);
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <DateRangeInput
@@ -332,10 +373,7 @@ const RenderDateRangeInputField = React.memo(
           value={inputValue || ""}
           onChange={(field, value) => {
             setInputValue(value);
-            handleInputChange(
-              field,
-              value
-            );
+            handleInputChange(field, value);
           }}
         />
       </div>
@@ -348,10 +386,21 @@ const RenderDateRangeFilterField = React.memo(
     className = "",
     name,
     height = "",
+    resetField,
     handleInputChange = () => { },
   }) => {
     const [activeTab, setActiveTab] = useState("Day");
-
+    useEffect(() => {
+      let isMounted = true;
+      if (isMounted) {
+        setActiveTab("Day");
+        const formattedDatee = moment().format("YYYY-MM-DD");
+        handleInputChange(name, `${formattedDatee},${formattedDatee}`);
+      }
+      return () => {
+        isMounted = false;
+      };
+    }, [resetField]);
     return (
       <div className={`${className} ${height} w-fit relative`}>
         <DateRangeFilter
@@ -378,6 +427,44 @@ const RenderDateRangeFilterField = React.memo(
           }}
         />
       </div>
+    );
+  }
+);
+
+const RenderResetFilter = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    filtersList = [],
+    height = "",
+    handleInputChange = () => { },
+    resetAllFields = () => { },
+  }) => {
+    console.log(filtersList)
+    const resetFilters = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      for (const filter of filtersList) {
+        handleInputChange(filter.name, "");
+      }
+      resetAllFields();
+    };
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='outline' size='sm' onClick={resetFilters}><RefreshCcw size={16} /> </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Reset the filters</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+      </div >
     );
   }
 );
