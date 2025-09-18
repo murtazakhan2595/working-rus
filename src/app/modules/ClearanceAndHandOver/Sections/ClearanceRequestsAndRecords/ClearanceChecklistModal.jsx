@@ -38,6 +38,8 @@ const PROGRESS_CALCULATION = {
     COMPLETED: 100,
     REJECTED: 0,
     ONHOLD: 0,
+    APPROVED: 100,
+    NOT_APPLICABLE: 100,
   },
 };
 
