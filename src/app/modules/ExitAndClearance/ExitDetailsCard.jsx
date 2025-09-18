@@ -319,6 +319,7 @@ const ExitDetailsCard = ({
               status={data?.status || null}
               current_approver={data?.current_approver || null}
               request_id={data.request}
+            final_approver={data.final_approvers}
               setResponse={(reponse, status) => {
                 if (reponse) {
                   toast.success(`Request ${status} Successfully!`);
