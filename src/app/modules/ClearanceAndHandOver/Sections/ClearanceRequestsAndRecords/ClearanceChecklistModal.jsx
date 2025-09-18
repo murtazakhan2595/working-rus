@@ -81,8 +81,9 @@ const ReassignmentSection = React.memo(
 
     // Validate reassignment form
     const isFormValid = useMemo(() => {
+      console.log("Validating form for itemId:", itemId, reassignApprovers[itemId], reassignApprovers);
       return (
-        reassignApprovers[itemId] && reassignApprovers[itemId].trim() !== ""
+        reassignApprovers[itemId]
       );
     }, [reassignApprovers, itemId]);
 
