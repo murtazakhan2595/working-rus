@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
@@ -16,10 +17,13 @@ import {
 import { FilterInput } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { HasAccess } from "utils/PermissionUtils";
-import { exportAttendanceShiftReport } from "app/hooks/reports";
+import {
+  exportAttendanceShiftReport,
+  exportTimeAdjustmentReport,
+} from "app/hooks/reports";
 import { toast } from "react-toastify";
 
-// Import individual report components
+// Import all existing report components
 import DailyAttendanceReport from "./Sections/DailyAttendanceReport";
 import MonthlyAttendanceReport from "./Sections/MonthlyAttendanceReport";
 import YearlyAttendanceReport from "./Sections/YearlyAttendanceReport";
@@ -38,9 +42,16 @@ import { WeeklyShiftCalendarReport } from "./Sections/WeeklyShiftCalendarReport"
 import { HolidaySpecialShiftReport } from "./Sections/HolidaySpecialShiftReport";
 import { WeekendWorkReport } from "./Sections/WeekendWorkReport";
 
+// Import new Time Adjustment components
+import TimeAdjustmentRequestReport from "./Sections/TimeAdjustmentReports/TimeAdjustmentRequestReport";
+import TimeAdjustmentStatusReport from "./Sections/TimeAdjustmentReports/TimeAdjustmentRequestReport";
+import ReasonAnalysisReport from "./Sections/TimeAdjustmentReports/ReasonAnalysisReport";
+import ManagerApprovalReport from "./Sections/TimeAdjustmentReports/ManagerApprovalReport";
+import RepeatAdjustmentReport from "./Sections/TimeAdjustmentReports/RepeatAdjustmentReport";
+
 const AttendanceAndShiftReports = () => {
   // Permission checks
-  const isAdminView = HasAccess("VIEW_ATTENDANCE_REPORTS") || true; // Default to true for now
+  const isAdminView = HasAccess("VIEW_ATTENDANCE_REPORTS") || true;
   const isBranchView = HasAccess("VIEW_BRN_ATTENDANCE_REPORTS") || true;
   const isDepartmentView = HasAccess("VIEW_DPT_ATTENDANCE_REPORTS") || true;
 
@@ -56,7 +67,7 @@ const AttendanceAndShiftReports = () => {
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Tab configuration
+  // Complete tab configuration with Time Adjustment Reports
   const reportTabs = [
     {
       value: "daily_reports",
@@ -171,6 +182,39 @@ const AttendanceAndShiftReports = () => {
         },
       ],
     },
+    // NEW: Time Adjustment Reports
+    {
+      value: "time_adjustment",
+      label: "Time Adjustments",
+      description: "Manual corrections, system errors, and employee requests",
+      reports: [
+        {
+          value: "time_adjustment_request_report",
+          label: "Adjustment Requests",
+          component: TimeAdjustmentRequestReport,
+        },
+        {
+          value: "adjustment_status_report",
+          label: "Status Overview",
+          component: TimeAdjustmentStatusReport,
+        },
+        {
+          value: "reason_analysis_report",
+          label: "Reason Analysis",
+          component: ReasonAnalysisReport,
+        },
+        {
+          value: "manager_approval_report",
+          label: "Manager Approvals",
+          component: ManagerApprovalReport,
+        },
+        {
+          value: "repeat_adjustment_report",
+          label: "Repeat Requests",
+          component: RepeatAdjustmentReport,
+        },
+      ],
+    },
   ];
 
   // State for nested tab navigation
@@ -226,10 +270,29 @@ const AttendanceAndShiftReports = () => {
     setIsExporting(true);
     try {
       const combinedFilters = { ...filterData, ...permittedViewFilterData };
-      const success = await exportAttendanceShiftReport(
-        activeReport,
-        combinedFilters
-      );
+
+      // Handle time adjustment reports differently
+      const timeAdjustmentReports = [
+        "time_adjustment_request_report",
+        "adjustment_status_report",
+        "reason_analysis_report",
+        "manager_approval_report",
+        "repeat_adjustment_report",
+      ];
+
+      let success = false;
+
+      if (timeAdjustmentReports.includes(activeReport)) {
+        success = await exportTimeAdjustmentReport(
+          activeReport,
+          combinedFilters
+        );
+      } else {
+        success = await exportAttendanceShiftReport(
+          activeReport,
+          combinedFilters
+        );
+      }
 
       if (success) {
         toast.success("Report exported successfully!", {
@@ -364,7 +427,7 @@ const AttendanceAndShiftReports = () => {
         {/* Main Tab Navigation */}
         <Card>
           <CardContent className="pt-6">
-            <TabsList className="grid w-full grid-cols-4 mb-4">
+            <TabsList className="grid w-full grid-cols-5 mb-4">
               {reportTabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}

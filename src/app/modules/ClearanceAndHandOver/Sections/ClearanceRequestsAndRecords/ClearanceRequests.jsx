@@ -34,8 +34,12 @@ export default function ClearanceRequests({
     const fetchClearanceTypes = async () => {
       try {
         const response = await getClearanceTypeList();
+        console.log("Clearance types response:", response);
         if (isMounted && response?.results) {
-          setClearanceTypes(response.results);
+          setClearanceTypes(response.results?.map((type) => ({
+            label: type.name,
+            value: type.id,
+          })) || []);
         }
       } catch (error) {
         console.error("Error fetching clearance types:", error);

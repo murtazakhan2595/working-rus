@@ -62,7 +62,7 @@ export default function ClearanceAndHandover() {
           ...payload,
           filterData: {
             ...payload.filterData,
-            status: ["PENDING", "IN_PROCESS", "COMPLETED", "REJECTED", "ONHOLD"],
+            status: ["PENDING", "IN_PROCESS", "REJECTED", "ONHOLD"],
           },
         };
         const response = await getClearanceRequestsList(requestsPayload);
