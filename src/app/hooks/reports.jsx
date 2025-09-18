@@ -3425,3 +3425,1211 @@ export const exportTimeAdjustmentReport = async (
     return false;
   }
 };
+
+// ============================================================================
+// 4️⃣ ATTENDANCE UPDATES & AUDIT REPORTS API FUNCTIONS
+// Add these to your src/app/hooks/reports.jsx file
+// ============================================================================
+
+// Get updated attendance report data
+export const getUpdatedAttendanceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-employee_id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/updated-attendance-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching updated attendance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get HR/Admin correction report data
+export const getHRAdminCorrectionReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-employee_id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/hr-admin-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching HR admin correction data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get audit trail report data
+export const getAuditTrailReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-timestamp";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/audit-trail-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching audit trail data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get compliance breach report data
+export const getComplianceBreachReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-timestamp";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/compliance-breaches/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching compliance breach data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get attendance update history data
+export const getAttendanceUpdateHistoryData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-modified_on";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/attendance-update-history/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data || [],
+        count: response.data.length || 0,
+        aggregated_stats: null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching update history data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// ============================================================================
+// 5️⃣ EXCEPTION & SPECIAL CONDITION REPORTS API FUNCTIONS
+// ============================================================================
+
+// Get missing punch report data
+export const getMissingPunchReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/missing-punch-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching missing punch data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get multiple punch report data
+export const getMultiplePunchReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/multiple-punch-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching multiple punch data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get half day report data
+export const getHalfDayReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/half-day-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching half day data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get grace period usage report data
+export const getGracePeriodUsageReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-frequency_this_month";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/grace-period-usage/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching grace period usage data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get frequent breaks report data
+export const getFrequentBreaksReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-total_break_duration";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/frequent-breaks/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching frequent breaks data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get remote work report data
+export const getRemoteWorkReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/remote-work-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching remote work data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get business trip report data
+export const getBusinessTripReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-date";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/business-trip-report/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching business trip data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// ============================================================================
+// 6️⃣ DEPARTMENT & MANAGERIAL REPORTS API FUNCTIONS
+// ============================================================================
+
+// Get department attendance report data
+export const getDepartmentAttendanceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-attendance_percent";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/department-attendance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching department attendance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get team attendance report data
+export const getTeamAttendanceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-present";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/team-attendance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching team attendance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get manager attendance report data
+export const getManagerAttendanceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-present";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/manager-attendance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching manager attendance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get branch attendance report data
+export const getBranchAttendanceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-present";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/branch-attendance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching branch attendance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get comparative attendance report data
+export const getComparativeAttendanceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-avg_attendance";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/comparative-attendance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching comparative attendance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// ============================================================================
+// 7️⃣ ANALYTICS, TRENDS & COMPLIANCE REPORTS API FUNCTIONS
+// ============================================================================
+
+// Get attendance trend report data
+export const getAttendanceTrendReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-present";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/attendance-trends/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching attendance trend data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get shift utilization report data
+export const getShiftUtilizationReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-total_employees";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/shift-utilization/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching shift utilization data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get overtime trend report data
+export const getOvertimeTrendReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-total_ot_hours";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/overtime-trends/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching overtime trend data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get attrition risk report data
+export const getAttritionRiskReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-employee_id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/attrition-risk/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching attrition risk data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get labor law compliance report data
+export const getLaborLawComplianceReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-employee_id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/labor-law-compliance/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching labor law compliance data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get payroll integration report data
+export const getPayrollIntegrationReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-employee_id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/payroll-integration/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching payroll integration data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// Get alerts threshold report data
+export const getAlertsThresholdReportData = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-late_arrival";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+
+    const URL = `/alerts-thresholds/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return {
+        results: response.data.results || [],
+        count: response.data.count || 0,
+        aggregated_stats: response.data.aggregated_stats || null,
+      };
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  } catch (error) {
+    console.error("Error fetching alerts threshold data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0, aggregated_stats: null };
+  }
+};
+
+// ============================================================================
+// EXPORT FUNCTIONALITY FOR REMAINING REPORTS
+// ============================================================================
+
+export const exportRemainingReports = async (reportType, filterData = {}) => {
+  try {
+    let response, dataToExport, filename;
+
+    switch (reportType) {
+      // 4️⃣ Attendance Updates & Audit Reports
+      case "updated_attendance_report":
+        response = await getUpdatedAttendanceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Original In": item.original_in,
+          "Updated In": item.updated_in,
+          "Original Out": item.original_out,
+          "Updated Out": item.updated_out,
+          "Updated By": item.updated_by,
+          "Update Date": item.update_date,
+          "Reason/Remarks": item.reason_remarks,
+        }));
+        filename = "Updated_Attendance_Report";
+        break;
+
+      case "hr_admin_correction_report":
+        response = await getHRAdminCorrectionReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Field Changed": item.field_changed,
+          "Old Value": item.old_value,
+          "New Value": item.new_value,
+          "Changed By": item.changed_by,
+          "Reason/Remarks": item.reason_remarks,
+        }));
+        filename = "HR_Admin_Correction_Report";
+        break;
+
+      case "audit_trail_report":
+        response = await getAuditTrailReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Change ID": item.change_id,
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Action": item.action,
+          "Field Affected": item.field_affected,
+          "Old Value": item.old_value,
+          "New Value": item.new_value,
+          "Performed By": item.performed_by,
+          "Timestamp": item.timestamp,
+          "Reason": item.reason,
+        }));
+        filename = "Audit_Trail_Report";
+        break;
+
+      case "compliance_breach_report":
+        response = await getComplianceBreachReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Breach ID": item.breach_id,
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Breach Type": item.breach_type,
+          "Changed By": item.changed_by,
+          "Timestamp": item.timestamp,
+          "Status": item.status,
+        }));
+        filename = "Compliance_Breach_Report";
+        break;
+
+      case "attendance_update_history":
+        response = await getAttendanceUpdateHistoryData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Change ID": item.change_id,
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Version No": item.version_no,
+          "In Time": item.in_time,
+          "Out Time": item.out_time,
+          "Modified By": item.modified_by,
+          "Modified On": item.modified_on,
+          "Remarks": item.remarks,
+        }));
+        filename = "Attendance_Update_History";
+        break;
+
+      // 5️⃣ Exception & Special Condition Reports
+      case "missing_punch_report":
+        response = await getMissingPunchReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Missing Punch Type": item.missing_punch_type,
+          "Recorded Punches": JSON.stringify(item.recorded_punches),
+          "Status": item.status,
+        }));
+        filename = "Missing_Punch_Report";
+        break;
+
+      case "multiple_punch_report":
+        response = await getMultiplePunchReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "User No": item.user_no,
+          "Date": item.date,
+          "Total Punches": item.total_punches,
+        }));
+        filename = "Multiple_Punch_Report";
+        break;
+
+      case "half_day_report":
+        response = await getHalfDayReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Expected Hours": item.expected_hours,
+          "Actual Hours": item.actual_hours,
+          "Status": item.status,
+          "Reason": item.reason,
+        }));
+        filename = "Half_Day_Report";
+        break;
+
+      case "grace_period_usage_report":
+        response = await getGracePeriodUsageReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Shift Start": item.shift_start,
+          "In Time": item.in_time,
+          "Grace Period": item.grace_period,
+          "Used Grace": item.used_grace,
+          "Frequency This Month": item.frequency_this_month,
+        }));
+        filename = "Grace_Period_Usage_Report";
+        break;
+
+      case "frequent_breaks_report":
+        response = await getFrequentBreaksReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Date": item.date,
+          "Breaks Taken": item.breaks_taken,
+          "Total Break Duration": item.total_break_duration,
+        }));
+        filename = "Frequent_Breaks_Report";
+        break;
+
+      case "remote_work_report":
+        response = await getRemoteWorkReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Punch Type": item.punch_type,
+          "Location Logged": item.location_logged,
+          "Geo-Fence Compliance": item.geo_fence_compliance,
+          "Remarks": item.remarks,
+        }));
+        filename = "Remote_Work_Report";
+        break;
+
+      case "business_trip_report":
+        response = await getBusinessTripReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Date": item.date,
+          "Trip Location": item.trip_location,
+          "Duration": item.duration,
+          "Approved By": item.approved_by,
+          "Status": item.status,
+        }));
+        filename = "Business_Trip_Report";
+        break;
+
+      // 6️⃣ Department & Managerial Reports
+      case "department_attendance_report":
+        response = await getDepartmentAttendanceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Department": item.department,
+          "Total Employees": item.total_employees,
+          "Present": item.present,
+          "Absent": item.absent,
+          "On Leave": item.on_leave,
+          "Attendance Percent": item.attendance_percent,
+        }));
+        filename = "Department_Attendance_Report";
+        break;
+
+      case "team_attendance_report":
+        response = await getTeamAttendanceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Team Name": item.team_name,
+          "Total Members": item.total_members,
+          "Present": item.present,
+          "Absent": item.absent,
+          "Leave": item.leave,
+        }));
+        filename = "Team_Attendance_Report";
+        break;
+
+      case "manager_attendance_report":
+        response = await getManagerAttendanceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Manager Name": item.manager_name,
+          "Present": item.present,
+          "Absent": item.absent,
+          "Leave": item.leave,
+        }));
+        filename = "Manager_Attendance_Report";
+        break;
+
+      case "branch_attendance_report":
+        response = await getBranchAttendanceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Branch": item.branch,
+          "Total Employees": item.total_employees,
+          "Present": item.present,
+          "Absent": item.absent,
+          "On Leave": item.on_leave,
+        }));
+        filename = "Branch_Attendance_Report";
+        break;
+
+      case "comparative_attendance_report":
+        response = await getComparativeAttendanceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Unit": item.unit,
+          "Avg Attendance": item.avg_attendance,
+          "Highest Attendance Day": item.highest_attendance_day,
+          "Lowest Attendance Day": item.lowest_attendance_day,
+        }));
+        filename = "Comparative_Attendance_Report";
+        break;
+
+      // 7️⃣ Analytics, Trends & Compliance Reports
+      case "attendance_trend_report":
+        response = await getAttendanceTrendReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Department": item.department,
+          "Total Days": item.total_days,
+          "Present": item.present,
+          "Absent": item.absent,
+          "Late Arrivals": item.late_arrivals,
+        }));
+        filename = "Attendance_Trend_Report";
+        break;
+
+      case "shift_utilization_report":
+        response = await getShiftUtilizationReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Shift Name": item.shift_name,
+          "Total Employees": item.total_employees,
+        }));
+        filename = "Shift_Utilization_Report";
+        break;
+
+      case "overtime_trend_report":
+        response = await getOvertimeTrendReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Department": item.department,
+          "Total OT Hours": item.total_ot_hours,
+          "Avg OT per Employee": item.avg_ot_per_employee,
+          "Exceeding Limit": item.exceeding_limit,
+        }));
+        filename = "Overtime_Trend_Report";
+        break;
+
+      case "attrition_risk_report":
+        response = await getAttritionRiskReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Department": item.department,
+          "Absent Days": item.absent_days,
+          "Late Arrivals": item.late_arrivals,
+          "Risk Level": item.risk_level,
+          "Remarks": item.remarks,
+        }));
+        filename = "Attrition_Risk_Report";
+        break;
+
+      case "labor_law_compliance_report":
+        response = await getLaborLawComplianceReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Total Hours": item.total_hours,
+          "Overtime Hours": item.overtime_hours,
+          "Weekly Offs": item.weekly_offs,
+          "Non Compliance": item.non_compliance,
+        }));
+        filename = "Labor_Law_Compliance_Report";
+        break;
+
+      case "payroll_integration_report":
+        response = await getPayrollIntegrationReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Total Days": item.total_days,
+          "Present": item.present,
+          "Payable Days": item.payable_days,
+          "Leave Without Pay": item.leave_without_pay,
+          "Adjustments": item.adjustments,
+        }));
+        filename = "Payroll_Integration_Report";
+        break;
+
+      case "alerts_threshold_report":
+        response = await getAlertsThresholdReportData({ filterData });
+        dataToExport = response.results.map((item) => ({
+          "Employee ID": item.employee_id,
+          "Employee Name": item.employee_name,
+          "Department": item.department,
+          "Absenteeism": item.absenteeism,
+          "OT Limit": item.ot_limit,
+          "Late Arrival": item.late_arrival,
+        }));
+        filename = "Alerts_Threshold_Report";
+        break;
+
+      default:
+        throw new Error("Invalid report type for remaining reports");
+    }
+
+    if (dataToExport && dataToExport.length > 0) {
+      exportRecordToExcel(dataToExport, "Additional Attendance Reports", filename);
+      return true;
+    } else {
+      toast.error("No data available to export", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error exporting additional report:", error);
+    toast.error("Failed to export report", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
