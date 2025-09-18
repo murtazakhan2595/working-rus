@@ -38,6 +38,8 @@ const PROGRESS_CALCULATION = {
     COMPLETED: 100,
     REJECTED: 0,
     ONHOLD: 0,
+    APPROVED: 100,
+    NOT_APPLICABLE: 100,
   },
 };
 
@@ -79,8 +81,9 @@ const ReassignmentSection = React.memo(
 
     // Validate reassignment form
     const isFormValid = useMemo(() => {
+      console.log("Validating form for itemId:", itemId, reassignApprovers[itemId], reassignApprovers);
       return (
-        reassignApprovers[itemId] && reassignApprovers[itemId].trim() !== ""
+        reassignApprovers[itemId]
       );
     }, [reassignApprovers, itemId]);
 
