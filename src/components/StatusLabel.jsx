@@ -1,5 +1,5 @@
 // Header.js
-import React from "react";
+import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -11,17 +11,17 @@ import { useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
 import { Badge } from "components/ui/badge";
-import { Check, CircleCheck, CircleDot, X } from "lucide-react";
+import { Check, CircleCheck, CircleDot, X, CircleSlash } from "lucide-react";
 import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
-import { EmployeeName } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
-import { DesignationName } from "utils/getValuesFromTables";
-import { EmployeeInfo } from "utils/getValuesFromTables";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { handleRequest } from "app/hooks/general";
+import { toast } from "react-toastify";
+import { TextAreaInput } from 'components/FormControl'
+import { SheetUI } from 'components'
 
 const statusVariants = cva("", {
   variants: {
@@ -53,19 +53,20 @@ export const getStatusVariant = (Status) => {
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
-  else if (status.includes("yes")) return "success";
   else if (status.includes("present")) return "success";
+  else if (status.includes("acknowledge")) return "success";
+  else if (status.includes("signed")) return "success";
   else if (status.includes("viewed")) return "warning";
   else if (status.includes("late")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
-  else if (status.includes("no")) return "error";
   else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("rejected")) return "error";
-  else if (status.includes("acknowledge")) return "success";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info";
+  else if (status.includes("no")) return "error";
+  else if (status.includes("yes")) return "success";
   else return "default";
 };
 
@@ -163,7 +164,7 @@ const MultiStatusLabel = React.forwardRef(
                   status={status}
                   className={cn("font-normal", className)}
                 >
-                  {status ? status?.toLowerCase() : ""}
+                  {status ? typeof status === 'string' ? status?.toLowerCase() : status : ""}
                 </StatusLabel>
               );
             })}
@@ -221,8 +222,9 @@ export const StatusButtons = ({
   permissionLogic = "OR", // "OR" or "AND" logic for multiple permissions
   status,
   current_approver,
+  final_approver = [],
   request_id,
-  setResponse = () => {},
+  setResponse = () => { },
 
   // 🚀 NEW: Custom approval flow props
   onApprove = null, // Custom approve handler - if provided, skips default API call
@@ -231,10 +233,14 @@ export const StatusButtons = ({
   rejectText = "Reject", // Customizable button text
   showApprove = true, // Allow hiding approve button
   showReject = true, // Allow hiding reject button
+  ApprovalConfig = null,//If comments are required and on approval from approver
+  RejectionConfig = null,//If comments are required and on rejection from approver
 }) => {
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
+  const [openCommentModal, setOpenCommentModal] = useState(false);
+  const [FormSheetData, setFormSheetData] = useState({});
 
   // Handle multiple permission keys
   const checkPermissions = () => {
@@ -265,12 +271,13 @@ export const StatusButtons = ({
   if (!status || status?.toLowerCase() !== "pending") return null;
   if (!current_approver && !user_role.includes(1)) return null;
 
-  if (current_approver.includes(user_id) || user_role.includes(1)) {
+  if ((current_approver || []).includes(user_id) || user_role.includes(1) || (final_approver || []).includes(user_id)) {
     // 🚀 UPDATED: Default API-based approval flow
-    const handleDefaultSubmit = async (status) => {
+    const handleDefaultSubmit = async (status, data = {}) => {
       try {
-        const response = await handleRequest(request_id, status === "Approved");
+        const response = await handleRequest(request_id, status === "Approved", data);
         if (response) {
+          toast.success(`Request ${status} Successfully!`);
           setResponse(true, status);
         } else {
           setResponse(false, status);
@@ -285,8 +292,20 @@ export const StatusButtons = ({
     const handleApproveClick = (event) => {
       event.preventDefault();
       event.stopPropagation();
+      if (ApprovalConfig) {
+        setOpenCommentModal(true);
+        setFormSheetData({
+          triggerText: "Submit & Approve",
+          title: ApprovalConfig?.label,
+          description: null,
+          footer: null,
+          className: "max-w-[478px] w-full h-[450px]",
+          status: 'Approved',
+          required: ApprovalConfig.required,
+        });
+      }
 
-      if (onApprove) {
+      else if (onApprove) {
         // Use custom approve handler
         onApprove();
       } else {
@@ -298,8 +317,18 @@ export const StatusButtons = ({
     const handleRejectClick = (event) => {
       event.preventDefault();
       event.stopPropagation();
-
-      if (onReject) {
+      if (RejectionConfig) {
+        setOpenCommentModal(true);
+        setFormSheetData({
+          triggerText: "Submit & Reject",
+          title: RejectionConfig?.label,
+          description: null,
+          footer: null,
+          className: "max-w-[478px] w-full h-[450px]",
+          status: 'Rejected',
+          required: RejectionConfig.required,
+        });
+      } else if (onReject) {
         // Use custom reject handler
         onReject();
       } else {
@@ -320,34 +349,48 @@ export const StatusButtons = ({
             {rejectText}
           </Button>
         )}
+        {openCommentModal && (
+          <SheetUI
+            isOpen={openCommentModal}
+            setIsOpen={setOpenCommentModal}
+            variant="modal"
+            sheetConfig={FormSheetData}
+            formConfig={{
+              initialValues: { comment: null },
+              enableReinitialize: true,
+              handleSubmit: (data) => {
+                handleDefaultSubmit(FormSheetData.status, data);
+              },
+              validateFormSchema: (values) => {
+                const error = {};
+                if (FormSheetData.required && !values.comment)
+                  error.comment = "This field is required";
+                return error;
+              },
+              submitButtonText: FormSheetData.triggerText,
+              cancelButtonText: "Cancel",
+              columns: 1,
+              formFields: [
+                {
+                  sheetCardExtension: false,
+                  InputFields: [
+                    {
+                      InputField: TextAreaInput,
+                      name: "comment",
+                      required: FormSheetData.required,
+                      rows: 3,
+                      placeholder: FormSheetData.title,
+
+                    },
+                  ].filter(Boolean),
+                },
+              ],
+            }}
+          ></SheetUI>
+        )}
       </div>
     );
   }
-};
-export const StatusLabelAttendance = ({ status, value }) => {
-  if (!status) {
-    return "";
-  }
-
-  // Assign the appropriate class name based on the status
-  let className = "";
-  switch (status) {
-    case "Present":
-      className = "bg-[#E5FFF9] text-[#1D735E";
-      break;
-    case "Absent":
-      className = "bg-[#F0F0F3] text-[#7F838D";
-      break;
-    case "Late":
-      className = "bg-[#FAEFE1] text-[#B8761A]";
-      break;
-    case "Weekend ":
-      className = "label-warning-D5D912";
-      break;
-  }
-
-  // Render the badge with the appropriate label and style
-  return <Badge className={className}>{status}</Badge>;
 };
 
 export const StatusCircleLabel = ({ label, status }) => {
@@ -414,6 +457,16 @@ export const StatusViewIcon = ({ status, className }) => {
           src={statusPendingIcon}
           alt=""
           className={iconClassName}
+        />
+      </div>
+    );
+  else if (Status === "skipped")
+    return (
+      <div className={`${custonClassName}`}>
+        <CircleSlash
+          className={`${iconClassName} bg-gray-400 text-gray-700`}
+          style={style}
+          size={iconSize}
         />
       </div>
     );
@@ -500,16 +553,18 @@ export const JobStatusLabel = ({ label, type }) => {
 export const StatusList = ({ status_list, className, infoPrefix = "By" }) => {
   if (!status_list || !Array.isArray(status_list) || status_list.length === 0)
     return <></>;
-  console.log(status_list);
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {status_list.map(({ status, info, time, designation }, index) => {
+      {status_list.map(({ status, info, time, infoPrefix: specific_info_prefix,description }, index) => {
         return (
           <div key={`status-list-${index}`} className="flex items-center">
             <StatusViewIcon status={status} className="mr-1 mt-1" />
             <div className="flex flex-col">
               <span className="text-capitalize">
-                {status.toLowerCase()} {infoPrefix} {info}
+                {status.toLowerCase()} {specific_info_prefix ?? infoPrefix} {info}
+              </span>
+              <span className="text-xs text-neutral-1000">
+                {description}
               </span>
               <span className="text-xs text-neutral-900">
                 {renderDate(time, "", "date-time")}
