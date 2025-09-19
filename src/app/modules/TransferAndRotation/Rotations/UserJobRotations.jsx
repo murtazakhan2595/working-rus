@@ -7,6 +7,7 @@ import TableCustom from "components/CustomTable";
 import { UserJobRotationColumns } from "app/modules/TransferAndRotation/Sections";
 import { EmployeeOverview } from "components";
 import { useLocation } from "react-router-dom";
+import { PageLoader } from "components";
 
 export default function UserJobRotations() {
     const location = useLocation();
@@ -16,6 +17,7 @@ export default function UserJobRotations() {
     const [ordering, setOrdering] = useState("-id");
     const [filterData, setFilterData] = useState({ employee: user_Id });
     const [statsData, setStatsData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -33,6 +35,7 @@ export default function UserJobRotations() {
     useEffect(() => {
         let isMounted = true;
         const fetchStatData = async () => {
+            setIsLoading(true);
             try {
                 const filter = { employee: user_Id };
                 const response = await getRotationStats({
@@ -44,6 +47,8 @@ export default function UserJobRotations() {
                 }
             } catch (e) {
                 console.error(e);
+            } finally {
+                setIsLoading(false);
             }
         };
         if (user_Id) fetchStatData(isMounted);
@@ -53,6 +58,7 @@ export default function UserJobRotations() {
     }, [user_Id]);
 
     const fetchData = async (isMounted) => {
+        setIsLoading(true);
         try {
             const data = await getJobRotationRequests({
                 options,
@@ -64,6 +70,8 @@ export default function UserJobRotations() {
             }
         } catch (error) {
             console.error("Error fetching employees:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -77,7 +85,7 @@ export default function UserJobRotations() {
 
 
     const RotationStatsData = React.useMemo(() => [
-        { label: "Total Tranfers", value: statsData.Total, icon: FolderInput },
+        { label: "Total Rotations", value: statsData.Total, icon: FolderInput },
         { label: "Pending", value: statsData.Pending, icon: Loader },
         { label: "Approved", value: statsData.Approved, icon: CircleCheckBig },
         { label: "Rejected", value: statsData.Rejected, icon: CircleX },
@@ -89,14 +97,18 @@ export default function UserJobRotations() {
         <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
             <Header showBackButton={true} navigationLink="/tranfer-rotations" />
             <Card>
-                <CardContent className='pt-6'>
-                    <EmployeeOverview
-                        id={user_Id}
-                        showId={true}
-                        showPosition={true}
-                        showDepartment={true}
-                    />
-                </CardContent>
+                {!user_Id ? <PageLoader /> :
+                    <CardContent className='pt-6'>
+                        <EmployeeOverview
+                            id={user_Id}
+                            showId={true}
+                            showPosition={true}
+                            showDepartment={true}
+                            showBranchName={true}
+                            avatarSize={20}
+                        />
+                    </CardContent>
+                }
             </Card>
             <div className='flex gap-4 justify-start flex-row flex-wrap'>
                 {RotationStatsData.map((stat, index) =>
@@ -118,14 +130,19 @@ export default function UserJobRotations() {
                 )}
             </div>
             <Card>
+                <CardHeader>
+                    <CardTitle>Rotations</CardTitle>
+                </CardHeader>
                 <CardContent>
-                    <TableCustom
-                        data={MyTransferData.results}
-                        columns={UserJobRotationColumns(fetchData)}
-                        pagination={true}
-                        dataTotalSize={MyTransferData.count || 0}
-                        tableOptions={tableOptions}
-                    />
+                    {isLoading ? <PageLoader /> :
+                        <TableCustom
+                            data={MyTransferData.results}
+                            columns={UserJobRotationColumns(fetchData)}
+                            pagination={true}
+                            dataTotalSize={MyTransferData.count || 0}
+                            tableOptions={tableOptions}
+                        />
+                    }
                 </CardContent>
             </Card>
         </div>

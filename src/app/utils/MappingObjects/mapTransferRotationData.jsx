@@ -90,10 +90,10 @@ export async function mapTransferStatsData(data) {
 export async function mapRotationStatsData(data) {
   if (!data || data.length === 0)
     return { Pending: 0, Approved: 0, Rejected: 0, Total: 0 };
-  const Pending = calculateTotalCount(data, "status", "PENDING");
+  const Pending = calculateTotalCount(data, "status", "pending");
   const Total = data.length || 0;
-  const Approved = calculateTotalCount(data, "status", "APPROVED");
-  const Rejected = calculateTotalCount(data, "status", "REJECTED");
+  const Approved = calculateTotalCount(data, "status", "approved");
+  const Rejected = calculateTotalCount(data, "status", "rejected");
 
   return { Pending, Approved, Rejected, Total };
 }
