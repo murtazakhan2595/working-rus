@@ -92,14 +92,8 @@ export default function ClearanceRequests({
           filters={[
             {
               type: "search",
-              name: "search",
-              placeholder: "Search by employee name/ID",
-            },
-            {
-              type: "select-multi",
-              options: Departments,
-              name: "department",
-              placeholder: "Department",
+              name: "employee_name",
+              placeholder: "Search by employee name",
             },
             {
               type: "select",
@@ -109,7 +103,7 @@ export default function ClearanceRequests({
             },
             {
               type: "select",
-              options: clearanceTypes,
+              options: clearanceTypes.filter(ct => ct.value !== "COMPLETED"), // Exclude 'Other' type
               name: "clearance_type",
               placeholder: "Clearance Type",
             },
