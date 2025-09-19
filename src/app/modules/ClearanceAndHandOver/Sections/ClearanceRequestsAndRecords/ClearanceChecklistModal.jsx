@@ -540,12 +540,19 @@ export default function ClearanceChecklistModal({
         // Enhanced status dropdowns for each item
         ...groupedItems[groupName].map((item) => {
           const canEdit = canUserEditItem(item);
-          const isDisabled = item.is_locked || !canEdit;
+          const isNotPending = item.status !== "PENDING";
+          const isDisabled = item.is_locked || !canEdit || isNotPending;
+
+          // Enhanced disabled reason logic
           const disabledReason = item.is_locked
             ? REASSIGNMENT_CONFIG.DISABLED_REASONS.LOCKED
             : isOnHold
             ? REASSIGNMENT_CONFIG.DISABLED_REASONS.ON_HOLD
-            : REASSIGNMENT_CONFIG.DISABLED_REASONS.NO_PERMISSION;
+            : !canEdit
+            ? REASSIGNMENT_CONFIG.DISABLED_REASONS.NO_PERMISSION
+            : isNotPending
+            ? "Action already taken"
+            : undefined;
 
           return {
             InputField: SelectInputComponent,
@@ -660,7 +667,7 @@ export default function ClearanceChecklistModal({
         initialValues: {},
         enableReinitialize: false,
         handleSubmit: handleSubmit,
-        submitButtonText: hasAnyEditPermission ? "Update Checklist" : "Close",
+        submitButtonText: hasAnyEditPermission ? "Update Checklist" : "",
         cancelButtonText: "Close",
         columns: 2,
         disableSubmit: isSubmitting || !hasAnyEditPermission,
@@ -766,8 +773,8 @@ export default function ClearanceChecklistModal({
                       <br />
                       <strong>Type:</strong>{" "}
                       {clearanceTypes?.find(
-                        (type) => type?.id === clearanceRequest?.clearance_type
-                      )?.name || "N/A"}
+                        (type) => type?.value === clearanceRequest?.clearance_type
+                      )?.label || "N/A"}
                       <br />
                       <strong>Start Date:</strong>{" "}
                       {renderDate(clearanceRequest?.start_date) || "N/A"}

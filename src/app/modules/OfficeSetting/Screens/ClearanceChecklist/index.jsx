@@ -27,8 +27,8 @@ const ClearanceChecklist = ({ reload }) => {
 
   // Status options
   const statusOptions = [
-    { value: "active", label: "Active" },
-    { value: "inactive", label: "Inactive" },
+    { value: "ACTIVE", label: "Active" },
+    { value: "INACTIVE", label: "Inactive" },
   ];
 
   const onPageChange = (name, value) => {

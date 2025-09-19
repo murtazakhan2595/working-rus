@@ -16,6 +16,19 @@ export const checkClearanceApproval = (
   isOnHold = false,
   returnType = "boolean"
 ) => {
+
+  console.log("Approval Check Debug:", {
+    itemId: item?.id,
+    currentUserId,
+    isOnHold,
+    returnType,
+    reassignApprover: item?.reassign_approver,
+    assignmentScope: item?.assignment_scope,
+    directReport: item?.direct_report,
+    indirectReport: item?.indirect_report,
+    designationList: item?.employees_with_matching_designation,
+  });
+  
   // Basic validation
   if (!item || !currentUserId) {
     return returnType === "boolean" ? false : null;
@@ -26,13 +39,6 @@ export const checkClearanceApproval = (
     return returnType === "boolean"
       ? false
       : { canApprove: false, reason: "On hold" };
-  }
-
-  // Block if item is locked
-  if (item.is_locked) {
-    return returnType === "boolean"
-      ? false
-      : { canApprove: false, reason: "Item locked" };
   }
 
   // PRIORITY 1: Check reassign_approver first (highest priority)

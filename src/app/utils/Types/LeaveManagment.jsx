@@ -102,6 +102,7 @@ export const SpecialLeaves = {
   balance: null,
   start_date: null,
   end_date: null,
+  clearance_required: false,
 }
 
 export { Leave, EmployeeLeaveTypesList };
