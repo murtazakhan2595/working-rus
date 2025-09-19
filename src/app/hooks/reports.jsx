@@ -4633,3 +4633,162 @@ export const exportRemainingReports = async (reportType, filterData = {}) => {
     return false;
   }
 };
+
+
+export const exportReportBackend = async (
+  moduleName,
+  moduleType,
+  fileFormat,
+  filterData = {}
+) => {
+  try {
+    const response = await axios({
+      method: "GET",
+      url: `${baseUrl}/export-report-viewset/`,
+      headers: {
+        ...headers(),
+        Accept: "application/json",
+      },
+      params: {
+        module_name: moduleName,
+        module_type: moduleType,
+        file_format: fileFormat,
+        ...filterData, // Include filters as URL parameters for GET request
+      },
+    });
+
+    if (response.status === 200) {
+      const responseData = response.data;
+      console.log("Backend export response:", responseData);
+
+      // Check if export was successful
+      if (responseData.success && responseData.file_url) {
+        // Create link to download from the provided URL
+        const link = document.createElement("a");
+        link.href = responseData.file_url;
+        link.setAttribute("target", "_blank");
+
+        // Use the filename provided by backend
+        if (responseData.filename) {
+          link.setAttribute("download", responseData.filename);
+        }
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        // Show success message with export stats
+        const recordsInfo =
+          responseData.records_exported > 0
+            ? ` (${responseData.records_exported} records exported)`
+            : "";
+
+        toast.success(
+          `Report exported successfully as ${responseData.file_format?.toUpperCase()}${recordsInfo}!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+
+        return true;
+      }
+
+      // Handle case where export was successful but no records
+      else if (responseData.success && responseData.records_exported === 0) {
+        toast.warning(
+          "Export completed but no records found with current filters",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        return false;
+      }
+
+      // Handle unsuccessful export
+      else if (!responseData.success) {
+        toast.error(
+          "Export failed: " + (responseData.message || "Unknown error"),
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        return false;
+      }
+
+      // If no recognizable response format
+      else {
+        console.warn("Unexpected response format:", responseData);
+        toast.warning(
+          "Export completed, but download link not found in response",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        return false;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Backend export error:", error);
+    console.error("Error response data:", error.response?.data);
+    console.error("Error status:", error.response?.status);
+
+    // Handle specific error responses
+    if (error.response?.status === 400) {
+      toast.error("Invalid export parameters", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } else if (error.response?.status === 404) {
+      toast.error("Export module not found", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } else if (error.response?.status === 405) {
+      toast.error("Export method not allowed", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } else {
+      toast.error("Failed to export report from backend", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
+    return false;
+  }
+};
+
+
+export const getBackendModuleMapping = (activeTab) => {
+  // HRDocuments module mappings
+  const hrDocumentsMapping = {
+    document_expiry: {
+      moduleName: "HRDocuments",
+      moduleType: "document-expiry",
+    },
+    missing_documents: {
+      moduleName: "HRDocuments",
+      moduleType: "missing-documents",
+    },
+    document_access: {
+      moduleName: "HRDocuments",
+      moduleType: "document-access",
+    },
+    visa_permit_expiry: {
+      moduleName: "HRDocuments",
+      moduleType: "visa-permit",
+    },
+    contract_renewal: {
+      moduleName: "HRDocuments",
+      moduleType: "contract-renewal",
+    },
+    policy_acknowledgement: {
+      moduleName: "HRDocuments",
+      moduleType: "policy-acknowledgement",
+    },
+  };
+  // Check HRDocuments first (new structure)
+  if (hrDocumentsMapping[activeTab]) {
+    return hrDocumentsMapping[activeTab];
+  }
+}
