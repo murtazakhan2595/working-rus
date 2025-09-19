@@ -170,3 +170,5 @@ const TimeAdjustmentStatusReport = ({
     </div>
   );
 };
+
+export default TimeAdjustmentStatusReport;

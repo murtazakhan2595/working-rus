@@ -422,7 +422,7 @@ export const clearanceStatusOptions = [
 
 export const clearanceRequestStatusOptions = [
   { value: "PENDING", label: "Pending" },
-  { value: "APPROVED", label: "Approved" },
+  { value: "APPROVED", label: "Clear" },
   { value: "NOT_APPLICABLE", label: "Not Applicable" },
   { value: "REJECTED", label: "Rejected" },
 ];

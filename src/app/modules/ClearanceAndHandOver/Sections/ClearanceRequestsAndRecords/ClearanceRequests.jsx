@@ -28,11 +28,13 @@ export default function ClearanceRequests({
 }) {
   const Departments = useSelector((state) => state.common.departments);
   const [clearanceTypes, setClearanceTypes] = useState([]);
+  const [typeLoading, setTypeLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     const fetchClearanceTypes = async () => {
       try {
+        setTypeLoading(true);
         const response = await getClearanceTypeList();
         console.log("Clearance types response:", response);
         if (isMounted && response?.results) {
@@ -41,8 +43,10 @@ export default function ClearanceRequests({
             value: type.id,
           })) || []);
         }
+        setTypeLoading(false);
       } catch (error) {
         console.error("Error fetching clearance types:", error);
+        setTypeLoading(false);
       }
     };
     fetchClearanceTypes();
@@ -89,7 +93,7 @@ export default function ClearanceRequests({
             {
               type: "search",
               name: "search",
-              placeholder: "Search by employee name or ID",
+              placeholder: "Search by employee name/ID",
             },
             {
               type: "select-multi",
@@ -118,7 +122,7 @@ export default function ClearanceRequests({
           onChange={handleFilterChange}
           className="justify-end mb-4"
         />
-        {loading ? (
+        {loading || typeLoading ? (
           <PageLoader />
         ) : (
           <TableCustom

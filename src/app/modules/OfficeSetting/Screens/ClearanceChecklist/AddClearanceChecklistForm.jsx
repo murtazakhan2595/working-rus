@@ -282,6 +282,17 @@ const AddClearanceChecklistForm = ({
                     },
                   ]
                 : []),
+
+              {
+                InputField: SelectInputComponent,
+                name: "status",
+                label: "Status",
+                required: true,
+                options: [
+                  { value: "ACTIVE", label: "Active" },
+                  { value: "INACTIVE", label: "Inactive" },
+                ],
+              },
             ],
           },
           {
