@@ -5,6 +5,9 @@ import { deleteRecord } from "app/hooks/general";
 import AddClearanceChecklistForm from "./AddClearanceChecklistForm";
 import ViewClearanceChecklist from "app/modules/OfficeSetting/Screens/ClearanceChecklist/ViewClearanceChecklist";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { renderErrorMessages } from "utils/renderErrors";
+import { toast } from "react-toastify";
+import { deleteClearanceChecklist } from "app/hooks/officeSetting";
 
 const ClearanceChecklistAction = ({ data, reloadData, DataList = [] }) => {
   const [view, setView] = useState(null);
@@ -34,15 +37,16 @@ const ClearanceChecklistAction = ({ data, reloadData, DataList = [] }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/clearance-checklists/${data?.id}/`, data?.name);
+     const response = await deleteClearanceChecklist(data?.id);
 
-      console.log("Deleting clearance checklist:", data?.name);
+      console.log("Deleting clearance checklist:", data?.name, response);
 
       if (typeof reloadData === "function") {
         reloadData(true);
       }
     } catch (error) {
       console.log("ERROR", error);
+      toast.error("Failed to delete clearance checklist");
     }
   };
 
