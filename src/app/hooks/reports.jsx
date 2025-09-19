@@ -608,7 +608,7 @@ export const getResignationReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/ResignationReport/?ordering=${ordering}&${
+    const URL = `/ExitClearance/ResignationReport/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -643,7 +643,7 @@ export const getExitRequestReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/exit-request-report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/exit-request-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -677,7 +677,7 @@ export const getV2ExitRequestReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/v2-exit-request-report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/v2-exit-request-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -707,7 +707,7 @@ export const getV2ExitRequestReportData = async (payload) => {
 // Get attrition retention report data
 export const getAttritionRetentionReportData = async (filterData = {}) => {
   try {
-    const response = await axios.get(`${baseUrl}/AttritionRetentionReport/`, {
+    const response = await axios.get(`${baseUrl}/ExitClearance/AttritionRetentionReport/`, {
       headers: headers(),
       params: filterData,
     });
@@ -896,7 +896,7 @@ export const getTerminationReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/v2-termination-report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/v2-termination-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -931,7 +931,7 @@ export const getNoticePeriodComplianceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/notice-period-compliance-report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/notice-period-compliance-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -965,7 +965,7 @@ export const getExitInterviewReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/Exit-Interview-Report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/Exit-Interview-Report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -999,7 +999,7 @@ export const getRehireEligibilityReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/rehire-eligibility-report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/rehire-eligibility-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1033,7 +1033,7 @@ export const getV2AttritionRehireEligibilityData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/v2-attrition-rehire-eligibility-report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/v2-attrition-rehire-eligibility-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1068,7 +1068,7 @@ export const getClearancePendingReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/Clearance-Pending-Report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/Clearance-Pending-Report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1102,7 +1102,7 @@ export const getV2ClearancePendingReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
     
-    const URL = `/v2-Clearance-Pending-Report/?ordering=${ordering}&${
+    const URL = `/ExitClearance/v2-Clearance-Pending-Report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1141,7 +1141,7 @@ export const getNewHireReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/new-hire-report/?ordering=${ordering}&${
+    const URL = `/EmployeeCreationHiring/EmployeeCreationHiring/new-hire-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1176,7 +1176,7 @@ export const getOfferLetterComplianceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/offer-letter-compliance/?ordering=${ordering}&${
+    const URL = `/EmployeeCreationHiring/offer-letter-compliance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1211,7 +1211,7 @@ export const getEmployeeCreationTATData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/employee-creation-tat/?ordering=${ordering}&${
+    const URL = `/EmployeeCreationHiring/employee-creation-tat/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1246,7 +1246,7 @@ export const getOfferLetterReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/offer-letter-report/?ordering=${ordering}&${
+    const URL = `/EmployeeCreationHiring/offer-letter-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1281,7 +1281,7 @@ export const getPreOnboardingComplianceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/pre-onboarding-compliance/?ordering=${ordering}&${
+    const URL = `/EmployeeCreationHiring/pre-onboarding-compliance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1316,7 +1316,7 @@ export const getProbationCompletionReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/probation-completion/?ordering=${ordering}&${
+    const URL = `/EmployeeCreationHiring/probation-completion/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1470,7 +1470,7 @@ export const getDocumentExpiryData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/document-expiry/?ordering=${ordering}&${
+    const URL = `/HRDocuments/document-expiry/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1505,7 +1505,7 @@ export const getMissingDocumentsData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/missing-documents/?ordering=${ordering}&${
+    const URL = `/HRDocuments/missing-documents/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1540,7 +1540,7 @@ export const getDocumentAccessData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/document-access/?ordering=${ordering}&${
+    const URL = `/HRDocuments/document-access/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1574,7 +1574,7 @@ export const getVisaPermitExpiryData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/visa-permit/?ordering=${ordering}&${
+    const URL = `/HRDocuments/visa-permit/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1609,7 +1609,7 @@ export const getContractRenewalData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/contract-renewal/?ordering=${ordering}&${
+    const URL = `/HRDocuments/contract-renewal/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1644,7 +1644,7 @@ export const getPolicyAcknowledgementData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/policy-acknowledgement/?ordering=${ordering}&${
+    const URL = `/HRDocuments/policy-acknowledgement/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1799,7 +1799,7 @@ export const getTransferReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/transfers/?ordering=${ordering}&${
+    const URL = `/TransferRotation/transfers/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1834,7 +1834,7 @@ export const getJobRotationHistoryData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/job-rotation-history/?ordering=${ordering}&${
+    const URL = `/TransferRotation/job-rotation-history/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1869,7 +1869,7 @@ export const getPendingTransferApprovalsData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/pending-transfer-approvals/?ordering=${ordering}&${
+    const URL = `/TransferRotation/pending-transfer-approvals/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1904,7 +1904,7 @@ export const getTransferCostImpactData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/transfer-cost-impact-report/?ordering=${ordering}&${
+    const URL = `/TransferRotation/transfer-cost-impact-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1939,7 +1939,7 @@ export const getRotationComplianceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/rotation-compilance-report/?ordering=${ordering}&${
+    const URL = `/TransferRotation/rotation-compilance-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -1974,7 +1974,7 @@ export const getTransferRejectionData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/transfer-rejection-report/?ordering=${ordering}&${
+    const URL = `/TransferRotation/transfer-rejection-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2009,7 +2009,7 @@ export const getRotationSkillGapData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/rotation-skill-gap-report/?ordering=${ordering}&${
+    const URL = `/TransferRotation/rotation-skill-gap-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2044,7 +2044,7 @@ export const getEmployeeRotationFrequencyData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/employee-rotation-frequency-report/?ordering=${ordering}&${
+    const URL = `/TransferRotation/employee-rotation-frequency-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2078,7 +2078,7 @@ export const getTransferApprovalTimelineData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/transfer-approval-timeline-report/?ordering=${ordering}&${
+    const URL = `/TransferRotation/transfer-approval-timeline-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2113,7 +2113,7 @@ export const getCrossDepartmentTransferData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/cross-department-transfers/?ordering=${ordering}&${
+    const URL = `/TransferRotation/cross-department-transfers/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2142,7 +2142,7 @@ export const getCrossDepartmentTransferData = async (payload) => {
 // Get transfer rotation dashboard data
 export const getTransferRotationDashboardData = async (filterData = {}) => {
   try {
-    const response = await axios.get(`${baseUrl}/transfer-rotation-dashboard/`, {
+    const response = await axios.get(`${baseUrl}/TransferRotation/transfer-rotation-dashboard/`, {
       headers: headers(),
       params: filterData,
     });
@@ -2296,7 +2296,7 @@ export const getDailyAttendanceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/daily-attendence/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/daily-attendence/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2331,7 +2331,7 @@ export const getMonthlyAttendanceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reports/montly-attendence/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/montly-attendence/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2366,7 +2366,7 @@ export const getYearlyAttendanceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/yearly-attendance-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/yearly-attendance-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2405,7 +2405,7 @@ export const getAbsenteeismReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/absenteeism-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/absenteeism-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2440,7 +2440,7 @@ export const getLateArrivalReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/late-arrival-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/late-arrival-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2475,7 +2475,7 @@ export const getEarlyDepartureReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/early-departure-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/early-departure-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2510,7 +2510,7 @@ export const getNoPunchReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/no-punch-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/no-punch-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2549,7 +2549,7 @@ export const getOvertimeReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/overtime-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/overtime-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2584,7 +2584,7 @@ export const getIdleUndertimeReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/idle-undertime-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/idle-undertime-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2619,7 +2619,7 @@ export const getAttendanceVsLeaveReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/attendance-vs-leave-report/?ordering=${ordering}&${
+    const URL = `/AttendanceReports/attendance-vs-leave-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2658,7 +2658,7 @@ export const getShiftAllocationReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/shift-allocation-report/?ordering=${ordering}&${
+    const URL = `/ShiftCalendarSchedulingReports/shift-allocation-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2693,7 +2693,7 @@ export const getShiftVsActualAttendanceData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/shift-vs-actual-attendance/?ordering=${ordering}&${
+    const URL = `/ShiftCalendarSchedulingReports/shift-vs-actual-attendance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2728,7 +2728,7 @@ export const getShiftComplianceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/shift-compliance-report/?ordering=${ordering}&${
+    const URL = `/ShiftCalendarSchedulingReports/shift-compliance-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2763,7 +2763,7 @@ export const getShiftCoverageReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/shift-coverage-report/?ordering=${ordering}&${
+    const URL = `/ShiftCalendarSchedulingReports/shift-coverage-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2798,7 +2798,7 @@ export const getShiftSwappingReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/shift-swapping-report/?ordering=${ordering}&${
+    const URL = `/ShiftCalendarSchedulingReports/shift-swapping-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2830,7 +2830,7 @@ export const getWeeklyShiftCalendarData = async (payload) => {
   try {
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/weekly-shift-calendar/?search=${encodeURIComponent(
+    const URL = `/ShiftCalendarSchedulingReports/weekly-shift-calendar/?search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
 
@@ -2860,7 +2860,7 @@ export const getHolidaySpecialShiftReportData = async (payload) => {
   try {
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/holiday-special-shift-report/?search=${encodeURIComponent(
+    const URL = `/ShiftCalendarSchedulingReports/holiday-special-shift-report/?search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
 
@@ -2893,7 +2893,7 @@ export const getWeekendWorkReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/weekend-work-report/?ordering=${ordering}&${
+    const URL = `/ShiftCalendarSchedulingReports/weekend-work-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3188,7 +3188,7 @@ export const getTimeAdjustmentReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/time-adjustment-report/?ordering=${ordering}&${
+    const URL = `/TimeAdjustmentReports/time-adjustment-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3221,7 +3221,7 @@ export const getTimeAdjustmentStatusReportData = async (payload) => {
   try {
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/time-adjustment-status/?search=${encodeURIComponent(
+    const URL = `/TimeAdjustmentReports/time-adjustment-status/?search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
 
@@ -3251,7 +3251,7 @@ export const getReasonAnalysisReportData = async (payload) => {
   try {
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/reason-analysis-report/?search=${encodeURIComponent(
+    const URL = `/TimeAdjustmentReports/reason-analysis-report/?search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
 
@@ -3281,7 +3281,7 @@ export const getManagerApprovalReportData = async (payload) => {
   try {
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/manager-approval-report/?search=${encodeURIComponent(
+    const URL = `/TimeAdjustmentReports/manager-approval-report/?search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
 
@@ -3311,7 +3311,7 @@ export const getRepeatAdjustmentReportData = async (payload) => {
   try {
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/repeat-adjustment-report/?search=${encodeURIComponent(
+    const URL = `/TimeAdjustmentReports/repeat-adjustment-report/?search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
 
@@ -3439,7 +3439,7 @@ export const getUpdatedAttendanceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/updated-attendance-report/?ordering=${ordering}&${
+    const URL = `/AttendanceUpdatesAuditReports/updated-attendance-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3474,7 +3474,7 @@ export const getHRAdminCorrectionReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/hr-admin-report/?ordering=${ordering}&${
+    const URL = `/AttendanceUpdatesAuditReports/hr-admin-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3509,7 +3509,7 @@ export const getAuditTrailReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/audit-trail-report/?ordering=${ordering}&${
+    const URL = `/AttendanceUpdatesAuditReports/audit-trail-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3544,7 +3544,7 @@ export const getComplianceBreachReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/compliance-breaches/?ordering=${ordering}&${
+    const URL = `/AttendanceUpdatesAuditReports/compliance-breaches/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3579,7 +3579,7 @@ export const getAttendanceUpdateHistoryData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/attendance-update-history/?ordering=${ordering}&${
+    const URL = `/AttendanceUpdatesAuditReports/attendance-update-history/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3618,7 +3618,7 @@ export const getMissingPunchReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/missing-punch-report/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/missing-punch-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3653,7 +3653,7 @@ export const getMultiplePunchReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/multiple-punch-report/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/multiple-punch-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3688,7 +3688,7 @@ export const getHalfDayReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/half-day-report/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/half-day-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3723,7 +3723,7 @@ export const getGracePeriodUsageReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/grace-period-usage/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/grace-period-usage/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3758,7 +3758,7 @@ export const getFrequentBreaksReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/frequent-breaks/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/frequent-breaks/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3793,7 +3793,7 @@ export const getRemoteWorkReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/remote-work-report/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/remote-work-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3828,7 +3828,7 @@ export const getBusinessTripReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/business-trip-report/?ordering=${ordering}&${
+    const URL = `/ExceptionSpecialConditionReports/business-trip-report/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3867,7 +3867,7 @@ export const getDepartmentAttendanceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/department-attendance/?ordering=${ordering}&${
+    const URL = `/DepartmentManagerialReports/department-attendance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3902,7 +3902,7 @@ export const getTeamAttendanceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/team-attendance/?ordering=${ordering}&${
+    const URL = `/DepartmentManagerialReports/team-attendance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3937,7 +3937,7 @@ export const getManagerAttendanceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/manager-attendance/?ordering=${ordering}&${
+    const URL = `/DepartmentManagerialReports/manager-attendance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -3972,7 +3972,7 @@ export const getBranchAttendanceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/branch-attendance/?ordering=${ordering}&${
+    const URL = `/DepartmentManagerialReports/branch-attendance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4007,7 +4007,7 @@ export const getComparativeAttendanceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/comparative-attendance/?ordering=${ordering}&${
+    const URL = `/DepartmentManagerialReports/comparative-attendance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4046,7 +4046,7 @@ export const getAttendanceTrendReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/attendance-trends/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/attendance-trends/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4081,7 +4081,7 @@ export const getShiftUtilizationReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/shift-utilization/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/shift-utilization/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4116,7 +4116,7 @@ export const getOvertimeTrendReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/overtime-trends/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/overtime-trends/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4151,7 +4151,7 @@ export const getAttritionRiskReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/attrition-risk/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/attrition-risk/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4186,7 +4186,7 @@ export const getLaborLawComplianceReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/labor-law-compliance/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/labor-law-compliance/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4221,7 +4221,7 @@ export const getPayrollIntegrationReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/payroll-integration/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/payroll-integration/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -4256,7 +4256,7 @@ export const getAlertsThresholdReportData = async (payload) => {
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
 
-    const URL = `/alerts-thresholds/?ordering=${ordering}&${
+    const URL = `/AnalyticsTrendsComplianceReports/alerts-thresholds/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
