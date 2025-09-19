@@ -18,6 +18,13 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 import { canReassignItem, canUserApproveItem } from "./ClearanceApprovalUtils";
+import { DesignationName } from "utils/getValuesFromTables";
+import { EmployeeName } from "utils/getValuesFromTables";
+import { BranchName } from "utils/getValuesFromTables";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { EmployeeID } from "utils/getValuesFromTables";
+import { EmployeeInfo } from "utils/getValuesFromTables";
+import { EmployeeOverview } from "components";
 
 // Constants for better maintainability and code organization
 const REASSIGNMENT_CONFIG = {
@@ -535,7 +542,7 @@ export default function ClearanceChecklistModal({
   const generateFormFields = useCallback(() => {
     return Object.keys(groupedItems).map((groupName) => ({
       sheetCardExtension: true,
-      sheetCardTitle: groupName,
+      sheetCardTitle: "Checklist Items - " + groupName,
       InputFields: [
         // Enhanced status dropdowns for each item
         ...groupedItems[groupName].map((item) => {
@@ -657,9 +664,7 @@ export default function ClearanceChecklistModal({
       variant="sheet"
       sheetConfig={{
         triggerText: "",
-        title: `Clearance Checklist - ${
-          clearanceRequest?.employee_name || "Employee"
-        }`,
+        title: `Clearance Checklist - ${clearanceRequest?.employee_name}`,
         footer: null,
         width: "800px",
       }}
@@ -679,6 +684,7 @@ export default function ClearanceChecklistModal({
             sheetCardExtension: true,
             sheetCardTitle: "Progress Overview",
             InputFields: [
+              // Enhanced Progress Overview Section
               {
                 InputField: () => (
                   <div className="space-y-4">
@@ -767,18 +773,91 @@ export default function ClearanceChecklistModal({
                         </div>
                       </div>
                     </div>
-                    <div className="text-sm">
-                      <strong>Employee:</strong>{" "}
-                      {clearanceRequest?.employee_name || "N/A"}
-                      <br />
-                      <strong>Type:</strong>{" "}
-                      {clearanceTypes?.find(
-                        (type) => type?.value === clearanceRequest?.clearance_type
-                      )?.label || "N/A"}
-                      <br />
-                      <strong>Start Date:</strong>{" "}
-                      {renderDate(clearanceRequest?.start_date) || "N/A"}
+
+                    {/* Enhanced Employee Information with Department/Reporting */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <EmployeeOverview
+                        id={clearanceRequest?.employee}
+                        showPosition={true}
+                        showDepartment={true}
+                        showBranchName={true}
+                      />
+
+                      <div className="space-y-2">
+                        <div>
+                          <strong>Clearance Type:</strong>{" "}
+                          {clearanceTypes?.find(
+                            (type) =>
+                              type?.value === clearanceRequest?.clearance_type
+                          )?.label || "N/A"}
+                        </div>
+                        <div>
+                          <strong>Start Date:</strong>{" "}
+                          {renderDate(clearanceRequest?.start_date) || "N/A"}
+                        </div>
+                        <div>
+                          <strong>Direct Manager:</strong>{" "}
+                          {checklistItems.length > 0 &&
+                          checklistItems[0].direct_report ? (
+                            <EmployeeName
+                              value={checklistItems[0].direct_report}
+                            />
+                          ) : (
+                            "N/A"
+                          )}
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Reporting Hierarchy Summary */}
+                    {checklistItems.length > 0 && (
+                      <div className="border-t pt-3">
+                        <h4 className="text-sm font-medium mb-2">
+                          Approval Hierarchy Summary
+                        </h4>
+                        <div className="space-y-1 text-sm">
+                          {/* Group by designation for summary */}
+                          {Object.entries(
+                            checklistItems.reduce((acc, item) => {
+                              const designationName = formatChecklistName(
+                                item.checklist_name
+                              );
+                              if (!acc[designationName]) {
+                                acc[designationName] = {
+                                  designation: item.designation,
+                                  direct_report: item.direct_report,
+                                  assignment_scope: item.assignment_scope,
+                                };
+                              }
+                              return acc;
+                            }, {})
+                          ).map(([checklistName, info]) => (
+                            <div
+                              key={checklistName}
+                              className="flex justify-between items-center py-1"
+                            >
+                              <span className="font-medium">
+                                {checklistName}:
+                              </span>
+                              <span className="text-neutral-1200">
+                                {info.assignment_scope === "DIRECT" &&
+                                  info.direct_report && (
+                                    <EmployeeName value={info.direct_report} />
+                                  )}
+                                {info.assignment_scope === "DESIGNATION" && (
+                                  <DesignationName
+                                    value={info.designation}
+                                    fallBackText="Designation-based"
+                                  />
+                                )}
+                                {info.assignment_scope === "INDIRECT" &&
+                                  "Indirect Reports"}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ),
                 name: "progress_overview",
