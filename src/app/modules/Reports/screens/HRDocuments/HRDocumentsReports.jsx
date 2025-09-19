@@ -240,7 +240,7 @@ const HRDocumentsReports = () => {
               {
                 type: "search",
                 placeholder: "Search by Employee Name/ID",
-                name: "search",
+                name: "employee_name",
               },
               {
                 type: "select-one",

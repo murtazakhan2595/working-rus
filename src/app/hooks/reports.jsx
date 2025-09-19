@@ -4653,7 +4653,7 @@ export const exportReportBackend = async (
         module_name: moduleName,
         module_type: moduleType,
         file_format: fileFormat,
-        ...filterData, // Include filters as URL parameters for GET request
+        search: encodeURIComponent(JSON.stringify(filterData)),
       },
     });
 
@@ -4787,6 +4787,7 @@ export const getBackendModuleMapping = (activeTab) => {
       moduleType: "policy-acknowledgement",
     },
   };
+
   // Check HRDocuments first (new structure)
   if (hrDocumentsMapping[activeTab]) {
     return hrDocumentsMapping[activeTab];
