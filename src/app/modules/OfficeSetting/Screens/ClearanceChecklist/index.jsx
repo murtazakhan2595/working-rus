@@ -55,6 +55,9 @@ const ClearanceChecklist = ({ reload }) => {
       if(filters?.clearance_types){
         filters.clearance_types = [filters.clearance_types];
       }
+      if (filters?.status) {
+        filters.status = [filters.status];
+      }
       console.log("Filters applied:", filters);
       const response = await getClearanceChecklistList({
         filterData: filters,
