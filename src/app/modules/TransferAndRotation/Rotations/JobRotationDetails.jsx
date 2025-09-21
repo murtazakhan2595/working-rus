@@ -7,7 +7,7 @@ import {
 import { getJobRotationRequests, getJobRotationById } from 'app/hooks/transferAndRotation';
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
-import { StatusLabel, StatusButtons } from "components";
+import { StatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { DepartmentName, ManagerName, BranchName, DesignationName, EmployeeName } from "utils/getValuesFromTables";
@@ -48,28 +48,15 @@ const JobRotationDetails = ({
             field: [
                 {
                     key: "employee",
-                    label: "Employee",
-                    formatter: (cell) => (<EmployeeName value={cell} />),
-                },
-                {
-                    key: "old_department",
-                    label: "Current Department",
-                    formatter: (cell) => (<DepartmentName value={cell} />),
-                },
-                {
-                    key: "old_designation",
-                    label: "Current Designation",
-                    formatter: (cell) => (<DesignationName value={cell} />),
-                },
-                {
-                    key: "old_branch",
-                    label: "Current Branch",
-                    formatter: (cell) => (<BranchName value={cell} />),
-                },
-                {
-                    key: "old_reporting_manager",
-                    label: "Current Manager",
-                    formatter: (cell) => (<ManagerName value={cell} />),
+                    label: "",
+                    formatter: (cell) => (
+                        <EmployeeDetailUI
+                            id={cell}
+                            InformationKeys={["name", "department", "position", "branch", "manager"]}
+                            ViewVariant={"vertical"}
+                            className
+                        />
+                    ),
                 },
             ],
         },
@@ -142,7 +129,7 @@ const JobRotationDetails = ({
                         console.log(cell);
                         return (
                             <ol className="[list-style:decimal-leading-zero] ml-5">
-                                {(cell || []).map((rotation, index) => {
+                                {(cell || []).map((rotation) => {
                                     const approver = (rotation?.approval_logs[0] || {})?.changed_by;
                                     return (
                                         <li className={'marker:text-plum-900 marker:font-semibold  mb-3'}>

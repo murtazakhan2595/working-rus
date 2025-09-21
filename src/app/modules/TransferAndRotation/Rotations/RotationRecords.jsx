@@ -151,6 +151,12 @@ const RotationRecords = ({ reload }) => {
             name: "designation",
             placeholder: "Designation",
           },
+          //  {
+          //   type: "number",
+          //   options: 'Designations',
+          //   name: "designation",
+          //   placeholder: "Designation",
+          // },
         ]}
         onChange={handleFilterChange}
         className="justify-end mb-4"
