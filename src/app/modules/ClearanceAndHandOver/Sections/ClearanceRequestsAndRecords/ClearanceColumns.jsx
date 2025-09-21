@@ -35,8 +35,8 @@ export const ClearanceColumns = (reload, clearanceList = [], clearanceTypes) => 
     text: "Clearance Type",
     sort: true,
     formatter: (cell) => {
-      const clearanceType = clearanceTypes.find((type) => type.id === cell);
-      return clearanceType ? clearanceType.name : cell;
+      const clearanceType = clearanceTypes.find((type) => type.value === cell);
+      return clearanceType ? clearanceType.label : "N/A";
     },
   },
   {

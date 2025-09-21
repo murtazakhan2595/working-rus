@@ -453,6 +453,32 @@ export const saveUpdateClearanceChecklist = async (payload, id) => {
   }
 };
 
+export const deleteClearanceChecklist = async (id) => {
+  let response = null;
+  try {
+     response = await axios.delete(
+      `${baseUrl}/clearance-checklists/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 204) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting clearance checklist:", error);
+     if (error?.response?.status === 400) {
+       console.log("ERROR", error.response.data);
+       renderErrorMessages(error.response.data);
+       return false;
+     }
+    else if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return response;
+  }
+};
+
 export const getClearanceTypeList = async () => {
   try {
     const response = await axios.get(`${baseUrl}/clearance-types/`, {

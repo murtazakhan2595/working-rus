@@ -13,11 +13,21 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "src/@/components/ui/dropdown-menu";
 import { FilterInput } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { HasAccess } from "utils/PermissionUtils";
-import { exportHRDocumentReport } from "app/hooks/reports";
+import {
+  exportReportBackend,
+  getBackendModuleMapping,
+} from "app/hooks/reports";
 import { toast } from "react-toastify";
+import { ChevronDown } from "lucide-react";
 
 // Import individual report components
 import DocumentExpiryReport from "./Sections/DocumentExpiryReport";
@@ -29,7 +39,7 @@ import PolicyAcknowledgementReport from "./Sections/PolicyAcknowledgementReport"
 
 const HRDocumentsReports = () => {
   // Permission checks
-  const isAdminView = HasAccess("VIEW_HR_DOCUMENTS_REPORTS") || true; // Default to true for now
+  const isAdminView = HasAccess("VIEW_HR_DOCUMENTS_REPORTS") || true;
   const isBranchView = HasAccess("VIEW_BRN_HR_DOCUMENTS_REPORTS") || true;
   const isDepartmentView = HasAccess("VIEW_DPT_HR_DOCUMENTS_REPORTS") || true;
 
@@ -87,6 +97,13 @@ const HRDocumentsReports = () => {
     },
   ];
 
+  // Export format options
+  const exportFormats = [
+    { value: "xlsx", label: "Excel (.xlsx)", icon: "📊" },
+    { value: "csv", label: "CSV (.csv)", icon: "📄" },
+    { value: "pdf", label: "PDF (.pdf)", icon: "📋" },
+  ];
+
   // Set permitted view filter data based on permissions
   useEffect(() => {
     let isMounted = true;
@@ -132,17 +149,22 @@ const HRDocumentsReports = () => {
     setFilterData({});
   }, []);
 
-  // Export current report
-  const handleExportReport = async () => {
+  // Handle report export
+  const handleExportReport = async (fileFormat) => {
     setIsExporting(true);
     try {
       const combinedFilters = { ...filterData, ...permittedViewFilterData };
-      const success = await exportHRDocumentReport(activeTab, combinedFilters);
+      const { moduleName, moduleType } = getBackendModuleMapping(activeTab);
 
-      if (success) {
-        toast.success("Report exported successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      const success = await exportReportBackend(
+        moduleName,
+        moduleType,
+        fileFormat,
+        combinedFilters
+      );
+
+      if (!success) {
+        throw new Error("Export failed");
       }
     } catch (error) {
       console.error("Export error:", error);
@@ -172,6 +194,7 @@ const HRDocumentsReports = () => {
                   "Comprehensive HR document management and compliance reporting"}
               </CardDescription>
             </div>
+
             <div className="flex gap-2">
               <Button
                 onClick={handleClearFilters}
@@ -180,16 +203,36 @@ const HRDocumentsReports = () => {
               >
                 Reset Filters
               </Button>
-              <Button
-                onClick={handleExportReport}
-                disabled={isExporting}
-                variant="default"
-              >
-                {isExporting ? "Exporting..." : "Export to Excel"}
-              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    disabled={isExporting}
+                    variant="default"
+                    className="flex items-center gap-2"
+                  >
+                    {isExporting ? "Exporting..." : "Export Report"}
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {exportFormats.map((format) => (
+                    <DropdownMenuItem
+                      key={format.value}
+                      onClick={() => handleExportReport(format.value)}
+                      disabled={isExporting}
+                      className="flex items-center gap-2"
+                    >
+                      <span>{format.icon}</span>
+                      {format.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </CardHeader>
+
         <CardContent>
           {/* Global Filters */}
           <FilterInput
@@ -197,7 +240,7 @@ const HRDocumentsReports = () => {
               {
                 type: "search",
                 placeholder: "Search by Employee Name/ID",
-                name: "search",
+                name: "employee_name",
               },
               {
                 type: "select-one",

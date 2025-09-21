@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
@@ -20,10 +19,11 @@ import { HasAccess } from "utils/PermissionUtils";
 import {
   exportAttendanceShiftReport,
   exportTimeAdjustmentReport,
+  exportRemainingReports,
 } from "app/hooks/reports";
 import { toast } from "react-toastify";
 
-// Import all existing report components
+// Import all existing report components (1️⃣-3️⃣)
 import DailyAttendanceReport from "./Sections/DailyAttendanceReport";
 import MonthlyAttendanceReport from "./Sections/MonthlyAttendanceReport";
 import YearlyAttendanceReport from "./Sections/YearlyAttendanceReport";
@@ -42,12 +42,44 @@ import { WeeklyShiftCalendarReport } from "./Sections/WeeklyShiftCalendarReport"
 import { HolidaySpecialShiftReport } from "./Sections/HolidaySpecialShiftReport";
 import { WeekendWorkReport } from "./Sections/WeekendWorkReport";
 
-// Import new Time Adjustment components
+// Import Time Adjustment components (3️⃣)
 import TimeAdjustmentRequestReport from "./Sections/TimeAdjustmentReports/TimeAdjustmentRequestReport";
-import TimeAdjustmentStatusReport from "./Sections/TimeAdjustmentReports/TimeAdjustmentRequestReport";
+import TimeAdjustmentStatusReport from "./Sections/TimeAdjustmentReports/TimeAdjustmentStatusReport";
 import ReasonAnalysisReport from "./Sections/TimeAdjustmentReports/ReasonAnalysisReport";
 import ManagerApprovalReport from "./Sections/TimeAdjustmentReports/ManagerApprovalReport";
 import RepeatAdjustmentReport from "./Sections/TimeAdjustmentReports/RepeatAdjustmentReport";
+
+// Import NEW Attendance Updates & Audit components (4️⃣)
+import UpdatedAttendanceReport from "./Sections/AttendanceUpdatesAuditReports/UpdatedAttendanceReport";
+import HRAdminCorrectionReport from "./Sections/AttendanceUpdatesAuditReports/HRAdminCorrectionReport";
+import AuditTrailReport from "./Sections/AttendanceUpdatesAuditReports/AuditTrailReport";
+import ComplianceBreachReport from "./Sections/AttendanceUpdatesAuditReports/ComplianceBreachReport";
+import AttendanceUpdateHistoryReport from "./Sections/AttendanceUpdatesAuditReports/AttendanceUpdateHistoryReport";
+
+// Import NEW Exception & Special Condition components (5️⃣)
+import MissingPunchReport from "./Sections/ExceptionSpecialConditionReports/MissingPunchReport";
+import MultiplePunchReport from "./Sections/ExceptionSpecialConditionReports/MultiplePunchReport";
+import HalfDayReport from "./Sections/ExceptionSpecialConditionReports/HalfDayReport";
+import GracePeriodUsageReport from "./Sections/ExceptionSpecialConditionReports/GracePeriodUsageReport";
+import FrequentBreaksReport from "./Sections/ExceptionSpecialConditionReports/FrequentBreaksReport";
+import RemoteWorkReport from "./Sections/ExceptionSpecialConditionReports/RemoteWorkReport";
+import BusinessTripReport from "./Sections/ExceptionSpecialConditionReports/BusinessTripReport";
+
+// Import NEW Department & Managerial components (6️⃣)
+import DepartmentAttendanceReport from "./Sections/DepartmentManagerialReports/DepartmentAttendanceReport";
+import TeamAttendanceReport from "./Sections/DepartmentManagerialReports/TeamAttendanceReport";
+import ManagerAttendanceReport from "./Sections/DepartmentManagerialReports/ManagerAttendanceReport";
+import BranchAttendanceReport from "./Sections/DepartmentManagerialReports/BranchAttendanceReport";
+import ComparativeAttendanceReport from "./Sections/DepartmentManagerialReports/ComparativeAttendanceReport";
+
+// Import NEW Analytics, Trends & Compliance components (7️⃣)
+import AttendanceTrendReport from "./Sections/AnalyticsTrendsComplianceReports/AttendanceTrendReport";
+import ShiftUtilizationReport from "./Sections/AnalyticsTrendsComplianceReports/ShiftUtilizationReport";
+import OvertimeTrendReport from "./Sections/AnalyticsTrendsComplianceReports/OvertimeTrendReport";
+import AttritionRiskReport from "./Sections/AnalyticsTrendsComplianceReports/AttritionRiskReport";
+import LaborLawComplianceReport from "./Sections/AnalyticsTrendsComplianceReports/LaborLawComplianceReport";
+import PayrollIntegrationReport from "./Sections/AnalyticsTrendsComplianceReports/PayrollIntegrationReport";
+import AlertsThresholdReport from "./Sections/AnalyticsTrendsComplianceReports/AlertsThresholdReport";
 
 const AttendanceAndShiftReports = () => {
   // Permission checks
@@ -67,7 +99,7 @@ const AttendanceAndShiftReports = () => {
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Complete tab configuration with Time Adjustment Reports
+  // Complete tab configuration with ALL REPORT CATEGORIES (1️⃣-7️⃣)
   const reportTabs = [
     {
       value: "daily_reports",
@@ -182,7 +214,6 @@ const AttendanceAndShiftReports = () => {
         },
       ],
     },
-    // NEW: Time Adjustment Reports
     {
       value: "time_adjustment",
       label: "Time Adjustments",
@@ -212,6 +243,158 @@ const AttendanceAndShiftReports = () => {
           value: "repeat_adjustment_report",
           label: "Repeat Requests",
           component: RepeatAdjustmentReport,
+        },
+      ],
+    },
+    // NEW: 4️⃣ Attendance Updates & Audit Reports
+    {
+      value: "attendance_updates_audit",
+      label: "Updates & Audit",
+      description: "Tracks modifications made by HR/admin for transparency",
+      reports: [
+        {
+          value: "updated_attendance_report",
+          label: "Updated Attendance",
+          component: UpdatedAttendanceReport,
+        },
+        {
+          value: "hr_admin_correction_report",
+          label: "HR/Admin Corrections",
+          component: HRAdminCorrectionReport,
+        },
+        {
+          value: "audit_trail_report",
+          label: "Audit Trail",
+          component: AuditTrailReport,
+        },
+        {
+          value: "compliance_breach_report",
+          label: "Compliance Breaches",
+          component: ComplianceBreachReport,
+        },
+        {
+          value: "attendance_update_history",
+          label: "Update History",
+          component: AttendanceUpdateHistoryReport,
+        },
+      ],
+    },
+    // NEW: 5️⃣ Exception & Special Condition Reports
+    {
+      value: "exception_special_conditions",
+      label: "Exceptions & Special",
+      description: "Reports for unusual attendance/shift cases",
+      reports: [
+        {
+          value: "missing_punch_report",
+          label: "Missing Punches",
+          component: MissingPunchReport,
+        },
+        {
+          value: "multiple_punch_report",
+          label: "Multiple Punches",
+          component: MultiplePunchReport,
+        },
+        {
+          value: "half_day_report",
+          label: "Half Days",
+          component: HalfDayReport,
+        },
+        {
+          value: "grace_period_usage_report",
+          label: "Grace Period Usage",
+          component: GracePeriodUsageReport,
+        },
+        {
+          value: "frequent_breaks_report",
+          label: "Frequent Breaks",
+          component: FrequentBreaksReport,
+        },
+        {
+          value: "remote_work_report",
+          label: "Remote Work",
+          component: RemoteWorkReport,
+        },
+        {
+          value: "business_trip_report",
+          label: "Business Trips",
+          component: BusinessTripReport,
+        },
+      ],
+    },
+    // NEW: 6️⃣ Department & Managerial Reports
+    {
+      value: "department_managerial",
+      label: "Department & Managerial",
+      description: "Useful for team-level analysis",
+      reports: [
+        {
+          value: "department_attendance_report",
+          label: "Department Attendance",
+          component: DepartmentAttendanceReport,
+        },
+        {
+          value: "team_attendance_report",
+          label: "Team Attendance",
+          component: TeamAttendanceReport,
+        },
+        {
+          value: "manager_attendance_report",
+          label: "Manager-wise Attendance",
+          component: ManagerAttendanceReport,
+        },
+        {
+          value: "branch_attendance_report",
+          label: "Branch/Location Attendance",
+          component: BranchAttendanceReport,
+        },
+        {
+          value: "comparative_attendance_report",
+          label: "Comparative Report",
+          component: ComparativeAttendanceReport,
+        },
+      ],
+    },
+    // NEW: 7️⃣ Analytics, Trends & Compliance Reports
+    {
+      value: "analytics_trends_compliance",
+      label: "Analytics & Compliance",
+      description: "For HR & compliance dashboards",
+      reports: [
+        {
+          value: "attendance_trend_report",
+          label: "Attendance Trends",
+          component: AttendanceTrendReport,
+        },
+        {
+          value: "shift_utilization_report",
+          label: "Shift Utilization",
+          component: ShiftUtilizationReport,
+        },
+        {
+          value: "overtime_trend_report",
+          label: "Overtime Trends",
+          component: OvertimeTrendReport,
+        },
+        {
+          value: "attrition_risk_report",
+          label: "Attrition Risk",
+          component: AttritionRiskReport,
+        },
+        {
+          value: "labor_law_compliance_report",
+          label: "UAE Labor Law Compliance",
+          component: LaborLawComplianceReport,
+        },
+        {
+          value: "payroll_integration_report",
+          label: "Payroll Integration",
+          component: PayrollIntegrationReport,
+        },
+        {
+          value: "alerts_threshold_report",
+          label: "Alerts & Thresholds",
+          component: AlertsThresholdReport,
         },
       ],
     },
@@ -271,13 +454,45 @@ const AttendanceAndShiftReports = () => {
     try {
       const combinedFilters = { ...filterData, ...permittedViewFilterData };
 
-      // Handle time adjustment reports differently
+      // Handle time adjustment reports
       const timeAdjustmentReports = [
         "time_adjustment_request_report",
         "adjustment_status_report",
         "reason_analysis_report",
         "manager_approval_report",
         "repeat_adjustment_report",
+      ];
+
+      // Handle new remaining reports (4️⃣-7️⃣)
+      const remainingReports = [
+        // 4️⃣ Attendance Updates & Audit Reports
+        "updated_attendance_report",
+        "hr_admin_correction_report",
+        "audit_trail_report",
+        "compliance_breach_report",
+        "attendance_update_history",
+        // 5️⃣ Exception & Special Condition Reports
+        "missing_punch_report",
+        "multiple_punch_report",
+        "half_day_report",
+        "grace_period_usage_report",
+        "frequent_breaks_report",
+        "remote_work_report",
+        "business_trip_report",
+        // 6️⃣ Department & Managerial Reports
+        "department_attendance_report",
+        "team_attendance_report",
+        "manager_attendance_report",
+        "branch_attendance_report",
+        "comparative_attendance_report",
+        // 7️⃣ Analytics, Trends & Compliance Reports
+        "attendance_trend_report",
+        "shift_utilization_report",
+        "overtime_trend_report",
+        "attrition_risk_report",
+        "labor_law_compliance_report",
+        "payroll_integration_report",
+        "alerts_threshold_report",
       ];
 
       let success = false;
@@ -287,7 +502,10 @@ const AttendanceAndShiftReports = () => {
           activeReport,
           combinedFilters
         );
+      } else if (remainingReports.includes(activeReport)) {
+        success = await exportRemainingReports(activeReport, combinedFilters);
       } else {
+        // Handle original reports (1️⃣-2️⃣ + existing reports)
         success = await exportAttendanceShiftReport(
           activeReport,
           combinedFilters
@@ -331,11 +549,11 @@ const AttendanceAndShiftReports = () => {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl font-bold text-plum-1100">
-                Attendance & Shift Reports
+                Comprehensive Attendance & Shift Reports
               </CardTitle>
               <CardDescription className="mt-2">
                 {currentTab?.description ||
-                  "Comprehensive attendance and shift reporting system"}
+                  "Complete attendance and shift reporting system with 7 major categories"}
               </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -424,15 +642,15 @@ const AttendanceAndShiftReports = () => {
         onValueChange={setActiveTab}
         defaultValue="daily_reports"
       >
-        {/* Main Tab Navigation */}
+        {/* Main Tab Navigation - Updated to show 8 tabs */}
         <Card>
           <CardContent className="pt-6">
-            <TabsList className="grid w-full grid-cols-5 mb-4">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-4 gap-1">
               {reportTabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="data-[state=active]:bg-plum-200 data-[state=active]:text-plum-1100 text-xs lg:text-sm"
+                  className="data-[state=active]:bg-plum-200 data-[state=active]:text-plum-1100 text-xs lg:text-sm px-2 py-1"
                 >
                   {tab.label}
                 </TabsTrigger>
