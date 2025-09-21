@@ -308,10 +308,8 @@ const SheetUI = forwardRef(
                                     value ? value : get(props?.values, name)
                                   }
                                   onChange={async (field, value) => {
-                                    if (
-                                      onFieldUpdate &&
-                                      typeof onFieldUpdate === "function"
-                                    )
+                                    props?.setFieldValue(field, value);
+                                    if (onFieldUpdate && typeof onFieldUpdate === "function")
                                       await onFieldUpdate(
                                         field,
                                         value,
@@ -319,14 +317,9 @@ const SheetUI = forwardRef(
                                         props.setFieldValue
                                       );
                                     if (validateDuplicate) {
-                                      await validateFieldValue(
-                                        value,
-                                        name,
-                                        props.values.id
-                                      );
+                                      await validateFieldValue(value, name, props.values.id);
                                     }
 
-                                    props?.setFieldValue(field, value);
                                   }}
                                   columns={subColumns}
                                   {...fieldsConfig}

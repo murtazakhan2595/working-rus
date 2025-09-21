@@ -1,33 +1,28 @@
-import { saveManpowerPanning, getManpowerById } from 'app/hooks/talentSphere';
+import { saveManpowerPanning, getManpowerById, getManpowerPlanningList } from 'app/hooks/talentSphere';
 import { getEmployeeList } from 'app/hooks/general';
 import { ManpowerPlanning } from "app/utils/Types/TalentSphere";
 import {
     TextAreaInput,
-    TextInput,
     SelectInputComponent,
     NumberInput,
-    DateInput,
 } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { errorClassName } from "components/FormControl";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { SheetUI } from "components";
 import { GetDispatchStateList } from "utils/Lists";
 import { yearsDropdownList } from 'utils/Lists';
+import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 
 const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, }) => {
-    const UserDetails = GetDispatchStateList('user_details', 'emp');
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
-    const [selectedEmployee, setSelectedEmployee] = useState({});
     const [FormValues, setFormValues] = useState(ManpowerPlanning);
-    const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(ManpowerPlanning);
-    const [ExistingHeadcount, setExistingHeadcount] = useState([]);
+    const [ManpowerExist, setManpowerExist] = useState(false);
 
     const FormSheetData = {
         triggerText: "",
@@ -68,7 +63,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values,};
+            const payload = { ...values, };
             const response = await saveManpowerPanning(payload, id);
             if (response) {
                 return {
@@ -86,18 +81,35 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
         }
     };
 
-    const getExistingHeadCount = async (branch, department) => {
+    const getExistingHeadCount = async (branch, department, handleChange) => {
         try {
             const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
             const response = await getEmployeeList({ filterData });
             if (response) {
-                setExistingHeadcount(response.count);
+                handleChange("existing_headcount", response.count);
             }
         } catch (error) {
             // Show error message
             console.error(error)
         }
     };
+
+    const ValidateExistingRecord = async (branch, department, fiscalYear) => {
+        try {
+            const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: fiscalYear } : {}) }
+            const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
+            if (existingPlanning.count > 0)
+                setManpowerExist(true);
+            else
+                setManpowerExist(false);
+
+        } catch (error) {
+            // Show error message
+            console.error(error)
+        }
+    };
+
+
 
     return (
         <SheetUI
@@ -110,7 +122,8 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
                 validateFormSchema: (values) => {
-                    const errors = {};
+                    const errors = validateManpowerPlanningFormSchema(values);
+                    if (ManpowerExist) errors.manpower_planning = 'Manpower Planning for selected fiscal year already exist form same branch and department.'
                     return errors;
                 },
                 submitButtonText: "Submit",
@@ -119,11 +132,11 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-                DataList: FormList,
                 formFields: [
                     {
                         sheetCardExtension: true,
-                        sheetCardTitle: "Form Details",
+                        sheetCardTitle: "Planning Details",
+                        sheetCardName: "manpower_planning",
                         InputFields: [
                             {
                                 InputField: SelectInputComponent,
@@ -131,6 +144,9 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Fiscal Year",
                                 options: YearsDropdown,
+                                onFieldUpdate: async (_, value) => {
+                                    await ValidateExistingRecord(FormValues?.branch, FormValues?.department, value);
+                                },
                             },
                             {
                                 InputField: SelectInputComponent,
@@ -138,8 +154,9 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Branch",
                                 options: Branches,
-                                onFieldUpdate: async (_, value) => {
-                                    await getExistingHeadCount(value, FormValues?.department);
+                                onFieldUpdate: async (_, value, __, handleChange) => {
+                                    await getExistingHeadCount(value, FormValues?.department, handleChange);
+                                    await ValidateExistingRecord(value, FormValues?.department, FormValues.fiscal_year);
                                 },
                             },
                             {
@@ -150,6 +167,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 options: Departments,
                                 onFieldUpdate: async (_, value) => {
                                     await getExistingHeadCount(FormValues?.branch, value);
+                                    await ValidateExistingRecord(FormValues?.branch, value, FormValues.fiscal_year);
                                 },
                             },
                             {
@@ -162,7 +180,6 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 InputField: NumberInput,
                                 name: `existing_headcount`,
                                 label: "Existing Headcount",
-                                value: ExistingHeadcount,
                                 disabled: true,
                             },
                             {
@@ -174,7 +191,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                             {
                                 InputField: TextAreaInput,
                                 name: "justification",
-                                required: true,
+                                required: (parseFloat(FormValues.planned_headcount) || 0) > ((parseFloat(FormValues.existing_headcount) || 0)),
                                 label: "Justification",
                                 colsSpan: 2,
                             },
@@ -188,30 +205,5 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     );
 };
 
-const AddNewKeyResult = React.memo(
-    ({ name, onChange = () => { }, value = [], error }) => {
-        const handleClick = (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const updatedSections = [
-                ...(value || []),
-                {
-                    description: null,
-                    target_value: null,
-                    current_value: null,
-                },
-            ];
-            onChange(name, updatedSections);
-        };
-        return (
-            <div>
-                <Button variant="outline" onClick={handleClick}>
-                    Add Key Results
-                </Button>
-                <div className={errorClassName}>{error}</div>
-            </div>
-        );
-    }
-);
 
 export default AddUpdateManpower;

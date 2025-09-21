@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { AddUpdateManpower } from "app/modules/TalentSphere";
 import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
-import { Header } from "components";
+import { Header, PageLoader, TableCustom } from "components";
 import { getManpowerPlanningList } from "app/hooks/talentSphere";
 import Stats from "components/ui/Stats";
-import TableCustom from "components/CustomTable";
+import { FilterInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { ManpowerPlanningColumns } from "app/modules/TalentSphere/Sections";
+import { yearsDropdownList } from 'utils/Lists';
 
 export default function ManpowerPlanning() {
   const userId = useSelector((state) => state.user.userProfile.id);
@@ -20,7 +21,7 @@ export default function ManpowerPlanning() {
   const [OpenManpowerForm, setOpenManpowerForm] = useState(false);
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({ employee_id: userId });
-  const [statsData, setStatsData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -36,6 +37,7 @@ export default function ManpowerPlanning() {
   };
 
   const fetchData = async (isMounted) => {
+    setIsLoading(true);
     try {
       const data = await getManpowerPlanningList({
         options,
@@ -47,6 +49,8 @@ export default function ManpowerPlanning() {
       }
     } catch (error) {
       console.error("Error fetching employees:", error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -58,13 +62,6 @@ export default function ManpowerPlanning() {
     };
   }, [options, filterData, ordering]);
 
-
-  const TransferStatsData = React.useMemo(() => [
-    { label: "Total Tranfers", value: statsData.Total, icon: FolderInput },
-    { label: "Pending", value: statsData.Pending, icon: Loader },
-    { label: "Approved", value: statsData.Approved, icon: CircleCheckBig },
-    { label: "Rejected", value: statsData.Rejected, icon: CircleX },
-  ], [statsData]);
 
   const HeaderButton = () => {
     const handleRequestClick = (event) => {
@@ -82,6 +79,20 @@ export default function ManpowerPlanning() {
     )
   }
 
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+  const YearsDropdown = React.useMemo(() => yearsDropdownList(2020, 2030), []);
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -89,20 +100,47 @@ export default function ManpowerPlanning() {
       <Header
         content={<HeaderButton />}
       />
-      <Stats stats={TransferStatsData} />
       <Card>
         <CardHeader>
           <CardTitle>Manpower Planning</CardTitle>
           <CardDescription>Here you can add, and view planned headcount, budgets, and justifications for manpower allocation</CardDescription>
         </CardHeader>
         <CardContent>
-          <TableCustom
-            data={ManpowerPlanningList.results}
-            columns={ManpowerPlanningColumns(fetchData)}
-            pagination={true}
-            dataTotalSize={ManpowerPlanningList.count || 0}
-            tableOptions={tableOptions}
+          <FilterInput
+            filters={[
+              {
+                type: "select-multiple",
+                options: YearsDropdown,
+                name: "initiated_by",
+                placeholder: "Fascal Year",
+              },
+              {
+                type: "select",
+                options: "departments",
+                name: "department",
+                placeholder: "Department",
+              },
+              {
+                type: "select",
+                options: "branches",
+                name: "new_branch",
+                placeholder: "Branch",
+              },
+            ]}
+            onChange={handleFilterChange}
+            className="justify-end mb-4"
           />
+          {isLoading ? <PageLoader />
+            : (
+              <TableCustom
+                data={ManpowerPlanningList.results}
+                columns={ManpowerPlanningColumns(fetchData)}
+                pagination={true}
+                dataTotalSize={ManpowerPlanningList.count || 0}
+                tableOptions={tableOptions}
+              />
+            )
+          }
         </CardContent>
       </Card>
       {OpenManpowerForm && (

@@ -6,4 +6,9 @@ export const ManpowerPlanning = {
     total_allocated_budget: null,
     justification: null,
     id:null,
+    existing_headcount:null,
+    created_on:null,
+    consumed_budget:null,
+    consumed_percentage:null,
+    consumed_budget_status:null,
 }

@@ -7,7 +7,6 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
-import TextInput from "components/FormControl/TextInput";
 import { ChevronsUpDown, Check, SearchIcon, RefreshCcw } from "lucide-react";
 import {
   Command,
@@ -17,10 +16,8 @@ import {
   CommandItem,
   CommandList,
 } from "src/@/components/ui/command";
-import { SelectInputComponent, } from "components/FormControl/InputSelect";
+import { SelectInputComponent, SelectMultiInputComponent, DateRangeInput, DateRangeFilter,TextInput } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
-import DateRangeInput from "./DateRangeInput";
-import DateRangeFilter from "./DateRangeFilter";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import {
@@ -157,6 +154,16 @@ const FilterInput = ({
             name,
             options = [],
           } = filter;
+          const SearchOptions =
+            !options ? [] :
+              Array.isArray(options) ? options :
+                typeof options === 'string' ?
+                  options.toLowerCase() === 'departments' ? Departments || [] :
+                    options.toLowerCase() === 'branches' ? Branches || [] :
+                      options.toLowerCase() === 'designations' ? Designations || [] :
+                        options.toLowerCase() === 'nationalities' ? countriesList || [] :
+                          options.toLowerCase() === 'employees' ? Employees || [] :
+                            [] : [];
           switch (filter.type) {
             case "search":
               return (
@@ -172,16 +179,6 @@ const FilterInput = ({
                 />
               );
             case "select":
-              const SearchOptions =
-                !options ? [] :
-                  Array.isArray(options) ? options :
-                    typeof options === 'string' ?
-                      options.toLowerCase() === 'departments' ? Departments || [] :
-                        options.toLowerCase() === 'branches' ? Branches || [] :
-                          options.toLowerCase() === 'designations' ? Designations || [] :
-                            options.toLowerCase() === 'nationalities' ? countriesList || [] :
-                              options.toLowerCase() === 'employees' ? Employees || [] :
-                                [] : [];
               return (
                 <RenderSelectInputField
                   className={FilterClassName}
@@ -195,6 +192,21 @@ const FilterInput = ({
                   resetField={resetFields}
                 />
               );
+            case "select-multiple":
+              return (
+                <RenderMultiSelectInputField
+                  className={FilterClassName}
+                  width={width ?? DefaultWidth}
+                  name={name}
+                  options={SearchOptions || []}
+                  placeholder={`Search ${placeholder}`}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                  value={filterValues[name] || null}
+                  resetField={resetFields}
+                />
+              );
+
             case "select-one":
               return renderPopoverSelect(
                 filter,
@@ -291,6 +303,55 @@ const RenderInputField = React.memo(
         {!inputValue && (
           <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-neutral-800" />
         )}
+      </div>
+    );
+  }
+);
+
+const RenderMultiSelectInputField = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    placeholder,
+    height = "",
+    handleInputChange = () => { },
+    options = [],
+    resetField,
+    value,
+  }) => {
+    const [inputValue, setInputValue] = useState(value);
+    // Add "All" option to the options array if it exists
+    const allOptions = React.useMemo(
+      () => (options ? [{ value: "All", label: "All" }, ...options] : []),
+      [options]
+    );
+    useEffect(() => {
+      let isMounted = true;
+      if (isMounted) {
+        setInputValue(null);
+      }
+      return () => {
+        isMounted = false;
+      };
+    }, [resetField]);
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+        <SelectMultiInputComponent
+          type={"text"}
+          placeholder={placeholder}
+          className={`rounded-sm text-neutral-1000`}
+          name={name}
+          value={inputValue || ""}
+          onChange={(field, value) => {
+            setInputValue(value ? (value === "All" ? "" : value) : "");
+            handleInputChange(
+              field,
+              value ? (value === "All" ? "" : value) : ""
+            );
+          }}
+          options={allOptions}
+        />
       </div>
     );
   }

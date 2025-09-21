@@ -1,9 +1,13 @@
 import {
     ManpowerPlanning,
-    AddUpdateManpower
+    AddUpdateManpower,
+    ManpowerPlanningActions,
+    ViewManpowerPlanning,
 } from './ManpowerPlanning';
 
 export {
     ManpowerPlanning,
-    AddUpdateManpower
+    AddUpdateManpower,
+    ManpowerPlanningActions,
+    ViewManpowerPlanning,
 };

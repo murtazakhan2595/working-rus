@@ -18,8 +18,19 @@ export function mapManpowerPayloadData(data) {
 export async function mapManpowerData(data) {
     const RecordDetails = {};
     for (const key of Object.keys(ManpowerPlanning)) {
-        if (Object.prototype.hasOwnProperty.call(data, key))
+        if (key === 'consumed_budget_status') {
+            const consumed_budget = parseFloat(data['consumed_percentage']);
+            if (consumed_budget <= 50)
+                RecordDetails[key] = "Within Budget";
+            else if (consumed_budget > 50 && consumed_budget <= 70)
+                RecordDetails[key] = "Approaching Limit";
+            else if (consumed_budget > 70 && consumed_budget <= 90)
+                RecordDetails[key] = "Near Threshold";
+            else if (consumed_budget > 90)
+                RecordDetails[key] = "Over Budget";
+        } else if (Object.prototype.hasOwnProperty.call(data, key)) {
             RecordDetails[key] = data[key];
+        }
     }
 
     return RecordDetails;
