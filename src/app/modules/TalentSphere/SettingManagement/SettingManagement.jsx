@@ -83,7 +83,7 @@ export default function SettingManagement() {
             )
         } else if (activeButtonTab === "Educations" && isAddEducationsPermitted) {
             return (
-                <Button title="benefits" onClick={handleRequestClick}>
+                <Button title="education" onClick={handleRequestClick}>
                     Add Education
                 </Button>
             )

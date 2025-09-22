@@ -1,154 +1,156 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
-import { AddUpdateManpower } from "app/modules/TalentSphere";
-import { CircleCheckBig, CircleX, FolderInput, Loader, } from "lucide-react";
-import { Header, PageLoader, TableCustom } from "components";
-import { getManpowerPlanningList } from "app/hooks/talentSphere";
-import Stats from "components/ui/Stats";
-import { FilterInput } from "components/FormControl";
+import { Header } from "components";
+import React, { useState } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
+import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
-import { ManpowerPlanningColumns } from "app/modules/TalentSphere/Sections";
-import { yearsDropdownList } from 'utils/Lists';
+import { HasAccess } from "utils/PermissionUtils";
+import {
+  Benefits,
+  AddUpdateManpower,
+  CareerLevels,
+  ManpowerHeadcount,
+  Educations,
+  AddUpdateEducationForm,
+  JobTypes,
+  AddUpdateJobTypeForm,
+  RemoteWorkChecklist,
+  AddUpdateRemoteWorkChecklistForm,
+} from 'app/modules/TalentSphere';
+import Error from "app/modules/Error";
 
 export default function ManpowerPlanning() {
-  const userId = useSelector((state) => state.user.userProfile.id);
-  const [ManpowerPlanningList, setManpowerPlanningList] = useState({
-    results: [],
-    count: 0,
-  });
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const isViewHeadcountPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
+  const isAddHeadcountPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
+  const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
+  const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
+  const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
+  const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
+  const isViewJobTypesPermitted = HasAccess("VIEW_TS_JOB_TYPE");
+  const isAddJobTypesPermitted = HasAccess("ADD_TS_JOB_TYPE");
+  const isViewChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+  const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+  const [activeTab, setActiveTab] = useState(null);
+  const [OpenBenefitForm, setOpenBenefitForm] = useState(false);
+  const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
+  const [OpenEducationForm, setOpenEducationForm] = useState(false);
+  const [OpenJobTypesForm, setOpenJobTypesForm] = useState(false);
+  const [reloadData, setReloadData] = useState({});
   const [OpenManpowerForm, setOpenManpowerForm] = useState(false);
-  const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState({ employee_id: userId });
-  const [isLoading, setIsLoading] = useState(false);
 
-  const onPageChange = (name, value) => {
-    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
-  };
 
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-    onSortChange: (sortName) => {
-      setOrdering(sortName);
-    },
-  };
+  const TabListArray = React.useMemo(() => [
+    ...(isViewHeadcountPermitted ? ["Manpower Headcount"] : []),
+    ...(isViewChecklistPermitted ? ["Remote Work Checklist"] : []),
+    ...(isViewJobTypesPermitted ? ["Job Types"] : []),
+    ...(isViewEducationsPermitted ? ["Education"] : []),
+    ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-  const fetchData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getManpowerPlanningList({
-        options,
-        filterData,
-        ordering,
-      });
-      if (isMounted) {
-        setManpowerPlanningList(data);
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      setIsLoading(false)
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [options, filterData, ordering]);
-
+  ], [isViewHeadcountPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
 
   const HeaderButton = () => {
     const handleRequestClick = (event) => {
       event.preventDefault();
       event.stopPropagation();
+      setOpenBenefitForm(false);
+      setOpenCareerLevelForm(false);
+      setOpenEducationForm(false);
+      setOpenJobTypesForm(false);
       setOpenManpowerForm(false);
       const triggeredResquest = event.target.title;
-      if (triggeredResquest === 'manpower')
+      if (triggeredResquest === 'manpower-headcount')
+        setOpenManpowerForm(true);
+      else if (triggeredResquest === 'career-level')
+        setOpenCareerLevelForm(true);
+      else if (triggeredResquest === 'education')
+        setOpenEducationForm(true);
+      else if (triggeredResquest === 'job-type')
+        setOpenJobTypesForm(true);
+      else if (triggeredResquest === 'checklist')
         setOpenManpowerForm(true);
     }
-    return (
-      <Button title="manpower" onClick={handleRequestClick}>
-        Add Manpower
-      </Button>
-    )
+    const activeButtonTab = activeTab ?? TabListArray[0];
+    if (activeButtonTab === "Manpower Headcount" && isAddHeadcountPermitted) {
+      return (
+        <Button title="manpower-headcount" onClick={handleRequestClick}>
+          Add Manpower
+        </Button>
+      )
+    } else if (activeButtonTab === "Career Level" && isAddCareerLevelsPermitted) {
+      return (
+        <Button title="career-level" onClick={handleRequestClick}>
+          Add Career Level
+        </Button>
+      )
+    } else if (activeButtonTab === "Educations" && isAddEducationsPermitted) {
+      return (
+        <Button title="benefits" onClick={handleRequestClick}>
+          Add Education
+        </Button>
+      )
+    } else if (activeButtonTab === "Job Types" && isAddJobTypesPermitted) {
+      return (
+        <Button title="job-type" onClick={handleRequestClick}>
+          Add Job Type
+        </Button>
+      )
+    } else if (activeButtonTab === "Remote Work Checklist" && isAddChecklistPermitted) {
+      return (
+        <Button title="checklist" onClick={handleRequestClick}>
+          Add Remote Work Checklist
+        </Button>
+      )
+    }
   }
-
-  const handleFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-  const YearsDropdown = React.useMemo(() => yearsDropdownList(2020, 2030), []);
-
+  if (!isViewHeadcountPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
+    return <Error errorType={401} />
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
-      <Header
-        content={<HeaderButton />}
-      />
-      <Card>
-        <CardHeader>
-          <CardTitle>Manpower Planning</CardTitle>
-          <CardDescription>Here you can add, and view planned headcount, budgets, and justifications for manpower allocation</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FilterInput
-            filters={[
-              {
-                type: "select-multiple",
-                options: YearsDropdown,
-                name: "initiated_by",
-                placeholder: "Fascal Year",
-              },
-              {
-                type: "select",
-                options: "departments",
-                name: "department",
-                placeholder: "Department",
-              },
-              {
-                type: "select",
-                options: "branches",
-                name: "new_branch",
-                placeholder: "Branch",
-              },
-            ]}
-            onChange={handleFilterChange}
-            className="justify-end mb-4"
-          />
-          {isLoading ? <PageLoader />
-            : (
-              <TableCustom
-                data={ManpowerPlanningList.results}
-                columns={ManpowerPlanningColumns(fetchData)}
-                pagination={true}
-                dataTotalSize={ManpowerPlanningList.count || 0}
-                tableOptions={tableOptions}
-              />
-            )
-          }
-        </CardContent>
-      </Card>
+    <div className="flex flex-col gap-4">
+      <Header content={<HeaderButton />} />
+
+      <Tabs
+        value={activeTab || TabListArray[0]}
+        onValueChange={setActiveTab}
+        defaultValue="Benefits"
+      >
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
+          <TabsList>
+            {TabListArray.map((tab) => (
+              <TabsTrigger key={tab} value={tab}>
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+
+        <Card>
+          <TabsContent value={'Manpower Headcount'}>
+            <ManpowerHeadcount reload={reloadData['manpower-headcount']} />
+          </TabsContent>
+          <TabsContent value={'Career Level'}>
+            <CareerLevels reload={reloadData['career-level']} />
+          </TabsContent>
+          <TabsContent value={'Education'}>
+            <Educations reload={reloadData['education']} />
+          </TabsContent>
+          <TabsContent value={'Job Types'}>
+            <JobTypes reload={reloadData['job-type']} />
+          </TabsContent>
+          <TabsContent value={'Remote Work Checklist'}>
+            <RemoteWorkChecklist reload={reloadData['checklist']} />
+          </TabsContent>
+        </Card>
+      </Tabs>
       {OpenManpowerForm && (
         <AddUpdateManpower
           isOpen={OpenManpowerForm}
           setIsOpen={() => {
             setOpenManpowerForm(false);
-            fetchData(true);
+            setReloadData((prev) => {
+              return {
+                ...prev,
+                'manpower-headcount': !prev["manpower-headcount"],
+              };
+            })
           }}
           isAdminView={true}
           isEmployee={true}
@@ -157,3 +159,4 @@ export default function ManpowerPlanning() {
     </div>
   );
 }
+

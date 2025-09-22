@@ -1,6 +1,6 @@
 import { countries } from "country-data";
 import Config from "constants/config";
-import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
+import { StatusLabel } from "components/StatusLabel";
 import {
   fetchDepartments,
   fetchDesignations,
@@ -21,7 +21,6 @@ import {
   fetchEmployeesDetail,
   fetchUser,
 } from "state/slices/EmpSlice";
-import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import { fetchUserAttendanceDetails } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
@@ -374,6 +373,25 @@ export const PriorityList = [
       </span>
     ),
     name: <span className="text-red-500">High</span>,
+  },
+];
+
+export const BudgetStatusOptions = [
+  {
+    value: "Within Budget",
+    label: (<StatusLabel status={'success'}>Within Budget</StatusLabel>),
+  },
+  {
+    value: "Approaching Limit",
+    label: (<StatusLabel status={'warning'}>Approaching Limit</StatusLabel>),
+  },
+  {
+    value: "Near Threshold",
+    label: (<StatusLabel status={'error'}>Near Threshold</StatusLabel>),
+  },
+  {
+    value: "Over Budget",
+    label: (<StatusLabel status={'critical'}>Over Budget</StatusLabel>),
   },
 ];
 

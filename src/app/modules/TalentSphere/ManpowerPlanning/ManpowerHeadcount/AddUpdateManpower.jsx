@@ -6,13 +6,14 @@ import {
     SelectInputComponent,
     NumberInput,
 } from "components/FormControl";
-import { Button } from "components/ui/button";
-import { errorClassName } from "components/FormControl";
+import { BudgetStatusOptions } from "data/Data";
 import React, { useEffect, useState } from "react";
 import { SheetUI } from "components";
 import { GetDispatchStateList } from "utils/Lists";
 import { yearsDropdownList } from 'utils/Lists';
 import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
+import { calculateTotal, calculatePercentage } from 'utils/renderValues';
+import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 
 const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, }) => {
     const Branches = GetDispatchStateList('branches', 'common');
@@ -23,6 +24,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(ManpowerPlanning);
     const [ManpowerExist, setManpowerExist] = useState(false);
+    const [BudgetStatus, setBudgetStatus] = useState(null);
 
     const FormSheetData = {
         triggerText: "",
@@ -83,10 +85,32 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
 
     const getExistingHeadCount = async (branch, department, handleChange) => {
         try {
-            const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
-            const response = await getEmployeeList({ filterData });
-            if (response) {
-                handleChange("existing_headcount", response.count);
+            if (branch && department) {
+                const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
+                const response = await getEmployeeList({ filterData });
+                if (response) {
+                    handleChange("existing_headcount", response.count);
+                    const consumed_budget = calculateTotal(response.results, 'basic_salary')
+                    handleChange("consumed_budget", consumed_budget);
+                }
+            } else {
+                handleChange("existing_headcount", 0);
+                handleChange("consumed_budget", 0);
+            }
+        } catch (error) {
+            // Show error message
+            console.error(error)
+        }
+    };
+
+    const renderConsumedBudgetStatus = async (consumed_budget, total_budget, handleChange) => {
+        try {
+            if (consumed_budget && total_budget) {
+                const percentage = calculatePercentage(consumed_budget, total_budget);
+                const consumed_budget_status = getConsumedBudgetStatus(percentage)
+                setBudgetStatus(consumed_budget_status);
+            } else {
+                setBudgetStatus(null);
             }
         } catch (error) {
             // Show error message
@@ -96,12 +120,16 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
 
     const ValidateExistingRecord = async (branch, department, fiscalYear) => {
         try {
-            const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: fiscalYear } : {}) }
-            const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
-            if (existingPlanning.count > 0)
-                setManpowerExist(true);
-            else
-                setManpowerExist(false);
+            if (branch && department && fiscalYear) {
+                const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: fiscalYear } : {}) }
+                const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
+                if (existingPlanning.count > 0) {
+                    setManpowerExist(true);
+                    return 0;
+                }
+            }
+            setManpowerExist(false);
+            return 0;
 
         } catch (error) {
             // Show error message
@@ -129,7 +157,10 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
                 columns: 2,
-                renderUpdatedFormValues: setFormValues,
+                renderUpdatedFormValues: (values) => {
+                    setFormValues(values);
+                    renderConsumedBudgetStatus(values.consumed_budget, values.total_allocated_budget)
+                },
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
@@ -165,8 +196,8 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Department",
                                 options: Departments,
-                                onFieldUpdate: async (_, value) => {
-                                    await getExistingHeadCount(FormValues?.branch, value);
+                                onFieldUpdate: async (_, value, __, handleChange) => {
+                                    await getExistingHeadCount(FormValues?.branch, value, handleChange);
                                     await ValidateExistingRecord(FormValues?.branch, value, FormValues.fiscal_year);
                                 },
                             },
@@ -187,6 +218,20 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 name: `total_allocated_budget`,
                                 label: "Total Allocated Budget",
                                 required: true,
+                            },
+                            {
+                                InputField: NumberInput,
+                                name: `consumed_budget`,
+                                label: "Consumed Budget",
+                                disabled: true,
+                            },
+                            {
+                                InputField: SelectInputComponent,
+                                name: `consumed_budget_status`,
+                                label: "Consumed Budget Status",
+                                disabled: true,
+                                value: BudgetStatus,
+                                options: BudgetStatusOptions,
                             },
                             {
                                 InputField: TextAreaInput,

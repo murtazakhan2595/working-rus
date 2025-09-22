@@ -3,6 +3,7 @@ import {
     AddUpdateManpower,
     ManpowerPlanningActions,
     ViewManpowerPlanning,
+    ManpowerHeadcount,
 } from './ManpowerPlanning';
 import {
     TalentSphereSettingManagement,
@@ -47,4 +48,5 @@ export {
     CareerLevels,
     AddUpdateCareerLevelForm,
     CareerLevelActions,
+    ManpowerHeadcount,
 };

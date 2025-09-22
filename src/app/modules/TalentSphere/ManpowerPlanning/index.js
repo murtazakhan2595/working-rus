@@ -1,11 +1,14 @@
 import ManpowerPlanning from './ManpowerPlanning';
-import AddUpdateManpower from './AddUpdateManpower';
-import ManpowerPlanningActions from './ManpowerPlanningActions';
-import ViewManpowerPlanning from './ViewManpowerPlanning';
-
+import {
+    ManpowerHeadcount,
+    AddUpdateManpower,
+    ManpowerPlanningActions,
+    ViewManpowerPlanning,
+} from './ManpowerHeadcount';
 export {
     ManpowerPlanning,
     AddUpdateManpower,
     ManpowerPlanningActions,
     ViewManpowerPlanning,
+    ManpowerHeadcount,
 };
