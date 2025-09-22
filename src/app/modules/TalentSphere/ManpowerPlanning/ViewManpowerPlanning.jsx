@@ -97,6 +97,8 @@ const ViewManpowerPlanning = ({
             deleteItemName="name"
             editTooltip="Edit Manpower Planning"
             deleteTooltip="Delete Manpower Planning"
+            editPermissions="EDIT_MANPOWER"
+            deletePermissions="DELETE_MANPOWER"
         >
             <DetailContent fields={fields} />
         </NavigationSheetComponent>

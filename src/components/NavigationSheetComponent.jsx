@@ -3,7 +3,7 @@ import { ViewDetailSheetCardExtension, PageLoader } from "components";
 import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import axios from "axios";
+import { HasAccess } from "utils/PermissionUtils";
 
 const NavigationSheetComponent = ({
   // Main sheet props
@@ -34,7 +34,15 @@ const NavigationSheetComponent = ({
 
   // Callbacks
   additionalEditProps = {},
+
+  //Permissions
+  editPermissions = null,
+  deletePermissions = null,
 }) => {
+  //Permissions
+  const isEditPermitted = editPermissions ? HasAccess("EDIT_MANPOWER") : true;
+  const isDeletePermitted = deletePermissions ? HasAccess("DELETE_MANPOWER") : true;
+
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -173,8 +181,8 @@ const NavigationSheetComponent = ({
           <div className="flex flex-col gap-4">
             <div className="flex justify-end mt-4 space-x-2">
               <CircularActionButtons
-                onEdit={allowEdit ? handleEdit : null}
-                onDelete={allowDelete ? handleDelete : null}
+                onEdit={allowEdit && isEditPermitted ? handleEdit : null}
+                onDelete={allowDelete && isDeletePermitted ? handleDelete : null}
                 editTooltip={allowEdit ? editTooltip : null}
                 deleteTooltip={allowDelete ? deleteTooltip : null}
               />

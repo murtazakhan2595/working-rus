@@ -1,34 +1,33 @@
+import TalentSphereSettingManagement from './SettingManagement';
 import {
-    ManpowerPlanning,
-    AddUpdateManpower,
-    ManpowerPlanningActions,
-    ViewManpowerPlanning,
-} from './ManpowerPlanning';
-import {
-    TalentSphereSettingManagement,
     Benefits,
     AddUpdateBenefitForm,
     BenefitStatusTogle,
     BenefitActions,
+} from './Benefits';
+import {
     RemoteWorkChecklist,
     RemoteWorkChecklistActions,
     RemoteWorkChecklistStatusTogle,
     AddUpdateRemoteWorkChecklistForm,
+} from './RemoteWorkChecklist';
+import {
     JobTypes,
     AddUpdateJobTypeForm,
     JobTypeActions,
+} from './JobTypes';
+import {
     Educations,
     AddUpdateEducationForm,
     EducationActions,
+} from './Educations';
+import {
     CareerLevels,
     AddUpdateCareerLevelForm,
     CareerLevelActions,
-} from './SettingManagement';
+} from './CareerLevels'
+
 export {
-    ManpowerPlanning,
-    AddUpdateManpower,
-    ManpowerPlanningActions,
-    ViewManpowerPlanning,
     TalentSphereSettingManagement,
     Benefits,
     AddUpdateBenefitForm,
