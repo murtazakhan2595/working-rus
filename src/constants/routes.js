@@ -8,7 +8,8 @@ import {
   JobApplicationForm,
 } from "app/modules/RecruitmentData";
 import {
-  ManpowerPlanning
+  ManpowerPlanning,
+  TalentSphereSettingManagement,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -391,37 +392,37 @@ export const SidebarRoutes = [
     : []),
   ...(Config.REPORTS
     ? [
-        Config.PROFILE_MANAGEMENT_REPORTS && {
-          path: "/profile-management-reports",
-          component: <ProfileManagementReports />,
-          name: "PROFILE_MANAGEMENT_REPORTS",
-        },
-        Config.EXIT_AND_CLEARANCE_REPORTS && {
-          path: "/exit-and-clearance-reports",
-          component: <ExitAndClearanceReports />,
-          name: "EXIT_AND_CLEARANCE_REPORTS",
-        },
-        Config.EMPLOYEE_CREATION_AND_HIRING && {
-          path: "/employee-creation-and-hiring",
-          component: <EmployeeCreationAndHiringReports />,
-          name: "EMPLOYEE_CREATION_AND_HIRING",
-        },
-        Config.HR_DOCUMENT_REPORTS && {
-          path: "/hr-documents-reports",
-          component: <HRDocumentsReports />,
-          name: "HR_DOCUMENT_REPORTS",
-        },
-        Config.TRANSFER_AND_ROTATIONS && {
-          path: "/transfer-and-rotation-reports",
-          component: <TransferAndRotationReports />,
-          name: "TRANSFER_AND_ROTATIONS",
-        },
-        Config.ATTENDANCE_AND_SHIFT_REPORTS && {
-          path: "/attendance-and-shift-reports",
-          component: <AttendanceAndShiftReports />,
-          name: "ATTENDANCE_AND_SHIFT_REPORTS",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.PROFILE_MANAGEMENT_REPORTS && {
+        path: "/profile-management-reports",
+        component: <ProfileManagementReports />,
+        name: "PROFILE_MANAGEMENT_REPORTS",
+      },
+      Config.EXIT_AND_CLEARANCE_REPORTS && {
+        path: "/exit-and-clearance-reports",
+        component: <ExitAndClearanceReports />,
+        name: "EXIT_AND_CLEARANCE_REPORTS",
+      },
+      Config.EMPLOYEE_CREATION_AND_HIRING && {
+        path: "/employee-creation-and-hiring",
+        component: <EmployeeCreationAndHiringReports />,
+        name: "EMPLOYEE_CREATION_AND_HIRING",
+      },
+      Config.HR_DOCUMENT_REPORTS && {
+        path: "/hr-documents-reports",
+        component: <HRDocumentsReports />,
+        name: "HR_DOCUMENT_REPORTS",
+      },
+      Config.TRANSFER_AND_ROTATIONS && {
+        path: "/transfer-and-rotation-reports",
+        component: <TransferAndRotationReports />,
+        name: "TRANSFER_AND_ROTATIONS",
+      },
+      Config.ATTENDANCE_AND_SHIFT_REPORTS && {
+        path: "/attendance-and-shift-reports",
+        component: <AttendanceAndShiftReports />,
+        name: "ATTENDANCE_AND_SHIFT_REPORTS",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ATTENDANCE
     ? [
@@ -587,6 +588,11 @@ export const SidebarRoutes = [
         path: "/office-settings/leave-setup",
         component: <LeaveManagement />,
         name: "LEAVE_SETUP",
+      },
+      Config.TALENT_SPHERE_SETTING && {
+        path: "/office-settings/talent-sphere-setting",
+        component: <TalentSphereSettingManagement />,
+        name: "TALENT_SPHERE_SETTING",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),

@@ -4,12 +4,11 @@ import {
   AttendanceAdjustmentActions,
 } from "app/modules/Attendance";
 import { calculatePercentage } from "utils/renderValues";
-import { EmployeeOverview } from "components";
+import { EmployeeOverview, StatusLabel } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 import { formatDuration } from "utils/renderValues";
 import moment from "moment";
 import { renderDate, formatNumber } from "utils/renderValues";
-import { StatusLabel } from "components";
 import { EmployeeUsername, EmployeeName } from "utils/getValuesFromTables";
 
 /**
@@ -184,7 +183,7 @@ export const MyAttendanceColumn = (reload) => [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell.toLowerCase()}</StatusLabel>,
+    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
   },
   // {
   //   dataField: "",

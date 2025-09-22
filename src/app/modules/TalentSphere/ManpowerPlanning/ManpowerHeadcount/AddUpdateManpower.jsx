@@ -1,33 +1,30 @@
-import { saveManpowerPanning, getManpowerById } from 'app/hooks/talentSphere';
+import { saveManpowerPanning, getManpowerById, getManpowerPlanningList } from 'app/hooks/talentSphere';
 import { getEmployeeList } from 'app/hooks/general';
 import { ManpowerPlanning } from "app/utils/Types/TalentSphere";
 import {
     TextAreaInput,
-    TextInput,
     SelectInputComponent,
     NumberInput,
-    DateInput,
 } from "components/FormControl";
-import { Button } from "components/ui/button";
-import { errorClassName } from "components/FormControl";
+import { BudgetStatusOptions } from "data/Data";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { SheetUI } from "components";
 import { GetDispatchStateList } from "utils/Lists";
 import { yearsDropdownList } from 'utils/Lists';
+import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
+import { calculateTotal, calculatePercentage } from 'utils/renderValues';
+import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 
 const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, }) => {
-    const UserDetails = GetDispatchStateList('user_details', 'emp');
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
-    const [selectedEmployee, setSelectedEmployee] = useState({});
     const [FormValues, setFormValues] = useState(ManpowerPlanning);
-    const [FormList, setFormList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(ManpowerPlanning);
-    const [ExistingHeadcount, setExistingHeadcount] = useState([]);
+    const [ManpowerExist, setManpowerExist] = useState(false);
+    const [BudgetStatus, setBudgetStatus] = useState(null);
 
     const FormSheetData = {
         triggerText: "",
@@ -68,7 +65,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values,};
+            const payload = { ...values, };
             const response = await saveManpowerPanning(payload, id);
             if (response) {
                 return {
@@ -86,18 +83,61 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
         }
     };
 
-    const getExistingHeadCount = async (branch, department) => {
+    const getExistingHeadCount = async (branch, department, handleChange) => {
         try {
-            const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
-            const response = await getEmployeeList({ filterData });
-            if (response) {
-                setExistingHeadcount(response.count);
+            if (branch && department) {
+                const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
+                const response = await getEmployeeList({ filterData });
+                if (response) {
+                    handleChange("existing_headcount", response.count);
+                    const consumed_budget = calculateTotal(response.results, 'basic_salary')
+                    handleChange("consumed_budget", consumed_budget);
+                }
+            } else {
+                handleChange("existing_headcount", 0);
+                handleChange("consumed_budget", 0);
             }
         } catch (error) {
             // Show error message
             console.error(error)
         }
     };
+
+    const renderConsumedBudgetStatus = async (consumed_budget, total_budget, handleChange) => {
+        try {
+            if (consumed_budget && total_budget) {
+                const percentage = calculatePercentage(consumed_budget, total_budget);
+                const consumed_budget_status = getConsumedBudgetStatus(percentage)
+                setBudgetStatus(consumed_budget_status);
+            } else {
+                setBudgetStatus(null);
+            }
+        } catch (error) {
+            // Show error message
+            console.error(error)
+        }
+    };
+
+    const ValidateExistingRecord = async (branch, department, fiscalYear) => {
+        try {
+            if (branch && department && fiscalYear) {
+                const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: fiscalYear } : {}) }
+                const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
+                if (existingPlanning.count > 0) {
+                    setManpowerExist(true);
+                    return 0;
+                }
+            }
+            setManpowerExist(false);
+            return 0;
+
+        } catch (error) {
+            // Show error message
+            console.error(error)
+        }
+    };
+
+
 
     return (
         <SheetUI
@@ -110,20 +150,24 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
                 validateFormSchema: (values) => {
-                    const errors = {};
+                    const errors = validateManpowerPlanningFormSchema(values);
+                    if (ManpowerExist) errors.manpower_planning = 'Manpower Planning for selected fiscal year already exist form same branch and department.'
                     return errors;
                 },
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
                 columns: 2,
-                renderUpdatedFormValues: setFormValues,
+                renderUpdatedFormValues: (values) => {
+                    setFormValues(values);
+                    renderConsumedBudgetStatus(values.consumed_budget, values.total_allocated_budget)
+                },
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-                DataList: FormList,
                 formFields: [
                     {
                         sheetCardExtension: true,
-                        sheetCardTitle: "Form Details",
+                        sheetCardTitle: "Planning Details",
+                        sheetCardName: "manpower_planning",
                         InputFields: [
                             {
                                 InputField: SelectInputComponent,
@@ -131,6 +175,9 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Fiscal Year",
                                 options: YearsDropdown,
+                                onFieldUpdate: async (_, value) => {
+                                    await ValidateExistingRecord(FormValues?.branch, FormValues?.department, value);
+                                },
                             },
                             {
                                 InputField: SelectInputComponent,
@@ -138,8 +185,9 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Branch",
                                 options: Branches,
-                                onFieldUpdate: async (_, value) => {
-                                    await getExistingHeadCount(value, FormValues?.department);
+                                onFieldUpdate: async (_, value, __, handleChange) => {
+                                    await getExistingHeadCount(value, FormValues?.department, handleChange);
+                                    await ValidateExistingRecord(value, FormValues?.department, FormValues.fiscal_year);
                                 },
                             },
                             {
@@ -148,8 +196,9 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Department",
                                 options: Departments,
-                                onFieldUpdate: async (_, value) => {
-                                    await getExistingHeadCount(FormValues?.branch, value);
+                                onFieldUpdate: async (_, value, __, handleChange) => {
+                                    await getExistingHeadCount(FormValues?.branch, value, handleChange);
+                                    await ValidateExistingRecord(FormValues?.branch, value, FormValues.fiscal_year);
                                 },
                             },
                             {
@@ -162,7 +211,6 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 InputField: NumberInput,
                                 name: `existing_headcount`,
                                 label: "Existing Headcount",
-                                value: ExistingHeadcount,
                                 disabled: true,
                             },
                             {
@@ -172,9 +220,23 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                             },
                             {
+                                InputField: NumberInput,
+                                name: `consumed_budget`,
+                                label: "Consumed Budget",
+                                disabled: true,
+                            },
+                            {
+                                InputField: SelectInputComponent,
+                                name: `consumed_budget_status`,
+                                label: "Consumed Budget Status",
+                                disabled: true,
+                                value: BudgetStatus,
+                                options: BudgetStatusOptions,
+                            },
+                            {
                                 InputField: TextAreaInput,
                                 name: "justification",
-                                required: true,
+                                required: (parseFloat(FormValues.planned_headcount) || 0) > ((parseFloat(FormValues.existing_headcount) || 0)),
                                 label: "Justification",
                                 colsSpan: 2,
                             },
@@ -188,30 +250,5 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     );
 };
 
-const AddNewKeyResult = React.memo(
-    ({ name, onChange = () => { }, value = [], error }) => {
-        const handleClick = (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const updatedSections = [
-                ...(value || []),
-                {
-                    description: null,
-                    target_value: null,
-                    current_value: null,
-                },
-            ];
-            onChange(name, updatedSections);
-        };
-        return (
-            <div>
-                <Button variant="outline" onClick={handleClick}>
-                    Add Key Results
-                </Button>
-                <div className={errorClassName}>{error}</div>
-            </div>
-        );
-    }
-);
 
 export default AddUpdateManpower;

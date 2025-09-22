@@ -295,7 +295,7 @@ const getEmployeeList = async (payload) => {
         branch_id: employee.branch_id,
         work_email: employee.work_email,
         serial_number: employee.serial_number,
-        basic_salary: employee.salary,
+        basic_salary: employee.ctc,
         salary_type: employee.salary_type,
         is_eos_applicable: employee.is_eos_applicable,
         is_new: employee.is_new,

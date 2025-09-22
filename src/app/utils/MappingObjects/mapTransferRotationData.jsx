@@ -52,7 +52,9 @@ export function mapRotationPayloadData(data) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      payload[key] = data[key];
+      if (key === 'rotation_cap_time')
+        payload[key] = Number(data[key]);
+      else payload[key] = data[key];
     }
   }
 
