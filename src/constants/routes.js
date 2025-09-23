@@ -11,6 +11,7 @@ import {
   ManpowerPlanning,
   TalentSphereSettingManagement,
   RequisitionPlanning,
+  TeamTalentSphere,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -238,6 +239,11 @@ export const SidebarRoutes = [
         path: "/team-performance-evaluation",
         component: <TeamPerformanceEvaluation />,
         name: "TEAM_PERFORMANCE_EVALUATION",
+      },
+      Config.TEAM_TALENT_SPHERE && {
+        path: "/team-talent-sphere",
+        component: <TeamTalentSphere />,
+        name: "TEAM_TALENT_SPHERE",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),

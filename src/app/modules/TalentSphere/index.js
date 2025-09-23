@@ -36,6 +36,13 @@ import {
     GenerateRequisitionActions,
     ViewRequisitionRequest,
 } from './RequisitionPlanning';
+import {
+    TeamTalentSphere,
+    TeamManpowerHeadcount,
+    AddUpdateManpowerHeadcountRequest,
+    ManpowerHeadCountRequest,
+} from './TeamTalentSphere';
+
 export {
     ManpowerPlanning,
     AddUpdateManpower,
@@ -68,4 +75,8 @@ export {
     GenerateRequisition,
     GenerateRequisitionActions,
     ViewRequisitionRequest,
+    TeamTalentSphere,
+    TeamManpowerHeadcount,
+    AddUpdateManpowerHeadcountRequest,
+    ManpowerHeadCountRequest,
 };
