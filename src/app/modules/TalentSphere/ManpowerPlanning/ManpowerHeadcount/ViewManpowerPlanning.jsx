@@ -2,9 +2,10 @@ import React from "react";
 import { NavigationSheetComponent } from "components";
 import { DetailContent } from "components";
 import { AddUpdateManpower } from "app/modules/TalentSphere";
-import { StatusLabel } from "components";
+import { BudgetStatusOptions } from "data/Data";
 import { getManpowerById } from "app/hooks/talentSphere";
 import { DepartmentName, FormatID, BranchName } from "utils/getValuesFromTables";
+import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 
 const ViewManpowerPlanning = ({
     isOpen,
@@ -23,7 +24,7 @@ const ViewManpowerPlanning = ({
                 {
                     key: "id",
                     label: "Id",
-                    formatter: (cell, row) => <FormatID value={cell} prefix={"MP-"} />,
+                    formatter: (cell) => <FormatID value={cell} prefix={"MP-"} />,
                 },
                 { key: "fiscal_year", label: "Fiscal Year" },
                 {
@@ -57,8 +58,12 @@ const ViewManpowerPlanning = ({
                     label: "Consumed Budget Percentage",
                 },
                 {
-                    key: "consumed_budget_status",
+                    key: "consumed_percentage",
                     label: "Consumed Budget Status",
+                    formatter: (cell) => {
+                        const status = getConsumedBudgetStatus(parseFloat(cell || 0));
+                        return (BudgetStatusOptions.find(obj => obj.value === status) || {}).label || '--';
+                    },
                 },
                 {
                     key: "justification",

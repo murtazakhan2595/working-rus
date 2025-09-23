@@ -120,17 +120,8 @@ const AddUpdateEducationForm = ({
             sheetCardTitle: `Education Details`,
             InputFields: [
               {
-                InputField: RadioGroupInput,
-                name: "status",
-                label: "Status",
-                options: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: "Inactive" },
-                ],
-              },
-              {
                 InputField: TextInput,
-                name: "name",
+                name: "level",
                 required: true,
                 label: "Name",
                 validateDuplicate: true,

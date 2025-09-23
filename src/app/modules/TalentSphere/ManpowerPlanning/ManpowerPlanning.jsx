@@ -5,7 +5,7 @@ import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
 import {
-  Benefits,
+  HeadCountRequests,
   AddUpdateManpower,
   CareerLevels,
   ManpowerHeadcount,
@@ -19,15 +19,15 @@ import {
 import Error from "app/modules/Error";
 
 export default function ManpowerPlanning() {
-  const isViewHeadcountPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
-  const isAddHeadcountPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
+  const isViewHeadcountPermitted = HasAccess("VIEW_MANPOWER");
+  const isAddHeadcountPermitted = HasAccess("ADD_MANPOWER");
   const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
   const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
   const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
   const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
   const isViewJobTypesPermitted = HasAccess("VIEW_TS_JOB_TYPE");
   const isAddJobTypesPermitted = HasAccess("ADD_TS_JOB_TYPE");
-  const isViewChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+  const isViewHCRequestPermitted = HasAccess("VIEW_HEADCOUNT_REQUESTS");
   const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
   const [activeTab, setActiveTab] = useState(null);
   const [OpenBenefitForm, setOpenBenefitForm] = useState(false);
@@ -40,12 +40,12 @@ export default function ManpowerPlanning() {
 
   const TabListArray = React.useMemo(() => [
     ...(isViewHeadcountPermitted ? ["Manpower Headcount"] : []),
-    ...(isViewChecklistPermitted ? ["Remote Work Checklist"] : []),
-    ...(isViewJobTypesPermitted ? ["Job Types"] : []),
-    ...(isViewEducationsPermitted ? ["Education"] : []),
-    ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+    ...(isViewHCRequestPermitted ? ["Headcount Requests"] : []),
+    // ...(isViewJobTypesPermitted ? ["Job Types"] : []),
+    // ...(isViewEducationsPermitted ? ["Education"] : []),
+    // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-  ], [isViewHeadcountPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
+  ], [isViewHeadcountPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewHCRequestPermitted]);
 
   const HeaderButton = () => {
     const handleRequestClick = (event) => {
@@ -101,7 +101,7 @@ export default function ManpowerPlanning() {
       )
     }
   }
-  if (!isViewHeadcountPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
+  if (!isViewHeadcountPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewHCRequestPermitted)
     return <Error errorType={401} />
   return (
     <div className="flex flex-col gap-4">
@@ -125,6 +125,9 @@ export default function ManpowerPlanning() {
         <Card>
           <TabsContent value={'Manpower Headcount'}>
             <ManpowerHeadcount reload={reloadData['manpower-headcount']} />
+          </TabsContent>
+          <TabsContent value={'Headcount Requests'}>
+            <HeadCountRequests reload={reloadData['headcount-request']} />
           </TabsContent>
           <TabsContent value={'Career Level'}>
             <CareerLevels reload={reloadData['career-level']} />

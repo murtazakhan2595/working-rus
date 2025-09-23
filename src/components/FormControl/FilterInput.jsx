@@ -16,7 +16,7 @@ import {
   CommandItem,
   CommandList,
 } from "src/@/components/ui/command";
-import { SelectInputComponent, SelectMultiInputComponent, DateRangeInput, DateRangeFilter,TextInput } from "components/FormControl";
+import { SelectInputComponent, SelectMultiInputComponent, DateRangeInput, DateRangeFilter, TextInput } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
@@ -344,11 +344,13 @@ const RenderMultiSelectInputField = React.memo(
           name={name}
           value={inputValue || ""}
           onChange={(field, value) => {
-            setInputValue(value ? (value === "All" ? "" : value) : "");
-            handleInputChange(
-              field,
-              value ? (value === "All" ? "" : value) : ""
-            );
+            if (value && value.includes('All')) {
+              setInputValue("");
+              handleInputChange(field, "");
+            } else {
+              setInputValue(value && value.length > 0 ? value : "");
+              handleInputChange(field, value && value.length > 0 ? value : "");
+            }
           }}
           options={allOptions}
         />

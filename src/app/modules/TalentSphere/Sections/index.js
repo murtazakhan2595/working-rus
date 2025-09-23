@@ -5,6 +5,7 @@ import {
     RemoteWorkChecklistsColumns,
     JobTypesColumns,
     CareerLevelsColumns,
+    HeadcountRequestColumns,
 } from './TableColumns';
 
 export {
@@ -14,4 +15,5 @@ export {
     JobTypesColumns,
     EducationsColumns,
 CareerLevelsColumns,
+HeadcountRequestColumns,
 }
