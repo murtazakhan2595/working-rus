@@ -372,11 +372,15 @@ export const SidebarRoutes = [
         component: <CreateUpdateJob />,
         name: "EDIT_JOBS",
       },
-     
       Config.REQUISITION_PLANNING && {
         path: "/office-settings/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,
         name: "REQUISITION_PLANNING",
+      },
+      Config.SETUP && {
+        path: "/office-settings/talent-sphere/requisition-planning",
+        component: <RequisitionPlanning />,
+        name: "SETUP",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),

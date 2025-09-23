@@ -78,6 +78,7 @@ const Config = {
   //Sub Modules
   MANPOWER_PLANNINGS: true,
   REQUISITION_PLANNING: true,
+  SETUP: true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,

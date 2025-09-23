@@ -81,7 +81,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <ManpowerPlanningActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -146,7 +146,7 @@ export const BenefitsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <BenefitActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -194,7 +194,7 @@ export const RemoteWorkChecklistsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <RemoteWorkChecklistActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -238,7 +238,7 @@ export const JobTypesColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <JobTypeActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -282,7 +282,7 @@ export const EducationsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <EducationActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -326,7 +326,7 @@ export const CareerLevelsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <CareerLevelActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -398,16 +398,17 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
         text: "Requested Date",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
-    {
-        dataField: "approved_by",
-        text: "Approved By",
-        formatter: (cell) => <EmployeeName value={cell} />,
-    },
-    {
-        dataField: "approved_on",
-        text: "Approved On",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
-    },
+    ...(isView ?
+        [{
+            dataField: "approved_by",
+            text: "Approved By",
+            formatter: (cell) => <EmployeeName value={cell} />,
+        },
+        {
+            dataField: "approved_on",
+            text: "Approved On",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        }] : []),
     {
         dataField: "status",
         text: "Status",
@@ -417,9 +418,9 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} />
+            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} ViewMode={isView} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 
@@ -480,7 +481,7 @@ export const RequisitionRequestColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <GenerateRequisitionActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        width:'50px'
+        width: '50px'
     },
 ];
 

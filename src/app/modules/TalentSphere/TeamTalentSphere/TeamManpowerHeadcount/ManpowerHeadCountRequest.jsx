@@ -136,11 +136,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
             <CardContent>
                 <FilterInput
                     filters={[
-                        {
-                            type: "date-range",
-                            name: "requested_on",
-                            placeholder: "Requested Date",
-                        },
+
                         {
                             type: "select-multiple",
                             options: "Departments",
@@ -158,6 +154,11 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                             options: 'Employees',
                             name: "requested_by",
                             placeholder: "Requested By",
+                        },
+                        {
+                            type: "date-range",
+                            name: "requested_on",
+                            placeholder: "Requested Date",
                         },
                         ...(activeTab === "Records"
                             ? [
@@ -178,7 +179,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                 ) : (
                     <TableCustom
                         data={HeadCountRequestList?.results || []}
-                        columns={HeadcountRequestColumns(fetchData, activeTab === 'Records')}
+                        columns={HeadcountRequestColumns(fetchData, true)}
                         pagination={true}
                         dataTotalSize={HeadCountRequestList?.count || 0}
                         tableOptions={tableOptions}

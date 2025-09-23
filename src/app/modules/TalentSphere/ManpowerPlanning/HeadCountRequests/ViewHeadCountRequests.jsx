@@ -29,6 +29,7 @@ const ViewHeadCountRequests = ({
     currentId,
     reloadData = () => { },
     DataList = [],
+    ViewMode=false,
 }) => {
     const [forceLoad, setForceLoad] = useState(false);
     const [openRejectModal, setOpenRejectModal] = useState(false);
@@ -169,6 +170,7 @@ const ViewHeadCountRequests = ({
         {
             customContent: true,
             renderContent: (data) => {
+                if(ViewMode) return null;
                 return (
                     <StatusButtons
                         permissionKey={'MANAGE_HEADCOUNT_REQUESTS'}
