@@ -11,6 +11,7 @@ import {
   ManpowerPlanning,
   TalentSphereSettingManagement,
   RequisitionPlanning,
+  TeamTalentSphere,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -239,6 +240,11 @@ export const SidebarRoutes = [
         component: <TeamPerformanceEvaluation />,
         name: "TEAM_PERFORMANCE_EVALUATION",
       },
+      Config.TEAM_TALENT_SPHERE && {
+        path: "/team-talent-sphere",
+        component: <TeamTalentSphere />,
+        name: "TEAM_PERFORMANCE_EVALUATION",
+      },
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PEOPLE_TEAM
@@ -366,11 +372,15 @@ export const SidebarRoutes = [
         component: <CreateUpdateJob />,
         name: "EDIT_JOBS",
       },
-     
       Config.REQUISITION_PLANNING && {
         path: "/office-settings/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,
         name: "REQUISITION_PLANNING",
+      },
+      Config.SETUP && {
+        path: "/office-settings/talent-sphere/requisition-planning",
+        component: <RequisitionPlanning />,
+        name: "SETUP",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),

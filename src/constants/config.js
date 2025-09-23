@@ -31,6 +31,7 @@ const Config = {
   TEAM_LEAVE_REQUEST: true,
   TEAM_EXIT_CLEARANCE: true,
   TEAM_PERFORMANCE_EVALUATION: true,
+  TEAM_TALENT_SPHERE: true,
 
   //-------------PROFIL_MANAGMENT-----------
   PEOPLE_TEAM: true,
@@ -77,6 +78,7 @@ const Config = {
   //Sub Modules
   MANPOWER_PLANNINGS: true,
   REQUISITION_PLANNING: true,
+  SETUP: true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,

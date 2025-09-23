@@ -131,16 +131,16 @@ const ViewRequisitionRequest = ({
                     formatter: (cell) => <DepartmentName value={cell} />,
                 },
                 {
-                    key: "attachment_url",
-                    label: "Attachment",
+                    key: "job_title",
+                    label: "Job Title",
                 },
                 {
-                    key: "requested_by_name",
-                    label: "Requested By",
+                    key: "job_description",
+                    label: "Job Description",
                 },
                 {
-                    key: "reason",
-                    label: "Reason for Request",
+                    key: "required_skills",
+                    label: "Required Skills",
                 },
             ],
         },

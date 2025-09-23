@@ -152,9 +152,9 @@ const StartAssessmentForm = ({
                 validateFormSchema: validateSubmitAssessmentFormSchema,
                 submitButtonText: !PreviewOnly ? "Submit" : null,
                 cancelButtonText: !PreviewOnly ? "Cancel" : null,
-                additionalButtonConfig: [
+                additionalButtonConfig: !PreviewOnly ? [
                     { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, 'draft'), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
-                ],
+                ] : [],
                 columns: 1,
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
