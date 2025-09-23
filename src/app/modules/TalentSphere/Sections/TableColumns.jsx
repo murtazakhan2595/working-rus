@@ -10,6 +10,7 @@ import {
     RemoteWorkChecklistStatusTogle,
     RemoteWorkChecklistActions,
     HeadCountRequestsActions,
+    GenerateRequisitionActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
 import { StatusLabel } from "components";
@@ -389,6 +390,66 @@ export const HeadcountRequestColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+    },
+];
+
+
+/**
+ * RequisitionRequestColumns
+ *
+ * Returns an array of column definitions for the RequisitionRequestColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const RequisitionRequestColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell) => <FormatID value={cell} prefix={"RR-"} />,
+    },
+    {
+        dataField: "department",
+        text: "Department",
+        formatter: (cell) => <DepartmentName value={cell} />,
+    },
+    {
+        dataField: "job_title",
+        text: "Job Title",
+    },
+    {
+        dataField: "job_type",
+        text: "Employment Type",
+    },
+    {
+        dataField: "number_of_positions",
+        text: "Required Headcount",
+    },
+    {
+        dataField: "salary_min",
+        text: "Budget/Salary Range",
+        formatter: (cell, row) => `${cell}-${row.salary_max}`,
+    },
+    {
+        dataField: "requested_by",
+        text: "Requested By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
+        dataField: "created_at",
+        text: "Created Date",
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <GenerateRequisitionActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
     },
 ];

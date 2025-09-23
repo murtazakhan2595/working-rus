@@ -6,6 +6,7 @@ import {
     JobTypesColumns,
     CareerLevelsColumns,
     HeadcountRequestColumns,
+    RequisitionRequestColumns,
 } from './TableColumns';
 
 export {
@@ -16,4 +17,5 @@ export {
     EducationsColumns,
 CareerLevelsColumns,
 HeadcountRequestColumns,
+RequisitionRequestColumns,
 }

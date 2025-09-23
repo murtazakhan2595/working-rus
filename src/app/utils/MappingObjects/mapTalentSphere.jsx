@@ -6,6 +6,7 @@ import {
     Education,
     CareerLevel,
     HeadcountRequest,
+    Requisition,
 } from 'app/utils/Types/TalentSphere';
 
 export function mapManpowerPayloadData(data) {
@@ -117,7 +118,7 @@ export async function mapRemoteWorkChecklistList(data) {
         const Details = mapRemoteWorkChecklistData(Record);
         return {
             value: Details.id,
-            label: Details.name,
+            label: Details.item_name,
             ...Details,
         };
     });
@@ -202,7 +203,7 @@ export function mapJobTypePayloadData(data, id) {
 export function mapEducationData(data) {
     const RecordDetails = Object.keys(Education).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "level" || key === 'description') acc[key] = data[key].trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -216,7 +217,7 @@ export async function mapEducationList(data) {
         const Details = mapEducationData(Record);
         return {
             value: Details.id,
-            label: Details.name,
+            label: Details.level,
             ...Details,
         };
     });
@@ -235,7 +236,7 @@ export function mapEducationPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "level" || key === 'description') payload[key] = data[key].trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -338,4 +339,65 @@ export function mapHeadcountRequestPayloadData(data, id) {
 
     // Return the constructed payload
     return payload;
+}
+
+//-------------RequisitionRequests ---------------
+
+export function mapRequisitionRequestData(data) {
+    const RecordDetails = Object.keys(Requisition).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapRequisitionRequestList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapRequisitionRequestData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapRequisitionRequestPayloadData(data, id) {
+    // Initialize an empty payload object
+    const formData = new FormData();
+    // Iterate over the keys in the RequisitionRequest object
+    for (const key in Requisition) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
+            else if (key === 'attachment') {
+                if (data[key] instanceof File) formData.append(key, data[key])
+            } else if (key === 'remote_work_checklist') {
+                if (Array.isArray(data[key]) && data[key].length > 0) {
+                    for (const checklist of data[key]) {
+                        formData.append(key, checklist)
+                    }
+                }
+            } else if (key === 'benefits') {
+                if (Array.isArray(data[key]) && data[key].length > 0) {
+                    for (const benefit of data[key]) {
+                        formData.append(key, benefit)
+                    }
+                }
+            }
+            else formData.append(key, data[key])
+        }
+    }
+
+    // Return the constructed payload
+    return formData;
 }
