@@ -167,7 +167,7 @@ export const APP_CODES = [
     CODE: 'STAGING'    
   },
   {
-    URL: 'http://staging.cohrus.com',
+    URL: 'https://staging.cohrus.com',
     CODE: 'STAGING'    
   },
   {
