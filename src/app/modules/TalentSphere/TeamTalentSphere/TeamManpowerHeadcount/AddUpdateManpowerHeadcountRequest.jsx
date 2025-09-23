@@ -92,16 +92,23 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
     const getExistingHeadCount = async (branch, department, handleChange) => {
         try {
             if (branch && department) {
-                const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
-                const response = await getEmployeeList({ filterData });
+                const filterData = {
+                    ...(department ? { department: department } : {}),
+                    ...(branch ? { branch: branch } : {}),
+                    fiscal_year: (new Date).getFullYear(),
+                }
+                const response = await getManpowerPlanningList({ filterData });
                 if (response) {
-                    handleChange("consumed_headcount", response.count);
-                    const consumed_budget = calculateTotal(response.results, 'basic_salary')
-                    handleChange("consumed_budget", consumed_budget);
+                    const headcount_details = response.results[0] || {};
+                    handleChange("consumed_headcount", headcount_details.existing_headcount || 0);
+                    handleChange("allocated_headcount", headcount_details.planned_headcount || 0);
+                    handleChange("remaining_headcount", (headcount_details.planned_headcount || 0) - (headcount_details.existing_headcount || 0));
                 }
             } else {
-                handleChange("existing_headcount", 0);
-                handleChange("consumed_budget", 0);
+                handleChange("consumed_headcount", 0);
+                handleChange("allocated_headcount", 0);
+                handleChange("remaining_headcount", 0);
+
             }
         } catch (error) {
             // Show error message
@@ -165,7 +172,6 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                 columns: 2,
                 renderUpdatedFormValues: (values) => {
                     setFormValues(values);
-                    renderConsumedBudgetStatus(values.consumed_budget, values.total_allocated_budget)
                 },
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",

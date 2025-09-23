@@ -1,5 +1,5 @@
 import { FormatID, BranchName, DepartmentName, EmployeeName } from "utils/getValuesFromTables";
-// import { StatusLabel } from 'components';
+import AttachmentUI from "components/ui/AttachmentUI";
 import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
@@ -13,7 +13,7 @@ import {
     GenerateRequisitionActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
-import { StatusLabel } from "components";
+import { StatusLabel, TextUI } from "components";
 
 
 /**
@@ -81,6 +81,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <ManpowerPlanningActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -145,6 +146,7 @@ export const BenefitsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <BenefitActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -192,6 +194,7 @@ export const RemoteWorkChecklistsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <RemoteWorkChecklistActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -235,6 +238,7 @@ export const JobTypesColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <JobTypeActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -278,6 +282,7 @@ export const EducationsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <EducationActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -321,6 +326,7 @@ export const CareerLevelsColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <CareerLevelActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -332,16 +338,11 @@ export const CareerLevelsColumns = (reloadData) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const HeadcountRequestColumns = (reloadData) => [
+export const HeadcountRequestColumns = (reloadData, isView) => [
     {
         dataField: "id",
         text: "ID",
         formatter: (cell) => <FormatID value={cell} prefix={"HCR-"} />,
-    },
-    {
-        dataField: "requested_on",
-        text: "Requested Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
     {
         dataField: "branch",
@@ -371,14 +372,41 @@ export const HeadcountRequestColumns = (reloadData) => [
     {
         dataField: "reason",
         text: "Reason for Request",
+        formatter: (cell) => <TextUI text={cell} maxLength={30} />
     },
     {
         dataField: "attachment_url",
         text: "Attachment",
+        formatter: (cell) => (
+            <>
+                <AttachmentUI
+                    attachment={cell}
+                    viewOnly={true}
+                    variant={'preview-only'}
+                    fallBackText='--'
+                />
+            </>
+        ),
     },
     {
-        dataField: "requested_by_name",
+        dataField: "requested_by",
         text: "Requested By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
+        dataField: "requested_on",
+        text: "Requested Date",
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+    },
+    {
+        dataField: "approved_by",
+        text: "Approved By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
+        dataField: "approved_on",
+        text: "Approved On",
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
     {
         dataField: "status",
@@ -391,6 +419,7 @@ export const HeadcountRequestColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
 
@@ -451,5 +480,7 @@ export const RequisitionRequestColumns = (reloadData) => [
         formatter: (_, row, data_list) => (
             <GenerateRequisitionActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
+        width:'50px'
     },
 ];
+
