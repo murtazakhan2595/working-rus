@@ -19,15 +19,15 @@ import {
 import Error from "app/modules/Error";
 
 export default function TeamTalentSphere() {
-    const isViewManpowerHeadcountPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isAddManpowerHeadcountPermitted = HasAccess("ADD_TS_BENEFITS");
+    const isViewManpowerHeadcountPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
+    const isAddManpowerHeadcountPermitted = HasAccess("REQUEST_MANPOWER_HEADCOUNT");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
     const isViewJobTypesPermitted = HasAccess("VIEW_TS_JOB_TYPE");
     const isAddJobTypesPermitted = HasAccess("ADD_TS_JOB_TYPE");
-    const isViewHeadcountRequestPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+    const isViewHeadcountRequestPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
     const [OpenHeadcountRequest, setOpenBenefitForm] = useState(false);
@@ -41,9 +41,9 @@ export default function TeamTalentSphere() {
     const TabListArray = React.useMemo(() => [
         ...(isViewManpowerHeadcountPermitted ? ["Manpower Headcount"] : []),
         ...(isViewHeadcountRequestPermitted ? ["Manpower Headcount Request"] : []),
-        ...(isViewJobTypesPermitted ? ["Job Types"] : []),
-        ...(isViewEducationsPermitted ? ["Education"] : []),
-        ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+        // ...(isViewJobTypesPermitted ? ["Job Types"] : []),
+        // ...(isViewEducationsPermitted ? ["Education"] : []),
+        // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
     ], [isViewManpowerHeadcountPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewHeadcountRequestPermitted]);
 

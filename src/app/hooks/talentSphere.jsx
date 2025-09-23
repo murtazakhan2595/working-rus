@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HandleLogout, baseUrl, headers, getCurrentRequestApprover,formDataHeader } from "./general";
+import { HandleLogout, baseUrl, headers, getCurrentRequestApprover, formDataHeader } from "./general";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
 import {
@@ -536,8 +536,10 @@ export const getHeadcountRequestData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = mapHeadcountRequestData(response.data);
-      return ResponseData;
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapHeadcountRequestData({ ...Response, ...currentapprover, }, true);
+      return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -617,8 +619,10 @@ export const getRequisitionRequestData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = mapRequisitionRequestData(response.data);
-      return ResponseData;
+       const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapRequisitionRequestData({ ...Response, ...currentapprover, }, true);
+      return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);

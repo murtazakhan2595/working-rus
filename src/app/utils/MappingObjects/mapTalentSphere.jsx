@@ -8,6 +8,7 @@ import {
     HeadcountRequest,
     Requisition,
 } from 'app/utils/Types/TalentSphere';
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapManpowerPayloadData(data) {
     // Initialize an empty payload object
@@ -297,33 +298,38 @@ export function mapCareerLevelPayloadData(data, id) {
 
 //-------------HeadcountRequests ---------------
 
-export function mapHeadcountRequestData(data) {
-    const RecordDetails = Object.keys(HeadcountRequest).reduce((acc, key) => {
-        if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
-            else acc[key] = data[key];
+export async function mapHeadcountRequestData(data, fetchApprovalDetails) {
+    const RecordDetails = {};
+    for (const key of Object.keys(HeadcountRequest)) {
+        if (key === "approval_details" && fetchApprovalDetails) {
+            RecordDetails[key] = await mapApproverDetails({ ...data, });
+        } else {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                RecordDetails[key] = data[key];
+            }
         }
-        return acc;
-    }, {});
-
+    }
     return RecordDetails;
 }
 export async function mapHeadcountRequestList(data) {
-    const DataList = await data?.map((Record) => {
-        const Details = mapHeadcountRequestData(Record);
-        return {
-            value: Details.id,
-            label: Details.name,
-            ...Details,
-        };
-    });
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-    return DataList;
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapHeadcountRequestData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 
 export function mapHeadcountRequestPayloadData(data, id) {
     // Initialize an empty payload object
-    const payload = {};
+    const formData = new FormData();
     // Iterate over the keys in the HeadcountRequest object
     for (const key in HeadcountRequest) {
         // Check if the key exists in the data object
@@ -332,39 +338,45 @@ export function mapHeadcountRequestPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
-            else payload[key] = data[key];
+            if (key === 'attachment') {
+                if (data[key] instanceof File) formData.append(key, data[key])
+            } formData.append(key, data[key])
         }
     }
 
     // Return the constructed payload
-    return payload;
+    return formData;
 }
 
 //-------------RequisitionRequests ---------------
 
-export function mapRequisitionRequestData(data) {
-    const RecordDetails = Object.keys(Requisition).reduce((acc, key) => {
-        if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
-            else acc[key] = data[key];
+export async function mapRequisitionRequestData(data,fetchApprovalDetails) {
+  const RecordDetails = {};
+    for (const key of Object.keys(Requisition)) {
+        if (key === "approval_details" && fetchApprovalDetails) {
+            RecordDetails[key] = await mapApproverDetails({ ...data, });
+        } else {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                RecordDetails[key] = data[key];
+            }
         }
-        return acc;
-    }, {});
-
+    }
     return RecordDetails;
 }
 export async function mapRequisitionRequestList(data) {
-    const DataList = await data?.map((Record) => {
-        const Details = mapRequisitionRequestData(Record);
-        return {
-            value: Details.id,
-            label: Details.name,
-            ...Details,
-        };
-    });
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-    return DataList;
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapRequisitionRequestData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 
 export function mapRequisitionRequestPayloadData(data, id) {

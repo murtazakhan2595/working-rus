@@ -485,3 +485,36 @@ export const RequisitionRequestColumns = (reloadData) => [
     },
 ];
 
+
+/**
+ * ManpowerHeadcountOverviewColumns
+ *
+ * Returns an array of column definitions for the ManpowerHeadcountOverviewColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const ManpowerHeadcountOverviewColumns = [
+    {
+        dataField: "department",
+        text: "Department",
+        formatter: (cell) => <DepartmentName value={cell} />,
+    },
+    {
+        dataField: "planned_headcount",
+        text: "Allocated Headcount",
+        dataSort: true,
+    },
+    {
+        dataField: "existing_headcount",
+        text: "Consumed Headcount",
+        dataSort: true,
+    },
+
+    {
+        dataField: "planned_headcount",
+        text: "Remaining Headcount",
+        formatter: (cell, row) => ((cell || 0) - (row.existing_headcount || 0)),
+        dataSort: true,
+    },
+];
+
