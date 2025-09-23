@@ -243,7 +243,7 @@ export const SidebarRoutes = [
       Config.TEAM_TALENT_SPHERE && {
         path: "/team-talent-sphere",
         component: <TeamTalentSphere />,
-        name: "TEAM_TALENT_SPHERE",
+        name: "TEAM_PERFORMANCE_EVALUATION",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),

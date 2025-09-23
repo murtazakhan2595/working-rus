@@ -48,10 +48,10 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
     return (
         <>
             <DropdownActionMenu
-                onView={handleView}
+                // onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                viewText="View Form"
+                // viewText="View Form"
                 editText="Edit Form"
                 deleteText="Delete Form"
                 menuTooltip="Form Actions"
@@ -87,17 +87,6 @@ const EvaluationFormActions = ({ data, reloadData = () => { }, DataList = [] }) 
                     id={data.id}
                     reloadData={reloadData}
                     isDuplicate={true}
-                />
-            )}
-
-            {/* View Duration - Direct component usage like ViewUserRole */}
-            {view && (
-                <ViewHolidayDetail
-                    isOpen={view}
-                    setIsOpen={setView}
-                    currentId={data.id}
-                    reloadData={reloadData}
-                    DataList={DataList}
                 />
             )}
         </>
