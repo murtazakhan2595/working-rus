@@ -365,11 +365,7 @@ export const SidebarRoutes = [
         component: <CreateUpdateJob />,
         name: "EDIT_JOBS",
       },
-      Config.TALENT_SPHERE && {
-        path: "/applicants/:id",
-        component: <Applications />,
-        name: "Applicants",
-      },
+     
       Config.REQUISITION_PLANNING && {
         path: "/office-settings/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,

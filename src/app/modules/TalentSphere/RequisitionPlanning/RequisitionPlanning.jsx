@@ -5,8 +5,8 @@ import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
 import {
-    Benefits,
-    AddUpdateBenefitForm,
+    GenerateRequisition,
+    AddUpdateGenerateRequisitionForm,
     CareerLevels,
     AddUpdateCareerLevelForm,
     Educations,
@@ -18,9 +18,9 @@ import {
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
 
-export default function SettingManagement() {
-    const isViewBenefitsPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isAddBenefitsPermitted = HasAccess("ADD_TS_BENEFITS");
+export default function RequisitionPlanning() {
+    const isViewGeneratedRequisitionPermitted = HasAccess("VIEW_TS_BENEFITS");
+    const isGeneratRequisitionPermitted = HasAccess("ADD_TS_BENEFITS");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
@@ -30,7 +30,7 @@ export default function SettingManagement() {
     const isViewChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
-    const [OpenBenefitForm, setOpenBenefitForm] = useState(false);
+    const [OpenGenerateRequisitionForm, setOpenGenerateRequisitionForm] = useState(false);
     const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
     const [OpenEducationForm, setOpenEducationForm] = useState(false);
     const [OpenJobTypesForm, setOpenJobTypesForm] = useState(false);
@@ -39,26 +39,26 @@ export default function SettingManagement() {
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isViewBenefitsPermitted ? ["Benefits"] : []),
-        ...(isViewChecklistPermitted ? ["Remote Work Checklist"] : []),
-        ...(isViewJobTypesPermitted ? ["Job Types"] : []),
-        ...(isViewEducationsPermitted ? ["Education"] : []),
-        ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+        ...(isViewGeneratedRequisitionPermitted ? ["Generate Requisition"] : []),
+        // ...(isViewChecklistPermitted ? ["Remote Work Checklist"] : []),
+        // ...(isViewJobTypesPermitted ? ["Job Types"] : []),
+        // ...(isViewEducationsPermitted ? ["Education"] : []),
+        // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewBenefitsPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
+    ], [isViewGeneratedRequisitionPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
             event.preventDefault();
             event.stopPropagation();
-            setOpenBenefitForm(false);
+            setOpenGenerateRequisitionForm(false);
             setOpenCareerLevelForm(false);
             setOpenEducationForm(false);
             setOpenJobTypesForm(false);
             setOpenRWChecklistForm(false);
             const triggeredResquest = event.target.title;
-            if (triggeredResquest === 'benefits')
-                setOpenBenefitForm(true);
+            if (triggeredResquest === 'generate-requisition')
+                setOpenGenerateRequisitionForm(true);
             else if (triggeredResquest === 'career-level')
                 setOpenCareerLevelForm(true);
             else if (triggeredResquest === 'education')
@@ -69,10 +69,10 @@ export default function SettingManagement() {
                 setOpenRWChecklistForm(true);
         }
         const activeButtonTab = activeTab ?? TabListArray[0];
-        if (activeButtonTab === "Benefits" && isAddBenefitsPermitted) {
+        if (activeButtonTab === "Generate Requisition" && isGeneratRequisitionPermitted) {
             return (
-                <Button title="benefits" onClick={handleRequestClick}>
-                    Add Benefit
+                <Button title="generate-requisition" onClick={handleRequestClick}>
+                    Add Requisition
                 </Button>
             )
         } else if (activeButtonTab === "Career Level" && isAddCareerLevelsPermitted) {
@@ -81,7 +81,7 @@ export default function SettingManagement() {
                     Add Career Level
                 </Button>
             )
-        } else if (activeButtonTab === "Education" && isAddEducationsPermitted) {
+        } else if (activeButtonTab === "Educations" && isAddEducationsPermitted) {
             return (
                 <Button title="education" onClick={handleRequestClick}>
                     Add Education
@@ -101,7 +101,7 @@ export default function SettingManagement() {
             )
         }
     }
-    if (!isViewBenefitsPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
+    if (!isViewGeneratedRequisitionPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -110,7 +110,7 @@ export default function SettingManagement() {
             <Tabs
                 value={activeTab || TabListArray[0]}
                 onValueChange={setActiveTab}
-                defaultValue="Benefits"
+                defaultValue="Generate Requisition"
             >
                 <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
                     <TabsList>
@@ -123,8 +123,8 @@ export default function SettingManagement() {
                 </div>
 
                 <Card>
-                    <TabsContent value={'Benefits'}>
-                        <Benefits reload={reloadData['benefits']} />
+                    <TabsContent value={'Generate Requisition'}>
+                        <GenerateRequisition reload={reloadData['generate-requisition']} />
                     </TabsContent>
                     <TabsContent value={'Career Level'}>
                         <CareerLevels reload={reloadData['career-level']} />
@@ -140,15 +140,15 @@ export default function SettingManagement() {
                     </TabsContent>
                 </Card>
             </Tabs>
-            {OpenBenefitForm && (
-                <AddUpdateBenefitForm
-                    isOpen={OpenBenefitForm}
+            {OpenGenerateRequisitionForm && (
+                <AddUpdateGenerateRequisitionForm
+                    isOpen={OpenGenerateRequisitionForm}
                     setIsOpen={() => {
-                        setOpenBenefitForm(false);
+                        setOpenGenerateRequisitionForm(false);
                         setReloadData((prev) => {
                             return {
                                 ...prev,
-                                'benefits': !prev["benefits"],
+                                'generate-requisition': !prev["generate-requisition"],
                             };
                         })
                     }}

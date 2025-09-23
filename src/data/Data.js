@@ -90,6 +90,9 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.EMPLOYEE_TRANSFER
     ? [{ label: "Job Rotation By Employee", value: "JOB_ROTATION_EMPLOYEE" }]
     : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Headcount Request", value: "HEADCOUNT_REQUEST" }]
+    : []),
 ];
 
 export const statusOptions = [
