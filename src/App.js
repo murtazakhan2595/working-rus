@@ -17,6 +17,7 @@ import "./index.css";
 import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
 import { getNodeExistInTree } from "utils/renderValues";
 import Error from "app/modules/Error";
+import useAccessCheck from "app/hooks/useAccessCheck";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -26,6 +27,9 @@ function App() {
   const Modules_Permitted = useMemo(() => {
     return { code_name: "DASHBOARD", childrens: ModuleList };
   }, [ModuleList]);
+
+  // API access check - runs on every page load
+  const { isChecking, hasAccess } = useAccessCheck();
 
   const token = window.localStorage.getItem("token");
   const baseUrl = useSelector((state) => state.user.baseUrl);
@@ -72,6 +76,7 @@ function App() {
           "/job-description",
           "/forgot-password",
           "/confirm-password",
+          "/access-denied"
         ];
         const isProtectedRoute = protectedRoutes.some((route) =>
           pathname.startsWith(route)

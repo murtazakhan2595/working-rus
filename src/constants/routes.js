@@ -106,6 +106,7 @@ import {
 import { ClearanceAndHandover } from "app/modules/ClearanceAndHandOver";
 import { MyClearanceTab } from "app/modules/ClearanceAndHandOver/Sections/MyClearance";
 import AccessRevokedPage from "app/modules/ClearanceAndHandOver/AccessRevoked";
+import AccessDenied from "app/modules/Error/AccessDenied";
 import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sections/ManagerDashboard";
 import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
@@ -727,6 +728,11 @@ const GeneralRoutes = [
     path: "/confirm-password",
     component: <ResetPassword />,
     name: "Reset Password",
+  },
+  {
+    path: "/access-denied",
+    component: <AccessDenied />,
+    name: "Access Denied",
   },
 ].filter(Boolean); // Filter out undefined routes
 

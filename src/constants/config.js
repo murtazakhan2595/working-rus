@@ -161,4 +161,37 @@ export const WEBSOCKET_PATHS = [
   // Add more as needed
 ];
 
+export const APP_CODES = [
+  {
+    URL: 'http://localhost:3000',
+    CODE: 'LOCALHOST'    
+  },
+  {
+    URL: 'https://staging-hrms.tecbrix.cloud',
+    CODE: 'STAGING'    
+  },
+  {
+    URL: 'https://staging.cohrus.com',
+    CODE: 'STAGING'    
+  },
+  {
+    URL: 'https://app.cohrus.com',
+    CODE: 'TECBRIX'    
+  },
+  {
+    URL: 'https://alghurair.cohrus.com',
+    CODE: 'ALGHURAIR_COHRUS'    
+  },
+  {
+    URL: 'https://demo.cohrus.com',
+    CODE: 'DEMO1'    
+  },
+  {
+    URL: 'https://demo1.cohrus.com/',
+    CODE: 'DEMO2'
+  }
+];
+
+export const CONTROLPANEL_BASE_URL = 'https://be-control-panel.cohrus.com/api';
+
 export default Config;
