@@ -119,15 +119,7 @@ const AddUpdateCareerLevelForm = ({
             sheetCardExtension: true,
             sheetCardTitle: `CareerLevel Details`,
             InputFields: [
-              {
-                InputField: RadioGroupInput,
-                name: "status",
-                label: "Status",
-                options: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: "Inactive" },
-                ],
-              },
+
               {
                 InputField: TextInput,
                 name: "name",

@@ -8,9 +8,11 @@ import {
     EducationActions,
     JobTypeActions,
     RemoteWorkChecklistStatusTogle,
-    RemoteWorkChecklistActions
+    RemoteWorkChecklistActions,
+    HeadCountRequestsActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
+import { StatusLabel } from "components";
 
 
 /**
@@ -35,13 +37,11 @@ export const ManpowerPlanningColumns = (reloadData) => [
         dataField: "branch",
         text: "Branch",
         formatter: (cell) => <BranchName value={cell} />,
-        dataSort: true,
     },
     {
         dataField: "department",
         text: "Department",
         formatter: (cell) => <DepartmentName value={cell} />,
-        dataSort: true,
     },
     {
         dataField: "planned_headcount",
@@ -319,6 +319,76 @@ export const CareerLevelsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <CareerLevelActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+    },
+];
+
+
+/**
+ * HeadcountRequestColumns
+ *
+ * Returns an array of column definitions for the HeadcountRequestColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const HeadcountRequestColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell) => <FormatID value={cell} prefix={"HCR-"} />,
+    },
+    {
+        dataField: "requested_on",
+        text: "Requested Date",
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+    },
+    {
+        dataField: "branch",
+        text: "Branch",
+        formatter: (cell) => <BranchName value={cell} />,
+    },
+    {
+        dataField: "department_name",
+        text: "Department",
+    },
+    {
+        dataField: "allocated_headcount",
+        text: "Current Allocated Headcount",
+    },
+    {
+        dataField: "consumed_headcount",
+        text: "Consumed Headcount",
+    },
+    {
+        dataField: "remaining_headcount",
+        text: "Remaining Headcount",
+    },
+    {
+        dataField: "requested_headcount",
+        text: "Requested Additional Headcount",
+    },
+    {
+        dataField: "reason",
+        text: "Reason for Request",
+    },
+    {
+        dataField: "attachment_url",
+        text: "Attachment",
+    },
+    {
+        dataField: "requested_by_name",
+        text: "Requested By",
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel>{cell?.toLowerCase()}</StatusLabel>
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
     },
 ];

@@ -126,7 +126,6 @@ const JobRotationDetails = ({
                 {
                     key: "rotation_summary",
                     formatter: (cell) => {
-                        console.log(cell);
                         return (
                             <ol className="[list-style:decimal-leading-zero] ml-5">
                                 {(cell || []).map((rotation) => {

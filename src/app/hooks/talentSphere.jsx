@@ -20,6 +20,9 @@ import {
   mapEducationList,
   mapEducationData,
   mapEducationPayloadData,
+  mapHeadcountRequestList,
+  mapHeadcountRequestData,
+  mapHeadcountRequestPayloadData,
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -341,7 +344,7 @@ export const getEducationList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "id";
-  const URL = `/benefits/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+  const URL = `/recruitment-education/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
@@ -365,7 +368,7 @@ export const getEducationList = async (payload) => {
 
 export const getEducationData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/benefits/${id}`, {
+    const response = await axios.get(`${baseUrl}/recruitment-education/${id}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -384,8 +387,8 @@ export const getEducationData = async (id) => {
 export const saveUpdateEducation = async (payload, id) => {
   try {
     const url = id
-      ? `${baseUrl}/benefits/${id}/`
-      : `${baseUrl}/benefits/`;
+      ? `${baseUrl}/recruitment-education/${id}/`
+      : `${baseUrl}/recruitment-education/`;
 
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
@@ -421,7 +424,7 @@ export const getCareerLevelList = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "id";
-  const URL = `/benefits/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+  const URL = `/recruitment-career-levels/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
     )}`;
@@ -445,7 +448,7 @@ export const getCareerLevelList = async (payload) => {
 
 export const getCareerLevelData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/benefits/${id}`, {
+    const response = await axios.get(`${baseUrl}/recruitment-career-levels/${id}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -464,12 +467,93 @@ export const getCareerLevelData = async (id) => {
 export const saveUpdateCareerLevel = async (payload, id) => {
   try {
     const url = id
-      ? `${baseUrl}/benefits/${id}/`
-      : `${baseUrl}/benefits/`;
+      ? `${baseUrl}/recruitment-career-levels/${id}/`
+      : `${baseUrl}/recruitment-career-levels/`;
 
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapCareerLevelPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+
+export const getHeadcountRequestList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/headcount-requests/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapHeadcountRequestList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getHeadcountRequestData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/headcount-requests/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = mapHeadcountRequestData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateHeadcountRequest = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/headcount-requests/${id}/`
+      : `${baseUrl}/headcount-requests/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapHeadcountRequestPayloadData(payload);
     const response = await axios({
       method,
       url,

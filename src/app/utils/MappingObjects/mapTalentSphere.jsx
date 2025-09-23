@@ -5,6 +5,7 @@ import {
     JobType,
     Education,
     CareerLevel,
+    HeadcountRequest,
 } from 'app/utils/Types/TalentSphere';
 
 export function mapManpowerPayloadData(data) {
@@ -52,7 +53,7 @@ export async function mapManpowerData(data) {
 //-------------Benefits ---------------
 
 export function mapBenefitData(data) {
-    const graceTimeDetails = Object.keys(Benefit).reduce((acc, key) => {
+    const RecordDetails = Object.keys(Benefit).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key].trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
@@ -61,11 +62,11 @@ export function mapBenefitData(data) {
         return acc;
     }, {});
 
-    return graceTimeDetails;
+    return RecordDetails;
 }
 export async function mapBenefitList(data) {
-    const DataList = await data?.map((graceTime) => {
-        const Details = mapBenefitData(graceTime);
+    const DataList = await data?.map((Record) => {
+        const Details = mapBenefitData(Record);
         return {
             value: Details.id,
             label: Details.name,
@@ -100,7 +101,7 @@ export function mapBenefitPayloadData(data, id) {
 //-------------RemoteWorkChecklists ---------------
 
 export function mapRemoteWorkChecklistData(data) {
-    const graceTimeDetails = Object.keys(RemoteWorkChecklist).reduce((acc, key) => {
+    const RecordDetails = Object.keys(RemoteWorkChecklist).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "item_name") acc[key] = data[key].trim()
             else if (key === "status") acc[key] = data[key] ? 'available' : 'unavailable';
@@ -109,11 +110,11 @@ export function mapRemoteWorkChecklistData(data) {
         return acc;
     }, {});
 
-    return graceTimeDetails;
+    return RecordDetails;
 }
 export async function mapRemoteWorkChecklistList(data) {
-    const DataList = await data?.map((graceTime) => {
-        const Details = mapRemoteWorkChecklistData(graceTime);
+    const DataList = await data?.map((Record) => {
+        const Details = mapRemoteWorkChecklistData(Record);
         return {
             value: Details.id,
             label: Details.name,
@@ -150,7 +151,7 @@ export function mapRemoteWorkChecklistPayloadData(data, id) {
 //-------------JobTypes ---------------
 
 export function mapJobTypeData(data) {
-    const graceTimeDetails = Object.keys(JobType).reduce((acc, key) => {
+    const RecordDetails = Object.keys(JobType).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key].trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
@@ -159,11 +160,11 @@ export function mapJobTypeData(data) {
         return acc;
     }, {});
 
-    return graceTimeDetails;
+    return RecordDetails;
 }
 export async function mapJobTypeList(data) {
-    const DataList = await data?.map((graceTime) => {
-        const Details = mapJobTypeData(graceTime);
+    const DataList = await data?.map((Record) => {
+        const Details = mapJobTypeData(Record);
         return {
             value: Details.id,
             label: Details.name,
@@ -199,7 +200,7 @@ export function mapJobTypePayloadData(data, id) {
 //-------------Educations ---------------
 
 export function mapEducationData(data) {
-    const graceTimeDetails = Object.keys(Education).reduce((acc, key) => {
+    const RecordDetails = Object.keys(Education).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key].trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
@@ -208,11 +209,11 @@ export function mapEducationData(data) {
         return acc;
     }, {});
 
-    return graceTimeDetails;
+    return RecordDetails;
 }
 export async function mapEducationList(data) {
-    const DataList = await data?.map((graceTime) => {
-        const Details = mapEducationData(graceTime);
+    const DataList = await data?.map((Record) => {
+        const Details = mapEducationData(Record);
         return {
             value: Details.id,
             label: Details.name,
@@ -247,7 +248,7 @@ export function mapEducationPayloadData(data, id) {
 //-------------CareerLevels ---------------
 
 export function mapCareerLevelData(data) {
-    const graceTimeDetails = Object.keys(CareerLevel).reduce((acc, key) => {
+    const RecordDetails = Object.keys(CareerLevel).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key].trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
@@ -256,11 +257,11 @@ export function mapCareerLevelData(data) {
         return acc;
     }, {});
 
-    return graceTimeDetails;
+    return RecordDetails;
 }
 export async function mapCareerLevelList(data) {
-    const DataList = await data?.map((graceTime) => {
-        const Details = mapCareerLevelData(graceTime);
+    const DataList = await data?.map((Record) => {
+        const Details = mapCareerLevelData(Record);
         return {
             value: Details.id,
             label: Details.name,
@@ -284,6 +285,53 @@ export function mapCareerLevelPayloadData(data, id) {
         ) {
             if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+
+//-------------HeadcountRequests ---------------
+
+export function mapHeadcountRequestData(data) {
+    const RecordDetails = Object.keys(HeadcountRequest).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapHeadcountRequestList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapHeadcountRequestData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapHeadcountRequestPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the HeadcountRequest object
+    for (const key in HeadcountRequest) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else payload[key] = data[key];
         }
     }

@@ -3,19 +3,17 @@ import { CardContent, CardHeader, CardTitle, CardDescription } from "components/
 import { PageLoader, TableCustom } from "components";
 import { getManpowerPlanningList } from "app/hooks/talentSphere";
 import { FilterInput } from "components/FormControl";
-import { useSelector } from "react-redux";
 import { ManpowerPlanningColumns } from "app/modules/TalentSphere/Sections";
 import { yearsDropdownList } from 'utils/Lists';
 
 export default function ManpowerHeadcount() {
-    const userId = useSelector((state) => state.user.userProfile.id);
     const [ManpowerPlanningList, setManpowerPlanningList] = useState({
         results: [],
         count: 0,
     });
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
-    const [filterData, setFilterData] = useState({ employee_id: userId });
+    const [filterData, setFilterData] = useState({ });
     const [isLoading, setIsLoading] = useState(false);
 
     const onPageChange = (name, value) => {
@@ -84,7 +82,7 @@ export default function ManpowerHeadcount() {
                         {
                             type: "select-multiple",
                             options: YearsDropdown,
-                            name: "initiated_by",
+                            name: "fiscal_year",
                             placeholder: "Fascal Year",
                         },
                         {
