@@ -240,7 +240,6 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                                 disabled: true,
                                 colsSpan: 2,
                             },
-
                         ],
                     },
                 ],

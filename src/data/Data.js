@@ -93,6 +93,9 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.TALENT_SPHERE
     ? [{ label: "Headcount Request", value: "HEADCOUNT_REQUEST" }]
     : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Requisition Request", value: "REQUISTION_REQUEST" }]
+    : []),
 ];
 
 export const statusOptions = [

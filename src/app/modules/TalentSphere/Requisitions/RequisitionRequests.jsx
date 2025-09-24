@@ -7,13 +7,13 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
-import { getHeadcountRequestList } from "app/hooks/talentSphere";
-import { HeadcountRequestColumns } from "app/modules/TalentSphere/Sections";
+import { getRequisitionRequestList } from "app/hooks/talentSphere";
+import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" }) => {
+const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) => {
     const {
         id: user_id,
         branch_id: user_branch,
@@ -21,7 +21,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
     } = GetDispatchStateList("user_details", "emp") || {};
 
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({ status: "pending" });
+    const [filterData, setFilterData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [HeadCountRequestList, setHeadCountRequestList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -46,7 +46,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
     const fetchData = async (isMounted) => {
         try {
             setIsLoading(true);
-            const HeadCountRequestList = await getHeadcountRequestList({ filterData, options, ordering, });
+            const HeadCountRequestList = await getRequisitionRequestList({ filterData, options, ordering, });
             if (HeadCountRequestList && isMounted) {
                 setHeadCountRequestList(HeadCountRequestList);
             }
@@ -179,7 +179,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                 ) : (
                     <TableCustom
                         data={HeadCountRequestList?.results || []}
-                        columns={HeadcountRequestColumns(fetchData, activeTab === 'Records')}
+                        columns={RequisitionRequestColumns(fetchData, activeTab==='Records')}
                         pagination={true}
                         dataTotalSize={HeadCountRequestList?.count || 0}
                         tableOptions={tableOptions}
@@ -190,4 +190,4 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
     );
 };
 
-export default ManpowerHeadCountRequest;
+export default RequisitionRequests;

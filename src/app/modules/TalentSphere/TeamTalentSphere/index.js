@@ -4,6 +4,7 @@ import {
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest
 } from './TeamManpowerHeadcount';
+
 export {
     TeamTalentSphere,
     TeamManpowerHeadcount,

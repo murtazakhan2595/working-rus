@@ -4,8 +4,8 @@ import {
     DetailContent,
     StatusList,
 } from "components";
-import { FormatID, BranchName ,DepartmentName} from "utils/getValuesFromTables";
-import { StatusLabel, SheetUI, StatusButtons, EmployeeDetailUI } from "components";
+import { FormatID, BranchName, DepartmentName } from "utils/getValuesFromTables";
+import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import { getRequisitionRequestData } from "app/hooks/talentSphere";
 import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { handleRequest } from "app/hooks/general";
@@ -145,23 +145,80 @@ const ViewRequisitionRequest = ({
             ],
         },
         {
-            title: "Headcount Details",
+            title: "Work Mode Details",
             field: [
                 {
-                    key: "allocated_headcount",
-                    label: "Allocated",
+                    key: "work_mode",
+                    label: "Work Mode",
                 },
                 {
-                    key: "consumed_headcount",
-                    label: "Consumed",
+                    key: "remote_work_checklist_name",
+                    label: "Remote Work Checklist",
+                    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
                 },
                 {
-                    key: "remaining_headcount",
-                    label: "Remaining",
+                    key: "country",
+                    label: "Country",
                 },
                 {
-                    key: "requested_headcount",
-                    label: "Requested Additional",
+                    key: "city",
+                    label: "City",
+                },
+            ],
+        },
+        {
+            title: "Compensation & Benefits",
+            field: [
+                {
+                    key: "benefit_names",
+                    label: "Benefits",
+                    formatter: (cell) => cell && cell.length > 0 ? <MultiStatusLabel statusList={cell} variant="info" displayAll={true} /> : <div>Not enabled</div>
+                },
+            ],
+        },
+        {
+            title: "Job Specification Details",
+            field: [
+                {
+                    key: "number_of_positions",
+                    label: "Number of Positions",
+                },
+                {
+                    key: "job_type_name",
+                    label: "Job Type",
+                },
+                {
+                    key: "gender_preference",
+                    label: "Gender Preference",
+                    formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+                },
+                {
+                    key: "min_age",
+                    label: "Age Limit",
+                    formatter: (cell, data) => `${cell} Years - ${data.max_age} Years`,
+                },
+                {
+                    key: "education",
+                    label: "Education Requirement",
+                },
+                {
+                    key: "career_level_name",
+                    label: "Career Level",
+                },
+                {
+                    key: "experience_min",
+                    label: "Experiance",
+                    formatter: (cell, data) => `${cell} Years - ${data.experience_max} Years`,
+                },
+                  {
+                    key: "salary_min",
+                    label: "Salary Range",
+                    formatter: (cell, data) => `${cell} - ${data.salary_max}`,
+                },
+                {
+                    key: "justification",
+                    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />,
+                    label: "Justification",
                 },
             ],
         },
