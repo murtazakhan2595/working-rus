@@ -4,7 +4,7 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
-    const isEditPermitted = HasAccess("CREATE_REQUISITION_REQUEST");
+    const isEditPermitted = HasAccess("MARK_ATTENDANCE");
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const handleView = () => {

@@ -131,6 +131,7 @@ const ViewRequisitionRequest = ({
                     label: "Department",
                     formatter: (cell) => <DepartmentName value={cell} />,
                 },
+             
                 {
                     key: "job_title",
                     label: "Job Title",
@@ -164,6 +165,11 @@ const ViewRequisitionRequest = ({
                 {
                     key: "city",
                     label: "City",
+                },
+                   {
+                    key: "is_emiratization_role",
+                    label: "Emiratization Role",
+                    formatter: (cell) => cell ? 'Required' : 'Not Required',
                 },
             ],
         },
@@ -223,30 +229,30 @@ const ViewRequisitionRequest = ({
                 },
             ],
         },
-         {
+        {
             title: `Attachment`,
             field: [
-              {
-                key: 'attachment',
-                formatter: (cell, data) =>
-                  cell ? (
-                    <AttachmentUI
-                      attachment={cell}
-                      name={`Requisition Request Document`}
-                      viewOnly={true}
-                    />
-                  ) : (
-                    <div className="text-neutral-1000 text-sm">No document attached</div>
-                  ),
-              },
+                {
+                    key: 'attachment',
+                    formatter: (cell, data) =>
+                        cell ? (
+                            <AttachmentUI
+                                attachment={cell}
+                                name={`Requisition Request Document`}
+                                viewOnly={true}
+                            />
+                        ) : (
+                            <div className="text-neutral-1000 text-sm">No document attached</div>
+                        ),
+                },
             ],
-          },
+        },
         {
             title: "Approval Details",
             field: [
                 {
                     key: "approval_details",
-                    formatter: (cell,data) => {
+                    formatter: (cell, data) => {
                         if (!data.approval_required) return 'Approval was not required';
                         return (<StatusList status_list={cell} className="my-3" />)
                     },

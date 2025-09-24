@@ -100,7 +100,6 @@ export const HeadcountRequest = {
 
 export const Requisition = {
     id: null,
-    employee_id: null,
     branch_name: null,
     approval_details: null,
     created_at: null,
@@ -123,7 +122,7 @@ export const Requisition = {
     status: null,
     approval_required: true,
     is_draft: null,
-    is_emiratization_role: null,
+    is_emiratization_role: false,
     created_by: null,
     updated_by: null,
     requested_by: null,

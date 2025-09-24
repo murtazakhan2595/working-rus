@@ -127,6 +127,8 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
             } else {
                 if (filterName === "status")
                     updatedFilters[filterName] = filterValue.toLowerCase();
+                else if (filterName === 'is_emiratization_role')
+                    updatedFilters[filterName] = filterValue === 'required' ? true : false;
                 else updatedFilters[filterName] = filterValue;
             }
 
@@ -232,6 +234,16 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
                                     ],
                                     name: "work_mode",
                                     placeholder: "Work Mode",
+                                },
+                                {
+                                    type: "select",
+                                    options: [
+                                        { value: 'required', label: 'Required' },
+                                        { value: 'not_required', label: "Not Reqiured" },
+                                        { value: 'remote', label: "Remote" },
+                                    ],
+                                    name: "is_emiratization_role",
+                                    placeholder: "Emiratization Role",
                                 },
                                 ...(activeTab === "Records"
                                     ? [

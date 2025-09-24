@@ -13,7 +13,7 @@ import {
     AddUpdateEducationForm,
     JobTypes,
     AddUpdateJobTypeForm,
-    RemoteWorkChecklist,
+    RequisitionRequests,
     AddUpdateRemoteWorkChecklistForm,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
@@ -27,7 +27,7 @@ export default function RequisitionPlanning() {
     const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
     const isViewJobTypesPermitted = HasAccess("VIEW_TS_JOB_TYPE");
     const isAddJobTypesPermitted = HasAccess("ADD_TS_JOB_TYPE");
-    const isViewChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+    const isViewRequisitionRequestPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
     const [OpenRequisitionForm, setOpenRequisitionForm] = useState(false);
@@ -40,12 +40,12 @@ export default function RequisitionPlanning() {
 
     const TabListArray = React.useMemo(() => [
         ...(isViewRequisitionPermitted ? ["Generate Requisition"] : []),
-        // ...(isViewChecklistPermitted ? ["Remote Work Checklist"] : []),
+        ...(isViewRequisitionRequestPermitted ? ["Requisition Requests"] : []),
         // ...(isViewJobTypesPermitted ? ["Job Types"] : []),
         // ...(isViewEducationsPermitted ? ["Education"] : []),
         // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewRequisitionPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
+    ], [isViewRequisitionPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewRequisitionRequestPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
@@ -65,7 +65,7 @@ export default function RequisitionPlanning() {
                 setOpenEducationForm(true);
             else if (triggeredResquest === 'job-type')
                 setOpenJobTypesForm(true);
-            else if (triggeredResquest === 'checklist')
+            else if (triggeredResquest === 'requisition-requests')
                 setOpenRWChecklistForm(true);
         }
         const activeButtonTab = activeTab ?? TabListArray[0];
@@ -93,15 +93,9 @@ export default function RequisitionPlanning() {
                     Add Job Type
                 </Button>
             )
-        } else if (activeButtonTab === "Remote Work Checklist" && isAddChecklistPermitted) {
-            return (
-                <Button title="checklist" onClick={handleRequestClick}>
-                    Add Remote Work Checklist
-                </Button>
-            )
         }
     }
-    if (!isViewRequisitionPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
+    if (!isViewRequisitionPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewRequisitionRequestPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -121,7 +115,9 @@ export default function RequisitionPlanning() {
                         ))}
                     </TabsList>
                 </div>
-
+                <TabsContent value={'Requisition Requests'}>
+                    <RequisitionRequests reload={reloadData['requisition-requests']} />
+                </TabsContent>
                 <Card>
                     <TabsContent value={'Generate Requisition'}>
                         <GenerateRequisition reload={reloadData['generate-requisition']} />
@@ -135,9 +131,7 @@ export default function RequisitionPlanning() {
                     <TabsContent value={'Job Types'}>
                         <JobTypes reload={reloadData['job-type']} />
                     </TabsContent>
-                    <TabsContent value={'Remote Work Checklist'}>
-                        <RemoteWorkChecklist reload={reloadData['checklist']} />
-                    </TabsContent>
+
                 </Card>
             </Tabs>
             {OpenRequisitionForm && (
@@ -204,7 +198,7 @@ export default function RequisitionPlanning() {
                         setReloadData((prev) => {
                             return {
                                 ...prev,
-                                'checklist': !prev["checklist"],
+                                'requisition-requests': !prev["requisition-requests"],
                             };
                         })
                     }}

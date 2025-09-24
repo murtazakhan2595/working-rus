@@ -388,28 +388,30 @@ export function mapRequisitionRequestPayloadData(data, id) {
     // Iterate over the keys in the RequisitionRequest object
     for (const key in Requisition) {
         // Check if the key exists in the data object
-        if (
-            data.hasOwnProperty(key) &&
-            data[key] !== null &&
-            data[key] !== undefined
-        ) {
-            if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
-            else if (key === 'attachment') {
-                if (data[key] instanceof File) formData.append(key, data[key])
-            } else if (key === 'remote_work_checklist') {
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                    for (const checklist of data[key]) {
-                        formData.append(key, checklist)
+        if (!['education_name', 'approval_details', 'status'].includes(key)) {
+            if (
+                data.hasOwnProperty(key) &&
+                data[key] !== null &&
+                data[key] !== undefined
+            ) {
+                if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
+                else if (key === 'attachment') {
+                    if (data[key] instanceof File) formData.append(key, data[key])
+                } else if (key === 'remote_work_checklist') {
+                    if (Array.isArray(data[key]) && data[key].length > 0) {
+                        for (const checklist of data[key]) {
+                            formData.append(key, checklist)
+                        }
+                    }
+                } else if (key === 'benefits') {
+                    if (Array.isArray(data[key]) && data[key].length > 0) {
+                        for (const benefit of data[key]) {
+                            formData.append(key, benefit)
+                        }
                     }
                 }
-            } else if (key === 'benefits') {
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                    for (const benefit of data[key]) {
-                        formData.append(key, benefit)
-                    }
-                }
+                else formData.append(key, data[key])
             }
-            else formData.append(key, data[key])
         }
     }
 

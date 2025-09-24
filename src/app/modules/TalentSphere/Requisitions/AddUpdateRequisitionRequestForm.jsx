@@ -9,6 +9,7 @@ import {
 } from "app/hooks/talentSphere";
 import { Requisition } from "app/utils/Types/TalentSphere";
 import { SheetUI, EmployeeDetailUI } from "components";
+import { CheckBoxInput } from "components/FormControl";
 import { CoverFileUpload } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
 import { TextInput, TextAreaInput, RadioGroupInput, SelectInputComponent, SwitchInput, SelectMultiInputComponent } from "components/FormControl";
@@ -104,7 +105,7 @@ const AddUpdateRequisitionRequestForm = ({
     const handleSubmit = async (values, is_draft = false) => {
         try {
             setIsSubmittingForm(true);
-            const response = await saveUpdateRequisitionRequest({ ...values, is_draft: is_draft }, id);
+            const response = await saveUpdateRequisitionRequest({ ...values, is_draft: Boolean(is_draft===true) }, id);
             if (response) {
                 return {
                     status: true,
@@ -248,6 +249,11 @@ const AddUpdateRequisitionRequestForm = ({
                                     required: true,
                                     label: "City",
                                     options: Departments,
+                                },
+                                {
+                                    InputField: CheckBoxInput,
+                                    name: "is_emiratization_role",
+                                    label: "Emiratization Role",
                                 },
                             ]),
                         ],
