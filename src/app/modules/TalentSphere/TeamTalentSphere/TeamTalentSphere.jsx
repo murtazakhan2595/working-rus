@@ -81,7 +81,7 @@ export default function TeamTalentSphere() {
         } else if (activeButtonTab === "Requisition Request" && isAddRequisitionRequestsPermitted) {
             return (
                 <Button title="requisition-request" onClick={handleRequestClick}>
-                    CREATE_REQUISITION_REQUEST
+                    Create Requisition Request
                 </Button>
             )
         } else if (activeButtonTab === "Remote Work Checklist" && isAddChecklistPermitted) {

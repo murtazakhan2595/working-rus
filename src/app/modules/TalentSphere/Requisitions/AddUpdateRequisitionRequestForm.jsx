@@ -104,7 +104,6 @@ const AddUpdateRequisitionRequestForm = ({
         try {
             setIsSubmittingForm(true);
             const response = await saveUpdateRequisitionRequest({ ...values, is_draft: is_draft }, id);
-        debugger
             if (response) {
                 return {
                     status: true,

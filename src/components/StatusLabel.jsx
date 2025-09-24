@@ -59,6 +59,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("signed")) return "success";
   else if (status.includes("viewed")) return "warning";
   else if (status.includes("late")) return "warning";
+  else if (status.includes("draft")) return "warning";
   else if (status.includes("warning")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";

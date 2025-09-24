@@ -448,7 +448,7 @@ export const RequisitionRequestColumns = (reloadData) => [
         text: "Job Title",
     },
     {
-        dataField: "job_type",
+        dataField: "job_type_name",
         text: "Employment Type",
     },
     {

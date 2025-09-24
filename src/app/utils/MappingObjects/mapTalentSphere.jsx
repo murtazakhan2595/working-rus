@@ -350,14 +350,16 @@ export function mapHeadcountRequestPayloadData(data, id) {
 
 //-------------RequisitionRequests ---------------
 
-export async function mapRequisitionRequestData(data,fetchApprovalDetails) {
-  const RecordDetails = {};
+export async function mapRequisitionRequestData(data, fetchApprovalDetails) {
+    const RecordDetails = {};
     for (const key of Object.keys(Requisition)) {
         if (key === "approval_details" && fetchApprovalDetails) {
             RecordDetails[key] = await mapApproverDetails({ ...data, });
         } else {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
-                RecordDetails[key] = data[key];
+                if (key === 'status') {
+                    RecordDetails[key] = data[key].toLowerCase() === 'pending' && data['is_draft'] ? 'draft' : data[key].toLowerCase();
+                } else RecordDetails[key] = data[key];
             }
         }
     }

@@ -95,6 +95,11 @@ export const HeadcountRequest = {
     requested_by: null,
     approved_by: null,
     request: null,
+    remote_work_checklist_name:null,
+    benefit_names:null,
+    job_type_name:null,
+    career_level_name:null,
+    education_name:null,
 }
 
 export const Requisition = {
