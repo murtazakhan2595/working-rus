@@ -8,7 +8,7 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
-import { getRequisitionRequestList, getRequisitionStats } from "app/hooks/talentSphere";
+import { getRequisitionRequestList, getRequisitionStats, getJobTypeList } from "app/hooks/talentSphere";
 import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
@@ -28,7 +28,7 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
     const [statsData, setStatsData] = useState({});
-
+    const [JobTypeList, setJobTypeList] = useState([]);
     const OuterTabList = useMemo(() => {
         return ["Requests", "Records"];
     }, []);
@@ -44,6 +44,28 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
             setOrdering(sortName);
         },
     };
+
+    useEffect(() => {
+        const fetchBenefitData = async (isMounted) => {
+            try {
+                setIsLoading(true);
+                // Add organizationId to filter if available
+                const job_type = await getJobTypeList();
+                if (isMounted) {
+                    setJobTypeList(job_type.results);
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        let isMounted = true;
+        fetchBenefitData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const fetchData = async (isMounted) => {
         try {
@@ -140,7 +162,7 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
                 {RotationStatsData.map((stat, index) =>
                     <Card
                         key={`${index}`}
-                        className="flex flex-col justify-center w-[18%] min-w-[150px]"
+                        className="flex flex-col justify-center w-[18%] min-w-[100px]"
                     >
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-bold text-neutral-900">
@@ -190,27 +212,26 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
                             filters={[
 
                                 {
-                                    type: "select-multiple",
+                                    type: "select",
                                     options: "Departments",
                                     name: "department",
                                     placeholder: "Department",
                                 },
                                 {
-                                    type: "select-multiple",
-                                    options: 'Branches',
-                                    name: "branch",
-                                    placeholder: "Branch",
+                                    type: "select",
+                                    options: JobTypeList,
+                                    name: "job_type",
+                                    placeholder: "Job Type",
                                 },
                                 {
                                     type: "select",
-                                    options: 'Employees',
-                                    name: "requested_by",
-                                    placeholder: "Requested By",
-                                },
-                                {
-                                    type: "date-range",
-                                    name: "requested_on",
-                                    placeholder: "Requested Date",
+                                    options: [
+                                        { value: 'onsite', label: 'Onsite' },
+                                        { value: 'hybrid', label: "Hybrid" },
+                                        { value: 'remote', label: "Remote" },
+                                    ],
+                                    name: "work_mode",
+                                    placeholder: "Work Mode",
                                 },
                                 ...(activeTab === "Records"
                                     ? [
