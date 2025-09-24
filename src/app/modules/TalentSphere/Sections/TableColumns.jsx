@@ -475,6 +475,11 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         text: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
+    ...(!isTeamView ? [{
+        dataField: "approval_requied",
+        text: "Approval Requied",
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
+    },] : []),
     {
         dataField: "",
         text: "",

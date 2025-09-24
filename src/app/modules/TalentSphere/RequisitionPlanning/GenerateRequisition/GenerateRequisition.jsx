@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import { getRequisitionRequestList } from "app/hooks/talentSphere";
+import { getRequisitionRequestList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
 import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
+import { GlobalStatusOptions } from "data/Data";
 
 const GenerateRequisition = ({ reload }) => {
     const [RequisitionList, setRequisitionList] = useState({});
@@ -12,6 +13,8 @@ const GenerateRequisition = ({ reload }) => {
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [isLoading, setIsLoading] = useState(false);
+    const [JobTypeList, setJobTypeList] = useState([]);
+    const [CareerLevelList, setCareerLevelList] = useState([]);
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -24,7 +27,29 @@ const GenerateRequisition = ({ reload }) => {
             setOrdering(sortName);
         },
     };
-
+    useEffect(() => {
+        const fetchBenefitData = async (isMounted) => {
+            try {
+                setIsLoading(true);
+                // Add organizationId to filter if available
+                const career_level = await getCareerLevelList();
+                const job_type = await getJobTypeList();
+                if (isMounted) {
+                    setJobTypeList(job_type.results);
+                    setCareerLevelList(career_level.results);
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        let isMounted = true;
+        fetchBenefitData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, []);
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
@@ -85,21 +110,47 @@ const GenerateRequisition = ({ reload }) => {
                     <FilterInput
                         filters={[
                             {
-                                type: "search",
-                                placeholder: "Search by name",
-                                name: "name",
+                                type: "select",
+                                options: "Departments",
+                                name: "department",
+                                placeholder: "Department",
                             },
                             {
                                 type: "select",
-                                placeholder: "Status",
-                                name: "status",
-                                options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },]
+                                options: "Branches",
+                                name: "branch",
+                                placeholder: "Branch",
                             },
                             {
-                                type: "date-range",
-                                placeholder: "Creation Date",
-                                name: "created_at",
+                                type: "select",
+                                options: JobTypeList,
+                                name: "job_type",
+                                placeholder: "Job Type",
                             },
+                            {
+                                type: "select",
+                                options: CareerLevelList,
+                                name: "career_level",
+                                placeholder: "Career Level",
+                            },
+                            {
+                                type: "select",
+                                options: [
+                                    { value: 'onsite', label: 'Onsite' },
+                                    { value: 'hybrid', label: "Hybrid" },
+                                    { value: 'remote', label: "Remote" },
+                                ],
+                                name: "work_mode",
+                                placeholder: "Work Mode",
+                            },
+
+                            {
+                                type: "select",
+                                options: [...GlobalStatusOptions(false),],
+                                name: "status",
+                                placeholder: "Status",
+                            },
+
                         ]}
                         className="justify-end"
                         onChange={handleFilterChange}
@@ -112,7 +163,7 @@ const GenerateRequisition = ({ reload }) => {
                 ) : (
                     <TableCustom
                         columns={RequisitionRequestColumns(fetchData)}
-                        data={RequisitionList.results||[]}
+                        data={RequisitionList.results || []}
                         tableOptions={tableOptions}
                         dataTotalSize={RequisitionList?.count || 0}
                         pagination={true}

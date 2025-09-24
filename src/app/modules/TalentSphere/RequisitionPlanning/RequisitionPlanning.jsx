@@ -6,7 +6,7 @@ import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
 import {
     GenerateRequisition,
-    AddUpdateGenerateRequisitionForm,
+    AddUpdateRequisitionRequestForm,
     CareerLevels,
     AddUpdateCareerLevelForm,
     Educations,
@@ -19,8 +19,8 @@ import {
 import Error from "app/modules/Error";
 
 export default function RequisitionPlanning() {
-    const isViewGeneratedRequisitionPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isGeneratRequisitionPermitted = HasAccess("ADD_TS_BENEFITS");
+    const isViewRequisitionPermitted = HasAccess("VIEW_TS_BENEFITS");
+    const isAddRequisitionPermitted = HasAccess("ADD_TS_BENEFITS");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
@@ -30,7 +30,7 @@ export default function RequisitionPlanning() {
     const isViewChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
-    const [OpenGenerateRequisitionForm, setOpenGenerateRequisitionForm] = useState(false);
+    const [OpenRequisitionForm, setOpenRequisitionForm] = useState(false);
     const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
     const [OpenEducationForm, setOpenEducationForm] = useState(false);
     const [OpenJobTypesForm, setOpenJobTypesForm] = useState(false);
@@ -39,26 +39,26 @@ export default function RequisitionPlanning() {
 
 
     const TabListArray = React.useMemo(() => [
-        ...(isViewGeneratedRequisitionPermitted ? ["Generate Requisition"] : []),
+        ...(isViewRequisitionPermitted ? ["Generate Requisition"] : []),
         // ...(isViewChecklistPermitted ? ["Remote Work Checklist"] : []),
         // ...(isViewJobTypesPermitted ? ["Job Types"] : []),
         // ...(isViewEducationsPermitted ? ["Education"] : []),
         // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewGeneratedRequisitionPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
+    ], [isViewRequisitionPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
             event.preventDefault();
             event.stopPropagation();
-            setOpenGenerateRequisitionForm(false);
+            setOpenRequisitionForm(false);
             setOpenCareerLevelForm(false);
             setOpenEducationForm(false);
             setOpenJobTypesForm(false);
             setOpenRWChecklistForm(false);
             const triggeredResquest = event.target.title;
             if (triggeredResquest === 'generate-requisition')
-                setOpenGenerateRequisitionForm(true);
+                setOpenRequisitionForm(true);
             else if (triggeredResquest === 'career-level')
                 setOpenCareerLevelForm(true);
             else if (triggeredResquest === 'education')
@@ -69,7 +69,7 @@ export default function RequisitionPlanning() {
                 setOpenRWChecklistForm(true);
         }
         const activeButtonTab = activeTab ?? TabListArray[0];
-        if (activeButtonTab === "Generate Requisition" && isGeneratRequisitionPermitted) {
+        if (activeButtonTab === "Generate Requisition" && isAddRequisitionPermitted) {
             return (
                 <Button title="generate-requisition" onClick={handleRequestClick}>
                     Add Requisition
@@ -101,7 +101,7 @@ export default function RequisitionPlanning() {
             )
         }
     }
-    if (!isViewGeneratedRequisitionPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
+    if (!isViewRequisitionPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -140,11 +140,11 @@ export default function RequisitionPlanning() {
                     </TabsContent>
                 </Card>
             </Tabs>
-            {OpenGenerateRequisitionForm && (
-                <AddUpdateGenerateRequisitionForm
-                    isOpen={OpenGenerateRequisitionForm}
+            {OpenRequisitionForm && (
+                <AddUpdateRequisitionRequestForm
+                    isOpen={OpenRequisitionForm}
                     setIsOpen={() => {
-                        setOpenGenerateRequisitionForm(false);
+                        setOpenRequisitionForm(false);
                         setReloadData((prev) => {
                             return {
                                 ...prev,
