@@ -112,7 +112,9 @@ export default function TeamTalentSphere() {
                         ))}
                     </TabsList>
                 </div>
-
+                <TabsContent value={'Requisition Request'}>
+                    <RequisitionRequests reload={reloadData['requisition-request']} isTeamView={true} />
+                </TabsContent>
                 <Card>
                     <TabsContent value={'Manpower Headcount'}>
                         <TeamManpowerHeadcount reload={reloadData['headcount-request']} />
@@ -123,9 +125,7 @@ export default function TeamTalentSphere() {
                     <TabsContent value={'Education'}>
                         <Educations reload={reloadData['education']} />
                     </TabsContent>
-                    <TabsContent value={'Requisition Request'}>
-                        <RequisitionRequests reload={reloadData['requisition-request']} />
-                    </TabsContent>
+
                     <TabsContent value={'Remote Work Checklist'}>
                         <RemoteWorkChecklist reload={reloadData['checklist']} />
                     </TabsContent>

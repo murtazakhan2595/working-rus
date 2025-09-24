@@ -41,7 +41,7 @@ import {
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
 } from './TeamTalentSphere';
-import { AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest } from './Requisitions';
+import { AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest,RequisitionActions } from './Requisitions';
 export {
     ManpowerPlanning,
     AddUpdateManpower,
@@ -79,5 +79,6 @@ export {
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
     RequisitionRequests,
-    AddUpdateRequisitionRequestForm
+    AddUpdateRequisitionRequestForm,
+    RequisitionActions
 };

@@ -9,7 +9,7 @@ import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI
 import { getRequisitionRequestData } from "app/hooks/talentSphere";
 import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { handleRequest } from "app/hooks/general";
-import { renderDate } from "utils/renderValues";
+import AttachmentUI from "components/ui/AttachmentUI";
 import { toast } from "react-toastify";
 import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
@@ -29,6 +29,7 @@ const ViewRequisitionRequest = ({
     currentId,
     reloadData = () => { },
     DataList = [],
+    isTeamView = false,
 }) => {
     const [forceLoad, setForceLoad] = useState(false);
     const [openRejectModal, setOpenRejectModal] = useState(false);
@@ -210,7 +211,7 @@ const ViewRequisitionRequest = ({
                     label: "Experiance",
                     formatter: (cell, data) => `${cell} Years - ${data.experience_max} Years`,
                 },
-                  {
+                {
                     key: "salary_min",
                     label: "Salary Range",
                     formatter: (cell, data) => `${cell} - ${data.salary_max}`,
@@ -222,20 +223,40 @@ const ViewRequisitionRequest = ({
                 },
             ],
         },
+         {
+            title: `Attachment`,
+            field: [
+              {
+                key: 'attachment',
+                formatter: (cell, data) =>
+                  cell ? (
+                    <AttachmentUI
+                      attachment={cell}
+                      name={`Requisition Request Document`}
+                      viewOnly={true}
+                    />
+                  ) : (
+                    <div className="text-neutral-1000 text-sm">No document attached</div>
+                  ),
+              },
+            ],
+          },
         {
             title: "Approval Details",
             field: [
                 {
                     key: "approval_details",
-                    formatter: (cell) => (
-                        <StatusList status_list={cell} className="my-3" />
-                    ),
+                    formatter: (cell,data) => {
+                        if (!data.approval_required) return 'Approval was not required';
+                        return (<StatusList status_list={cell} className="my-3" />)
+                    },
                 },
             ],
         },
         {
             customContent: true,
             renderContent: (data) => {
+                if (isTeamView) return null;
                 return (
                     <StatusButtons
                         permissionKey={'MANAGE_HEADCOUNT_REQUESTS'}

@@ -81,6 +81,7 @@ const AddUpdateRequisitionRequestForm = ({
                 const response = await getRequisitionRequestData(id);
                 if (isMounted) {
                     setFormData(response);
+                    setFormValues(response);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -288,13 +289,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 label: "Job Type",
                                 options: JobTypeList,
                             },
-                            {
-                                InputField: SelectInputComponent,
-                                name: "gender_preference",
-                                required: true,
-                                label: "Gender Preference",
-                                options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'None', value: 'none' },],
-                            },
+                         
                             {
                                 InputField: NumberInput,
                                 name: "min_age",
@@ -342,6 +337,13 @@ const AddUpdateRequisitionRequestForm = ({
                                 name: "salary_max",
                                 required: true,
                                 label: "Maximum Salary",
+                            },
+                               {
+                                InputField: SelectInputComponent,
+                                name: "gender_preference",
+                                required: true,
+                                label: "Gender Preference",
+                                options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'None', value: 'none' },],
                             },
                             {
                                 InputField: TextAreaInput,

@@ -10,7 +10,7 @@ import {
     RemoteWorkChecklistStatusTogle,
     RemoteWorkChecklistActions,
     HeadCountRequestsActions,
-    GenerateRequisitionActions,
+    RequisitionActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
@@ -432,7 +432,7 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const RequisitionRequestColumns = (reloadData) => [
+export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     {
         dataField: "id",
         text: "ID",
@@ -479,7 +479,7 @@ export const RequisitionRequestColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <GenerateRequisitionActions data={row} reloadData={reloadData} DataList={data_list} />
+            <RequisitionActions data={row} reloadData={reloadData} DataList={data_list} isTeamView={isTeamView} />
         ),
         width: '50px'
     },

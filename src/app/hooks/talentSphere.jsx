@@ -26,6 +26,7 @@ import {
   mapRequisitionRequestList,
   mapRequisitionRequestData,
   mapRequisitionRequestPayloadData,
+  mapRequisitionStatsData
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -611,6 +612,23 @@ export const getRequisitionRequestList = async (payload) => {
     }
     return {};
   }
+};
+
+export const getRequisitionStats = async (payload) => {
+  try {
+    const response = await getRequisitionRequestList();
+    if (response) {
+      const ResponseData = response.results;
+      const StatData = mapRequisitionStatsData(ResponseData);
+      return StatData;
+    } else return {};
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return {};
 };
 
 export const getRequisitionRequestData = async (id) => {

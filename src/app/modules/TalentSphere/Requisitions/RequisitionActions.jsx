@@ -3,7 +3,7 @@ import { ViewRequisitionRequest, AddUpdateRequisitionRequestForm } from "app/mod
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
-const GenerateRequisitionActions = ({ data, DataList = [], reloadData = () => { } }) => {
+const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
     const isEditPermitted = HasAccess("CREATE_REQUISITION_REQUEST");
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
@@ -35,6 +35,7 @@ const GenerateRequisitionActions = ({ data, DataList = [], reloadData = () => { 
                     }}
                     currentId={data.id}
                     DataList={DataList}
+                    isTeamView={isTeamView}
                 />
             )}
             {edit && (
@@ -48,9 +49,10 @@ const GenerateRequisitionActions = ({ data, DataList = [], reloadData = () => { 
                         setEdit(false);
                     }}
                     id={data.id}
+                    approvalRequired={isTeamView}
                 />
             )}
         </>
     );
 };
-export default GenerateRequisitionActions;
+export default RequisitionActions;

@@ -9,6 +9,7 @@ import {
     Requisition,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
+import { calculateTotalCount } from "utils/renderValues";
 
 export function mapManpowerPayloadData(data) {
     // Initialize an empty payload object
@@ -414,4 +415,15 @@ export function mapRequisitionRequestPayloadData(data, id) {
 
     // Return the constructed payload
     return formData;
+}
+
+export async function mapRequisitionStatsData(data) {
+    if (!data || data.length === 0)
+        return { Pending: 0, Approved: 0, Rejected: 0, Total: 0, Draft: 0 };
+    const Pending = calculateTotalCount(data, "status", "pending");
+    const Draft = calculateTotalCount(data, "status", "draft");
+    const Total = data.length || 0;
+    const Approved = calculateTotalCount(data, "status", "approved");
+    const Rejected = calculateTotalCount(data, "status", "rejected");
+    return { Pending, Approved, Rejected, Total, Draft };
 }

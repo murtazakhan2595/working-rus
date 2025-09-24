@@ -4,10 +4,11 @@ import {
     CardDescription,
     CardTitle,
     CardHeader,
+    Card,
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
-import { getRequisitionRequestList } from "app/hooks/talentSphere";
+import { getRequisitionRequestList, getRequisitionStats } from "app/hooks/talentSphere";
 import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
@@ -26,6 +27,7 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
     const [HeadCountRequestList, setHeadCountRequestList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
+    const [statsData, setStatsData] = useState({});
 
     const OuterTabList = useMemo(() => {
         return ["Requests", "Records"];
@@ -65,6 +67,27 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
         };
     }, [filterData, options, ordering]);
 
+    useEffect(() => {
+        let isMounted = true;
+        const fetchStatData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await getRequisitionStats({ filterData: { approval_required: true } });
+                if (response) {
+                    setStatsData(response);
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchStatData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
         setFilterData((prevFilters) => {
@@ -103,90 +126,121 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
         }
     };
 
+    const RotationStatsData = React.useMemo(() => [
+        { label: "Total", value: statsData.Total },
+        { label: "Pending", value: statsData.Pending },
+        { label: "Draft", value: statsData.Draft },
+        { label: "Approved", value: statsData.Approved },
+        { label: "Rejected", value: statsData.Rejected },
+    ], [statsData]);
+
     return (
-        <Tabs
-            defaultValue="Requests"
-            className="w-full"
-            onValueChange={(tab) => {
-                setActiveTab(tab);
-                handleTabChange(tab);
-            }}
-            value={activeTab}
-        >
-            <TabsList>
-                {OuterTabList.map((tab) => (
-                    <TabsTrigger
-                        key={tab}
-                        value={tab}
-                        variant="inner-tab"
+        <>
+            <div className='flex gap-4 justify-start flex-row flex-wrap mb-4'>
+                {RotationStatsData.map((stat, index) =>
+                    <Card
+                        key={`${index}`}
+                        className="flex flex-col justify-center w-[18%] min-w-[150px]"
                     >
-                        {tab}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-            <CardHeader className="flex flex-row justify-between items-center gap-4">
-                <div>
-                    <CardTitle className="text-primary">Headcount {activeTab}</CardTitle>
-                    <CardDescription className="text-neutral-1100">
-                        Here you can {activeTab === 'Requests' ? 'view' : 'approve, or reject'} manpower headcount requests submitted.
-                    </CardDescription>
-                </div>
-            </CardHeader>
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-bold text-neutral-900">
+                                {stat.label}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-3xl font-medium text-plum-900">
+                                {stat.value}
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+            <Card>
+                <Tabs
+                    defaultValue="Requests"
+                    className="w-full"
+                    onValueChange={(tab) => {
+                        setActiveTab(tab);
+                        handleTabChange(tab);
+                    }}
+                    value={activeTab}
+                >
+                    <TabsList>
+                        {OuterTabList.map((tab) => (
+                            <TabsTrigger
+                                key={tab}
+                                value={tab}
+                                variant="inner-tab"
+                            >
+                                {tab}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                    <CardHeader className="flex flex-row justify-between items-center gap-4">
+                        <div>
+                            <CardTitle className="text-primary">Requisition {activeTab}</CardTitle>
+                            <CardDescription className="text-neutral-1100">
+                                Here you can {activeTab === 'Records' ? 'view' : 'view, approve, or reject'} requisition requests submitted.
+                            </CardDescription>
+                        </div>
+                    </CardHeader>
 
-            <CardContent>
-                <FilterInput
-                    filters={[
+                    <CardContent>
+                        <FilterInput
+                            filters={[
 
-                        {
-                            type: "select-multiple",
-                            options: "Departments",
-                            name: "department",
-                            placeholder: "Department",
-                        },
-                        {
-                            type: "select-multiple",
-                            options: 'Branches',
-                            name: "branch",
-                            placeholder: "Branch",
-                        },
-                        {
-                            type: "select",
-                            options: 'Employees',
-                            name: "requested_by",
-                            placeholder: "Requested By",
-                        },
-                        {
-                            type: "date-range",
-                            name: "requested_on",
-                            placeholder: "Requested Date",
-                        },
-                        ...(activeTab === "Records"
-                            ? [
+                                {
+                                    type: "select-multiple",
+                                    options: "Departments",
+                                    name: "department",
+                                    placeholder: "Department",
+                                },
+                                {
+                                    type: "select-multiple",
+                                    options: 'Branches',
+                                    name: "branch",
+                                    placeholder: "Branch",
+                                },
                                 {
                                     type: "select",
-                                    options: [...GlobalStatusOptions(false),],
-                                    name: "status",
-                                    placeholder: "Status",
+                                    options: 'Employees',
+                                    name: "requested_by",
+                                    placeholder: "Requested By",
                                 },
-                            ]
-                            : []),
-                    ]}
-                    onChange={handleFilterChange}
-                    className="justify-end mb-4"
-                />
-                {isLoading ? (
-                    <PageLoader />
-                ) : (
-                    <TableCustom
-                        data={HeadCountRequestList?.results || []}
-                        columns={RequisitionRequestColumns(fetchData, activeTab==='Records')}
-                        pagination={true}
-                        dataTotalSize={HeadCountRequestList?.count || 0}
-                        tableOptions={tableOptions}
-                    />
-                )}
-            </CardContent>
-        </Tabs>
+                                {
+                                    type: "date-range",
+                                    name: "requested_on",
+                                    placeholder: "Requested Date",
+                                },
+                                ...(activeTab === "Records"
+                                    ? [
+                                        {
+                                            type: "select",
+                                            options: [...GlobalStatusOptions(false),],
+                                            name: "status",
+                                            placeholder: "Status",
+                                        },
+                                    ]
+                                    : []),
+                            ]}
+                            onChange={handleFilterChange}
+                            className="justify-end mb-4"
+                        />
+                        {isLoading ? (
+                            <PageLoader />
+                        ) : (
+                            <TableCustom
+                                data={HeadCountRequestList?.results || []}
+                                columns={RequisitionRequestColumns(fetchData, activeTab === 'Records', isTeamView)}
+                                pagination={true}
+                                dataTotalSize={HeadCountRequestList?.count || 0}
+                                tableOptions={tableOptions}
+                            />
+                        )}
+                    </CardContent>
+                </Tabs>
+            </Card>
+        </>
     );
 };
 
