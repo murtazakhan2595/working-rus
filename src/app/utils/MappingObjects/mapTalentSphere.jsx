@@ -7,7 +7,10 @@ import {
     CareerLevel,
     HeadcountRequest,
     Requisition,
+    PublishVacancy,
 } from 'app/utils/Types/TalentSphere';
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
+import { calculateTotalCount } from "utils/renderValues";
 
 export function mapManpowerPayloadData(data) {
     // Initialize an empty payload object
@@ -48,6 +51,22 @@ export async function mapManpowerData(data) {
     }
 
     return RecordDetails;
+}
+
+export async function mapManpowerList(data) {
+    if (!Array.isArray(data) || data.length === 0) return [];
+
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapManpowerData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 
 
@@ -297,33 +316,38 @@ export function mapCareerLevelPayloadData(data, id) {
 
 //-------------HeadcountRequests ---------------
 
-export function mapHeadcountRequestData(data) {
-    const RecordDetails = Object.keys(HeadcountRequest).reduce((acc, key) => {
-        if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
-            else acc[key] = data[key];
+export async function mapHeadcountRequestData(data, fetchApprovalDetails) {
+    const RecordDetails = {};
+    for (const key of Object.keys(HeadcountRequest)) {
+        if (key === "approval_details" && fetchApprovalDetails) {
+            RecordDetails[key] = await mapApproverDetails({ ...data, });
+        } else {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                RecordDetails[key] = data[key];
+            }
         }
-        return acc;
-    }, {});
-
+    }
     return RecordDetails;
 }
 export async function mapHeadcountRequestList(data) {
-    const DataList = await data?.map((Record) => {
-        const Details = mapHeadcountRequestData(Record);
-        return {
-            value: Details.id,
-            label: Details.name,
-            ...Details,
-        };
-    });
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-    return DataList;
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapHeadcountRequestData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 
 export function mapHeadcountRequestPayloadData(data, id) {
     // Initialize an empty payload object
-    const payload = {};
+    const formData = new FormData();
     // Iterate over the keys in the HeadcountRequest object
     for (const key in HeadcountRequest) {
         // Check if the key exists in the data object
@@ -332,39 +356,48 @@ export function mapHeadcountRequestPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
-            else payload[key] = data[key];
+            if (key === 'attachment') {
+                if (data[key] instanceof File) formData.append(key, data[key])
+            } formData.append(key, data[key])
         }
     }
 
     // Return the constructed payload
-    return payload;
+    return formData;
 }
 
 //-------------RequisitionRequests ---------------
 
-export function mapRequisitionRequestData(data) {
-    const RecordDetails = Object.keys(Requisition).reduce((acc, key) => {
-        if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
-            else acc[key] = data[key];
+export async function mapRequisitionRequestData(data, fetchApprovalDetails) {
+    const RecordDetails = {};
+    for (const key of Object.keys(Requisition)) {
+        if (key === "approval_details" && fetchApprovalDetails) {
+            RecordDetails[key] = await mapApproverDetails({ ...data, });
+        } else {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                if (key === 'id') RecordDetails['requisition_id'] = data[key];
+                if (key === 'status') {
+                    RecordDetails[key] = data[key].toLowerCase() === 'pending' && data['is_draft'] ? 'draft' : data[key].toLowerCase();
+                } else RecordDetails[key] = data[key];
+            }
         }
-        return acc;
-    }, {});
-
+    }
     return RecordDetails;
 }
 export async function mapRequisitionRequestList(data) {
-    const DataList = await data?.map((Record) => {
-        const Details = mapRequisitionRequestData(Record);
-        return {
-            value: Details.id,
-            label: Details.name,
-            ...Details,
-        };
-    });
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-    return DataList;
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapRequisitionRequestData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 
 export function mapRequisitionRequestPayloadData(data, id) {
@@ -373,31 +406,96 @@ export function mapRequisitionRequestPayloadData(data, id) {
     // Iterate over the keys in the RequisitionRequest object
     for (const key in Requisition) {
         // Check if the key exists in the data object
-        if (
-            data.hasOwnProperty(key) &&
-            data[key] !== null &&
-            data[key] !== undefined
-        ) {
-            if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
-            else if (key === 'attachment') {
-                if (data[key] instanceof File) formData.append(key, data[key])
-            } else if (key === 'remote_work_checklist') {
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                    for (const checklist of data[key]) {
-                        formData.append(key, checklist)
+        if (!['education_name', 'approval_details', 'status'].includes(key)) {
+            if (
+                data.hasOwnProperty(key) &&
+                data[key] !== null &&
+                data[key] !== undefined
+            ) {
+                if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
+                else if (key === 'attachment') {
+                    if (data[key] instanceof File) formData.append(key, data[key])
+                } else if (key === 'remote_work_checklist') {
+                    if (Array.isArray(data[key]) && data[key].length > 0) {
+                        for (const checklist of data[key]) {
+                            formData.append(key, checklist)
+                        }
+                    }
+                } else if (key === 'benefits') {
+                    if (Array.isArray(data[key]) && data[key].length > 0) {
+                        for (const benefit of data[key]) {
+                            formData.append(key, benefit)
+                        }
                     }
                 }
-            } else if (key === 'benefits') {
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                    for (const benefit of data[key]) {
-                        formData.append(key, benefit)
-                    }
-                }
+                else formData.append(key, data[key])
             }
-            else formData.append(key, data[key])
         }
     }
 
     // Return the constructed payload
     return formData;
+}
+
+export async function mapRequisitionStatsData(data) {
+    if (!data || data.length === 0)
+        return { Pending: 0, Approved: 0, Rejected: 0, Total: 0, Draft: 0 };
+    const Pending = calculateTotalCount(data, "status", "pending");
+    const Draft = calculateTotalCount(data, "status", "draft");
+    const Total = data.length || 0;
+    const Approved = calculateTotalCount(data, "status", "approved");
+    const Rejected = calculateTotalCount(data, "status", "rejected");
+    return { Pending, Approved, Rejected, Total, Draft };
+}
+
+
+//-------------Vacancy ---------------
+
+export function mapVacancyData(data) {
+    const RecordDetails = Object.keys(PublishVacancy).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === 'requisition_type') {
+                const posted_portals = [];
+                if (data['post_on_cohrus']) posted_portals.push('Cohrus')
+                if (data['post_on_linkedin']) posted_portals.push('Linkedin')
+                if (data['post_on_indeed']) posted_portals.push('Indeed')
+                if (data['post_on_other']) posted_portals.push('Other Portals')
+                acc['posted_portals'] = posted_portals;
+
+            }
+            acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapVacancyList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapVacancyData(Record);
+        return {
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapVacancyPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Vacancy object
+    for (const key in PublishVacancy) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
 }

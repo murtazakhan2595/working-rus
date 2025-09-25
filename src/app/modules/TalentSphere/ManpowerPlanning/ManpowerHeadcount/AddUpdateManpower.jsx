@@ -106,6 +106,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const renderConsumedBudgetStatus = async (consumed_budget, total_budget, handleChange) => {
         try {
             if (consumed_budget && total_budget) {
+                debugger
                 const percentage = calculatePercentage(consumed_budget, total_budget);
                 const consumed_budget_status = getConsumedBudgetStatus(percentage)
                 setBudgetStatus(consumed_budget_status);

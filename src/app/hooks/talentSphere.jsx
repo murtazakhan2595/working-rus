@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { HandleLogout, baseUrl, headers, getCurrentRequestApprover,formDataHeader } from "./general";
+import { HandleLogout, baseUrl, headers, getCurrentRequestApprover, formDataHeader } from "./general";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
 import {
@@ -24,9 +24,14 @@ import {
   mapHeadcountRequestList,
   mapHeadcountRequestData,
   mapHeadcountRequestPayloadData,
+  mapVacancyList,
+  mapVacancyData,
+  mapVacancyPayloadData,
+  mapRequisitionStatsData,
   mapRequisitionRequestList,
   mapRequisitionRequestData,
   mapRequisitionRequestPayloadData,
+  mapManpowerList,
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -42,7 +47,9 @@ export const getManpowerPlanningList = async (payload) => {
   try {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
-      return response.data;
+      const ResponseData = response.data;
+      const ResponseDataList = await mapManpowerList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
     console.error("Error fetching job rotation requests:", error);
@@ -537,8 +544,10 @@ export const getHeadcountRequestData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = mapHeadcountRequestData(response.data);
-      return ResponseData;
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapHeadcountRequestData({ ...Response, ...currentapprover, }, true);
+      return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -612,14 +621,33 @@ export const getRequisitionRequestList = async (payload) => {
   }
 };
 
+export const getRequisitionStats = async (payload) => {
+  try {
+    const response = await getRequisitionRequestList();
+    if (response) {
+      const ResponseData = response.results;
+      const StatData = mapRequisitionStatsData(ResponseData);
+      return StatData;
+    } else return {};
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return {};
+};
+
 export const getRequisitionRequestData = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/requisition-requests/${id}`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = mapRequisitionRequestData(response.data);
-      return ResponseData;
+      const Response = response.data;
+      const currentapprover = Response.request ? await getCurrentRequestApprover(Response.request) : {};
+      const ResponseData = await mapRequisitionRequestData({ ...Response, ...currentapprover, }, true);
+      return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -918,5 +946,88 @@ export const deleteDemographicField = async (id) => {
     }
     renderErrorMessages(error?.response?.data);
     return false;
+  }
+};
+
+
+export const getVacancyList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/published-vacancies/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapVacancyList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getVacancyData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/published-vacancies/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const RequisitionData = await getRequisitionRequestData(Response.requisition);
+      const ResponseData = await mapVacancyData({ ...Response });
+      return { ...RequisitionData,...ResponseData };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateVacancy = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/published-vacancies/${id}/`
+      : `${baseUrl}/published-vacancies/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapVacancyPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: formDataHeader(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };

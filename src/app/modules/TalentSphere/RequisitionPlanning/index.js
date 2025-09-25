@@ -1,14 +1,15 @@
 import RequisitionPlanning from './RequisitionPlanning';
 import {
-    AddUpdateGenerateRequisitionForm,
     GenerateRequisition,
     GenerateRequisitionActions,
-    ViewRequisitionRequest,
 } from './GenerateRequisition';
+
+import {PublishedVacancies,PublishVacancyActions,ViewPublishedVacancies} from './PublishedVacancies';
 export {
     RequisitionPlanning,
-    AddUpdateGenerateRequisitionForm,
     GenerateRequisition,
     GenerateRequisitionActions,
-    ViewRequisitionRequest,
+    PublishedVacancies,
+    PublishVacancyActions,
+    ViewPublishedVacancies,
 };

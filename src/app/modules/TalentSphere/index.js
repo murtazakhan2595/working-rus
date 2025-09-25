@@ -32,10 +32,11 @@ import {
 
 import {
     RequisitionPlanning,
-    AddUpdateGenerateRequisitionForm,
+    PublishedVacancies,
     GenerateRequisition,
     GenerateRequisitionActions,
-    ViewRequisitionRequest,
+    PublishVacancyActions,
+    ViewPublishedVacancies,
 } from './RequisitionPlanning';
 import {
     TeamTalentSphere,
@@ -43,7 +44,10 @@ import {
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
 } from './TeamTalentSphere';
-
+import {
+    AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest, RequisitionActions,
+    AddUpdateVacancyForm
+} from './Requisitions';
 export {
     ManpowerPlanning,
     AddUpdateManpower,
@@ -72,7 +76,6 @@ export {
     HeadCountRequestsActions,
     ViewHeadCountRequests,
     RequisitionPlanning,
-    AddUpdateGenerateRequisitionForm,
     GenerateRequisition,
     GenerateRequisitionActions,
     ViewRequisitionRequest,
@@ -80,5 +83,12 @@ export {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
-    DemoGraphics
+    DemoGraphics,
+    RequisitionRequests,
+    AddUpdateRequisitionRequestForm,
+    RequisitionActions,
+    PublishedVacancies,
+    AddUpdateVacancyForm,
+    PublishVacancyActions,
+    ViewPublishedVacancies,
 };

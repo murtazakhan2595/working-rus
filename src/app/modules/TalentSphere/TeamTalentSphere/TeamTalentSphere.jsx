@@ -11,29 +11,29 @@ import {
     AddUpdateCareerLevelForm,
     Educations,
     AddUpdateEducationForm,
-    JobTypes,
-    AddUpdateJobTypeForm,
+    RequisitionRequests,
+    AddUpdateRequisitionRequestForm,
     RemoteWorkChecklist,
     AddUpdateRemoteWorkChecklistForm,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
 
 export default function TeamTalentSphere() {
-    const isViewManpowerHeadcountPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isAddManpowerHeadcountPermitted = HasAccess("ADD_TS_BENEFITS");
+    const isViewManpowerHeadcountPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
+    const isAddManpowerHeadcountPermitted = HasAccess("REQUEST_MANPOWER_HEADCOUNT");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
-    const isViewJobTypesPermitted = HasAccess("VIEW_TS_JOB_TYPE");
-    const isAddJobTypesPermitted = HasAccess("ADD_TS_JOB_TYPE");
-    const isViewHeadcountRequestPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+    const isViewRequisitionRequestsPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
+    const isAddRequisitionRequestsPermitted = HasAccess("CREATE_REQUISITION_REQUEST");
+    const isViewHeadcountRequestPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
     const [OpenHeadcountRequest, setOpenBenefitForm] = useState(false);
     const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
     const [OpenEducationForm, setOpenEducationForm] = useState(false);
-    const [OpenJobTypesForm, setOpenJobTypesForm] = useState(false);
+    const [OpenRequisitionRequestsForm, setOpenRequisitionRequestsForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
     const [OpenRWChecklistForm, setOpenRWChecklistForm] = useState(false);
 
@@ -41,11 +41,11 @@ export default function TeamTalentSphere() {
     const TabListArray = React.useMemo(() => [
         ...(isViewManpowerHeadcountPermitted ? ["Manpower Headcount"] : []),
         ...(isViewHeadcountRequestPermitted ? ["Manpower Headcount Request"] : []),
-        ...(isViewJobTypesPermitted ? ["Job Types"] : []),
-        ...(isViewEducationsPermitted ? ["Education"] : []),
-        ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+        ...(isViewRequisitionRequestsPermitted ? ["Requisition Request"] : []),
+        // ...(isViewEducationsPermitted ? ["Education"] : []),
+        // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewManpowerHeadcountPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewHeadcountRequestPermitted]);
+    ], [isViewManpowerHeadcountPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewRequisitionRequestsPermitted, isViewHeadcountRequestPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
@@ -53,15 +53,15 @@ export default function TeamTalentSphere() {
             event.stopPropagation();
             setOpenBenefitForm(false);
             setOpenEducationForm(false);
-            setOpenJobTypesForm(false);
+            setOpenRequisitionRequestsForm(false);
             setOpenRWChecklistForm(false);
             const triggeredResquest = event.target.title;
             if (triggeredResquest === 'headcount-request')
                 setOpenBenefitForm(true);
             else if (triggeredResquest === 'education')
                 setOpenEducationForm(true);
-            else if (triggeredResquest === 'job-type')
-                setOpenJobTypesForm(true);
+            else if (triggeredResquest === 'requisition-request')
+                setOpenRequisitionRequestsForm(true);
             else if (triggeredResquest === 'checklist')
                 setOpenRWChecklistForm(true);
         }
@@ -72,16 +72,16 @@ export default function TeamTalentSphere() {
                     Request Manpower Headcount
                 </Button>
             )
-        }else if (activeButtonTab === "Education" && isAddEducationsPermitted) {
+        } else if (activeButtonTab === "Education" && isAddEducationsPermitted) {
             return (
                 <Button title="education" onClick={handleRequestClick}>
                     Add Education
                 </Button>
             )
-        } else if (activeButtonTab === "Job Types" && isAddJobTypesPermitted) {
+        } else if (activeButtonTab === "Requisition Request" && isAddRequisitionRequestsPermitted) {
             return (
-                <Button title="job-type" onClick={handleRequestClick}>
-                    Add Job Type
+                <Button title="requisition-request" onClick={handleRequestClick}>
+                    Create Requisition Request
                 </Button>
             )
         } else if (activeButtonTab === "Remote Work Checklist" && isAddChecklistPermitted) {
@@ -92,7 +92,7 @@ export default function TeamTalentSphere() {
             )
         }
     }
-    if (!isViewManpowerHeadcountPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewHeadcountRequestPermitted)
+    if (!isViewManpowerHeadcountPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewRequisitionRequestsPermitted && !isViewHeadcountRequestPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -112,7 +112,9 @@ export default function TeamTalentSphere() {
                         ))}
                     </TabsList>
                 </div>
-
+                <TabsContent value={'Requisition Request'}>
+                    <RequisitionRequests reload={reloadData['requisition-request']} isTeamView={true} />
+                </TabsContent>
                 <Card>
                     <TabsContent value={'Manpower Headcount'}>
                         <TeamManpowerHeadcount reload={reloadData['headcount-request']} />
@@ -123,9 +125,7 @@ export default function TeamTalentSphere() {
                     <TabsContent value={'Education'}>
                         <Educations reload={reloadData['education']} />
                     </TabsContent>
-                    <TabsContent value={'Job Types'}>
-                        <JobTypes reload={reloadData['job-type']} />
-                    </TabsContent>
+
                     <TabsContent value={'Remote Work Checklist'}>
                         <RemoteWorkChecklist reload={reloadData['checklist']} />
                     </TabsContent>
@@ -173,15 +173,16 @@ export default function TeamTalentSphere() {
                     }}
                 />
             )}
-            {OpenJobTypesForm && (
-                <AddUpdateJobTypeForm
-                    isOpen={OpenJobTypesForm}
+            {OpenRequisitionRequestsForm && (
+                <AddUpdateRequisitionRequestForm
+                    approvalRequired={true}
+                    isOpen={OpenRequisitionRequestsForm}
                     setIsOpen={() => {
-                        setOpenJobTypesForm(false);
+                        setOpenRequisitionRequestsForm(false);
                         setReloadData((prev) => {
                             return {
                                 ...prev,
-                                'job-type': !prev["job-type"],
+                                'requisition-request': !prev["requisition-request"],
                             };
                         })
                     }}

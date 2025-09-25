@@ -10,11 +10,11 @@ import {
     RemoteWorkChecklistStatusTogle,
     RemoteWorkChecklistActions,
     HeadCountRequestsActions,
-    GenerateRequisitionActions,
+    RequisitionActions,
+    PublishVacancyActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
-import { DemographicsFormActions } from "../DemographicsFormActions";
 
 
 /**
@@ -66,9 +66,21 @@ export const ManpowerPlanningColumns = (reloadData) => [
         dataSort: true,
     },
     {
+        dataField: "consumed_budget_status",
+        text: "Consumed Budget Status",
+        formatter: (cell) => {
+            return (BudgetStatusOptions.find(obj => obj.value === cell) || {}).label || '--';
+        },
+    },
+    {
+        dataField: "justification",
+        text: "Justification",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} />
+    },
+    {
         dataField: "created_by",
         text: "Created By",
-        dataSort: true,
+        formatter: (cell) => <EmployeeName value={cell} />,
     },
     {
         dataField: "created_on",
@@ -339,7 +351,7 @@ export const CareerLevelsColumns = (reloadData) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const HeadcountRequestColumns = (reloadData, isView) => [
+export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
     {
         dataField: "id",
         text: "ID",
@@ -373,7 +385,7 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
     {
         dataField: "reason",
         text: "Reason for Request",
-        formatter: (cell) => <TextUI text={cell} maxLength={30} />
+        formatter: (cell) => <TextUI text={cell} maxLength={100} />
     },
     {
         dataField: "attachment_url",
@@ -419,7 +431,7 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} ViewMode={isView} />
+            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} ViewMode={isView} isTeamView={isTeamView} />
         ),
         width: '50px'
     },
@@ -433,7 +445,7 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const RequisitionRequestColumns = (reloadData) => [
+export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     {
         dataField: "id",
         text: "ID",
@@ -449,7 +461,7 @@ export const RequisitionRequestColumns = (reloadData) => [
         text: "Job Title",
     },
     {
-        dataField: "job_type",
+        dataField: "job_type_name",
         text: "Employment Type",
     },
     {
@@ -477,10 +489,20 @@ export const RequisitionRequestColumns = (reloadData) => [
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
     {
+        dataField: "is_emiratization_role",
+        text: "Emiratization Role",
+        formatter: (cell) => <StatusLabel variant={cell ? 'info-secondary' : 'info'}>{cell ? 'Required' : 'Not Required'}</StatusLabel>
+    },
+    ...(!isTeamView ? [{
+        dataField: "approval_requied",
+        text: "Approval Requied",
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
+    },] : []),
+    {
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <GenerateRequisitionActions data={row} reloadData={reloadData} DataList={data_list} />
+            <RequisitionActions data={row} reloadData={reloadData} DataList={data_list} isTeamView={isTeamView} />
         ),
         width: '50px'
     },
@@ -548,5 +570,100 @@ export const DemographicsFormColumns = (reloadData) => [
             />
         ),
         headerStyle: { width: "80px" },
+    },
+];
+
+
+/**
+ * ManpowerHeadcountOverviewColumns
+ *
+ * Returns an array of column definitions for the ManpowerHeadcountOverviewColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const ManpowerHeadcountOverviewColumns = [
+    {
+        dataField: "department",
+        text: "Department",
+        formatter: (cell) => <DepartmentName value={cell} />,
+    },
+    {
+        dataField: "planned_headcount",
+        text: "Allocated Headcount",
+        dataSort: true,
+    },
+    {
+        dataField: "existing_headcount",
+        text: "Consumed Headcount",
+        dataSort: true,
+    },
+
+    {
+        dataField: "planned_headcount",
+        text: "Remaining Headcount",
+        formatter: (cell, row) => ((cell || 0) - (row.existing_headcount || 0)),
+        dataSort: true,
+    },
+];
+
+
+/**
+ * PublishedVacancyColumns
+ *
+ * Returns an array of column definitions for the PublishedVacancyColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const PublishedVacancyColumns = (reloadData) => [
+    {
+        dataField: "requisition",
+        text: "Requisition",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span><FormatID value={cell} prefix={"RR-"} /></div>
+                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row.department}</div>
+                <div><span className="font-bold">Branch: </span>{row.branch}</div>
+            </div>
+        ),
+    },
+    {
+        dataField: "publish_date",
+        text: "Publish Date",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
+    {
+        dataField: "due_date",
+        text: "Due Date",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
+    {
+        dataField: "requisition_type",
+        text: "Requisition Type",
+        formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+    },
+    {
+        dataField: "posted_portals",
+        text: "Posted On",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
+
+    },
+    {
+        dataField: "total_applications",
+        text: "Total Applications",
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    },
+
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <PublishVacancyActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
     },
 ];

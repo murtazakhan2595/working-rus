@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import { SheetUI } from "components";
 import { GetDispatchStateList } from "utils/Lists";
 import { yearsDropdownList } from 'utils/Lists';
-import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
+import { validateHeadCoutnRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 import { calculateTotal, calculatePercentage } from 'utils/renderValues';
 import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 import { CoverFileUpload } from 'components/FormControl';
@@ -163,8 +163,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
                 validateFormSchema: (values) => {
-                    const errors = validateManpowerPlanningFormSchema(values);
-                    if (ManpowerExist) errors.manpower_planning = 'Manpower headcount request for selected fiscal year already exist form same branch and department.'
+                    const errors = validateHeadCoutnRequestFormSchema(values);
                     return errors;
                 },
                 submitButtonText: "Submit",
@@ -237,10 +236,8 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                                 InputField: CoverFileUpload,
                                 name: `attachment`,
                                 label: "Attachment",
-                                disabled: true,
                                 colsSpan: 2,
                             },
-
                         ],
                     },
                 ],

@@ -7,8 +7,8 @@ export const CoverFileInput = ({
   acceptType,
   multiple,
   handleFile,
-  handleRemoveFile = () => {},
-  handleUpdateFileClick = () => {},
+  handleRemoveFile = () => { },
+  handleUpdateFileClick = () => { },
   disabled = false,
   allowUpdate = true,
   AccetpedFile,
@@ -48,9 +48,7 @@ export const CoverFileInput = ({
   const renderInputFile = () => {
     return (
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 ${
-          dragActive ? "border-primary-500 bg-primary-50" : "border-neutral-300"
-        }`}
+        className={`relative border-2 border-dashed rounded-lg p-6 ${dragActive ? "border-primary-500 bg-primary-50" : "border-neutral-300"}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}

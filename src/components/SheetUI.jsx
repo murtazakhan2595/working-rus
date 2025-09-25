@@ -66,14 +66,24 @@ const SheetUI = forwardRef(
       setIsCloseConfirmationOpen(true);
     };
 
-    const HandleSubmit = async (values, resetForm) => {
+    const HandleSubmit = async (values, resetForm, CustomClick) => {
       try {
         setIsSubmittingForm(true);
-        const response = await handleSubmit(values, resetForm);
-        if (response?.status) {
-          setMessageConfig(response);
-          setOpenActionMessage(true);
+        if (CustomClick && typeof CustomClick === "function") {
+          const response = await CustomClick(values, resetForm);
+          if (response?.status) {
+            setMessageConfig(response);
+            setOpenActionMessage(true);
+          }
+        } else {
+          const response = await handleSubmit(values, resetForm);
+          if (response?.status) {
+            setMessageConfig(response);
+            setOpenActionMessage(true);
+          }
         }
+
+
       } catch (error) {
         console.error(error);
       } finally {
@@ -310,12 +320,7 @@ const SheetUI = forwardRef(
                                   onChange={async (field, value) => {
                                     props?.setFieldValue(field, value);
                                     if (onFieldUpdate && typeof onFieldUpdate === "function")
-                                      await onFieldUpdate(
-                                        field,
-                                        value,
-                                        props.values,
-                                        props.setFieldValue
-                                      );
+                                      await onFieldUpdate(field, value, props.values, props.setFieldValue);
                                     if (validateDuplicate) {
                                       await validateFieldValue(value, name, props.values.id);
                                     }
@@ -358,7 +363,7 @@ const SheetUI = forwardRef(
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
-                            onButtonClick(props.values);
+                            HandleSubmit(props.values, () => { }, onButtonClick);
                           }}
                           key={`${buttonText}-${index}`}
                           disabled={disableSubmit || isSubmittingForm || disabled}

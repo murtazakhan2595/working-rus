@@ -207,7 +207,7 @@ export const calculatePercentage = (count = 0, total = 0) => {
   if (isNaN(parsedCount) || isNaN(parsedTotal)) return 0;
 
   // Prevent division by zero and ensure count is non-negative and not more than total
-  if (parsedTotal <= 0 || parsedCount < 0 || parsedCount > parsedTotal) return 0;
+  if (parsedTotal <= 0 || parsedCount < 0) return 0;
 
   const percentage = (parsedCount / parsedTotal) * 100;
   return parseFloat(percentage.toFixed(2)); // Round to 2 decimal places

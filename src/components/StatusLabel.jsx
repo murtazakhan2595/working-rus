@@ -31,7 +31,9 @@ const statusVariants = cva("", {
       outline: "text-slate-900 dark:text-slate-50",
       plum: "bg-plum-300 text-plum-1100",
       error: "bg-red-50 text-red-400",
-      critical: "bg-red-50 text-red-800",
+      alarming: "bg-orange-50 text-orange-700",
+      "info-secondary": "bg-purple-50 text-purple-800",
+      disable: "bg-gray-400 text-purple-1100",
       warning: "bg-amber-50 text-amber-500",
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
@@ -59,18 +61,21 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("signed")) return "success";
   else if (status.includes("viewed")) return "warning";
   else if (status.includes("late")) return "warning";
+  else if (status.includes("draft")) return "warning";
   else if (status.includes("warning")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
   else if (status.includes("error")) return "error";
   else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
-  else if (status.includes("critical")) return "critical";
+  else if (status.includes("alarming")) return "alarming";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info";
   else if (status.includes("no")) return "error";
   else if (status.includes("yes")) return "success";
+  else if (status.includes("publish")) return "info-secondary";
+  else if (status.includes("close")) return "disable";
   else return "default";
 };
 
@@ -282,7 +287,7 @@ export const StatusButtons = ({
         const response = await handleRequest(request_id, status === "Approved", data);
         if (response) {
           toast.success(`Request ${status} Successfully!`);
-          setResponse(true, status);
+          setResponse(true, status, data);
         } else {
           setResponse(false, status);
         }
@@ -559,7 +564,7 @@ export const StatusList = ({ status_list, className, infoPrefix = "By" }) => {
     return <></>;
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {status_list.map(({ status, info, time, infoPrefix: specific_info_prefix,description }, index) => {
+      {status_list.map(({ status, info, time, infoPrefix: specific_info_prefix, description }, index) => {
         return (
           <div key={`status-list-${index}`} className="flex items-center">
             <StatusViewIcon status={status} className="mr-1 mt-1" />

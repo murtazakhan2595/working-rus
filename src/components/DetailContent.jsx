@@ -3,7 +3,7 @@ import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { cn } from "src/@/lib/utils";
 const DetailContent = ({ currentItem = {}, fields = [] }) => {
   return (
-    <div>
+    <div className="mb-4">
       {fields.map(
         ({
           field = [],
@@ -11,7 +11,7 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
           footerField,
           footerTitle,
           customContent = false,
-          renderContent = () => {},
+          renderContent = () => { },
           className = "",
         }) =>
           customContent ? (
@@ -29,18 +29,19 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
                   formatter,
                   fallBackText = "N/A",
                   fieldClassName = "",
+                  renderCondition,
                 }) => {
                   const value =
-                    currentItem && currentItem[key] ? currentItem[key] : null;
+                    currentItem && (currentItem[key] !== null && currentItem[key] !== undefined) ? currentItem[key] : null;
+                  if (renderCondition && typeof renderCondition === "function") {
+                    const renderEnable = renderCondition(value, currentItem);
+                    if (!renderEnable) return <></>;
+                  }
                   return label ? (
                     <DetailBox
                       key={key}
                       label={label}
-                      value={
-                        formatter
-                          ? formatter(value, currentItem)
-                          : value ?? fallBackText
-                      }
+                      value={formatter ? formatter(value, currentItem) : value ?? fallBackText}
                     />
                   ) : (
                     <div className={cn("mt-2", fieldClassName)}>

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import { getRequisitionRequestList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
+import { getVacancyList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
-import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
+import { PublishedVacancyColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
 
-const GenerateRequisition = ({ reload }) => {
+const PublishedVacancies = ({ reload }) => {
     const [RequisitionList, setRequisitionList] = useState({});
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
@@ -53,7 +53,7 @@ const GenerateRequisition = ({ reload }) => {
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
-            const response = await getRequisitionRequestList({
+            const response = await getVacancyList({
                 filterData,
                 options,
                 ordering,
@@ -93,7 +93,10 @@ const GenerateRequisition = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+                if (filterName === 'requisition') {
+                    const value = filterValue.replace(/\D/g, '');
+                    if (value) updatedFilters[filterName] = parseInt(value);
+                } else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -102,13 +105,23 @@ const GenerateRequisition = ({ reload }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle >Generate Requisition</CardTitle>
+                <CardTitle >Publish Vacancy for Approved Requisitions</CardTitle>
                 <CardDescription>
-                    Here you can view generated requisitions directly.
+                    Here you can view all the published vacancy for approved recruitment requisitions
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
                         filters={[
+                            {
+                                type: "search",
+                                name: "requisition",
+                                placeholder: "Requisition",
+                            },
+                            {
+                                type: "search",
+                                name: "job_title",
+                                placeholder: "Job Title",
+                            },
                             {
                                 type: "select",
                                 options: "Departments",
@@ -123,33 +136,44 @@ const GenerateRequisition = ({ reload }) => {
                             },
                             {
                                 type: "select",
-                                options: JobTypeList,
-                                name: "job_type",
-                                placeholder: "Job Type",
-                            },
-                            {
-                                type: "select",
-                                options: CareerLevelList,
-                                name: "career_level",
-                                placeholder: "Career Level",
-                            },
-                            {
-                                type: "select",
                                 options: [
                                     { value: 'onsite', label: 'Onsite' },
                                     { value: 'hybrid', label: "Hybrid" },
                                     { value: 'remote', label: "Remote" },
                                 ],
                                 name: "work_mode",
-                                placeholder: "Work Mode",
+                                placeholder: "Job Mode",
                             },
-
                             {
                                 type: "select",
-                                options: [...GlobalStatusOptions(false),],
+                                options: [
+                                    { value: 'internal', label: 'Internal' },
+                                    { value: 'external', label: "External" },
+                                    { value: 'both', label: "Both" },
+                                ],
+                                name: "requisition_type",
+                                placeholder: "Requisition Type",
+                            },
+                            {
+                                type: "date-range",
+                                name: "publish_date",
+                                placeholder: "Pulish date",
+                            },
+                            {
+                                type: "date-range",
+                                name: "due_date",
+                                placeholder: "Due date",
+                            },
+                            {
+                                type: "select",
+                                options: [
+                                    { value: 'published', label: 'Published' },
+                                    { value: 'closed', label: "Closed" },
+                                ],
                                 name: "status",
                                 placeholder: "Status",
                             },
+
 
                         ]}
                         className="justify-end"
@@ -162,7 +186,7 @@ const GenerateRequisition = ({ reload }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        columns={RequisitionRequestColumns(fetchData)}
+                        columns={PublishedVacancyColumns(fetchData)}
                         data={RequisitionList.results || []}
                         tableOptions={tableOptions}
                         dataTotalSize={RequisitionList?.count || 0}
@@ -174,4 +198,4 @@ const GenerateRequisition = ({ reload }) => {
     );
 };
 
-export default GenerateRequisition;
+export default PublishedVacancies;

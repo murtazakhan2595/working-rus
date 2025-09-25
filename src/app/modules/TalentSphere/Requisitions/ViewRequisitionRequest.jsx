@@ -4,17 +4,18 @@ import {
     DetailContent,
     StatusList,
 } from "components";
-import { FormatID, BranchName ,DepartmentName} from "utils/getValuesFromTables";
-import { StatusLabel, SheetUI, StatusButtons, EmployeeDetailUI } from "components";
+import { FormatID, BranchName, DepartmentName } from "utils/getValuesFromTables";
+import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import { getRequisitionRequestData } from "app/hooks/talentSphere";
 import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { handleRequest } from "app/hooks/general";
-import { renderDate } from "utils/renderValues";
+import AttachmentUI from "components/ui/AttachmentUI";
 import { toast } from "react-toastify";
 import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
 import { getAttendanceData } from "app/hooks/attendance";
 import { saveAttendance } from "app/hooks/attendance";
+import { RequisitionViewFields } from 'app/modules/TalentSphere/Sections';
 
 const FormSheetData = {
     triggerText: "Submit",
@@ -29,6 +30,7 @@ const ViewRequisitionRequest = ({
     currentId,
     reloadData = () => { },
     DataList = [],
+    isTeamView = false,
 }) => {
     const [forceLoad, setForceLoad] = useState(false);
     const [openRejectModal, setOpenRejectModal] = useState(false);
@@ -110,75 +112,23 @@ const ViewRequisitionRequest = ({
                 },
             ],
         },
-        {
-            title: "Job Details",
-            footerTitle: "Request At",
-            footerField: "created_at",
-            field: [
-                {
-                    key: "id",
-                    label: "Id",
-                    formatter: (cell, row) => <FormatID value={cell} prefix={"RR-"} />,
-                },
-                {
-                    key: "branch",
-                    label: "Branch",
-                    formatter: (cell) => <BranchName value={cell} />,
-                },
-                {
-                    key: "department",
-                    label: "Department",
-                    formatter: (cell) => <DepartmentName value={cell} />,
-                },
-                {
-                    key: "job_title",
-                    label: "Job Title",
-                },
-                {
-                    key: "job_description",
-                    label: "Job Description",
-                },
-                {
-                    key: "required_skills",
-                    label: "Required Skills",
-                },
-            ],
-        },
-        {
-            title: "Headcount Details",
-            field: [
-                {
-                    key: "allocated_headcount",
-                    label: "Allocated",
-                },
-                {
-                    key: "consumed_headcount",
-                    label: "Consumed",
-                },
-                {
-                    key: "remaining_headcount",
-                    label: "Remaining",
-                },
-                {
-                    key: "requested_headcount",
-                    label: "Requested Additional",
-                },
-            ],
-        },
+        ...RequisitionViewFields,
         {
             title: "Approval Details",
             field: [
                 {
                     key: "approval_details",
-                    formatter: (cell) => (
-                        <StatusList status_list={cell} className="my-3" />
-                    ),
+                    formatter: (cell, data) => {
+                        if (!data.approval_required) return 'Approval was not required';
+                        return (<StatusList status_list={cell} className="my-3" />)
+                    },
                 },
             ],
         },
         {
             customContent: true,
             renderContent: (data) => {
+                if (isTeamView) return null;
                 return (
                     <StatusButtons
                         permissionKey={'MANAGE_HEADCOUNT_REQUESTS'}

@@ -83,7 +83,7 @@ export default function ManpowerHeadcount() {
                             type: "select-multiple",
                             options: YearsDropdown,
                             name: "fiscal_year",
-                            placeholder: "Fascal Year",
+                            placeholder: "Fiscal Year",
                         },
                         {
                             type: "select",
@@ -94,7 +94,7 @@ export default function ManpowerHeadcount() {
                         {
                             type: "select",
                             options: "branches",
-                            name: "new_branch",
+                            name: "branch",
                             placeholder: "Branch",
                         },
                     ]}

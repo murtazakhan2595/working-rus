@@ -7,3 +7,11 @@ export const validateManpowerPlanningFormSchema = (values, DataList = [],) => {
 
     return errors;
 };
+export const validateHeadCoutnRequestFormSchema = (values, DataList = [],) => {
+    const errors = {};
+
+    // Basic required field validations
+   if (values.requested_headcount && parseFloat(values.requested_headcount) <= 0) errors.requested_headcount = "Requested headcount cannot be negative or zero";
+
+    return errors;
+};

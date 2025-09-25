@@ -179,7 +179,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                 ) : (
                     <TableCustom
                         data={HeadCountRequestList?.results || []}
-                        columns={HeadcountRequestColumns(fetchData, true)}
+                        columns={HeadcountRequestColumns(fetchData, activeTab === 'Records', true)}
                         pagination={true}
                         dataTotalSize={HeadCountRequestList?.count || 0}
                         tableOptions={tableOptions}
