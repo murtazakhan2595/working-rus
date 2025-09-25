@@ -1,35 +1,31 @@
 import React, { useState } from "react";
-import { ViewRequisitionRequest, AddUpdateRequisitionRequestForm, AddUpdateVacancyForm } from "app/modules/TalentSphere";
+import { ViewPublishedVacancies, AddUpdateRequisitionRequestForm, AddUpdateVacancyForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
-const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
+const PublishVacancyActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
     const isEditPermitted = HasAccess("MARK_ATTENDANCE");
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
-    const [openPublishVacancyForm, setopenPublishVacancyForm] = useState(null);
     const handleView = () => {
         setView(true)
     };
     const handleEdit = () => {
         setEdit(true)
     };
-    const handlePublish = () => {
-        setopenPublishVacancyForm(true)
-    };
+   
     return (
         <>
             <DropdownActionMenu
                 onView={handleView}
-                onEdit={isEditPermitted && data.is_draft ? handleEdit : null}
-                viewText="View Requisition"
-                editText="Edit Requisition"
-                menuTooltip="Requisition Actions"
-                additionalOptionsConfig={[{ text: 'Publish Vacancy', action: handlePublish }]}
+                // onEdit={isEditPermitted && data.is_draft ? handleEdit : null}
+                viewText="Vacancy Requisition"
+                editText="Vacancy Requisition"
+                menuTooltip="Vacancy Actions"
             />
 
             {view && (
-                <ViewRequisitionRequest
+                <ViewPublishedVacancies
                     isOpen={view}
                     reloadData={() => {
                         reloadData(true);
@@ -44,7 +40,7 @@ const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTea
                 />
             )}
             {edit && (
-                <AddUpdateRequisitionRequestForm
+                <AddUpdateVacancyForm
                     isOpen={edit}
                     reloadData={() => {
                         reloadData(true);
@@ -54,23 +50,9 @@ const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTea
                         setEdit(false);
                     }}
                     id={data.id}
-                    approvalRequired={isTeamView}
-                />
-            )}
-            {openPublishVacancyForm && (
-                <AddUpdateVacancyForm
-                    isOpen={openPublishVacancyForm}
-                    reloadData={() => {
-                        reloadData(true);
-                        setEdit(false);
-                    }}
-                    setIsOpen={() => {
-                        setEdit(false);
-                    }}
-                    requisition_id={data.id}
                 />
             )}
         </>
     );
 };
-export default RequisitionActions;
+export default PublishVacancyActions;

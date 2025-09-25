@@ -15,6 +15,7 @@ import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
 import { getAttendanceData } from "app/hooks/attendance";
 import { saveAttendance } from "app/hooks/attendance";
+import { RequisitionViewFields } from 'app/modules/TalentSphere/Sections';
 
 const FormSheetData = {
     triggerText: "Submit",
@@ -111,142 +112,7 @@ const ViewRequisitionRequest = ({
                 },
             ],
         },
-        {
-            title: "Job Details",
-            footerTitle: "Request At",
-            footerField: "created_at",
-            field: [
-                {
-                    key: "id",
-                    label: "Id",
-                    formatter: (cell, row) => <FormatID value={cell} prefix={"RR-"} />,
-                },
-                {
-                    key: "branch",
-                    label: "Branch",
-                    formatter: (cell) => <BranchName value={cell} />,
-                },
-                {
-                    key: "department",
-                    label: "Department",
-                    formatter: (cell) => <DepartmentName value={cell} />,
-                },
-             
-                {
-                    key: "job_title",
-                    label: "Job Title",
-                },
-                {
-                    key: "job_description",
-                    label: "Job Description",
-                },
-                {
-                    key: "required_skills",
-                    label: "Required Skills",
-                },
-            ],
-        },
-        {
-            title: "Work Mode Details",
-            field: [
-                {
-                    key: "work_mode",
-                    label: "Work Mode",
-                },
-                {
-                    key: "remote_work_checklist_name",
-                    label: "Remote Work Checklist",
-                    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
-                },
-                {
-                    key: "country",
-                    label: "Country",
-                },
-                {
-                    key: "city",
-                    label: "City",
-                },
-                   {
-                    key: "is_emiratization_role",
-                    label: "Emiratization Role",
-                    formatter: (cell) => cell ? 'Required' : 'Not Required',
-                },
-            ],
-        },
-        {
-            title: "Compensation & Benefits",
-            field: [
-                {
-                    key: "benefit_names",
-                    label: "Benefits",
-                    formatter: (cell) => cell && cell.length > 0 ? <MultiStatusLabel statusList={cell} variant="info" displayAll={true} /> : <div>Not enabled</div>
-                },
-            ],
-        },
-        {
-            title: "Job Specification Details",
-            field: [
-                {
-                    key: "number_of_positions",
-                    label: "Number of Positions",
-                },
-                {
-                    key: "job_type_name",
-                    label: "Job Type",
-                },
-                {
-                    key: "gender_preference",
-                    label: "Gender Preference",
-                    formatter: (cell) => <div className="text-capitalize">{cell}</div>,
-                },
-                {
-                    key: "min_age",
-                    label: "Age Limit",
-                    formatter: (cell, data) => `${cell} Years - ${data.max_age} Years`,
-                },
-                {
-                    key: "education",
-                    label: "Education Requirement",
-                },
-                {
-                    key: "career_level_name",
-                    label: "Career Level",
-                },
-                {
-                    key: "experience_min",
-                    label: "Experiance",
-                    formatter: (cell, data) => `${cell} Years - ${data.experience_max} Years`,
-                },
-                {
-                    key: "salary_min",
-                    label: "Salary Range",
-                    formatter: (cell, data) => `${cell} - ${data.salary_max}`,
-                },
-                {
-                    key: "justification",
-                    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />,
-                    label: "Justification",
-                },
-            ],
-        },
-        {
-            title: `Attachment`,
-            field: [
-                {
-                    key: 'attachment',
-                    formatter: (cell, data) =>
-                        cell ? (
-                            <AttachmentUI
-                                attachment={cell}
-                                name={`Requisition Request Document`}
-                                viewOnly={true}
-                            />
-                        ) : (
-                            <div className="text-neutral-1000 text-sm">No document attached</div>
-                        ),
-                },
-            ],
-        },
+        ...RequisitionViewFields,
         {
             title: "Approval Details",
             field: [

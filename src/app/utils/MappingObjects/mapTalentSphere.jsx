@@ -7,6 +7,7 @@ import {
     CareerLevel,
     HeadcountRequest,
     Requisition,
+    PublishVacancy,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -358,6 +359,7 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails) {
             RecordDetails[key] = await mapApproverDetails({ ...data, });
         } else {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
+                if(key==='id') RecordDetails['requisition_id'] = data[key];
                 if (key === 'status') {
                     RecordDetails[key] = data[key].toLowerCase() === 'pending' && data['is_draft'] ? 'draft' : data[key].toLowerCase();
                 } else RecordDetails[key] = data[key];
@@ -428,4 +430,56 @@ export async function mapRequisitionStatsData(data) {
     const Approved = calculateTotalCount(data, "status", "approved");
     const Rejected = calculateTotalCount(data, "status", "rejected");
     return { Pending, Approved, Rejected, Total, Draft };
+}
+
+
+//-------------Vacancy ---------------
+
+export function mapVacancyData(data) {
+    const RecordDetails = Object.keys(PublishVacancy).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === 'requisition_type') {
+                const posted_portals = [];
+                if (data['post_on_cohrus']) posted_portals.push('Cohrus')
+                if (data['post_on_linkedin']) posted_portals.push('Linkedin')
+                if (data['post_on_indeed']) posted_portals.push('Indeed')
+                if (data['post_on_other']) posted_portals.push('Other Portals')
+                acc['posted_portals'] = posted_portals;
+
+            }
+            acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapVacancyList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapVacancyData(Record);
+        return {
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapVacancyPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Vacancy object
+    for (const key in PublishVacancy) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
 }
