@@ -4,7 +4,7 @@ import { DetailContent } from "components";
 import { AddUpdateManpower } from "app/modules/TalentSphere";
 import { BudgetStatusOptions } from "data/Data";
 import { getManpowerById } from "app/hooks/talentSphere";
-import { DepartmentName, FormatID, BranchName } from "utils/getValuesFromTables";
+import { DepartmentName, FormatID, BranchName, EmployeeName } from "utils/getValuesFromTables";
 import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 
 const ViewManpowerPlanning = ({
@@ -72,6 +72,7 @@ const ViewManpowerPlanning = ({
                 {
                     key: "created_by",
                     label: "Created By",
+                    formatter: (cell) => <EmployeeName value={cell} />,
                 },
             ],
         },

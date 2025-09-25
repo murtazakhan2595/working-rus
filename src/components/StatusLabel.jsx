@@ -287,7 +287,7 @@ export const StatusButtons = ({
         const response = await handleRequest(request_id, status === "Approved", data);
         if (response) {
           toast.success(`Request ${status} Successfully!`);
-          setResponse(true, status);
+          setResponse(true, status, data);
         } else {
           setResponse(false, status);
         }
@@ -564,7 +564,7 @@ export const StatusList = ({ status_list, className, infoPrefix = "By" }) => {
     return <></>;
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {status_list.map(({ status, info, time, infoPrefix: specific_info_prefix,description }, index) => {
+      {status_list.map(({ status, info, time, infoPrefix: specific_info_prefix, description }, index) => {
         return (
           <div key={`status-list-${index}`} className="flex items-center">
             <StatusViewIcon status={status} className="mr-1 mt-1" />

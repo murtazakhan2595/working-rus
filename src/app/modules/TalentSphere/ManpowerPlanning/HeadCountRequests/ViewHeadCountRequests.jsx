@@ -5,83 +5,21 @@ import {
     StatusList,
 } from "components";
 import { FormatID, BranchName } from "utils/getValuesFromTables";
-import { StatusLabel, SheetUI, StatusButtons } from "components";
-import { getHeadcountRequestData } from "app/hooks/talentSphere";
-import { getActiveShiftData } from "app/hooks/shiftManagement";
-import { handleRequest } from "app/hooks/general";
-import { renderDate } from "utils/renderValues";
-import { toast } from "react-toastify";
-import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
-import { TextAreaInput } from "components/FormControl";
-import { getAttendanceData } from "app/hooks/attendance";
-import { saveAttendance } from "app/hooks/attendance";
+import { StatusLabel, StatusButtons } from "components";
+import { getHeadcountRequestData, saveUpdateHeadcountRequest } from "app/hooks/talentSphere";
 
-const FormSheetData = {
-    triggerText: "Submit",
-    title: "Reject Attendance Update Request",
-    description: null,
-    footer: null,
-    className: "max-w-[478px] w-full h-[400px]",
-};
 const ViewHeadCountRequests = ({
     isOpen,
     setIsOpen,
     currentId,
     reloadData = () => { },
     DataList = [],
-    ViewMode=false,
+    ViewMode = false,
 }) => {
     const [forceLoad, setForceLoad] = useState(false);
-    const [openRejectModal, setOpenRejectModal] = useState(false);
-    const [RejectedData, setRejectData] = useState(false);
-    const handleSubmit = async (
-        status,
-        {
-            employee,
-            id,
-            rejection_reason,
-            request_id,
-            requested_checkout,
-            requested_checkin,
-            is_second_shift,
-            attendance_date,
-        }
-    ) => {
+    const handleSubmit = async (id, { comment }) => {
         try {
-            const response = await handleRequest(request_id, status === "Approved");
-            // return
-            if (response) {
-                toast.success(`Request ${status} Successfully!`);
-                if (status === "Rejected") {
-                    await saveUpdateAttendanceAdjustment(
-                        { rejection_reason: rejection_reason },
-                        id
-                    );
-                }
-                const { status: updatedStatus, attendance } = await fetchData(id, true);
-                if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
-                    const attendanceData = attendance
-                        ? await getAttendanceData(attendance)
-                        : {};
-                    const shiftData = await getActiveShiftData(employee, attendance_date);
-                    const payload = {
-                        ...attendanceData,
-                        date: attendance_date,
-                        id: attendance,
-                        ...(is_second_shift
-                            ? { second_checkin: requested_checkin }
-                            : { checkin: requested_checkin }),
-                        ...(is_second_shift
-                            ? { second_checkout: requested_checkout }
-                            : { checkout: requested_checkout }),
-                        employee_id: employee,
-                    };
-                    await saveAttendance(payload, shiftData, attendance);
-                }
-                setForceLoad(!forceLoad);
-                setOpenRejectModal(false);
-                setRejectData(null);
-            }
+            await saveUpdateHeadcountRequest({ rejection_reason: comment }, id);
         } catch (error) {
             // Handle errors and rollback form data
             console.error(error);
@@ -133,6 +71,14 @@ const ViewHeadCountRequests = ({
                     key: "reason",
                     label: "Reason for Request",
                 },
+                {
+                    key: "rejection_reason",
+                    label: "Rehection Reason",
+                    renderCondition: (_, data) => {
+                        if (data.status.toLowerCase() === 'rejected') return true;
+                        else return false;
+                    },
+                },
             ],
         },
         {
@@ -170,17 +116,18 @@ const ViewHeadCountRequests = ({
         {
             customContent: true,
             renderContent: (data) => {
-                if(ViewMode) return null;
+                if (ViewMode) return null;
                 return (
                     <StatusButtons
                         permissionKey={'MANAGE_HEADCOUNT_REQUESTS'}
                         status={data?.status}
                         current_approver={data.current_approver}
                         final_approver={data.final_approvers || []}
-                        request_id={data.hierarchy_request}
-                        RejectionConfig={{ label: 'Rejection Reason', required: true }}
-                        setResponse={(response) => {
+                        request_id={data.request}
+                        RejectionConfig={{ label: 'Rejection Reason', required: true, }}
+                        setResponse={async (response, _, approval_data) => {
                             if (response) {
+                                await handleSubmit(data.id, approval_data);
                                 setForceLoad(!forceLoad);
                             }
                         }}
@@ -217,45 +164,6 @@ const ViewHeadCountRequests = ({
             >
                 <DetailContent fields={fields} />
             </NavigationSheetComponent>
-            {openRejectModal && (
-                <SheetUI
-                    isOpen={openRejectModal}
-                    setIsOpen={setOpenRejectModal}
-                    variant="modal"
-                    sheetConfig={FormSheetData}
-                    formConfig={{
-                        initialValues: RejectedData,
-                        enableReinitialize: true,
-                        handleSubmit: (data) => {
-                            handleSubmit("Rejected", data);
-                        },
-                        validateFormSchema: (values) => {
-                            const error = {};
-                            if (!values.rejection_reason)
-                                error.rejection_reason = "Reason is required";
-                            return error;
-                        },
-                        submitButtonText: "Submit",
-                        cancelButtonText: "Cancel",
-                        columns: 1,
-                        formFields: [
-                            {
-                                sheetCardExtension: false,
-                                sheetCardTitle: "Attendance Details",
-                                InputFields: [
-                                    {
-                                        InputField: TextAreaInput,
-                                        name: "rejection_reason",
-                                        required: true,
-                                        label: "Rejection Reson",
-                                        rows: 3,
-                                    },
-                                ].filter(Boolean),
-                            },
-                        ],
-                    }}
-                ></SheetUI>
-            )}
         </>
     );
 };

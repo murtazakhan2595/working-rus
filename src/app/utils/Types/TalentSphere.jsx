@@ -95,7 +95,6 @@ export const HeadcountRequest = {
     requested_by: null,
     approved_by: null,
     request: null,
-
 }
 
 export const Requisition = {

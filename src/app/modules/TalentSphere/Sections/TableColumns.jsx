@@ -76,12 +76,12 @@ export const ManpowerPlanningColumns = (reloadData) => [
     {
         dataField: "justification",
         text: "Justification",
-        formatter: (cell) => <TextUI text={cell} maxLength={30} />
+        formatter: (cell) => <TextUI text={cell} maxLength={100} />
     },
     {
         dataField: "created_by",
         text: "Created By",
-        dataSort: true,
+        formatter: (cell) => <EmployeeName value={cell} />,
     },
     {
         dataField: "created_on",
@@ -386,7 +386,7 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
     {
         dataField: "reason",
         text: "Reason for Request",
-        formatter: (cell) => <TextUI text={cell} maxLength={30} />
+        formatter: (cell) => <TextUI text={cell} maxLength={100} />
     },
     {
         dataField: "attachment_url",
