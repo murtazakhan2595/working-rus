@@ -19,7 +19,7 @@ export const DemographicsFormActions = ({
                 viewText="View Form"
                 editText="Edit Form"
                 menuTooltip="Demographics Form Actions"
-                onView={handleView}     // ✅ enable View action
+                onView={handleView}    
                 onEdit={handleEdit}
             />
 
