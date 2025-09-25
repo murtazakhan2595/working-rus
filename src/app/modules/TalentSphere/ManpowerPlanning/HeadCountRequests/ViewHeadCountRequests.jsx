@@ -15,6 +15,7 @@ const ViewHeadCountRequests = ({
     reloadData = () => { },
     DataList = [],
     ViewMode = false,
+    isTeamView = false,
 }) => {
     const [forceLoad, setForceLoad] = useState(false);
     const handleSubmit = async (id, { comment }) => {
@@ -75,7 +76,7 @@ const ViewHeadCountRequests = ({
                     key: "rejection_reason",
                     label: "Rehection Reason",
                     renderCondition: (_, data) => {
-                        if (data.status.toLowerCase() === 'rejected') return true;
+                        if (data?.status?.toLowerCase() === 'rejected') return true;
                         else return false;
                     },
                 },
@@ -116,7 +117,7 @@ const ViewHeadCountRequests = ({
         {
             customContent: true,
             renderContent: (data) => {
-                if (ViewMode) return null;
+                if (ViewMode || isTeamView) return null;
                 return (
                     <StatusButtons
                         permissionKey={'MANAGE_HEADCOUNT_REQUESTS'}

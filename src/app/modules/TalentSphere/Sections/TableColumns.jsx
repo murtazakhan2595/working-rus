@@ -352,7 +352,7 @@ export const CareerLevelsColumns = (reloadData) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const HeadcountRequestColumns = (reloadData, isView) => [
+export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
     {
         dataField: "id",
         text: "ID",
@@ -432,7 +432,7 @@ export const HeadcountRequestColumns = (reloadData, isView) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} ViewMode={isView} />
+            <HeadCountRequestsActions data={row} reloadData={reloadData} DataList={data_list} ViewMode={isView} isTeamView={isTeamView} />
         ),
         width: '50px'
     },
