@@ -7,6 +7,7 @@ import {
     CareerLevelsColumns,
     HeadcountRequestColumns,
     RequisitionRequestColumns,
+    DemographicsFormColumns
 } from './TableColumns';
 
 export {
@@ -18,4 +19,5 @@ export {
 CareerLevelsColumns,
 HeadcountRequestColumns,
 RequisitionRequestColumns,
+DemographicsFormColumns
 }
