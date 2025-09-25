@@ -220,6 +220,7 @@ const AddSelfAssessmentForm = ({ id, isOpen = true, setIsOpen = () => { }, reloa
                                                 name: `sections[${index}].fields[${fieldIndex}].evaluation_type`,
                                                 label: "Evaluation Type",
                                                 value: field.evaluation_type,
+                                                required:true,
                                                 options: [{ label: 'Radio', value: 'radio' }, { label: 'Dropdown', value: 'dropdown' }, { label: 'Text', value: 'text' }]
                                             },
                                              {
