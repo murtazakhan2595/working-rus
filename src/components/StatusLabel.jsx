@@ -31,7 +31,9 @@ const statusVariants = cva("", {
       outline: "text-slate-900 dark:text-slate-50",
       plum: "bg-plum-300 text-plum-1100",
       error: "bg-red-50 text-red-400",
-      critical: "bg-red-50 text-red-800",
+      alarming: "bg-orange-50 text-orange-800",
+      "info-secondary": "bg-purple-50 text-purple-800",
+      disable: "bg-gray-400 text-purple-1100",
       warning: "bg-amber-50 text-amber-500",
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
@@ -66,12 +68,14 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("error")) return "error";
   else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
-  else if (status.includes("critical")) return "critical";
+  else if (status.includes("alarming")) return "alarming";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info";
   else if (status.includes("no")) return "error";
   else if (status.includes("yes")) return "success";
+  else if (status.includes("publish")) return "info-secondary";
+  else if (status.includes("close")) return "disable";
   else return "default";
 };
 

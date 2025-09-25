@@ -95,7 +95,7 @@ export const HeadcountRequest = {
     requested_by: null,
     approved_by: null,
     request: null,
-   
+
 }
 
 export const Requisition = {
@@ -136,10 +136,33 @@ export const Requisition = {
     request: null,
     remote_work_checklist: null,
     benefits: null,
-    enable_benefits:false,
-     remote_work_checklist_name:null,
-    benefit_names:null,
-    job_type_name:null,
-    career_level_name:null,
-    education_name:null,
+    enable_benefits: false,
+    remote_work_checklist_name: null,
+    benefit_names: null,
+    job_type_name: null,
+    career_level_name: null,
+    education_name: null,
+}
+
+export const PublishVacancy = {
+    id: null,
+    job_title: null,
+    department: null,
+    branch: null,
+    total_applications: null,
+    created_at: null,
+    updated_at: null,
+    publish_date: null,
+    due_date: null,
+    requisition_type: 'both',
+    post_on_cohrus: null,
+    post_on_linkedin: null,
+    post_on_indeed: null,
+    post_on_other: null,
+    status: null,
+    created_by: null,
+    updated_by: null,
+    requisition: null,
+    organization:1,
+    posted_portals:1,
 }

@@ -11,9 +11,10 @@ import {
     RemoteWorkChecklistActions,
     HeadCountRequestsActions,
     RequisitionActions,
+    PublishVacancyActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
-import { StatusLabel, TextUI } from "components";
+import { StatusLabel, TextUI, MultiStatusLabel } from "components";
 
 
 /**
@@ -478,7 +479,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     {
         dataField: "is_emiratization_role",
         text: "Emiratization Role",
-        formatter: (cell) => <StatusLabel variant={cell ? 'info' : 'warning'}>{cell ? 'Required' : 'Not Required'}</StatusLabel>
+        formatter: (cell) => <StatusLabel variant={cell ? 'info-secondary' : 'info'}>{cell ? 'Required' : 'Not Required'}</StatusLabel>
     },
     ...(!isTeamView ? [{
         dataField: "approval_requied",
@@ -494,6 +495,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         width: '50px'
     },
 ];
+
 
 
 /**
@@ -528,3 +530,64 @@ export const ManpowerHeadcountOverviewColumns = [
     },
 ];
 
+
+/**
+ * PublishedVacancyColumns
+ *
+ * Returns an array of column definitions for the PublishedVacancyColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const PublishedVacancyColumns = (reloadData) => [
+    {
+        dataField: "requisition",
+        text: "Requisition",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span><FormatID value={cell} prefix={"RR-"} /></div>
+                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row.department}</div>
+                <div><span className="font-bold">Branch: </span>{row.branch}</div>
+            </div>
+        ),
+    },
+    {
+        dataField: "publish_date",
+        text: "Publish Date",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
+    {
+        dataField: "due_date",
+        text: "Due Date",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
+    {
+        dataField: "requisition_type",
+        text: "Requisition Type",
+        formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+    },
+    {
+        dataField: "posted_portals",
+        text: "Posted On",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
+
+    },
+    {
+        dataField: "total_applications",
+        text: "Total Applications",
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    },
+
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <PublishVacancyActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];

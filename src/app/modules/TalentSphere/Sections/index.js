@@ -7,9 +7,10 @@ import {
     CareerLevelsColumns,
     HeadcountRequestColumns,
     RequisitionRequestColumns,
+    PublishedVacancyColumns,
     ManpowerHeadcountOverviewColumns,
 } from './TableColumns';
-
+import { RequisitionViewFields } from './ViewFields';
 export {
     ManpowerPlanningColumns,
     BenefitsColumns,
@@ -20,4 +21,6 @@ export {
     HeadcountRequestColumns,
     RequisitionRequestColumns,
     ManpowerHeadcountOverviewColumns,
+    PublishedVacancyColumns,
+    RequisitionViewFields,
 }
