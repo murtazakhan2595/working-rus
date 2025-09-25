@@ -208,7 +208,7 @@ export function getEmployeeLeavesAgainsLeaveType(
 
 export const yearsDropdownList = (StartYear, EndYear) => {
   const years = [];
-  for (let year = EndYear; year >= StartYear; year--) {
+  for (let year = StartYear; year <= EndYear; year++) {
     years.push({ label: year, value: year });
   }
   return years;

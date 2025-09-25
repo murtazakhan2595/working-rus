@@ -53,6 +53,22 @@ export async function mapManpowerData(data) {
     return RecordDetails;
 }
 
+export async function mapManpowerList(data) {
+    if (!Array.isArray(data) || data.length === 0) return [];
+
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapManpowerData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
+}
+
 
 //-------------Benefits ---------------
 
@@ -359,7 +375,7 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails) {
             RecordDetails[key] = await mapApproverDetails({ ...data, });
         } else {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
-                if(key==='id') RecordDetails['requisition_id'] = data[key];
+                if (key === 'id') RecordDetails['requisition_id'] = data[key];
                 if (key === 'status') {
                     RecordDetails[key] = data[key].toLowerCase() === 'pending' && data['is_draft'] ? 'draft' : data[key].toLowerCase();
                 } else RecordDetails[key] = data[key];

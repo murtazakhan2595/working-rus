@@ -30,6 +30,7 @@ import {
   mapRequisitionRequestList,
   mapRequisitionRequestData,
   mapRequisitionRequestPayloadData,
+  mapManpowerList,
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -45,7 +46,9 @@ export const getManpowerPlanningList = async (payload) => {
   try {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
-      return response.data;
+      const ResponseData = response.data;
+      const ResponseDataList = await mapManpowerList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
     console.error("Error fetching job rotation requests:", error);

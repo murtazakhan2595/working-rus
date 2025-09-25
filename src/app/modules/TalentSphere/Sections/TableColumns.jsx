@@ -15,6 +15,7 @@ import {
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, TextUI, MultiStatusLabel } from "components";
+import { BudgetStatusOptions } from "data/Data";
 
 
 /**
@@ -64,6 +65,18 @@ export const ManpowerPlanningColumns = (reloadData) => [
         dataField: "consumed_budget",
         text: "Consumed Budget",
         dataSort: true,
+    },
+    {
+        dataField: "consumed_budget_status",
+        text: "Consumed Budget Status",
+        formatter: (cell) => {
+            return (BudgetStatusOptions.find(obj => obj.value === cell) || {}).label || '--';
+        },
+    },
+    {
+        dataField: "justification",
+        text: "Justification",
+        formatter: (cell) => <TextUI text={cell} maxLength={30} />
     },
     {
         dataField: "created_by",

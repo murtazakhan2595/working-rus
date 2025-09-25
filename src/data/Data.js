@@ -393,11 +393,11 @@ export const BudgetStatusOptions = [
   },
   {
     value: "Near Threshold",
-    label: (<StatusLabel status={'error'}>Near Threshold</StatusLabel>),
+    label: (<StatusLabel status={'alarming'}>Near Threshold</StatusLabel>),
   },
   {
     value: "Over Budget",
-    label: (<StatusLabel status={'critical'}>Over Budget</StatusLabel>),
+    label: (<StatusLabel status={'error'}>Over Budget</StatusLabel>),
   },
 ];
 

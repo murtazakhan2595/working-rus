@@ -31,7 +31,7 @@ const statusVariants = cva("", {
       outline: "text-slate-900 dark:text-slate-50",
       plum: "bg-plum-300 text-plum-1100",
       error: "bg-red-50 text-red-400",
-      alarming: "bg-orange-50 text-orange-800",
+      alarming: "bg-orange-50 text-orange-700",
       "info-secondary": "bg-purple-50 text-purple-800",
       disable: "bg-gray-400 text-purple-1100",
       warning: "bg-amber-50 text-amber-500",
