@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import DemographicsSheet from "./DemographicsForm/DemographicsSheet";
+import ViewDemographicForm from "app/modules/TalentSphere/DemographicsForm/ViewDemographicForm"
 
 export const DemographicsFormActions = ({
     data,
@@ -39,14 +40,15 @@ export const DemographicsFormActions = ({
 
             {/* View Form */}
             {view && (
-                <DemographicsSheet
+                <ViewDemographicForm
                     isOpen={view}
                     reloadData={() => {
                         reloadData();
                         setView(false);
                     }}
                     setIsOpen={() => setView(false)}
-                    id={data.id}
+                    currentId={data.id}
+                    DataList={DataList}
                     mode="view"  
                 />
             )}
