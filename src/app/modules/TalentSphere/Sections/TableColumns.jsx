@@ -14,8 +14,10 @@ import {
     PublishVacancyActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
-import { StatusLabel, TextUI, MultiStatusLabel } from "components";
+import { StatusLabel, TextUI } from "components";
 import { BudgetStatusOptions } from "data/Data";
+import { MultiStatusLabel } from "components";
+import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 
 
 /**
@@ -509,6 +511,70 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     },
 ];
 
+/**
+ * DemographicsFormColumns
+ *
+ * Returns an array of column definitions for the Demographics Form table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const DemographicsFormColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "Sr. No.",
+        formatter: (cell) => <span>DF-{cell}</span>,
+    },
+    {
+        dataField: "name",
+        text: "Form Name",
+        dataSort: true,
+    },
+    {
+        dataField: "is_active",
+        text: "Status",
+        formatter: (cell) =>
+            cell ? (
+                <span className="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
+                    Active
+                </span>
+            ) : (
+                <span className="px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">
+                    Inactive
+                </span>
+            ),
+    },
+    {
+        dataField: "sections",
+        text: "Total Sections",
+        formatter: (cell) => (cell ? cell.length : 0),
+    },
+    {
+        dataField: "sections",
+        text: "Total Fields",
+        formatter: (cell) =>
+            cell
+                ? cell.reduce((acc, section) => acc + (section.fields?.length || 0), 0)
+                : 0,
+    },
+    {
+        dataField: "created_at",
+        text: "Created Date",
+        formatter: (cell) => renderDate(cell),
+        dataSort: true,
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <DemographicsFormActions
+                data={row}
+                reloadData={reloadData}
+                DataList={data_list}
+            />
+        ),
+        headerStyle: { width: "80px" },
+    },
+];
 
 
 /**

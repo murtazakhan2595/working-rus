@@ -12,6 +12,7 @@ import {
   TalentSphereSettingManagement,
   RequisitionPlanning,
   TeamTalentSphere,
+  DemoGraphics
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -378,8 +379,8 @@ export const SidebarRoutes = [
         name: "REQUISITION_PLANNING",
       },
       Config.SETUP && {
-        path: "/office-settings/talent-sphere/requisition-planning",
-        component: <RequisitionPlanning />,
+        path: "/office-settings/talent-sphere/Setup",
+        component: <DemoGraphics />,
         name: "SETUP",
       },
     ].filter(Boolean) // Filter out undefined route
