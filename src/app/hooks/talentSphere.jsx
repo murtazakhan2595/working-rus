@@ -1035,33 +1035,157 @@ export const saveUpdateVacancy = async (payload, id) => {
   }
 };
 
+// ==================== Applicants ====================
 
-export const getApplicantsList = async (payload) => {
+// Get Applicants list with pagination, filters, ordering
+export const getApplicantsList = async (payload = {}) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "id";
-  const URL = `/recruitment-applicants/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/recruitment-applicants/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
   try {
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const ResponseData = response.data;
-      const ResponseDataList = await mapApplicantsList(ResponseData.results);
-      return { results: ResponseDataList, count: ResponseData.count };
-    }
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) return response.data;
   } catch (error) {
-    console.error("Error getting regions list:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return {};
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
   }
 };
+
+export const getApplicantById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching applicant by ID:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const saveUpdateApplicant = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-applicants/${id}/`
+      : `${baseUrl}/recruitment-applicants/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({ method, url, data: payload, headers: headers() });
+    if (response.status === expectedStatus) return response.data;
+
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateApplicant:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const deleteApplicant = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/recruitment-applicants/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 204) return true;
+    console.warn("Unexpected status deleting applicant:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error deleting applicant:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// ==================== Interviews ====================
+
+// Get Interviews list with pagination, filters, ordering
+export const getInterviewsList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/interviews/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching interviews list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const getInterviewById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/interviews/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching interview by ID:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const saveUpdateInterview = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/interviews/${id}/`
+      : `${baseUrl}/interviews/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({ method, url, data: payload, headers: headers() });
+    if (response.status === expectedStatus) return response.data;
+
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateInterview:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const deleteInterview = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/interviews/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 204) return true;
+    console.warn("Unexpected status deleting interview:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error deleting interview:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+
 
 export const getApplicantsData = async (id) => {
   try {

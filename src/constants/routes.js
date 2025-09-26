@@ -47,6 +47,7 @@ import {
   ApprovalHierarchyHistoryLogs,
 } from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
+import { Applicants } from "../app/modules/TalentSphere/ScreenedApplicants";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import { EOSSettlementDetails } from "app/modules/SelfService/Exit";
 import {
@@ -373,6 +374,11 @@ export const SidebarRoutes = [
         component: <DemoGraphics />,
         name: "SETUP",
       },
+      Config.SCREENED_APPLICANTS && {
+          path: "/office-settings/talent-sphere/Secreend-Applicants",
+        component: <Applicants />,
+        name: "SCREENED_APPLICANTS",
+      }
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ASSET_MANAGEMENT

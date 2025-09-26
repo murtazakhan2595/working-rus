@@ -535,16 +535,7 @@ export const DemographicsFormColumns = (reloadData) => [
     {
         dataField: "is_active",
         text: "Status",
-        formatter: (cell) =>
-            cell ? (
-                <span className="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
-                    Active
-                </span>
-            ) : (
-                <span className="px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">
-                    Inactive
-                </span>
-            ),
+        formatter: (cell) => <StatusLabel status={cell ? 'Active' : 'Inactive'}>{cell ? 'Active' : 'Inactive'}</StatusLabel>
     },
     {
         dataField: "sections",
@@ -560,8 +551,23 @@ export const DemographicsFormColumns = (reloadData) => [
                 : 0,
     },
     {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
+        dataField: "updated_by",
+        text: "Updated By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
         dataField: "created_at",
         text: "Created Date",
+        formatter: (cell) => renderDate(cell),
+        dataSort: true,
+    }, {
+        dataField: "updated_at",
+        text: "Updated Date",
         formatter: (cell) => renderDate(cell),
         dataSort: true,
     },
@@ -674,6 +680,85 @@ export const PublishedVacancyColumns = (reloadData) => [
     },
 ];
 
+/**
+ * ApplicantsColumns
+ *
+ * Returns an array of column definitions for the Applicants table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const ApplicantsColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "Sr. No.",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
+    },
+    {
+        dataField: "candidate_id",
+        text: "Candidate ID",
+        dataSort: true,
+    },
+    {
+        dataField: "candidate_name",
+        text: "Candidate Name",
+        dataSort: true,
+    },
+    {
+        dataField: "email",
+        text: "Email",
+        formatter: (cell) => <TextUI text={cell} maxLength={50} />,
+    },
+    {
+        dataField: "contact_number",
+        text: "Contact Number",
+        dataSort: true,
+    },
+    {
+        dataField: "department",
+        text: "Department",
+        formatter: (cell) => <DepartmentName value={cell} />,
+    },
+    {
+        dataField: "application_source",
+        text: "Application Source",
+        dataSort: true,
+    },
+    {
+        dataField: "emiratization_flag",
+        text: "Emiratization",
+        formatter: (cell) => (cell ? "Yes" : "No"),
+    },
+    {
+        dataField: "application_date",
+        text: "Application Date",
+        formatter: (cell) => renderDate(cell),
+        dataSort: true,
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel>{cell?.toLowerCase()}</StatusLabel>,
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
+        dataField: "created_at",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+        dataSort: true,
+    },
+    {
+        dataField: "",
+        text: "",
+        // formatter: (_, row, data_list) => (
+        //     // <ApplicantsActions data={row} reloadData={reloadData} DataList={data_list} />
+        // ),
+        width: "50px",
+    },
+];
 
 /**
  * PublishedVacancyColumns
