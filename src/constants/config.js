@@ -79,6 +79,7 @@ const Config = {
   MANPOWER_PLANNINGS: true,
   REQUISITION_PLANNING: true,
   SETUP: true,
+  SCREENED_APPLICANTS : true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
