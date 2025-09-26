@@ -10,6 +10,7 @@ const pathNames = () => {
     "manpower-planning": "Manpower Planning",
     "team-profile-management": "Team Managment",
     "self-service": "Self Service",
+    "talent-sphere/applicant-management": "Applicants Management",
     "talent-sphere-setting": "Talent Sphere Setting",
     "talent-sphere": "Talent Sphere",
     "requisition-planning": "Requisition Planning",

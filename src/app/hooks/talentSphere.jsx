@@ -32,6 +32,9 @@ import {
   mapRequisitionRequestData,
   mapRequisitionRequestPayloadData,
   mapManpowerList,
+  mapApplicantsList,
+  mapApplicantsData,
+  mapApplicationPayloadData,
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -1011,6 +1014,90 @@ export const saveUpdateVacancy = async (payload, id) => {
       url,
       data: finalPayload,
       headers: formDataHeader(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+
+export const getApplicantsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/recruitment-applicants/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapApplicantsList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getApplicantsData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapApplicantsData(Response);
+      const VacancyData = await getVacancyData(Response.published_vacancy);
+      return {...VacancyData,...ResponseData};
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateApplication = async (payload, id) => {
+  try {
+    debugger
+    const url = id
+      ? `${baseUrl}/recruitment-applicants/${id}/`
+      : `${baseUrl}/recruitment-applicants/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
     });
 
     if (response.status === expectedStatus) {

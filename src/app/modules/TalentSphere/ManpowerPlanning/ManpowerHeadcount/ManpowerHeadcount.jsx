@@ -6,14 +6,14 @@ import { FilterInput } from "components/FormControl";
 import { ManpowerPlanningColumns } from "app/modules/TalentSphere/Sections";
 import { yearsDropdownList } from 'utils/Lists';
 
-export default function ManpowerHeadcount() {
+export default function ManpowerHeadcount({ reload }) {
     const [ManpowerPlanningList, setManpowerPlanningList] = useState({
         results: [],
         count: 0,
     });
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
-    const [filterData, setFilterData] = useState({ });
+    const [filterData, setFilterData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
     const onPageChange = (name, value) => {
@@ -55,6 +55,15 @@ export default function ManpowerHeadcount() {
         };
     }, [options, filterData, ordering]);
 
+    useEffect(() => {
+        let isMounted = true;
+        onPageChange("page", 1);
+        setOrdering("-id");
+        fetchData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, [reload]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);

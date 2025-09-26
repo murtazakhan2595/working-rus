@@ -432,3 +432,43 @@ export const getNodeExistInTree = (node = {}, selectedValue, label = "id") => {
 
   return null; // Not found anywhere in this subtree
 };
+
+
+
+
+
+/**
+ * Builds a readable range string based on minimum and maximum values.
+ *
+ * Rules:
+ * - If both minimum and maximum are missing → return the fallbackValue.
+ * - If only minimum is present → return "From {minimum}{suffix}".
+ * - If only maximum is present → return "Up to {maximum}{suffix}".
+ * - If both are present → return "{minimum}{suffix} - {maximum}{suffix}".
+ *
+ * @param {number|string|null} minimum - The starting value of the range.
+ * @param {number|string|null} maximum - The ending value of the range.
+ * @param {string} fallbackValue - The value to return if both min and max are missing.
+ * @param {string} [suffix=""] - Optional suffix to append (e.g., "kg", "years").
+ * @returns {string} - A human-readable range string.
+ */
+export const renderRange = (minimum, maximum, fallbackValue, suffix = "") => {
+  if (minimum == null && maximum == null) {
+    return fallbackValue;
+  }
+
+  if (minimum != null && maximum != null) {
+    return `${minimum} ${suffix} - ${maximum} ${suffix}`;
+  }
+
+  if (minimum != null) {
+    return `From ${minimum} ${suffix}`;
+  }
+
+  if (maximum != null) {
+    return `Up to ${maximum} ${suffix}`;
+  }
+
+  return fallbackValue;
+};
+

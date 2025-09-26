@@ -6,16 +6,17 @@ import {
 } from "components";
 import { FormatID, BranchName, DepartmentName } from "utils/getValuesFromTables";
 import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
-import { getRequisitionRequestData } from "app/hooks/talentSphere";
+import { getRequisitionRequestData, getManpowerPlanningList, saveUpdateRequisitionRequest } from "app/hooks/talentSphere";
 import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { handleRequest } from "app/hooks/general";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { toast } from "react-toastify";
 import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
-import { TextAreaInput } from "components/FormControl";
+import { TextAreaInput, NumberInput } from "components/FormControl";
 import { getAttendanceData } from "app/hooks/attendance";
 import { saveAttendance } from "app/hooks/attendance";
 import { RequisitionViewFields } from 'app/modules/TalentSphere/Sections';
+import { errorClassName } from "components/FormControl";
 
 const FormSheetData = {
     triggerText: "Submit",
@@ -33,59 +34,53 @@ const ViewRequisitionRequest = ({
     isTeamView = false,
 }) => {
     const [forceLoad, setForceLoad] = useState(false);
-    const [openRejectModal, setOpenRejectModal] = useState(false);
-    const [RejectedData, setRejectData] = useState(false);
-    const handleSubmit = async (
-        status,
-        {
-            employee,
-            id,
-            rejection_reason,
-            request_id,
-            requested_checkout,
-            requested_checkin,
-            is_second_shift,
-            attendance_date,
-        }
-    ) => {
+    const [approvalBlockMessage, setApprovalBlock] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [ModalData, setModalData] = useState({});
+    const handleApprovalClick = async (handleApprove = () => { }, { department, branch, number_of_positions, salary_max, salary_min, id }) => {
+        setModalData({ handleApprove, department, branch, number_of_positions, salary_max, salary_min, title: 'Add Salary Range', id })
+        setOpenModal(true);
+    };
+    const handleRejectClick = async (comment, id) => {
+        await saveUpdateRequisitionRequest({ rejectio_reason: comment }, id);
+    };
+
+    const handleSubmit = async ({ handleApprove = () => { }, department, branch, number_of_positions, salary_max, salary_min, id }) => {
         try {
-            const response = await handleRequest(request_id, status === "Approved");
-            // return
+            const blockMessage = 'Approval blocked — Please update the manpower budget before approving this requisition.'
+            const filterData = { department, branch, fiscal_year: (new Date()).getFullYear() }
+            const response = await getManpowerPlanningList({ filterData });
             if (response) {
-                toast.success(`Request ${status} Successfully!`);
-                if (status === "Rejected") {
-                    await saveUpdateAttendanceAdjustment(
-                        { rejection_reason: rejection_reason },
-                        id
-                    );
+                const ResponseList = response.results;
+                if (!Array.isArray(ResponseList) || ResponseList.length === 0) {
+                    setApprovalBlock(blockMessage);
+                    return null;
                 }
-                const { status: updatedStatus, attendance } = await fetchData(id, true);
-                if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
-                    const attendanceData = attendance
-                        ? await getAttendanceData(attendance)
-                        : {};
-                    const shiftData = await getActiveShiftData(employee, attendance_date);
-                    const payload = {
-                        ...attendanceData,
-                        date: attendance_date,
-                        id: attendance,
-                        ...(is_second_shift
-                            ? { second_checkin: requested_checkin }
-                            : { checkin: requested_checkin }),
-                        ...(is_second_shift
-                            ? { second_checkout: requested_checkout }
-                            : { checkout: requested_checkout }),
-                        employee_id: employee,
-                    };
-                    await saveAttendance(payload, shiftData, attendance);
+                else {
+                    const headcount_details = ResponseList[0];
+                    const allowed_headcount = parseInt(headcount_details['planned_headcount']) - parseInt(headcount_details['existing_headcount']);
+                    const remaining_budget = parseFloat(headcount_details['total_allocated_budget']) - parseFloat(headcount_details['consumed_budget']);
+                    if (parseInt(number_of_positions) > allowed_headcount) {
+                        setApprovalBlock(`${blockMessage} Vacancy count increases the planned headcount.`);
+                        return null;
+                    }
+                    else if (parseFloat(salary_max) > remaining_budget) {
+                        setApprovalBlock(`${blockMessage} Budget exceeds the allocated budget.`);
+                        return null;
+                    } else {
+                        await saveUpdateRequisitionRequest({ salary_max, salary_min }, id);
+                        setApprovalBlock(null);
+                        handleApprove('Approved');
+
+                    }
                 }
-                setForceLoad(!forceLoad);
-                setOpenRejectModal(false);
-                setRejectData(null);
             }
         } catch (error) {
             // Handle errors and rollback form data
             console.error(error);
+        } finally {
+            setOpenModal(false);
+            setModalData({});
         }
     };
     // Define the fields to display
@@ -127,6 +122,13 @@ const ViewRequisitionRequest = ({
         },
         {
             customContent: true,
+            renderContent: () => {
+                if (approvalBlockMessage)
+                    return (<div className={`${errorClassName} my-2`}>{approvalBlockMessage}</div>);
+            },
+        },
+        {
+            customContent: true,
             renderContent: (data) => {
                 if (isTeamView) return null;
                 return (
@@ -135,10 +137,13 @@ const ViewRequisitionRequest = ({
                         status={data?.status}
                         current_approver={data.current_approver}
                         final_approver={data.final_approvers || []}
-                        request_id={data.hierarchy_request}
+                        request_id={data.request}
                         RejectionConfig={{ label: 'Rejection Reason', required: true }}
-                        setResponse={(response) => {
+                        onApprove={(handleApprove) => handleApprovalClick(handleApprove, data)}
+                        setResponse={async (response, status, approval_Data) => {
                             if (response) {
+                                if (status?.toLowerCase() === 'rejected')
+                                    await handleRejectClick(approval_Data.comment, data.id);
                                 setForceLoad(!forceLoad);
                             }
                         }}
@@ -175,38 +180,39 @@ const ViewRequisitionRequest = ({
             >
                 <DetailContent fields={fields} />
             </NavigationSheetComponent>
-            {openRejectModal && (
+            {openModal && (
                 <SheetUI
-                    isOpen={openRejectModal}
-                    setIsOpen={setOpenRejectModal}
+                    isOpen={openModal}
+                    setIsOpen={setOpenModal}
                     variant="modal"
-                    sheetConfig={FormSheetData}
+                    sheetConfig={ModalData}
                     formConfig={{
-                        initialValues: RejectedData,
+                        initialValues: ModalData,
                         enableReinitialize: true,
-                        handleSubmit: (data) => {
-                            handleSubmit("Rejected", data);
-                        },
-                        validateFormSchema: (values) => {
+                        handleSubmit: handleSubmit,
+                        validateFormSchema: () => {
                             const error = {};
-                            if (!values.rejection_reason)
-                                error.rejection_reason = "Reason is required";
                             return error;
                         },
-                        submitButtonText: "Submit",
+                        submitButtonText: "Confirm",
                         cancelButtonText: "Cancel",
                         columns: 1,
                         formFields: [
                             {
                                 sheetCardExtension: false,
-                                sheetCardTitle: "Attendance Details",
+                                sheetCardTitle: "Salary Details",
                                 InputFields: [
                                     {
-                                        InputField: TextAreaInput,
-                                        name: "rejection_reason",
+                                        InputField: NumberInput,
+                                        name: "salary_min",
                                         required: true,
-                                        label: "Rejection Reson",
-                                        rows: 3,
+                                        label: "Minimum Salary",
+                                    },
+                                    {
+                                        InputField: NumberInput,
+                                        name: "salary_max",
+                                        required: true,
+                                        label: "Maximum Salary",
                                     },
                                 ].filter(Boolean),
                             },
