@@ -8,6 +8,7 @@ import {
     HeadCountRequestsActions,
     ViewHeadCountRequests,
 } from './ManpowerPlanning';
+import DemoGraphics from './DemographicsForm';
 import {
     TalentSphereSettingManagement,
     Benefits,
@@ -88,6 +89,7 @@ export {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
+    DemoGraphics,
     RequisitionRequests,
     AddUpdateRequisitionRequestForm,
     RequisitionActions,

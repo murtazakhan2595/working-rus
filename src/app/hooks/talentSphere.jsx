@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { HandleLogout, baseUrl, headers, getCurrentRequestApprover, formDataHeader } from "./general";
 import moment from "moment";
@@ -666,7 +667,7 @@ export const saveUpdateRequisitionRequest = async (payload, id) => {
       ? `${baseUrl}/requisition-requests/${id}/`
       : `${baseUrl}/requisition-requests/`;
 
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const method = id ? "PATCH" : "POST"; 
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapRequisitionRequestPayloadData(payload);
     const response = await axios({
@@ -688,10 +689,266 @@ export const saveUpdateRequisitionRequest = async (payload, id) => {
   } catch (error) {
     console.error("API error in saveUpdateUserRole:", error);
     if (error?.response?.status === 401) {
-      HandleLogout(); // Assuming this logs out the user properly
+      HandleLogout(); 
     }
     renderErrorMessages(error?.response?.data);
-    return false; // To be caught and handled in UI/component
+    return false; 
+  }
+};
+
+
+// Demographic Forms API hooks
+export const getDemographicFormsList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+  const URL = `/demographic-forms/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic forms:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getDemographicFormById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/demographic-forms/${id}/`, { headers: headers() });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic form by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const saveUpdateDemographicForm = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/demographic-forms/${id}/`
+      : `${baseUrl}/demographic-forms/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+    const response = await axios({
+      method,
+      url,
+      data: payload,
+      headers: headers(),
+    });
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn("API call succeeded but with unexpected status code:", response.status);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateDemographicForm:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// Demographic Sections API hooks
+export const getDemographicSectionsList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/demographic-sections/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""}${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic sections:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const getDemographicSectionById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/demographic-sections/${id}/`, { headers: headers() });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic section by ID:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const saveUpdateDemographicSection = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/demographic-sections/${id}/`
+      : `${baseUrl}/demographic-sections/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({ method, url, data: payload, headers: headers() });
+    if (response.status === expectedStatus) return response.data;
+
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateDemographicSection:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const deleteDemographicSection = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/demographic-sections/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      return true;
+    }
+    console.warn("Unexpected status on delete section:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error deleting demographic section:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+
+export const getDemographicFieldsList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/demographic-fields/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+      return response.data;
+    }
+    console.warn("Unexpected status fetching fields list:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error fetching demographic fields list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+/**
+ * Fetch a single demographic field by ID.
+ * @param {number|string} id
+ * @returns {Object|false}
+ */
+export const getDemographicFieldById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/demographic-fields/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+    console.warn("Unexpected status fetching field by id:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error fetching demographic field by ID:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+/**
+ * Create a new demographic field or update an existing one.
+ * @param {Object} payload 
+ * @param {number|string} [id] 
+ * 
+ * @returns {Object|false}
+ */
+export const saveUpdateDemographicField = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/demographic-fields/${id}/`
+      : `${baseUrl}/demographic-fields/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({
+      method,
+      url,
+      data: payload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+
+    renderErrorMessages(response?.data);
+    console.warn("Unexpected status in saveUpdateDemographicField:", response.status);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateDemographicField:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+/**
+ * Delete a demographic field by ID.
+ * @param {number|string} id
+ * @returns {boolean}
+ */
+export const deleteDemographicField = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/demographic-fields/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      return true;
+    }
+    console.warn("Unexpected status deleting field:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error deleting demographic field:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
   }
 };
 
