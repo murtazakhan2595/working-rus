@@ -12,10 +12,11 @@ import {
     HeadCountRequestsActions,
     RequisitionActions,
     PublishVacancyActions,
+    ApplicationActions,
 } from 'app/modules/TalentSphere';
-import { renderDate } from "utils/renderValues";
+import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
-import { BudgetStatusOptions } from "data/Data";
+import { BudgetStatusOptions, RecruitmentApplicationSource } from "data/Data";
 import { MultiStatusLabel } from "components";
 import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 
@@ -74,6 +75,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
         formatter: (cell) => {
             return (BudgetStatusOptions.find(obj => obj.value === cell) || {}).label || '--';
         },
+
     },
     {
         dataField: "justification",
@@ -460,8 +462,13 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         formatter: (cell) => <DepartmentName value={cell} />,
     },
     {
+        dataField: "requested_by",
+        text: "Requested By",
+        formatter: (cell) => <><EmployeeName value={cell} /></>,
+    },
+    {
         dataField: "job_title",
-        text: "Job Title",
+        text: "Designation",
     },
     {
         dataField: "job_type_name",
@@ -469,18 +476,14 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     },
     {
         dataField: "number_of_positions",
-        text: "Required Headcount",
+        text: "Vacancy Count",
     },
     {
         dataField: "salary_min",
         text: "Budget/Salary Range",
-        formatter: (cell, row) => `${cell}-${row.salary_max}`,
+        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined'),
     },
-    {
-        dataField: "requested_by",
-        text: "Requested By",
-        formatter: (cell) => <EmployeeName value={cell} />,
-    },
+
     {
         dataField: "created_at",
         text: "Created Date",
@@ -674,85 +677,5 @@ export const PublishedVacancyColumns = (reloadData) => [
             <PublishVacancyActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
-    },
-];
-
-/**
- * ApplicantsColumns
- *
- * Returns an array of column definitions for the Applicants table.
- *
- * @returns {array} An array of column definitions.
- */
-export const ApplicantsColumns = (reloadData) => [
-    {
-        dataField: "id",
-        text: "Sr. No.",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
-    },
-    {
-        dataField: "candidate_id",
-        text: "Candidate ID",
-        dataSort: true,
-    },
-    {
-        dataField: "candidate_name",
-        text: "Candidate Name",
-        dataSort: true,
-    },
-    {
-        dataField: "email",
-        text: "Email",
-        formatter: (cell) => <TextUI text={cell} maxLength={50} />,
-    },
-    {
-        dataField: "contact_number",
-        text: "Contact Number",
-        dataSort: true,
-    },
-    {
-        dataField: "department",
-        text: "Department",
-        formatter: (cell) => <DepartmentName value={cell} />,
-    },
-    {
-        dataField: "application_source",
-        text: "Application Source",
-        dataSort: true,
-    },
-    {
-        dataField: "emiratization_flag",
-        text: "Emiratization",
-        formatter: (cell) => (cell ? "Yes" : "No"),
-    },
-    {
-        dataField: "application_date",
-        text: "Application Date",
-        formatter: (cell) => renderDate(cell),
-        dataSort: true,
-    },
-    {
-        dataField: "status",
-        text: "Status",
-        formatter: (cell) => <StatusLabel>{cell?.toLowerCase()}</StatusLabel>,
-    },
-    {
-        dataField: "created_by",
-        text: "Created By",
-        formatter: (cell) => <EmployeeName value={cell} />,
-    },
-    {
-        dataField: "created_at",
-        text: "Created On",
-        formatter: (cell) => renderDate(cell),
-        dataSort: true,
-    },
-    {
-        dataField: "",
-        text: "",
-        // formatter: (_, row, data_list) => (
-        //     // <ApplicantsActions data={row} reloadData={reloadData} DataList={data_list} />
-        // ),
-        width: "50px",
     },
 ];

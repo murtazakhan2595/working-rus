@@ -80,6 +80,7 @@ const Config = {
   REQUISITION_PLANNING: true,
   SETUP: true,
   SCREENED_APPLICANTS : true,
+  APPLICANTS:true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,

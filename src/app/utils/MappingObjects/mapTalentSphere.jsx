@@ -8,6 +8,7 @@ import {
     HeadcountRequest,
     Requisition,
     PublishVacancy,
+    Applicants,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -486,6 +487,53 @@ export function mapVacancyPayloadData(data, id) {
     const payload = {};
     // Iterate over the keys in the Vacancy object
     for (const key in PublishVacancy) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+
+//-------------Applicants ---------------
+
+export function mapApplicantsData(data) {
+    const RecordDetails = Object.keys(Applicants).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "candidate_id" || key === 'candidate_name') acc[key] = data[key].trim()
+            else if (key === "status") {
+                const status = data[key];
+                if(status==='resume_bank')
+                acc[key] = 'Resume Bank';
+                else acc[key] = data[key] ;
+            }
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapApplicantsList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapApplicantsData(Record);
+        return { ...Details, };
+    });
+
+    return DataList;
+}
+export function mapApplicationPayloadData(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Applicants object
+    for (const key in Applicants) {
         // Check if the key exists in the data object
         if (
             data.hasOwnProperty(key) &&

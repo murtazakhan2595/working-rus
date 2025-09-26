@@ -84,6 +84,11 @@ const NavigationSheetComponent = ({
     }
   };
 
+  const handleClose=()=>{
+    reloadData(true);
+    setIsOpen(false);
+  }
+
   const handlePrevious = () => {
     // Ensure dataList is an array
     const validList = Array.isArray(dataList) ? dataList : [];
@@ -145,11 +150,7 @@ const NavigationSheetComponent = ({
       // Call the delete function
       await deleteRecord(deleteAPI, itemName);
       // Close the modal
-      setIsOpen(false);
-      // Refresh data if applicable
-      if (typeof reloadData === "function") {
-        reloadData(true);
-      }
+      handleClose(false);
     } catch (error) {
       console.error("Failed to delete item:", error);
     }
@@ -169,7 +170,7 @@ const NavigationSheetComponent = ({
     <>
       <ViewDetailSheetCardExtension
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        setIsOpen={handleClose}
         title={title}
         handlePrevious={handlePrevious}
         handleNext={handleNext}

@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) => {
+const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests" }) => {
     const {
         id: user_id,
         branch_id: user_branch,
@@ -92,7 +92,6 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
     useEffect(() => {
         let isMounted = true;
         const fetchStatData = async () => {
-            setIsLoading(true);
             try {
                 const response = await getRequisitionStats({ filterData: { approval_required: true } });
                 if (response) {
@@ -100,15 +99,23 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
                 }
             } catch (e) {
                 console.error(e);
-            } finally {
-                setIsLoading(false);
             }
         };
         fetchStatData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [reload]);
+
+    useEffect(() => {
+        let isMounted = true;
+        onPageChange("page", 1);
+        setOrdering("-id");
+        fetchData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, [reload]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);

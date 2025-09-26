@@ -514,33 +514,12 @@ export const ProjectStatusList = [
   },
 ];
 
-export const status2Options = [
-  {
-    value: "Pending",
-    label: (
-      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10">
-        Pending
-      </div>
-    ),
-  },
-  {
-    value: "Inprogress",
-    label: (
-      <div className="items-center px-2 py-1 text-xs font-medium text-yellow-800 rounded-full bginline-flex bg-yellow-50 ring-1 ring-inset ring-yellow-600/20">
-        <Timer />
-        In Progress
-      </div>
-    ),
-  },
-  {
-    value: "Done",
-    label: (
-      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 rounded-full bg-green-50 ring-1 ring-inset ring-green-600/20">
-        Done
-      </div>
-    ),
-  },
-];
+export const RecruitmentApplicationSource =  [
+  { label: 'Cohrus', value: 'cohrus' }, 
+  { label: 'Indeed', value: 'indeed' },
+   { label: 'Linkedin', value: 'linkedin' }, 
+   { label: 'Other', value: 'other' },
+  ];
 
 export const workplaceTypes = [
   { label: "Remote", value: "REMOTE" },

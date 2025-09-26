@@ -10,6 +10,7 @@ import {
     DemographicsFormColumns,
     PublishedVacancyColumns,
     ManpowerHeadcountOverviewColumns,
+    ApplicationColumns,
 } from './TableColumns';
 import { RequisitionViewFields } from './ViewFields';
 export {
@@ -25,4 +26,5 @@ DemographicsFormColumns,
     ManpowerHeadcountOverviewColumns,
     PublishedVacancyColumns,
     RequisitionViewFields,
+    ApplicationColumns,
 }

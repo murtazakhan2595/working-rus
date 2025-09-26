@@ -48,7 +48,13 @@ import {
     AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest, RequisitionActions,
     AddUpdateVacancyForm
 } from './Requisitions';
+
+import { ApplicantManagement, AllApplicants,ApplicationActions ,ViewApplicationDetail} from './ApplicantManagement';
 export {
+    AllApplicants,
+    ApplicantManagement,
+    ApplicationActions,
+    ViewApplicationDetail,
     ManpowerPlanning,
     AddUpdateManpower,
     ManpowerPlanningActions,
