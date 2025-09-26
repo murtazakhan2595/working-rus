@@ -9,6 +9,7 @@ import {
     RequisitionRequestColumns,
     PublishedVacancyColumns,
     ManpowerHeadcountOverviewColumns,
+    ApplicationColumns,
 } from './TableColumns';
 import { RequisitionViewFields } from './ViewFields';
 export {
@@ -23,4 +24,5 @@ export {
     ManpowerHeadcountOverviewColumns,
     PublishedVacancyColumns,
     RequisitionViewFields,
+    ApplicationColumns,
 }

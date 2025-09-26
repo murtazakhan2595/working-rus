@@ -60,6 +60,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("acknowledge")) return "success";
   else if (status.includes("signed")) return "success";
   else if (status.includes("viewed")) return "warning";
+  else if (status.includes("screen")) return "warning";
   else if (status.includes("late")) return "warning";
   else if (status.includes("draft")) return "warning";
   else if (status.includes("warning")) return "warning";
@@ -71,11 +72,13 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("alarming")) return "alarming";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
-  else if (status.includes("interview")) return "info";
+  else if (status.includes("interview")) return "info-secondary";
   else if (status.includes("no")) return "error";
   else if (status.includes("yes")) return "success";
+  else if (status.includes("new")) return "info";
   else if (status.includes("publish")) return "info-secondary";
   else if (status.includes("close")) return "disable";
+  else if (status.includes("resume")) return "plum";
   else return "default";
 };
 

@@ -12,10 +12,11 @@ import {
     HeadCountRequestsActions,
     RequisitionActions,
     PublishVacancyActions,
+    ApplicationActions,
 } from 'app/modules/TalentSphere';
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, TextUI, MultiStatusLabel } from "components";
-import { BudgetStatusOptions } from "data/Data";
+import { BudgetStatusOptions, RecruitmentApplicationSource } from "data/Data";
 
 
 /**
@@ -72,6 +73,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
         formatter: (cell) => {
             return (BudgetStatusOptions.find(obj => obj.value === cell) || {}).label || '--';
         },
+
     },
     {
         dataField: "justification",
@@ -600,6 +602,70 @@ export const PublishedVacancyColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <PublishVacancyActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+
+/**
+ * PublishedVacancyColumns
+ *
+ * Returns an array of column definitions for the PublishedVacancyColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const ApplicationColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "Application ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
+    },
+    {
+        dataField: "candidate_id",
+        text: "Candidate",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
+                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+            </div>
+        ),
+        minWidth: '250px',
+    },
+    {
+        dataField: "job_title",
+        text: "Job Title",
+    },
+    {
+        dataField: "application_source",
+        text: "Application Source",
+        formatter: (cell) => {
+            return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+        },
+    },
+    {
+        dataField: "emiratization_flag",
+        text: "Emiratization Flag",
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
+    },
+    {
+        dataField: "application_date",
+        text: "Application Date",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    },
+
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
     },

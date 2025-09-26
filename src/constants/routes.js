@@ -2,16 +2,11 @@ import Config from "constants/config";
 import Dashboard from "app/modules/Dashboard";
 import Login from "app/modules/Login";
 import {
-  Applications,
-  CreateUpdateJob,
-  JobDescription,
-  JobApplicationForm,
-} from "app/modules/RecruitmentData";
-import {
   ManpowerPlanning,
   TalentSphereSettingManagement,
   RequisitionPlanning,
   TeamTalentSphere,
+  ApplicantManagement,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -362,15 +357,10 @@ export const SidebarRoutes = [
         component: <ManpowerPlanning />,
         name: "MANPOWER_PLANNINGS",
       },
-      Config.JOBS && {
-        path: "/job-post",
-        component: <CreateUpdateJob />,
-        name: "JOBS",
-      },
-      Config.JOBS && {
-        path: "/edit-post/:id",
-        component: <CreateUpdateJob />,
-        name: "EDIT_JOBS",
+      Config.APPLICANTS && {
+        path: "/talent-sphere/applicant-management",
+        component: <ApplicantManagement />,
+        name: "APPLICANTS",
       },
       Config.REQUISITION_PLANNING && {
         path: "/office-settings/talent-sphere/requisition-planning",
@@ -718,16 +708,6 @@ const GeneralRoutes = [
     path: "/style-guide",
     component: <StyleGuide />,
     name: "Style Guide",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/apply/:id",
-    component: <JobApplicationForm />,
-    name: "Job Application Form",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/job-description/:id",
-    component: <JobDescription />,
-    name: "Job Description",
   },
   {
     path: "/forgot-password",

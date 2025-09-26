@@ -162,6 +162,24 @@ export const PublishVacancy = {
     created_by: null,
     updated_by: null,
     requisition: null,
-    organization:1,
-    posted_portals:1,
+    organization: 1,
+    posted_portals: 1,
+}
+
+export const Applicants = {
+    id:null,
+    published_vacancy: null,
+    candidate_id: null,
+    candidate_name: null,
+    email: null,
+    contact_number: null,
+    department: null,
+    application_source: null,
+    emiratization_flag: null,
+    status: null,
+    attachments: null,
+    created_by: null,
+    rejection_reason: null,
+    application_date: null,
+    location: null,
 }

@@ -12,48 +12,51 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
           footerTitle,
           customContent = false,
           renderContent = () => { },
+          renderSectionCondition = () => { },
           className = "",
-        }) =>
-          customContent ? (
-            <div className={cn(className)}>{renderContent(currentItem)}</div>
-          ) : (
-            <DetailCard
-              detailCardTitle={title}
-              date={currentItem?.[footerField]}
-              dateTitle={footerTitle}
-            >
-              {field.map(
-                ({
-                  key,
-                  label,
-                  formatter,
-                  fallBackText = "N/A",
-                  fieldClassName = "",
-                  renderCondition,
-                }) => {
-                  const value =
-                    currentItem && (currentItem[key] !== null && currentItem[key] !== undefined) ? currentItem[key] : null;
-                  if (renderCondition && typeof renderCondition === "function") {
-                    const renderEnable = renderCondition(value, currentItem);
-                    if (!renderEnable) return <></>;
-                  }
-                  return label ? (
-                    <DetailBox
-                      key={key}
-                      label={label}
-                      value={formatter ? formatter(value, currentItem) : value ?? fallBackText}
-                    />
-                  ) : (
-                    <div className={cn("mt-2", fieldClassName)}>
-                      {formatter
-                        ? formatter(value, currentItem)
-                        : value ?? fallBackText}
-                    </div>
-                  );
+        }) => {
+          const renderSection = renderSectionCondition(currentItem);
+          if (!renderSection) return <></>;
+          if (customContent) {
+            return <div className={cn(className)}>{renderContent(currentItem)}</div>;
+          }
+          return <DetailCard
+            detailCardTitle={title}
+            date={currentItem?.[footerField]}
+            dateTitle={footerTitle}
+          >
+            {field.map(
+              ({
+                key,
+                label,
+                formatter,
+                fallBackText = "N/A",
+                fieldClassName = "",
+                renderCondition,
+              }) => {
+                const value =
+                  currentItem && (currentItem[key] !== null && currentItem[key] !== undefined) ? currentItem[key] : null;
+                if (renderCondition && typeof renderCondition === "function") {
+                  const renderEnable = renderCondition(value, currentItem);
+                  if (!renderEnable) return <></>;
                 }
-              )}
-            </DetailCard>
-          )
+                return label ? (
+                  <DetailBox
+                    key={key}
+                    label={label}
+                    value={formatter ? formatter(value, currentItem) : value ?? fallBackText}
+                  />
+                ) : (
+                  <div className={cn("mt-2", fieldClassName)}>
+                    {formatter
+                      ? formatter(value, currentItem)
+                      : value ?? fallBackText}
+                  </div>
+                );
+              }
+            )}
+          </DetailCard>
+        }
       )}
     </div>
   );
