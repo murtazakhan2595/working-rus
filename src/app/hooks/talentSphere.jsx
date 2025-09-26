@@ -1185,32 +1185,7 @@ export const deleteInterview = async (id) => {
   }
 };
 
-export const getApplicantsList = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
-  const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "id";
-  const URL = `/recruitment-applicants/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
-  try {
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const ResponseData = response.data;
-      const ResponseDataList = await mapApplicantsList(ResponseData.results);
-      return { results: ResponseDataList, count: ResponseData.count };
-    }
-  } catch (error) {
-    console.error("Error getting regions list:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return {};
-  }
-};
+
 
 export const getApplicantsData = async (id) => {
   try {
