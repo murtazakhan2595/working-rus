@@ -12,7 +12,7 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
           footerTitle,
           customContent = false,
           renderContent = () => { },
-          renderSectionCondition = () => { },
+          renderSectionCondition = () => { return true;},
           className = "",
         }) => {
           const renderSection = renderSectionCondition(currentItem);

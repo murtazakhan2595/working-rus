@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) => {
+const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests" }) => {
     const {
         id: user_id,
         branch_id: user_branch,
@@ -109,6 +109,16 @@ const RequisitionRequests = ({ isTeamView = false, activeView = "Requests" }) =>
             isMounted = false;
         };
     }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+        onPageChange("page", 1);
+        setOrdering("-id");
+        fetchData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, [reload]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
