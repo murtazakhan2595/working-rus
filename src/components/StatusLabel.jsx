@@ -319,7 +319,7 @@ export const StatusButtons = ({
 
       else if (onApprove) {
         // Use custom approve handler
-        onApprove();
+        onApprove(handleDefaultSubmit);
       } else {
         // Use default API flow
         handleDefaultSubmit("Approved");

@@ -92,7 +92,6 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     useEffect(() => {
         let isMounted = true;
         const fetchStatData = async () => {
-            setIsLoading(true);
             try {
                 const response = await getRequisitionStats({ filterData: { approval_required: true } });
                 if (response) {
@@ -100,15 +99,13 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                 }
             } catch (e) {
                 console.error(e);
-            } finally {
-                setIsLoading(false);
             }
         };
         fetchStatData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [reload]);
 
     useEffect(() => {
         let isMounted = true;

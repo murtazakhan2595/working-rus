@@ -106,7 +106,6 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const renderConsumedBudgetStatus = async (consumed_budget, total_budget, handleChange) => {
         try {
             if (consumed_budget && total_budget) {
-                debugger
                 const percentage = calculatePercentage(consumed_budget, total_budget);
                 const consumed_budget_status = getConsumedBudgetStatus(percentage)
                 setBudgetStatus(consumed_budget_status);
@@ -122,7 +121,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const ValidateExistingRecord = async (branch, department, fiscalYear) => {
         try {
             if (branch && department && fiscalYear) {
-                const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: fiscalYear } : {}) }
+                const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: [fiscalYear] } : {}) }
                 const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
                 if (existingPlanning.count > 0) {
                     setManpowerExist(true);

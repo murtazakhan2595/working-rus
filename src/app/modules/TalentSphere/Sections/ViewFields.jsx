@@ -1,5 +1,6 @@
 import React from "react";
 import { FormatID, BranchName, DepartmentName } from "utils/getValuesFromTables";
+import { renderRange } from "utils/renderValues";
 import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 
@@ -76,7 +77,6 @@ export const RequisitionViewFields = [
             {
                 key: "is_emiratization_role",
                 label: "Emiratization Role",
-
                 formatter: (cell) => cell ? 'Required' : 'Not Required',
             },
         ],
@@ -110,7 +110,7 @@ export const RequisitionViewFields = [
             {
                 key: "min_age",
                 label: "Age Limit",
-                formatter: (cell, data) => `${cell || 0} Years - ${data.max_age || 0} Years`,
+                formatter: (cell, row) => renderRange(cell, row.max_age, 'Not Defined', 'Years'),
             },
             {
                 key: "education",
@@ -123,12 +123,12 @@ export const RequisitionViewFields = [
             {
                 key: "experience_min",
                 label: "Experiance",
-                formatter: (cell, data) => `${cell} Years - ${data.experience_max} Years`,
+                formatter: (cell, row) => renderRange(cell, row.experience_max, 'Not Defined', 'Years'),
             },
             {
                 key: "salary_min",
                 label: "Salary Range",
-                formatter: (cell, data) => `${cell} - ${data.salary_max}`,
+                formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined'),
             },
             {
                 key: "justification",

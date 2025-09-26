@@ -14,7 +14,7 @@ import {
     PublishVacancyActions,
     ApplicationActions,
 } from 'app/modules/TalentSphere';
-import { renderDate } from "utils/renderValues";
+import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
 import { BudgetStatusOptions, RecruitmentApplicationSource } from "data/Data";
 import { MultiStatusLabel } from "components";
@@ -462,8 +462,13 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         formatter: (cell) => <DepartmentName value={cell} />,
     },
     {
+        dataField: "requested_by",
+        text: "Requested By",
+        formatter: (cell) => <><EmployeeName value={cell} /></>,
+    },
+    {
         dataField: "job_title",
-        text: "Job Title",
+        text: "Designation",
     },
     {
         dataField: "job_type_name",
@@ -471,18 +476,14 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     },
     {
         dataField: "number_of_positions",
-        text: "Required Headcount",
+        text: "Vacancy Count",
     },
     {
         dataField: "salary_min",
         text: "Budget/Salary Range",
-        formatter: (cell, row) => `${cell}-${row.salary_max}`,
+        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined'),
     },
-    {
-        dataField: "requested_by",
-        text: "Requested By",
-        formatter: (cell) => <EmployeeName value={cell} />,
-    },
+
     {
         dataField: "created_at",
         text: "Created Date",

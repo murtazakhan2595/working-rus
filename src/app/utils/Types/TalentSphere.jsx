@@ -8,6 +8,7 @@ export const ManpowerPlanning = {
     id: null,
     existing_headcount: null,
     created_on: null,
+    created_by: null,
     consumed_budget: null,
     consumed_percentage: null,
     consumed_budget_status: null,
