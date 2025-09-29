@@ -35,6 +35,8 @@ import {
   mapApplicantsList,
   mapApplicantsData,
   mapApplicationPayloadData,
+
+  mapRejectedApplicationPayloadData
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -177,13 +179,10 @@ export const saveUpdateBenefit = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -257,13 +256,10 @@ export const saveUpdateRemoteWorkChecklist = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -338,13 +334,10 @@ export const saveUpdateJobType = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -418,13 +411,10 @@ export const saveUpdateEducation = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -498,13 +488,10 @@ export const saveUpdateCareerLevel = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -581,13 +568,10 @@ export const saveUpdateHeadcountRequest = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -667,7 +651,7 @@ export const saveUpdateRequisitionRequest = async (payload, id) => {
       ? `${baseUrl}/requisition-requests/${id}/`
       : `${baseUrl}/requisition-requests/`;
 
-    const method = id ? "PATCH" : "POST"; 
+    const method = id ? "PATCH" : "POST";
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapRequisitionRequestPayloadData(payload);
     const response = await axios({
@@ -681,18 +665,15 @@ export const saveUpdateRequisitionRequest = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
-      HandleLogout(); 
+      HandleLogout();
     }
     renderErrorMessages(error?.response?.data);
-    return false; 
+    return false;
   }
 };
 
@@ -989,7 +970,7 @@ export const getVacancyData = async (id) => {
       const Response = response.data;
       const RequisitionData = await getRequisitionRequestData(Response.requisition);
       const ResponseData = await mapVacancyData({ ...Response });
-      return { ...RequisitionData,...ResponseData };
+      return { ...RequisitionData, ...ResponseData };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1020,13 +1001,10 @@ export const saveUpdateVacancy = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
+
     return false;
   } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
+    console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
     }
@@ -1052,11 +1030,69 @@ export const getApplicantsList = async (payload = {}) => {
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
-    if (response.status === 200) return response.data;
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapApplicantsList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
   } catch (error) {
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
+  }
+};
+
+export const getApplicantsData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapApplicantsData(Response);
+      const VacancyData = await getVacancyData(Response.published_vacancy);
+      const RejectionData = await getRejectedApplicantList({ filterData: { applicant: Response.id } });
+      return { ...VacancyData, ...ResponseData, ...(RejectionData?.results?.[0] || {}) };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateApplication = async (payload, id) => {
+  try {
+    debugger
+    const url = id
+      ? `${baseUrl}/recruitment-applicants/${id}/`
+      : `${baseUrl}/recruitment-applicants/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -1107,6 +1143,64 @@ export const deleteApplicant = async (id) => {
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
     return false;
+  }
+};
+// ==================== Rejected Applications ====================
+
+
+export const getRejectedApplicantList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/recruitment-rejections/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const saveUpdateRejectedApplication = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-rejections/${id}/`
+      : `${baseUrl}/recruitment-rejections/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapRejectedApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -1182,63 +1276,5 @@ export const deleteInterview = async (id) => {
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
     return false;
-  }
-};
-
-
-
-export const getApplicantsData = async (id) => {
-  try {
-    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const Response = response.data;
-      const ResponseData = await mapApplicantsData(Response);
-      const VacancyData = await getVacancyData(Response.published_vacancy);
-      return {...VacancyData,...ResponseData};
-    }
-  } catch (error) {
-    console.error("Error getting onboarding document by id:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return [];
-  }
-};
-
-export const saveUpdateApplication = async (payload, id) => {
-  try {
-    debugger
-    const url = id
-      ? `${baseUrl}/recruitment-applicants/${id}/`
-      : `${baseUrl}/recruitment-applicants/`;
-
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
-    const expectedStatus = id ? 200 : 201;
-    const finalPayload = mapApplicationPayloadData(payload);
-    const response = await axios({
-      method,
-      url,
-      data: finalPayload,
-      headers: headers(),
-    });
-
-    if (response.status === expectedStatus) {
-      return response.data;
-    }
-    renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
-    return false;
-  } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout(); // Assuming this logs out the user properly
-    }
-    renderErrorMessages(error?.response?.data);
-    return false; // To be caught and handled in UI/component
   }
 };

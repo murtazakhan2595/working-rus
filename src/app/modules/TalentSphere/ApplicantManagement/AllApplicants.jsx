@@ -27,32 +27,36 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
             setOrdering(sortName);
         },
     };
-    useEffect(() => {
-        let isMounted = true;
-        if (isMounted) {
-            setFilterData((prevFilters) => {
-                const updatedFilters = { ...prevFilters };
-                if (variant === "all") {
-                    delete updatedFilters['status'];
-                } else if (variant === 'rejected') {
-                    updatedFilters['status'] = 'rejected';
-                } else if (variant === 'resume') {
-                    updatedFilters['status'] = 'resume_bank';
-                } else if (variant === 'screened') {
-                    updatedFilters['status'] = 'screened';
-                }
-                return updatedFilters;
-            });
-        }
-        return () => {
-            isMounted = false;
-        };
-    }, [variant]);
+    // useEffect(() => {
+    //     let isMounted = true;
+    //     if (isMounted) {
+    //         setFilterData((prevFilters) => {
+    //             const updatedFilters = { ...prevFilters };
+    //             if (variant === "all") {
+    //                 delete updatedFilters['status'];
+    //             } else if (variant === 'rejected') {
+    //                 updatedFilters['status'] = 'rejected';
+    //             } else if (variant === 'resume') {
+    //                 updatedFilters['status'] = 'resume_bank';
+    //             } else if (variant === 'screened') {
+    //                 updatedFilters['status'] = 'screened';
+    //             }
+    //             return updatedFilters;
+    //         });
+    //     }
+    //     return () => {
+    //         isMounted = false;
+    //     };
+    // }, [variant]);
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
+            const filters = {
+                ...filterData,
+                ...(variant === 'rejected' ? { status: 'rejected' } : {}),
+            }
             const response = await getApplicantsList({
-                filterData,
+                filterData: filters,
                 options,
                 ordering,
             });
@@ -68,7 +72,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
 
     useEffect(() => {
         let isMounted = true;
-        fetchData(isMounted);
+        if (variant) fetchData(isMounted);
         return () => {
             isMounted = false;
         };
