@@ -15,6 +15,7 @@ import {
     RequisitionActions,
     PublishVacancyActions,
     ApplicationActions,
+    InterviewActions,
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
@@ -726,8 +727,8 @@ export const PublishedVacancyColumns = (reloadData) => [
         dataField: "posted_portals",
         text: "Posted On",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
-
     },
+    
     {
         dataField: "total_applications",
         text: "Total Applications",
@@ -961,6 +962,56 @@ export const ResumeBankColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+
+/**
+ * InProgressInterviewColumns
+ *
+ * Returns an array of column definitions for the InProgressInterviewColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const InProgressInterviewColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "Candidate Name",
+    },
+ {
+        dataField: "job_title_applied_for",
+        text: "Applied Job Title",
+    },   
+ {
+        dataField: "interview_type",
+        text: "Interview Type",
+    }, 
+    {
+        dataField: "scheduled_datetime",
+        text: "Scheduled Date & Time",
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+    },
+    {
+        dataField: "panel",
+        text: "Interview Panel",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
+    },
+    {
+        dataField: "posted_portals",
+        text: "AI Match Score",
+    },
+     {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    },
+      {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <InterviewActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
     },

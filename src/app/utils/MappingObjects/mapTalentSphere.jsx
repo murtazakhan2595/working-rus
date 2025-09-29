@@ -564,6 +564,8 @@ export function mapApplicantsData(data) {
                 const status = data[key];
                 if (status === 'resume_bank')
                     acc[key] = 'Resume Bank';
+                else if (status === 'in_progress')
+                    acc[key] = 'In Progress';
                 else acc[key] = data[key];
             }
             else acc[key] = data[key];

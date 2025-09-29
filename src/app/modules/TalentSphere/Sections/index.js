@@ -13,16 +13,17 @@ import {
     ApplicationColumns,
     ResumeBankColumns,
     InterviewTypesColumns,
+    InProgressInterviewColumns,
 } from './TableColumns';
-import { RequisitionViewFields,ApplicantDetails } from './ViewFields';
+import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
 export {
     ManpowerPlanningColumns,
     BenefitsColumns,
     RemoteWorkChecklistsColumns,
     JobTypesColumns,
     EducationsColumns,
-CareerLevelsColumns,
-DemographicsFormColumns,
+    CareerLevelsColumns,
+    DemographicsFormColumns,
     HeadcountRequestColumns,
     RequisitionRequestColumns,
     ResumeBankColumns,
@@ -32,4 +33,6 @@ DemographicsFormColumns,
     ApplicationColumns,
     ApplicantDetails,
     InterviewTypesColumns,
+    InProgressInterviewColumns,
+    InterviewDetails,
 }
