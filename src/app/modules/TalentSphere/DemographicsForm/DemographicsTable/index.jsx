@@ -1,29 +1,29 @@
-import React, { useEffect, useState,forwardRef,useImperativeHandle } from 'react'
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import {
   CardHeader,
   CardTitle,
   CardDescription,
   Card,
-  CardContent
+  CardContent,
 } from "components/ui/card";
-import { getDemographicFormsList } from 'app/hooks/talentSphere';
+import { getDemographicFormsList } from "app/hooks/talentSphere";
 import { PageLoader, TableCustom } from "components";
-import { DemographicsFormColumns } from 'app/modules/TalentSphere/Sections';
+import { DemographicsFormColumns } from "app/modules/TalentSphere/Sections";
 
-const DemographicsTable = forwardRef((props, ref) => {
+const DemographicsTable = forwardRef(({ onDataChange }, ref) => {
   const [demographicFormsList, setDemographicFormsList] = useState({
     results: [],
-    count: 0
+    count: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
-    const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  
-    const onPageChange = (name, value) => {
-      setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
-    };
-      const [ordering, setOrdering] = useState("-id");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
 
-      const tableOptions = {
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
@@ -39,6 +39,10 @@ const DemographicsTable = forwardRef((props, ref) => {
         results: data.results || [],
         count: data.count || 0,
       });
+
+      if (onDataChange) {
+        onDataChange(data);
+      }
     } catch (error) {
       console.error("Error fetching demographic forms:", error);
     } finally {
@@ -47,7 +51,7 @@ const DemographicsTable = forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    reload: fetchData
+    reload: fetchData,
   }));
 
   useEffect(() => {
@@ -60,7 +64,7 @@ const DemographicsTable = forwardRef((props, ref) => {
       <CardHeader>
         <CardTitle>Demographic Form Setup</CardTitle>
         <CardDescription>
-          Create and manage a single demographic form with customizable sections and fields. 
+          Create and manage a single demographic form with customizable sections and fields.
           Candidates will use this form to provide their demographic information through a secure link.
         </CardDescription>
       </CardHeader>
@@ -74,7 +78,7 @@ const DemographicsTable = forwardRef((props, ref) => {
             columns={DemographicsFormColumns(fetchData)}
             pagination={true}
             dataTotalSize={demographicFormsList.count || 0}
-             tableOptions={tableOptions}
+            tableOptions={tableOptions}
           />
         )}
       </CardContent>

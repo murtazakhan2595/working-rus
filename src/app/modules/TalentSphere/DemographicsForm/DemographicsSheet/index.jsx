@@ -27,7 +27,8 @@ const DEMOGRAPHIC_FORM_STRUCTURE = {
   sections: [],
 }
 
-const NAME_REGEX = /^[A-Za-z0-9 _-]+$/
+const NAME_REGEX = /^[A-Za-z0-9_-]+( [A-Za-z0-9_-]+)*$/;
+
 
 const FIELD_TYPE_OPTIONS = [
   { label: "Text", value: "text" },
@@ -50,8 +51,8 @@ const FILE_TYPE_OPTIONS = [
 ]
 
 const STATUS_OPTIONS = [
-  { label: "Active", value: true },
-  { label: "Inactive", value: false },
+  { label: "Active", value: "true" },
+  { label: "Inactive", value: "false" },
 ]
 
 const REQUIRED_OPTIONS = [
@@ -105,8 +106,14 @@ const DemographicsSheet = ({
         const response = await getDemographicFormById(id)
 
         if (isMounted) {
-          setFormData(response)
-          setFormValues(response)
+          setFormData({
+            ...response,
+            is_active: Boolean(response.is_active),
+          });
+          setFormValues({
+            ...response,
+            is_active: Boolean(response.is_active),
+          });
         }
       } catch (error) {
         toast.error("Failed to load form")
@@ -129,50 +136,75 @@ const DemographicsSheet = ({
   }
 
   const validateSections = (sections) => {
-    if (!sections || sections.length === 0) return true
+    if (!sections || sections.length === 0) return true;
 
-    if (sections.some(section => !section.heading?.trim())) {
-      toast.error("Each section must have a heading")
-      return false
+    for (let i = 0; i < sections.length; i++) {
+      const heading = sections[i].heading?.trim();
+
+      if (!heading) {
+        toast.error(`Section ${i + 1} must have a heading`);
+        return false;
+      }
+
+      if (!NAME_REGEX.test(heading)) {
+        toast.error(
+          `Section ${i + 1} heading is invalid. Use only letters, numbers, spaces, hyphens, or underscores.`
+        );
+        return false;
+      }
     }
 
-    const sectionHeadings = sections.map(s => s.heading?.trim().toLowerCase())
+    const sectionHeadings = sections.map(s => s.heading?.trim().toLowerCase());
     const duplicateSections = sectionHeadings.filter((h, i) =>
       h && sectionHeadings.indexOf(h) !== i
-    )
+    );
 
     if (duplicateSections.length > 0) {
-      toast.error("Duplicate section headings are not allowed")
-      return false
+      toast.error("Duplicate section headings are not allowed");
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
   const validateFields = (sections) => {
     for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
-      const section = sections[sectionIndex]
+      const section = sections[sectionIndex];
 
-      if (!section.fields || section.fields.length === 0) continue
+      if (!section.fields || section.fields.length === 0) continue;
 
-      if (section.fields.some(field => !field.label?.trim())) {
-        toast.error(`Field label is required in section ${sectionIndex + 1}`)
-        return false
+      for (let fieldIndex = 0; fieldIndex < section.fields.length; fieldIndex++) {
+        const label = section.fields[fieldIndex].label?.trim();
+
+        if (!label) {
+          toast.error(`Field label is required in section ${sectionIndex + 1}`);
+          return false;
+        }
+
+        if (!NAME_REGEX.test(label)) {
+          toast.error(
+            `Invalid field label in Section ${sectionIndex + 1}, Field ${fieldIndex + 1}. Use only letters, numbers, spaces, hyphens, or underscores.`
+          );
+          return false;
+        }
       }
 
-      const fieldLabels = section.fields.map(f => f.label?.trim().toLowerCase())
+      const fieldLabels = section.fields.map(f => f.label?.trim().toLowerCase());
       const duplicateFields = fieldLabels.filter((l, j) =>
         l && fieldLabels.indexOf(l) !== j
-      )
+      );
 
       if (duplicateFields.length > 0) {
-        toast.error(`Duplicate field labels are not allowed in section ${sectionIndex + 1}`)
-        return false
+        toast.error(
+          `Duplicate field labels are not allowed in section ${sectionIndex + 1}`
+        );
+        return false;
       }
     }
 
-    return true
-  }
+    return true;
+  };
+
 
   const saveForm = async (formPayload) => {
     if (id) {
@@ -226,122 +258,117 @@ const DemographicsSheet = ({
     return sectionIdMapping
   }
 
-const processFields = async (fields, sectionId, sectionIndex) => {
-  for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
-    const field = fields[fieldIndex];
+  const processFields = async (fields, sectionId, sectionIndex) => {
+    for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
+      const field = fields[fieldIndex];
 
-    let options = null;
+      let options = null;
 
-    switch (field.field_type) {
-      case "radio":
-      case "checkbox":
-      case "dropdown":
+      switch (field.field_type) {
+        case "radio":
+        case "checkbox":
+        case "dropdown":
           if (typeof field.options === "string") {
-          options = field.options
-            .split(",")
-            .map(opt => opt.trim())
-            .filter(opt => opt.length > 0);
-        } else if (Array.isArray(field.options)) {
-          options = field.options;
-        } else {
-          options = [];
-        }
-        break;
+            options = field.options
+              .split(",")
+              .map(opt => opt.trim())
+              .filter(opt => opt.length > 0);
+          } else if (Array.isArray(field.options)) {
+            options = field.options;
+          } else {
+            options = [];
+          }
+          break;
 
-      case "file":
-        options = {
-          file_type: field.file_type || "any",
-        };
-        break;
+        case "file":
+          options = {
+            file_type: field?.options?.file_type || field.file_type || "any",
+          }
+          break;
 
-      case "toggle":
-        options = { trueLabel: "Yes", falseLabel: "No" };
-        break;
+        case "toggle":
+          options = { trueLabel: "Yes", falseLabel: "No" };
+          break;
 
-      case "number":
-      case "email":
-      case "date":
-      case "text":
-      default:
-        options = null;
-        break;
+        case "number":
+        case "email":
+        case "date":
+        case "text":
+        default:
+          options = null;
+          break;
+      }
+
+      const fieldPayload = {
+        label: field.label || "",
+        field_type: field.field_type || "text",
+        required: Boolean(field.required),
+        attachment_required: Boolean(field.attachment_required),
+        options: options,
+        order: fieldIndex + 1,
+        section: sectionId,
+      };
+
+      const savedField = await saveField(fieldPayload, field.id);
+      if (!savedField) {
+        throw new Error(
+          `Failed to save field ${fieldIndex + 1} in section ${sectionIndex + 1}`
+        );
+      }
     }
-
-    const fieldPayload = {
-      label: field.label || "",
-      field_type: field.field_type || "text",
-      required: Boolean(field.required),
-      attachment_required: Boolean(field.attachment_required),
-      options: options, 
-      order: fieldIndex + 1,
-      section: sectionId,
-    };
-
-    const savedField = await saveField(fieldPayload, field.id);
-    if (!savedField) {
-      throw new Error(
-        `Failed to save field ${fieldIndex + 1} in section ${sectionIndex + 1}`
-      );
-    }
-  }
-};
+  };
 
 
   const handleSubmit = async (values) => {
     setIsSubmittingForm(true)
 
     try {
-      if (!validateSections(values.sections)) {
-        return
-      }
+      if (!validateSections(values.sections)) return
+      if (!validateFields(values.sections || [])) return
 
-      // Validate fields
-      if (!validateFields(values.sections || [])) {
-        return
-      }
+      const isActiveBool =
+        values.is_active === true || values.is_active === "true"
 
-      // Prepare form payload
       const formPayload = {
         name: values.name?.trim(),
         description: values.description || "",
-        is_active: Boolean(values.is_active),
+        is_active: isActiveBool,
         created_by: id ? formData.created_by?.id : userId,
         updated_by: userId,
       }
 
-      // Validate form name
       if (!isValidName(formPayload.name)) {
-        toast.error("Form name must be at least 3 characters and can include letters, numbers, spaces, hyphens, and underscores.")
+        toast.error(
+          "Form name must be at least 3 characters and can include letters, numbers, spaces, hyphens, and underscores."
+        )
         return
       }
 
-      // Save form
       const savedForm = await saveForm(formPayload)
       if (!savedForm) throw new Error("Failed to save form")
 
-      // Process sections and fields
       const formId = savedForm.id || id
       if (values.sections && values.sections.length > 0) {
         await processSections(values.sections, formId)
       }
 
-      toast.success(`Demographics Form ${isEditMode ? "Updated" : "Created"} successfully`)
+      toast.success(
+        `Demographics Form ${isEditMode ? "Updated" : "Created"} successfully`
+      )
       handleClose()
-
     } catch (error) {
       console.error("Form save error:", error)
-
       const errorMessage =
         error?.response?.data?.form?.[0] ||
         error?.response?.data?.heading?.[0] ||
         error?.message ||
         `Failed to ${isEditMode ? "update" : "create"} form.`
-
       toast.error(errorMessage)
     } finally {
       setIsSubmittingForm(false)
     }
   }
+
 
   // Form Field Builders
   const buildFormDetailsFields = () => ({
@@ -440,9 +467,9 @@ const processFields = async (fields, sectionId, sectionIndex) => {
       if (field.attachment_required) {
         inputs.push({
           InputField: SelectInputComponent,
-          name: `sections[${sectionIndex}].fields[${fieldIndex}].file_type`,
+          name: `sections[${sectionIndex}].fields[${fieldIndex}].options.file_type`,
           label: "Allowed File Type",
-          value: field.options.file_type,
+          value: field?.options?.file_type || "",
           options: FILE_TYPE_OPTIONS,
           required: true,
           colsSpan: 2,

@@ -538,6 +538,11 @@ export const DemographicsFormColumns = (reloadData) => [
         formatter: (cell) => <StatusLabel status={cell ? 'Active' : 'Inactive'}>{cell ? 'Active' : 'Inactive'}</StatusLabel>
     },
     {
+        dataField: "description",
+        text: "Description",
+        dataSort: true,
+    },
+    {
         dataField: "sections",
         text: "Total Sections",
         formatter: (cell) => (cell ? cell.length : 0),
@@ -753,12 +758,12 @@ export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "",
         text: "",
-        
+
 
         formatter: (_, row, data_list) => (
             <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        
+
         width: "50px",
     },
 ];

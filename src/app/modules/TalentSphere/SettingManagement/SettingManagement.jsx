@@ -82,10 +82,8 @@ export default function SettingManagement() {
         } else if (activeButtonTab === "Remote Work Checklist" && isAddChecklistPermitted) {
             return <Button title="checklist" onClick={handleRequestClick}>Add Remote Work Checklist</Button>;
         } else if (activeButtonTab === "Add Demographics" && isAddChecklistPermitted) {
-            return <Button title="add-demographics" onClick={handleRequestClick}>Add Demographics</Button>;
         }
 
-        // ✅ make sure function always returns something
         return null;
     };
 

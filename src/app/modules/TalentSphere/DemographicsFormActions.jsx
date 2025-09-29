@@ -6,7 +6,7 @@ import ViewDemographicForm from "app/modules/TalentSphere/DemographicsForm/ViewD
 export const DemographicsFormActions = ({
     data,
     DataList = [],
-    reloadData = () => {},
+    reloadData = () => { },
 }) => {
     const [view, setView] = useState(false);
     const [openEditForm, setOpenEditForm] = useState(false);
@@ -20,7 +20,7 @@ export const DemographicsFormActions = ({
                 viewText="View Form"
                 editText="Edit Form"
                 menuTooltip="Demographics Form Actions"
-                onView={handleView}    
+                onView={handleView}
                 onEdit={handleEdit}
             />
 
@@ -34,7 +34,7 @@ export const DemographicsFormActions = ({
                     }}
                     setIsOpen={() => setOpenEditForm(false)}
                     id={data.id}
-                    mode="edit"   
+                    mode="edit"
                 />
             )}
 
@@ -42,14 +42,14 @@ export const DemographicsFormActions = ({
             {view && (
                 <ViewDemographicForm
                     isOpen={view}
-                    reloadData={() => {
+                    reloadData={(shouldClose = false) => {
                         reloadData();
-                        setView(false);
+                        if (shouldClose) setView(false);
                     }}
                     setIsOpen={() => setView(false)}
                     currentId={data.id}
                     DataList={DataList}
-                    mode="view"  
+                    mode="view"
                 />
             )}
         </>
