@@ -237,6 +237,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                                 name: `attachment`,
                                 label: "Attachment",
                                 colsSpan: 2,
+                                acceptType:'.pdf,.doc,.docx'
                             },
                         ],
                     },

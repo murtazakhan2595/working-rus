@@ -9,6 +9,7 @@ import {
     Requisition,
     PublishVacancy,
     Applicants,
+    RejectedApplication,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -510,9 +511,9 @@ export function mapApplicantsData(data) {
             if (key === "candidate_id" || key === 'candidate_name') acc[key] = data[key].trim()
             else if (key === "status") {
                 const status = data[key];
-                if(status==='resume_bank')
-                acc[key] = 'Resume Bank';
-                else acc[key] = data[key] ;
+                if (status === 'resume_bank')
+                    acc[key] = 'Resume Bank';
+                else acc[key] = data[key];
             }
             else acc[key] = data[key];
         }
@@ -541,6 +542,26 @@ export function mapApplicationPayloadData(data) {
             data[key] !== undefined
         ) {
             payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+export function mapRejectedApplicationPayloadData(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Applicants object
+    for (const key in RejectedApplication) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "rejection_reason") payload[key] = data[key].trim();
+            else payload[key] = data[key];
         }
     }
 

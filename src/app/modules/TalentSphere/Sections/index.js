@@ -12,7 +12,7 @@ import {
     ManpowerHeadcountOverviewColumns,
     ApplicationColumns,
 } from './TableColumns';
-import { RequisitionViewFields } from './ViewFields';
+import { RequisitionViewFields,ApplicantDetails } from './ViewFields';
 export {
     ManpowerPlanningColumns,
     BenefitsColumns,
@@ -27,4 +27,5 @@ DemographicsFormColumns,
     PublishedVacancyColumns,
     RequisitionViewFields,
     ApplicationColumns,
+    ApplicantDetails,
 }
