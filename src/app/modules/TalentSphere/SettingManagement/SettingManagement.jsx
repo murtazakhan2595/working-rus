@@ -7,6 +7,8 @@ import { HasAccess } from "utils/PermissionUtils";
 import {
     Benefits,
     AddUpdateBenefitForm,
+    InterviewTypes,
+    AddUpdateInterviewTypeForm,
     CareerLevels,
     AddUpdateCareerLevelForm,
     Educations,
@@ -22,6 +24,8 @@ import Demographics from "app/modules/TalentSphere/DemographicsForm"
 export default function SettingManagement() {
     const isViewBenefitsPermitted = HasAccess("VIEW_TS_BENEFITS");
     const isAddBenefitsPermitted = HasAccess("ADD_TS_BENEFITS");
+    const isViewInterviewTypesPermitted = HasAccess("VIEW_TS_BENEFITS");
+    const isAddInterviewTypesPermitted = HasAccess("ADD_TS_BENEFITS");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
@@ -33,6 +37,7 @@ export default function SettingManagement() {
 
     const [activeTab, setActiveTab] = useState(null);
     const [OpenBenefitForm, setOpenBenefitForm] = useState(false);
+    const [OpenInterviewTypeForm, setOpenInterviewTypeForm] = useState(false);
     const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
     const [OpenEducationForm, setOpenEducationForm] = useState(false);
     const [OpenJobTypesForm, setOpenJobTypesForm] = useState(false);
@@ -46,13 +51,15 @@ export default function SettingManagement() {
         ...(isViewJobTypesPermitted ? ["Job Types"] : []),
         ...(isViewEducationsPermitted ? ["Education"] : []),
         ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
-        "Add Demographics", 
-    ], [isViewBenefitsPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
+        ...(isViewInterviewTypesPermitted ? ["Interview Types"] : []),
+        "Add Demographics",
+    ], [isViewBenefitsPermitted, isViewInterviewTypesPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
             event.preventDefault();
             event.stopPropagation();
+            setOpenInterviewTypeForm(false);
             setOpenBenefitForm(false);
             setOpenCareerLevelForm(false);
             setOpenEducationForm(false);
@@ -62,6 +69,7 @@ export default function SettingManagement() {
 
             const triggeredResquest = event.target.title;
             if (triggeredResquest === 'benefits') setOpenBenefitForm(true);
+            else if (triggeredResquest === 'interview-type') setOpenInterviewTypeForm(true);
             else if (triggeredResquest === 'career-level') setOpenCareerLevelForm(true);
             else if (triggeredResquest === 'education') setOpenEducationForm(true);
             else if (triggeredResquest === 'job-type') setOpenJobTypesForm(true);
@@ -73,6 +81,8 @@ export default function SettingManagement() {
 
         if (activeButtonTab === "Benefits" && isAddBenefitsPermitted) {
             return <Button title="benefits" onClick={handleRequestClick}>Add Benefit</Button>;
+        } else if (activeButtonTab === "Interview Types" && isAddInterviewTypesPermitted) {
+            return <Button title="interview-type" onClick={handleRequestClick}>Add Interview Type</Button>;
         } else if (activeButtonTab === "Career Level" && isAddCareerLevelsPermitted) {
             return <Button title="career-level" onClick={handleRequestClick}>Add Career Level</Button>;
         } else if (activeButtonTab === "Education" && isAddEducationsPermitted) {
@@ -90,6 +100,7 @@ export default function SettingManagement() {
     };
 
     if (!isViewBenefitsPermitted &&
+        !isViewInterviewTypesPermitted &&
         !isViewCareerLevelsPermitted &&
         !isViewEducationsPermitted &&
         !isViewJobTypesPermitted &&
@@ -119,6 +130,9 @@ export default function SettingManagement() {
                     <TabsContent value={'Benefits'}>
                         <Benefits reload={reloadData['benefits']} />
                     </TabsContent>
+                    <TabsContent value={'Interview Types'}>
+                        <InterviewTypes reload={reloadData['interview-type']} />
+                    </TabsContent>
                     <TabsContent value={'Career Level'}>
                         <CareerLevels reload={reloadData['career-level']} />
                     </TabsContent>
@@ -144,6 +158,15 @@ export default function SettingManagement() {
                     setIsOpen={() => {
                         setOpenBenefitForm(false);
                         setReloadData((prev) => ({ ...prev, 'benefits': !prev["benefits"] }));
+                    }}
+                />
+            )}
+            {OpenInterviewTypeForm && (
+                <AddUpdateInterviewTypeForm
+                    isOpen={OpenInterviewTypeForm}
+                    setIsOpen={() => {
+                        setOpenInterviewTypeForm(false);
+                        setReloadData((prev) => ({ ...prev, 'interview-type': !prev["interview-type"] }));
                     }}
                 />
             )}
