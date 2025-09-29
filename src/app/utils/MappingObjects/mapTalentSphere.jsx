@@ -10,6 +10,8 @@ import {
     PublishVacancy,
     Applicants,
     RejectedApplication,
+    ResumeBankApplication,
+    InterviewType,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -168,7 +170,55 @@ export function mapRemoteWorkChecklistPayloadData(data, id) {
     return payload;
 }
 
+//-------------InterviewTypes ---------------
 
+export function mapInterviewTypeData(data) {
+    const RecordDetails = Object.keys(InterviewType).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "is_active") {
+                acc['status'] = data[key] ? 'active' : 'inactive';
+            }
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapInterviewTypeList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapInterviewTypeData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapInterviewTypePayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the InterviewType object
+    for (const key in InterviewType) {
+        // Check if the key exists in the data object
+        if (key === "is_active") payload[key] = Boolean(data['status'] === 'active')
+        else if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
 
 //-------------JobTypes ---------------
 
@@ -508,6 +558,7 @@ export function mapVacancyPayloadData(data, id) {
 export function mapApplicantsData(data) {
     const RecordDetails = Object.keys(Applicants).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
+            if (key === 'id') acc['applicant_id'] = data[key];
             if (key === "candidate_id" || key === 'candidate_name') acc[key] = data[key].trim()
             else if (key === "status") {
                 const status = data[key];
@@ -548,7 +599,7 @@ export function mapApplicationPayloadData(data) {
     // Return the constructed payload
     return payload;
 }
-
+//--------------- Rejected Application--------------------
 export function mapRejectedApplicationPayloadData(data) {
     // Initialize an empty payload object
     const payload = {};
@@ -567,4 +618,43 @@ export function mapRejectedApplicationPayloadData(data) {
 
     // Return the constructed payload
     return payload;
+}
+//--------------- Resume Bank Application--------------------
+export function mapResumeBankApplicationPayloadData(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Applicants object
+    for (const key in ResumeBankApplication) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+export function mapResumeBankApplicantsData(data) {
+    const RecordDetails = Object.keys(ResumeBankApplication).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "applicant") acc['applicant_id'] = data[key];
+            acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapResumeBankApplicantsList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapResumeBankApplicantsData(Record);
+        return { ...Details, };
+    });
+
+    return DataList;
 }

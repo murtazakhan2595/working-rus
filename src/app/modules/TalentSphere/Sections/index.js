@@ -11,6 +11,8 @@ import {
     PublishedVacancyColumns,
     ManpowerHeadcountOverviewColumns,
     ApplicationColumns,
+    ResumeBankColumns,
+    InterviewTypesColumns,
 } from './TableColumns';
 import { RequisitionViewFields,ApplicantDetails } from './ViewFields';
 export {
@@ -23,9 +25,11 @@ CareerLevelsColumns,
 DemographicsFormColumns,
     HeadcountRequestColumns,
     RequisitionRequestColumns,
+    ResumeBankColumns,
     ManpowerHeadcountOverviewColumns,
     PublishedVacancyColumns,
     RequisitionViewFields,
     ApplicationColumns,
     ApplicantDetails,
+    InterviewTypesColumns,
 }

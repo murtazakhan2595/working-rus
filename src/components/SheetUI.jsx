@@ -318,7 +318,7 @@ const SheetUI = forwardRef(
                                     value ? value : get(props?.values, name)
                                   }
                                   onChange={async (field, value) => {
-                                    props?.setFieldValue(field, value);
+                                    await props?.setFieldValue(field, value);
                                     if (onFieldUpdate && typeof onFieldUpdate === "function")
                                       await onFieldUpdate(field, value, props.values, props.setFieldValue);
                                     if (validateDuplicate) {

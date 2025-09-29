@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ViewApplicationDetail, AddUpdateRequisitionRequestForm, AddUpdateVacancyForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
-import {ScheduleInterviewSheet} from "app/modules/TalentSphere/ScreenedApplicants";
+import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplicants";
 import { useDispatch } from "react-redux";
 
 const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
@@ -12,7 +12,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [interview, setInterview] = useState(null);
-   
+
     const handleView = () => {
         setView(true)
     };
@@ -20,19 +20,19 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
         setEdit(true)
     };
 
-    const handleDelete = () => {    
-       setInterview(true)
+    const handleDelete = () => {
+        setInterview(true)
     }
 
 
-  
-   
+
+
     return (
         <>
             <DropdownActionMenu
                 onView={handleView}
-                onEdit={ handleEdit }
-                onDelete = {handleDelete}
+                onEdit={handleEdit}
+                onDelete={data.status === 'screened' ? handleDelete : null}
                 viewText="View Application"
                 editText="Edit Application"
                 deleteText="Schedule Interview"
@@ -49,7 +49,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                     setIsOpen={() => {
                         setView(false);
                     }}
-                    currentId={data.id}
+                    currentId={data.applicant_id}
                     DataList={DataList}
                 />
             )}
@@ -71,12 +71,12 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                     isOpen={interview}
                     setIsOpen={() => setInterview(false)}
                     id={data.id}
-                    mode = "add"
+                    mode="add"
                     reloadData={reloadData}
-                    
-                    />
 
-                )}
+                />
+
+            )}
 
         </>
     );

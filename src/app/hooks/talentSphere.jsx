@@ -9,6 +9,9 @@ import {
   mapBenefitList,
   mapBenefitData,
   mapBenefitPayloadData,
+  mapInterviewTypeList,
+  mapInterviewTypeData,
+  mapInterviewTypePayloadData,
   mapCareerLevelList,
   mapCareerLevelData,
   mapCareerLevelPayloadData,
@@ -35,8 +38,9 @@ import {
   mapApplicantsList,
   mapApplicantsData,
   mapApplicationPayloadData,
-
-  mapRejectedApplicationPayloadData
+  mapResumeBankApplicationPayloadData,
+  mapRejectedApplicationPayloadData,
+  mapResumeBankApplicantsList
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -168,6 +172,84 @@ export const saveUpdateBenefit = async (payload, id) => {
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapBenefitPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+
+export const getInterviewTypeList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/interview-types/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapInterviewTypeList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getInterviewTypeData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/interview-types/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = mapInterviewTypeData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateInterviewType = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/interview-types/${id}/`
+      : `${baseUrl}/interview-types/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapInterviewTypePayloadData(payload);
     const response = await axios({
       method,
       url,
@@ -1051,8 +1133,9 @@ export const getApplicantsData = async (id) => {
       const Response = response.data;
       const ResponseData = await mapApplicantsData(Response);
       const VacancyData = await getVacancyData(Response.published_vacancy);
-      const RejectionData = await getRejectedApplicantList({ filterData: { applicant: Response.id } });
-      return { ...VacancyData, ...ResponseData, ...(RejectionData?.results?.[0] || {}) };
+      const RejectedData = await getRejectedApplicantById(Response.id);
+      const ResumeBankData = await getResumeBankApplicantById(Response.id);
+      return { ...VacancyData, ...(RejectedData || {}), ...(ResumeBankData || {}), ...ResponseData, };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1142,6 +1225,24 @@ export const getRejectedApplicantList = async (payload = {}) => {
   }
 };
 
+export const getRejectedApplicantById = async (applicant) => {
+  try {
+    const response = await getRejectedApplicantList({ filterData: { applicant: applicant } });
+    if (response) {
+      const ResponseList = response.results;
+      if (ResponseList.length > 0) {
+        const ResponseData = ResponseList.find(obj => obj.applicant === applicant);
+        return ResponseData;
+      }
+      return {};
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return {};
+  }
+};
+
 export const saveUpdateRejectedApplication = async (payload, id) => {
   try {
     const url = id
@@ -1151,6 +1252,85 @@ export const saveUpdateRejectedApplication = async (payload, id) => {
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapRejectedApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+
+// ==================== Resume Bank Applications ====================
+
+
+export const getResumeBankApplicantList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/resume-bank/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+       const ResponseData = response.data;
+      const ResponseDataList = await mapResumeBankApplicantsList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const getResumeBankApplicantById = async (applicant) => {
+  try {
+    const response = await getResumeBankApplicantList({ filterData: { applicant: applicant } });
+    if (response) {
+      const ResponseList = response.results;
+      if (ResponseList.length > 0) {
+        const ResponseData = ResponseList.find(obj => obj.applicant === applicant);
+        return ResponseData;
+      }
+      return {};
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return {};
+  }
+};
+
+export const saveUpdateResumeBankApplication = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/resume-bank/${id}/`
+      : `${baseUrl}/resume-bank/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapResumeBankApplicationPayloadData(payload);
     const response = await axios({
       method,
       url,
@@ -1344,27 +1524,6 @@ export const getInterviewTypeById = async (id) => {
   } catch (error) {
     console.error("Error fetching interview type by ID:", error);
     if (error?.response?.status === 401) HandleLogout();
-    return false;
-  }
-};
-
-export const saveUpdateInterviewType = async (payload, id) => {
-  try {
-    const url = id
-      ? `${baseUrl}/interview-types/${id}/`
-      : `${baseUrl}/interview-types/`;
-    const method = id ? "PATCH" : "POST";
-    const expectedStatus = id ? 200 : 201;
-
-    const response = await axios({ method, url, data: payload, headers: headers() });
-    if (response.status === expectedStatus) return response.data;
-
-    renderErrorMessages(response?.data);
-    return false;
-  } catch (error) {
-    console.error("API error in saveUpdateInterviewType:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    renderErrorMessages(error?.response?.data);
     return false;
   }
 };
