@@ -1063,38 +1063,7 @@ export const getApplicantsData = async (id) => {
   }
 };
 
-export const saveUpdateApplication = async (payload, id) => {
-  try {
-    debugger
-    const url = id
-      ? `${baseUrl}/recruitment-applicants/${id}/`
-      : `${baseUrl}/recruitment-applicants/`;
 
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
-    const expectedStatus = id ? 200 : 201;
-    const finalPayload = mapApplicationPayloadData(payload);
-    const response = await axios({
-      method,
-      url,
-      data: finalPayload,
-      headers: headers(),
-    });
-
-    if (response.status === expectedStatus) {
-      return response.data;
-    }
-    renderErrorMessages(response?.data);
-
-    return false;
-  } catch (error) {
-    console.error("API error in saveUpdate:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout(); // Assuming this logs out the user properly
-    }
-    renderErrorMessages(error?.response?.data);
-    return false; // To be caught and handled in UI/component
-  }
-};
 
 export const getApplicantById = async (id) => {
   try {
@@ -1273,6 +1242,220 @@ export const deleteInterview = async (id) => {
     return false;
   } catch (error) {
     console.error("Error deleting interview:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+
+
+// export const getApplicantsData = async (id) => {
+//   try {
+//     const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}`, {
+//       headers: headers(),
+//     });
+//     if (response.status === 200) {
+//       const Response = response.data;
+//       const ResponseData = await mapApplicantsData(Response);
+//       const VacancyData = await getVacancyData(Response.published_vacancy);
+//       return {...VacancyData,...ResponseData};
+//     }
+//   } catch (error) {
+//     console.error("Error getting onboarding document by id:", error);
+//     if (error?.response?.status === 401) {
+//       HandleLogout();
+//     }
+//     return [];
+//   }
+// };
+
+export const saveUpdateApplication = async (payload, id) => {
+  try {
+    debugger
+    const url = id
+      ? `${baseUrl}/recruitment-applicants/${id}/`
+      : `${baseUrl}/recruitment-applicants/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); 
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; 
+  }
+};
+
+
+
+// =========================
+// INTERVIEW TYPES HOOKS
+// =========================
+
+export const getInterviewTypesList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL =
+    `/interview-types/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching interview types list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const getInterviewTypeById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/interview-types/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching interview type by ID:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const saveUpdateInterviewType = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/interview-types/${id}/`
+      : `${baseUrl}/interview-types/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({ method, url, data: payload, headers: headers() });
+    if (response.status === expectedStatus) return response.data;
+
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateInterviewType:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const deleteInterviewType = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/interview-types/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 204) return true;
+    console.warn("Unexpected status deleting interview type:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error deleting interview type:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// =========================
+// RECRUITMENT EMAIL TEMPLATES HOOKS
+// =========================
+
+export const getEmailTemplatesList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL =
+    `/recruitment-email-templates/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching email templates list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const getEmailTemplateById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment-email-templates/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    console.error("Error fetching email template by ID:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const saveUpdateEmailTemplate = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-email-templates/${id}/`
+      : `${baseUrl}/recruitment-email-templates/`;
+    const method = id ? "PATCH" : "POST";
+    const expectedStatus = id ? 200 : 201;
+
+    const response = await axios({ method, url, data: payload, headers: headers() });
+    if (response.status === expectedStatus) return response.data;
+
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateEmailTemplate:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const deleteEmailTemplate = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/recruitment-email-templates/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 204) return true;
+    console.warn("Unexpected status deleting email template:", response.status);
+    return false;
+  } catch (error) {
+    console.error("Error deleting email template:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
     return false;

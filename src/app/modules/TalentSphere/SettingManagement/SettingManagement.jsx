@@ -17,6 +17,7 @@ import {
     AddUpdateRemoteWorkChecklistForm,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
+import Demographics from "app/modules/TalentSphere/DemographicsForm"
 
 export default function SettingManagement() {
     const isViewBenefitsPermitted = HasAccess("VIEW_TS_BENEFITS");
@@ -29,6 +30,7 @@ export default function SettingManagement() {
     const isAddJobTypesPermitted = HasAccess("ADD_TS_JOB_TYPE");
     const isViewChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+
     const [activeTab, setActiveTab] = useState(null);
     const [OpenBenefitForm, setOpenBenefitForm] = useState(false);
     const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
@@ -36,7 +38,7 @@ export default function SettingManagement() {
     const [OpenJobTypesForm, setOpenJobTypesForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
     const [OpenRWChecklistForm, setOpenRWChecklistForm] = useState(false);
-
+    const [OpenAddDemographicsForm, setOpenAddDemographicsForm] = useState(false);
 
     const TabListArray = React.useMemo(() => [
         ...(isViewBenefitsPermitted ? ["Benefits"] : []),
@@ -44,7 +46,7 @@ export default function SettingManagement() {
         ...(isViewJobTypesPermitted ? ["Job Types"] : []),
         ...(isViewEducationsPermitted ? ["Education"] : []),
         ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
-
+        "Add Demographics", 
     ], [isViewBenefitsPermitted, isViewCareerLevelsPermitted, isViewEducationsPermitted, isViewJobTypesPermitted, isViewChecklistPermitted]);
 
     const HeaderButton = () => {
@@ -56,57 +58,48 @@ export default function SettingManagement() {
             setOpenEducationForm(false);
             setOpenJobTypesForm(false);
             setOpenRWChecklistForm(false);
+            setOpenAddDemographicsForm(false);
+
             const triggeredResquest = event.target.title;
-            if (triggeredResquest === 'benefits')
-                setOpenBenefitForm(true);
-            else if (triggeredResquest === 'career-level')
-                setOpenCareerLevelForm(true);
-            else if (triggeredResquest === 'education')
-                setOpenEducationForm(true);
-            else if (triggeredResquest === 'job-type')
-                setOpenJobTypesForm(true);
-            else if (triggeredResquest === 'checklist')
-                setOpenRWChecklistForm(true);
-        }
+            if (triggeredResquest === 'benefits') setOpenBenefitForm(true);
+            else if (triggeredResquest === 'career-level') setOpenCareerLevelForm(true);
+            else if (triggeredResquest === 'education') setOpenEducationForm(true);
+            else if (triggeredResquest === 'job-type') setOpenJobTypesForm(true);
+            else if (triggeredResquest === 'checklist') setOpenRWChecklistForm(true);
+            else if (triggeredResquest === 'add-demographics') setOpenAddDemographicsForm(true);
+        };
+
         const activeButtonTab = activeTab ?? TabListArray[0];
+
         if (activeButtonTab === "Benefits" && isAddBenefitsPermitted) {
-            return (
-                <Button title="benefits" onClick={handleRequestClick}>
-                    Add Benefit
-                </Button>
-            )
+            return <Button title="benefits" onClick={handleRequestClick}>Add Benefit</Button>;
         } else if (activeButtonTab === "Career Level" && isAddCareerLevelsPermitted) {
-            return (
-                <Button title="career-level" onClick={handleRequestClick}>
-                    Add Career Level
-                </Button>
-            )
+            return <Button title="career-level" onClick={handleRequestClick}>Add Career Level</Button>;
         } else if (activeButtonTab === "Education" && isAddEducationsPermitted) {
-            return (
-                <Button title="education" onClick={handleRequestClick}>
-                    Add Education
-                </Button>
-            )
+            return <Button title="education" onClick={handleRequestClick}>Add Education</Button>;
         } else if (activeButtonTab === "Job Types" && isAddJobTypesPermitted) {
-            return (
-                <Button title="job-type" onClick={handleRequestClick}>
-                    Add Job Type
-                </Button>
-            )
+            return <Button title="job-type" onClick={handleRequestClick}>Add Job Type</Button>;
         } else if (activeButtonTab === "Remote Work Checklist" && isAddChecklistPermitted) {
-            return (
-                <Button title="checklist" onClick={handleRequestClick}>
-                    Add Remote Work Checklist
-                </Button>
-            )
+            return <Button title="checklist" onClick={handleRequestClick}>Add Remote Work Checklist</Button>;
+        } else if (activeButtonTab === "Add Demographics" && isAddChecklistPermitted) {
+            return <Button title="add-demographics" onClick={handleRequestClick}>Add Demographics</Button>;
         }
+
+        // ✅ make sure function always returns something
+        return null;
+    };
+
+    if (!isViewBenefitsPermitted &&
+        !isViewCareerLevelsPermitted &&
+        !isViewEducationsPermitted &&
+        !isViewJobTypesPermitted &&
+        !isViewChecklistPermitted) {
+        return <Error errorType={401} />;
     }
-    if (!isViewBenefitsPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewJobTypesPermitted && !isViewChecklistPermitted)
-        return <Error errorType={401} />
+
     return (
         <div className="flex flex-col gap-4">
             <Header content={<HeaderButton />} />
-
             <Tabs
                 value={activeTab || TabListArray[0]}
                 onValueChange={setActiveTab}
@@ -138,19 +131,19 @@ export default function SettingManagement() {
                     <TabsContent value={'Remote Work Checklist'}>
                         <RemoteWorkChecklist reload={reloadData['checklist']} />
                     </TabsContent>
+                    <TabsContent value={'Add Demographics'}>
+                        <Demographics />
+                    </TabsContent>
                 </Card>
             </Tabs>
+
+            {/* Modals */}
             {OpenBenefitForm && (
                 <AddUpdateBenefitForm
                     isOpen={OpenBenefitForm}
                     setIsOpen={() => {
                         setOpenBenefitForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'benefits': !prev["benefits"],
-                            };
-                        })
+                        setReloadData((prev) => ({ ...prev, 'benefits': !prev["benefits"] }));
                     }}
                 />
             )}
@@ -159,12 +152,7 @@ export default function SettingManagement() {
                     isOpen={OpenCareerLevelForm}
                     setIsOpen={() => {
                         setOpenCareerLevelForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'career-level': !prev["career-level"],
-                            };
-                        })
+                        setReloadData((prev) => ({ ...prev, 'career-level': !prev["career-level"] }));
                     }}
                 />
             )}
@@ -173,12 +161,7 @@ export default function SettingManagement() {
                     isOpen={OpenEducationForm}
                     setIsOpen={() => {
                         setOpenEducationForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'education': !prev["education"],
-                            };
-                        })
+                        setReloadData((prev) => ({ ...prev, 'education': !prev["education"] }));
                     }}
                 />
             )}
@@ -187,12 +170,7 @@ export default function SettingManagement() {
                     isOpen={OpenJobTypesForm}
                     setIsOpen={() => {
                         setOpenJobTypesForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'job-type': !prev["job-type"],
-                            };
-                        })
+                        setReloadData((prev) => ({ ...prev, 'job-type': !prev["job-type"] }));
                     }}
                 />
             )}
@@ -201,12 +179,7 @@ export default function SettingManagement() {
                     isOpen={OpenRWChecklistForm}
                     setIsOpen={() => {
                         setOpenRWChecklistForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'checklist': !prev["checklist"],
-                            };
-                        })
+                        setReloadData((prev) => ({ ...prev, 'checklist': !prev["checklist"] }));
                     }}
                 />
             )}
