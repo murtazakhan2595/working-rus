@@ -12,6 +12,7 @@ import {
     ManpowerHeadcountOverviewColumns,
     ApplicationColumns,
     ResumeBankColumns,
+    InterviewTypesColumns,
 } from './TableColumns';
 import { RequisitionViewFields,ApplicantDetails } from './ViewFields';
 export {
@@ -30,4 +31,5 @@ DemographicsFormColumns,
     RequisitionViewFields,
     ApplicationColumns,
     ApplicantDetails,
+    InterviewTypesColumns,
 }

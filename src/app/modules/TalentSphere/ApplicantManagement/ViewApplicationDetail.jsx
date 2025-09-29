@@ -34,7 +34,12 @@ const StatusConfig = {
     successMessage: "Application Moved to Resume Bank Successfully!",
     saveUpdateApplicationResponse: saveUpdateResumeBankApplication,
     FormSheetData: { title: 'Add to Resume Bank', },
-  }
+  },
+  'screened': {
+    successMessage: "Application Screened Successfully!",
+    saveUpdateApplicationResponse: saveUpdateApplication,
+    FormSheetData: { title: 'Add to Screen', },
+  },
 }
 
 const ViewApplicationDetail = ({
@@ -62,7 +67,8 @@ const ViewApplicationDetail = ({
       const response = await saveUpdateApplicationResponse(values, id);
       // return
       if (response) {
-        await saveUpdateApplication({ status: values.status }, values.applicant);
+        if (status !== 'screened')
+          await saveUpdateApplication({ status: values.status }, values.applicant);
         // toast.success(successMessage);
         setForceLoad(!forceLoad);
         return {
@@ -95,7 +101,7 @@ const ViewApplicationDetail = ({
         setOpenFormModal(true);
       }
       if (status === 'screened') {
-        handleSubmit({ id: data.id, status: status }, 'Screened')
+        handleSubmit({ id: data.id, status: status })
       }
       if (status === "rejected") {
         setFormData({
@@ -244,6 +250,7 @@ const ViewApplicationDetail = ({
         allowEdit={false}
         allowDelete={false}
         fetchCurrentItemDetails={fetchData}
+        dataUniqueKey='applicant_id'
       >
         <DetailContent fields={fields} />
       </NavigationSheetComponent>

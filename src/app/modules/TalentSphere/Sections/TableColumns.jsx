@@ -4,6 +4,8 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    InterviewTypeStatusTogle,
+    InterviewTypeActions,
     CareerLevelActions,
     EducationActions,
     JobTypeActions,
@@ -164,6 +166,71 @@ export const BenefitsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <BenefitActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+
+/**
+ * InterviewTypesColumns
+ *
+ * Returns an array of column definitions for the InterviewTypesColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const InterviewTypesColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"TSB-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Name",
+        dataSort: true,
+    },
+    {
+        dataField: "description",
+        text: "Description",
+        dataSort: true,
+    },
+    {
+        dataField: "created_at",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by_name",
+        text: "Created By",
+        // formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+
+    {
+        dataField: "updated_at",
+        text: "Last Updated On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "updated_by_name",
+        text: "Last Updated By",
+        // formatter: (cell) => <EmployeeName value={cell} />,
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <InterviewTypeStatusTogle data={row} status={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <InterviewTypeActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
     },

@@ -21,7 +21,6 @@ export const Benefit = {
     status: 'active',
     name: null,
     description: null,
-    organization: null,
     created_by: null,
     updated_by: null,
 }
@@ -70,6 +69,20 @@ export const CareerLevel = {
     organization: null,
     created_by: null,
     updated_by: null,
+}
+
+export const InterviewType = {
+    id: null,
+    created_at: null,
+    updated_at: null,
+    status: 'active',
+    is_active: true,
+    name: null,
+    description: null,
+    created_by: null,
+    updated_by: null,
+    created_by_name: null,
+    updated_by_name: null,
 }
 
 export const HeadcountRequest = {
