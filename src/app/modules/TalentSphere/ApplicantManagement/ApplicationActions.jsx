@@ -49,7 +49,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                     setIsOpen={() => {
                         setView(false);
                     }}
-                    currentId={data.id}
+                    currentId={data.applicant_id}
                     DataList={DataList}
                 />
             )}

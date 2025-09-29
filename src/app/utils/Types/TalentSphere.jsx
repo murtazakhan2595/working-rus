@@ -193,3 +193,17 @@ export const RejectedApplication = {
     rejected_by: null,
     rejected_on: null,
 }
+export const ResumeBankApplication = {
+    id: null,
+    applicant: null,
+    candidate_name: null,
+    email: null,
+    contact_number: null,
+    job_title_applied_for: null,
+    application_date: null,
+    resume: null,
+    recommended_department: null,
+    recommended_designation: null,
+    added_on: null,
+    added_by: null,
+}

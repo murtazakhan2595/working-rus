@@ -19,6 +19,7 @@ import { StatusLabel, TextUI } from "components";
 import { BudgetStatusOptions, RecruitmentApplicationSource } from "data/Data";
 import { MultiStatusLabel } from "components";
 import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
+import { DesignationName } from "utils/getValuesFromTables";
 
 
 /**
@@ -764,9 +765,9 @@ export const ApplicantsColumns = (reloadData) => [
 ];
 
 /**
- * PublishedVacancyColumns
+ * ApplicationColumns
  *
- * Returns an array of column definitions for the PublishedVacancyColumns table.
+ * Returns an array of column definitions for the ApplicationColumns table.
  *
  * @returns {array} An array of column definitions.
  */
@@ -816,6 +817,78 @@ export const ApplicationColumns = (reloadData) => [
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
 
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+/**
+ * ResumeBankColumns
+ *
+ * Returns an array of column definitions for the ResumeBankColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const ResumeBankColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "Resume ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"RBA-"} />,
+    },
+    {
+        dataField: "candidate_id",
+        text: "Candidate",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
+                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+            </div>
+        ),
+        minWidth: '250px',
+    },
+    {
+        dataField: "recommended_department",
+        text: "Recommended Department",
+        formatter:(cell)=><DepartmentName value={cell}/>
+    },
+    {
+        dataField: "recommended_designation",
+        text: "Recommended Designation",
+        formatter:(cell)=><DesignationName value={cell}/>
+    },
+    {
+        dataField: "job_title_applied_for",
+        text: "Job Title",
+    },
+    {
+        dataField: "application_source",
+        text: "Application Source",
+        formatter: (cell) => {
+            return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+        },
+    },
+    {
+        dataField: "emiratization_flag",
+        text: "Emiratization Flag",
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
+    },
+    {
+        dataField: "application_date",
+        text: "Application Date",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
+    {
+        dataField: "added_on",
+        text: "Added to Resume Bank On",
+        formatter: (cell) => renderDate(cell, '--', 'date'),
+    },
     {
         dataField: "",
         text: "",

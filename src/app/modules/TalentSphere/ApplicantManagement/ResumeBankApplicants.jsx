@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import { getApplicantsList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
+import { getResumeBankApplicantList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
-import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
+import { ResumeBankColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
 
-const AllApplicants = ({ reload, variant = 'all' }) => {
-    const [RequisitionList, setRequisitionList] = useState({});
+const ResumeBankApplicants = ({ reload, variant = 'all' }) => {
+    const [ResumeBankList, setResumeBankList] = useState({});
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -27,41 +27,20 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
             setOrdering(sortName);
         },
     };
-    // useEffect(() => {
-    //     let isMounted = true;
-    //     if (isMounted) {
-    //         setFilterData((prevFilters) => {
-    //             const updatedFilters = { ...prevFilters };
-    //             if (variant === "all") {
-    //                 delete updatedFilters['status'];
-    //             } else if (variant === 'rejected') {
-    //                 updatedFilters['status'] = 'rejected';
-    //             } else if (variant === 'resume') {
-    //                 updatedFilters['status'] = 'resume_bank';
-    //             } else if (variant === 'screened') {
-    //                 updatedFilters['status'] = 'screened';
-    //             }
-    //             return updatedFilters;
-    //         });
-    //     }
-    //     return () => {
-    //         isMounted = false;
-    //     };
-    // }, [variant]);
+
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
             const filters = {
                 ...filterData,
-                ...(variant === 'rejected' ? { status: 'rejected' } : {}),
             }
-            const response = await getApplicantsList({
+            const response = await getResumeBankApplicantList({
                 filterData: filters,
                 options,
                 ordering,
             });
             if (isMounted && response) {
-                setRequisitionList(response);
+                setResumeBankList(response);
             }
         } catch (error) {
             console.error(error);
@@ -72,7 +51,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
 
     useEffect(() => {
         let isMounted = true;
-        if (variant) fetchData(isMounted);
+        fetchData(isMounted);
         return () => {
             isMounted = false;
         };
@@ -106,9 +85,9 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle >{variant?.toUpperCase() || ''} Applicants</CardTitle>
+                <CardTitle >Resume Bank Applicants</CardTitle>
                 <CardDescription>
-                    Here you can view application of all applicants applied on pusblished vacancies through all portals.
+                    Here you can view application of all applicants that are added in resume bank.
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
@@ -126,31 +105,20 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                             {
                                 type: "select",
                                 options: "Departments",
-                                name: "department",
-                                placeholder: "Department",
+                                name: "recommended_department",
+                                placeholder: "Recommended Department",
                             },
                             {
                                 type: "select",
-                                options: "nationalities",
-                                name: "location",
-                                placeholder: "Location",
+                                options: "designations",
+                                name: "recommended_designation",
+                                placeholder: "Recommended Designation",
                             },
                             {
                                 type: "select",
                                 options: RecruitmentApplicationSource,
                                 name: "application_source",
                                 placeholder: "Application Source",
-                            },
-                            {
-                                type: "select",
-                                options: [
-                                    { value: 'new', label: 'New' },
-                                    { value: 'rejected', label: "Rejected" },
-                                    { value: 'resume_bank', label: "Resume Bank" },
-                                    { value: 'screened', label: "Screened" },
-                                ],
-                                name: "status",
-                                placeholder: "Status",
                             },
                             {
                                 type: "select",
@@ -167,11 +135,11 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 name: "application_date",
                                 placeholder: "Application Date",
                             },
-                            (variant === 'rejected' ? [{
+                            {
                                 type: "date-range",
-                                name: "rejection_date",
-                                placeholder: "Rejection Date",
-                            },] : [])
+                                name: "added_on",
+                                placeholder: "Added On Date",
+                            },
 
                         ]}
                         className="justify-end"
@@ -184,10 +152,10 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        columns={ApplicationColumns(fetchData, variant)}
-                        data={RequisitionList.results || []}
+                        columns={ResumeBankColumns(fetchData, variant)}
+                        data={ResumeBankList.results || []}
                         tableOptions={tableOptions}
-                        dataTotalSize={RequisitionList?.count || 0}
+                        dataTotalSize={ResumeBankList?.count || 0}
                         pagination={true}
                     />
                 )}
@@ -196,4 +164,4 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
     );
 };
 
-export default AllApplicants;
+export default ResumeBankApplicants;
