@@ -13,6 +13,7 @@ import AttendanceSlice from "./AttendanceSlice";
 import CommonSlice from "./CommonSlice";
 import taskManagmentSlice from "./TaskManagmentSlice";
 import exitEmployeeSlice from "./ExitEmployeeSlice";
+import ScreenedInterview from "./ScreenedInterview";
 
 const rootReducer = combineReducers({
   user: userSlice,
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   common: CommonSlice,
   task_managment: taskManagmentSlice,
   exit_emp:exitEmployeeSlice,
+  interview : ScreenedInterview,
 });
 
 export default rootReducer;

@@ -738,7 +738,7 @@ export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "status",
         text: "Status",
-        formatter: (cell) => <StatusLabel>{cell?.toLowerCase()}</StatusLabel>,
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
     {
         dataField: "created_by",
@@ -754,9 +754,12 @@ export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "",
         text: "",
-        // formatter: (_, row, data_list) => (
-        //     // <ApplicantsActions data={row} reloadData={reloadData} DataList={data_list} />
-        // ),
+        
+
+        formatter: (_, row, data_list) => (
+            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        
         width: "50px",
     },
 ];

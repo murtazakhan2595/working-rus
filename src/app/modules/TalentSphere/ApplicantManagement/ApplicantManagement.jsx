@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
 import { HasAccess } from "utils/PermissionUtils";
+import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
 import {
     AllApplicants,
     CareerLevels,
@@ -58,7 +59,7 @@ export default function ApplicantManagement() {
                         <CareerLevels reload={reloadData['career-level']} />
                     </TabsContent>
                     <TabsContent value={'Screened Application'}>
-                        <Educations reload={reloadData['education']} />
+                        <Applicants />
                     </TabsContent>
                     <TabsContent value={'Resume Bank Application'}>
                         <ResumeBankApplicants reload={reloadData['resume']} />
