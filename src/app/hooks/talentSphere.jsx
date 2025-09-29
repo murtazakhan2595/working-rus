@@ -1063,38 +1063,7 @@ export const getApplicantsData = async (id) => {
   }
 };
 
-export const saveUpdateApplication = async (payload, id) => {
-  try {
-    debugger
-    const url = id
-      ? `${baseUrl}/recruitment-applicants/${id}/`
-      : `${baseUrl}/recruitment-applicants/`;
 
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
-    const expectedStatus = id ? 200 : 201;
-    const finalPayload = mapApplicationPayloadData(payload);
-    const response = await axios({
-      method,
-      url,
-      data: finalPayload,
-      headers: headers(),
-    });
-
-    if (response.status === expectedStatus) {
-      return response.data;
-    }
-    renderErrorMessages(response?.data);
-
-    return false;
-  } catch (error) {
-    console.error("API error in saveUpdate:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout(); // Assuming this logs out the user properly
-    }
-    renderErrorMessages(error?.response?.data);
-    return false; // To be caught and handled in UI/component
-  }
-};
 
 export const getApplicantById = async (id) => {
   try {
@@ -1281,25 +1250,25 @@ export const deleteInterview = async (id) => {
 
 
 
-export const getApplicantsData = async (id) => {
-  try {
-    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const Response = response.data;
-      const ResponseData = await mapApplicantsData(Response);
-      const VacancyData = await getVacancyData(Response.published_vacancy);
-      return {...VacancyData,...ResponseData};
-    }
-  } catch (error) {
-    console.error("Error getting onboarding document by id:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return [];
-  }
-};
+// export const getApplicantsData = async (id) => {
+//   try {
+//     const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}`, {
+//       headers: headers(),
+//     });
+//     if (response.status === 200) {
+//       const Response = response.data;
+//       const ResponseData = await mapApplicantsData(Response);
+//       const VacancyData = await getVacancyData(Response.published_vacancy);
+//       return {...VacancyData,...ResponseData};
+//     }
+//   } catch (error) {
+//     console.error("Error getting onboarding document by id:", error);
+//     if (error?.response?.status === 401) {
+//       HandleLogout();
+//     }
+//     return [];
+//   }
+// };
 
 export const saveUpdateApplication = async (payload, id) => {
   try {
