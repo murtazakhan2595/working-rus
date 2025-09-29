@@ -16,7 +16,7 @@ const NavigationSheetComponent = ({
   allowEdit = true,
   allowDelete = true,
   ForceItemLoad = false, //forceLoad  the Item in case of updation
-
+  dataUniqueKey = 'id', //unique key in data list to view the details of
   // Content and actions
   children,
   editComponent: EditComponent,
@@ -76,15 +76,15 @@ const NavigationSheetComponent = ({
 
     if (currentIndex < validList.length - 1) {
       const nextItem = validList[currentIndex + 1];
-      setCurrentItemId(nextItem?.id);
+      setCurrentItemId(nextItem?.[dataUniqueKey]);
     } else {
       // Loop to first item
       const firstItem = validList[0];
-      setCurrentItemId(firstItem?.id);
+      setCurrentItemId(firstItem?.[dataUniqueKey]);
     }
   };
 
-  const handleClose=()=>{
+  const handleClose = () => {
     reloadData(true);
     setIsOpen(false);
   }
@@ -100,11 +100,11 @@ const NavigationSheetComponent = ({
 
     if (currentIndex > 0) {
       const prevItem = validList[currentIndex - 1];
-      setCurrentItemId(prevItem?.id);
+      setCurrentItemId(prevItem?.[dataUniqueKey]);
     } else {
       // Loop to last item
       const lastItem = validList[validList.length - 1];
-      setCurrentItemId(lastItem?.id);
+      setCurrentItemId(lastItem?.[dataUniqueKey]);
     }
   };
 
@@ -161,7 +161,7 @@ const NavigationSheetComponent = ({
     if (!Array.isArray(dataList) || dataList.length === 0) return null;
 
     const currentIndex = dataList.findIndex(
-      (item) => item.id === currentItemId
+      (item) => item?.[dataUniqueKey] === currentItemId
     );
     return `${currentIndex + 1} of ${dataList.length}`;
   };

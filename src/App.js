@@ -18,6 +18,7 @@ import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
 import { getNodeExistInTree } from "utils/renderValues";
 import Error from "app/modules/Error";
 import useAccessCheck from "app/hooks/useAccessCheck";
+import {fetchInterviewOptions} from "./state/slices/ScreenedInterview";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -98,10 +99,11 @@ function App() {
       setLoading(true);
       getProfile();
     }
-  }, []);
+    dispatch(fetchInterviewOptions());
+  }, [dispatch]);
 
   if (loading) {
-    return <PageLoader height="100vh" />; // Render the loader if loading is true
+    return <PageLoader height="100vh" />;
   }
 
   return (

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import React, { useState } from "react";
 import { FormatID } from "utils/getValuesFromTables";
-import { getApplicantsData, saveUpdateApplication } from "app/hooks/talentSphere";
+import { getApplicantsData, saveUpdateApplication, saveUpdateResumeBankApplication, saveUpdateRejectedApplication } from "app/hooks/talentSphere";
 import {
   ClearanceSheet,
   UploadExitInterviewDetails,
@@ -10,169 +10,37 @@ import { Button } from "components/ui/button";
 // import { CoverFileUpload } from "components/FormControl";
 import {
   EmployeeOverview,
-  EmployeeDetailUI,
+  SheetUI,
   StatusLabel,
   NavigationSheetComponent,
   DetailContent,
   StatusList,
   StatusButtons,
 } from "components";
-import { handleRequest } from "app/hooks/general";
+import { RejectedApplication, ResumeBankApplication } from "app/utils/Types/TalentSphere";
 import { renderDate } from "utils/renderValues";
-import AttachmentUI from "components/ui/AttachmentUI";
-import { EmployeeName } from "utils/getValuesFromTables";
-import { RecruitmentApplicationSource } from "data/Data";
+import { GetDispatchStateList } from "utils/Lists";
+import { ApplicantDetails } from "app/modules/TalentSphere/Sections";
+import { TextAreaInput } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 
-export const ExitDetails = (isResignation) => [
-  {
-    customContent: true,
-    renderContent: (data) => {
-      return (
-        <div className="flex flex-wrap justify-end gap-2 items-center">
-          <div className="flex justify-end gap-2 flex-wrap">
-            <StatusLabel status={data.status}>
-              {data?.status?.toLowerCase()}
-            </StatusLabel>
-          </div>
-        </div>
-      );
-    },
+const StatusConfig = {
+  'rejected': {
+    successMessage: "Application Rejected Successfully!",
+    saveUpdateApplicationResponse: saveUpdateRejectedApplication,
+    FormSheetData: { title: 'Rejection Reson', },
   },
-  {
-    title: "Candidate Information",
-    field: [
-      {
-        key: "candidate_name",
-        label: "Candidate Name",
-      },
-      {
-        key: "candidate_id",
-        label: "Candidate ID",
-      },
-      {
-        key: "email",
-        label: "Email Address",
-      },
-      {
-        key: "contact_number",
-        label: "Contact Number",
-      },
-      {
-        key: "emiratization_flag",
-        label: "Emiration Eligibity",
-        formatter: (cell) => cell ? 'Yes' : 'No',
-      },
-    ],
+  'resume_bank': {
+    successMessage: "Application Moved to Resume Bank Successfully!",
+    saveUpdateApplicationResponse: saveUpdateResumeBankApplication,
+    FormSheetData: { title: 'Add to Resume Bank', },
   },
-  {
-    title: `Application Details`,
-    footerTitle: "Request At",
-    footerField: "created_at",
-    field: [
-      {
-        key: "id",
-        label: "Id",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
-      },
-      {
-        key: "job_title",
-        label: "Job Title",
-        // formatter: (cell) => renderDate(cell),
-      },
-      {
-        key: "job_description",
-        label: "Job Description",
-        // formatter: (cell) => renderDate(cell),
-      },
-
-      {
-        key: "department",
-        label: "Department",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-      {
-        key: "location",
-        label: "Location",
-      },
-      {
-        key: "job_type_name",
-        label: "Job Type",
-      },
-      {
-        key: "career_level_name",
-        label: "Career Level",
-      },
-      {
-        key: "education",
-        label: "Education Requirement",
-      },
-      {
-        key: "notice_period",
-        label: "Experience Requirement",
-      },
-      {
-        key: "application_source",
-        label: "Application Source",
-        formatter: (cell) => {
-          return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
-        },
-      },
-      {
-        key: "application_date",
-        label: "Application Date",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-    ],
+  'screened': {
+    successMessage: "Application Screened Successfully!",
+    saveUpdateApplicationResponse: saveUpdateApplication,
+    FormSheetData: { title: 'Add to Screen', },
   },
-  {
-    title: `Resume/Attachment`,
-    field: [
-      {
-        key: "attachment",
-        formatter: (cell, data) =>
-          cell ? (
-            <AttachmentUI
-              attachment={cell}
-              name={`${data.candidate_name} Resume`}
-              viewOnly={true}
-            />
-          ) : (
-            <div className="text-neutral-1000 text-sm">No letter attached</div>
-          ),
-      },
-    ],
-  },
-  {
-    title: "Candidate Information",
-    renderSectionCondition: (data) => {
-      if (data.status === 'rejected') return true;
-      return false;
-    },
-    field: [
-      {
-        key: "candidate_name",
-        label: "Candidate Name",
-      },
-      {
-        key: "candidate_id",
-        label: "Candidate ID",
-      },
-      {
-        key: "email",
-        label: "Email Address",
-      },
-      {
-        key: "contact_number",
-        label: "Contact Number",
-      },
-      {
-        key: "emiratization_flag",
-        label: "Emiration Eligibity",
-        formatter: (cell) => cell ? 'Yes' : 'No',
-      },
-    ],
-  },
-];
+}
 
 const ViewApplicationDetail = ({
   currentId,
@@ -183,24 +51,39 @@ const ViewApplicationDetail = ({
   setIsOpen = () => { },
   handleUploadClearanceReportClick = () => { },
 }) => {
+  const Designations = GetDispatchStateList('branches', 'common');
+  const Departments = GetDispatchStateList('departments', 'common');
   const [forceLoad, setForceLoad] = useState(false);
-  const [openClearanceForm, setOpenClearanceForm] = useState(false);
+  const [FormData, setFormData] = useState({});
+  const [OpenFormModal, setOpenFormModal] = useState(false);
   const [openexitInterviewForm, setOpenexitInterviewForm] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [exitData, setExitData] = useState(null);
-  const handleSubmit = async ({ status, id }, successMessage) => {
+  const handleSubmit = async (values) => {
     try {
-
-      const response = await saveUpdateApplication({ status }, id);
+      debugger
+      const { status, id } = values;
+      const { saveUpdateApplicationResponse, successMessage } = StatusConfig[status];
+      const response = await saveUpdateApplicationResponse(values, id);
       // return
       if (response) {
-        toast.success(`Application ${successMessage}Successfully!`);
-
+        if (status !== 'screened')
+          await saveUpdateApplication({ status: values.status }, values.applicant);
+        // toast.success(successMessage);
         setForceLoad(!forceLoad);
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: successMessage,
+          description: `Applicant status is updated successfully.`,
+        }
       }
     } catch (error) {
       // Handle errors and rollback form data
       console.error(error);
+    } finally {
+      setOpenFormModal(false)
+      setFormData({})
     }
   };
 
@@ -210,13 +93,23 @@ const ViewApplicationDetail = ({
       event.stopPropagation();
       setCurrentItemId(data.id);
       if (status === 'resume_bank') {
-        handleSubmit({ id: data.id, status: status }, 'Resumed')
+        setFormData({
+          status: status,
+          ...ResumeBankApplication,
+          applicant: data.id,
+        })
+        setOpenFormModal(true);
       }
       if (status === 'screened') {
-        handleSubmit({ id: data.id, status: status }, 'Screened')
+        handleSubmit({ id: data.id, status: status })
       }
-      if (status === "INITIATED") {
-        setOpenClearanceForm(data.employee_id);
+      if (status === "rejected") {
+        setFormData({
+          status: status,
+          ...RejectedApplication,
+          applicant: data.id,
+        })
+        setOpenFormModal(true);
       } else if (status === "COMPLETED") {
         handleUploadClearanceReportClick(data.id);
         setIsOpen(false)
@@ -227,7 +120,7 @@ const ViewApplicationDetail = ({
         setExitData(data)
       }
     },
-    [setOpenClearanceForm, handleSubmit, setCurrentItemId]
+    [setOpenFormModal, handleSubmit, setCurrentItemId]
   );
 
   const fetchData = async (id, isMounted) => {
@@ -242,7 +135,7 @@ const ViewApplicationDetail = ({
 
   const fields = React.useMemo(
     () => [
-      ...(ExitDetails(isResignation) || []),
+      ...(ApplicantDetails || []),
       {
         customContent: true,
         className: "flex flex-wrap justify-end gap-2 my-5",
@@ -268,7 +161,7 @@ const ViewApplicationDetail = ({
               </Button>
               <Button
                 variant="destructive"
-                onClick={(event) => handleClick(event, "INITIATED", data)}
+                onClick={(event) => handleClick(event, "rejected", data)}
               >
                 Reject
               </Button>
@@ -357,31 +250,57 @@ const ViewApplicationDetail = ({
         allowEdit={false}
         allowDelete={false}
         fetchCurrentItemDetails={fetchData}
+        dataUniqueKey='applicant_id'
       >
         <DetailContent fields={fields} />
       </NavigationSheetComponent>
-      {openClearanceForm && (
-        <ClearanceSheet
-          isOpen={Boolean(openClearanceForm)}
-          setIsOpen={() => {
-            setOpenClearanceForm(null);
-            setForceLoad(!forceLoad);
+      {OpenFormModal && (
+        <SheetUI
+          isOpen={OpenFormModal}
+          setIsOpen={setOpenFormModal}
+          variant="modal"
+          sheetConfig={StatusConfig[FormData.status]?.FormSheetData}
+          formConfig={{
+            initialValues: FormData,
+            enableReinitialize: true,
+            handleSubmit: handleSubmit,
+            validateFormSchema: () => {
+              const error = {};
+              return error;
+            },
+            submitButtonText: "Confirm",
+            cancelButtonText: "Cancel",
+            columns: 1,
+            formFields: [
+              {
+                sheetCardExtension: false,
+                // sheetCardTitle: "Salary Details",
+                InputFields: [
+                  ...(FormData.status === 'rejected' ? [{
+                    InputField: TextAreaInput,
+                    name: "rejection_reason",
+                    required: true,
+                    label: "Reason",
+                  }] : []),
+                  ...(FormData.status === 'resume_bank' ? [{
+                    InputField: SelectInputComponent,
+                    name: "recommended_department",
+                    options: Departments,
+                    required: true,
+                    label: "Recommended Department",
+                  },
+                  {
+                    InputField: SelectInputComponent,
+                    name: "recommended_designation",
+                    required: true,
+                    label: "Recommended Designation",
+                    options: Designations,
+                  },] : []),
+                ].filter(Boolean),
+              },
+            ],
           }}
-          employee_id={openClearanceForm}
-          exit_id={currentItemId}
-        />
-      )}
-      {openexitInterviewForm && (
-        <UploadExitInterviewDetails
-          isOpen={openexitInterviewForm}
-          setIsOpen={() => {
-            setOpenexitInterviewForm(false);
-            setForceLoad(!forceLoad);
-            setExitData(null);
-          }}
-          exit_id={currentItemId}
-          exitData={exitData}
-        />
+        ></SheetUI>
       )}
     </>
   );

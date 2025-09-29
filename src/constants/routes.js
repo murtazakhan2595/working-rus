@@ -374,11 +374,7 @@ export const SidebarRoutes = [
         component: <DemoGraphics />,
         name: "SETUP",
       },
-      Config.SCREENED_APPLICANTS && {
-          path: "/office-settings/talent-sphere/Secreend-Applicants",
-        component: <Applicants />,
-        name: "SCREENED_APPLICANTS",
-      }
+   
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ASSET_MANAGEMENT

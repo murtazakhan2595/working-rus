@@ -7,8 +7,9 @@ import {
   CardContent,
 } from "components/ui/card";
 import { PageLoader, TableCustom } from "components";
-import { ApplicantsColumns } from "app/modules/TalentSphere/ScreenedApplicants";
+import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
 import { getApplicantsList } from "app/hooks/talentSphere"; 
+import { FilterInput } from "components/FormControl";
 
 const ApplicantsTable = forwardRef((props, ref) => {
   const [applicantsList, setApplicantsList] = useState({
@@ -18,6 +19,7 @@ const ApplicantsTable = forwardRef((props, ref) => {
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
+    const [filterData, setFilterData] = useState({});
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -35,7 +37,7 @@ const ApplicantsTable = forwardRef((props, ref) => {
   // Fetch applicants
   const fetchData = async () => {
     try {
-      const data = await getApplicantsList({ options, ordering });
+      const data = await getApplicantsList({ options, ordering ,filterData});
       setApplicantsList({
         results: data.results || [],
         count: data.count || 0,
@@ -55,7 +57,27 @@ const ApplicantsTable = forwardRef((props, ref) => {
   useEffect(() => {
     setIsLoading(true);
     fetchData();
-  }, [options, ordering]);
+  }, [options, ordering,filterData]);
+    const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
+  const optionsSource = [
+  { label: "Cohrus", value: "cohrus" },
+  { label: "LinkedIn", value: "linkedin" },
+  { label: "Indeed", value: "indeed" },
+  { label: "Other", value: "other" }
+];
+
 
   return (
     <Card>
@@ -68,13 +90,42 @@ const ApplicantsTable = forwardRef((props, ref) => {
         </CardDescription>
       </CardHeader>
 
+      <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Candidate Name/ID ",
+                  name: "candidate",
+                },
+                {
+                  type: "select",
+                  placeholder: "Filter By Application Source",
+                  name: "application_source",
+                  options:optionsSource
+                },
+                {
+                  type: "select",
+                  placeholder: "Filter By Emiratization Flag",
+                  name: "emiratization_flag",
+                  options: [
+                    { label: "Active", value: true },
+                    { label: "Inactive", value: false },
+                  ],
+                },
+                
+              
+              ]}
+              className="justify-end mx-2"
+              onChange={handleFilterChange}
+            />
+
       <CardContent className="mt-4">
         {isLoading ? (
           <PageLoader />
         ) : (
           <TableCustom
             data={applicantsList.results || []}
-            columns={ApplicantsColumns(fetchData)}
+            columns={ApplicationColumns(fetchData)}
             pagination={true}
             dataTotalSize={applicantsList.count || 0}
             tableOptions={tableOptions}

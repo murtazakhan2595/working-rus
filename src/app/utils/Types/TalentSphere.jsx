@@ -21,7 +21,6 @@ export const Benefit = {
     status: 'active',
     name: null,
     description: null,
-    organization: null,
     created_by: null,
     updated_by: null,
 }
@@ -70,6 +69,20 @@ export const CareerLevel = {
     organization: null,
     created_by: null,
     updated_by: null,
+}
+
+export const InterviewType = {
+    id: null,
+    created_at: null,
+    updated_at: null,
+    status: 'active',
+    is_active: true,
+    name: null,
+    description: null,
+    created_by: null,
+    updated_by: null,
+    created_by_name: null,
+    updated_by_name: null,
 }
 
 export const HeadcountRequest = {
@@ -168,7 +181,7 @@ export const PublishVacancy = {
 }
 
 export const Applicants = {
-    id:null,
+    id: null,
     published_vacancy: null,
     candidate_id: null,
     candidate_name: null,
@@ -183,4 +196,27 @@ export const Applicants = {
     rejection_reason: null,
     application_date: null,
     location: null,
+}
+
+export const RejectedApplication = {
+    id: null,
+    applicant: null,
+    rejection_reason: null,
+    remarks: null,
+    rejected_by: null,
+    rejected_on: null,
+}
+export const ResumeBankApplication = {
+    id: null,
+    applicant: null,
+    candidate_name: null,
+    email: null,
+    contact_number: null,
+    job_title_applied_for: null,
+    application_date: null,
+    resume: null,
+    recommended_department: null,
+    recommended_designation: null,
+    added_on: null,
+    added_by: null,
 }

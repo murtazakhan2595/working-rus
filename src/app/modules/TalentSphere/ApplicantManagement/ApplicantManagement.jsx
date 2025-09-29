@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
 import { HasAccess } from "utils/PermissionUtils";
+import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
 import {
     AllApplicants,
     CareerLevels,
     Educations,
+    ResumeBankApplicants,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
 
@@ -57,10 +59,10 @@ export default function ApplicantManagement() {
                         <CareerLevels reload={reloadData['career-level']} />
                     </TabsContent>
                     <TabsContent value={'Screened Application'}>
-                        <Educations reload={reloadData['education']} />
+                        <Applicants />
                     </TabsContent>
                     <TabsContent value={'Resume Bank Application'}>
-                        <AllApplicants reload={reloadData['resume']} variant='resume' />
+                        <ResumeBankApplicants reload={reloadData['resume']} />
                     </TabsContent>
                     <TabsContent value={'Rejected Applications'}>
                         <AllApplicants reload={reloadData['rejected']} variant='rejected' />
