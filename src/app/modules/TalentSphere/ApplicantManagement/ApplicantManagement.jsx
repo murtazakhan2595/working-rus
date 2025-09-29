@@ -7,6 +7,7 @@ import {
     AllApplicants,
     CareerLevels,
     Educations,
+    ResumeBankApplicants,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
 
@@ -60,7 +61,7 @@ export default function ApplicantManagement() {
                         <Educations reload={reloadData['education']} />
                     </TabsContent>
                     <TabsContent value={'Resume Bank Application'}>
-                        <AllApplicants reload={reloadData['resume']} variant='resume' />
+                        <ResumeBankApplicants reload={reloadData['resume']} />
                     </TabsContent>
                     <TabsContent value={'Rejected Applications'}>
                         <AllApplicants reload={reloadData['rejected']} variant='rejected' />

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import React, { useState } from "react";
 import { FormatID } from "utils/getValuesFromTables";
-import { getApplicantsData, saveUpdateApplication, saveUpdateRejectedApplication } from "app/hooks/talentSphere";
+import { getApplicantsData, saveUpdateApplication, saveUpdateResumeBankApplication, saveUpdateRejectedApplication } from "app/hooks/talentSphere";
 import {
   ClearanceSheet,
   UploadExitInterviewDetails,
@@ -17,17 +17,23 @@ import {
   StatusList,
   StatusButtons,
 } from "components";
-import { RejectedApplication } from "app/utils/Types/TalentSphere";
+import { RejectedApplication, ResumeBankApplication } from "app/utils/Types/TalentSphere";
 import { renderDate } from "utils/renderValues";
-import AttachmentUI from "components/ui/AttachmentUI";
+import { GetDispatchStateList } from "utils/Lists";
 import { ApplicantDetails } from "app/modules/TalentSphere/Sections";
 import { TextAreaInput } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 
 const StatusConfig = {
   'rejected': {
     successMessage: "Application Rejected Successfully!",
     saveUpdateApplicationResponse: saveUpdateRejectedApplication,
     FormSheetData: { title: 'Rejection Reson', },
+  },
+  'resume_bank': {
+    successMessage: "Application Moved to Resume Bank Successfully!",
+    saveUpdateApplicationResponse: saveUpdateResumeBankApplication,
+    FormSheetData: { title: 'Add to Resume Bank', },
   }
 }
 
@@ -40,6 +46,8 @@ const ViewApplicationDetail = ({
   setIsOpen = () => { },
   handleUploadClearanceReportClick = () => { },
 }) => {
+  const Designations = GetDispatchStateList('branches', 'common');
+  const Departments = GetDispatchStateList('departments', 'common');
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
   const [OpenFormModal, setOpenFormModal] = useState(false);
@@ -54,14 +62,22 @@ const ViewApplicationDetail = ({
       const response = await saveUpdateApplicationResponse(values, id);
       // return
       if (response) {
-        toast.success(successMessage);
-        setOpenFormModal({})
-        setFormData({})
+        await saveUpdateApplication({ status: values.status }, values.applicant);
+        // toast.success(successMessage);
         setForceLoad(!forceLoad);
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: successMessage,
+          description: `Applicant status is updated successfully.`,
+        }
       }
     } catch (error) {
       // Handle errors and rollback form data
       console.error(error);
+    } finally {
+      setOpenFormModal(false)
+      setFormData({})
     }
   };
 
@@ -71,7 +87,12 @@ const ViewApplicationDetail = ({
       event.stopPropagation();
       setCurrentItemId(data.id);
       if (status === 'resume_bank') {
-        handleSubmit({ id: data.id, status: status }, 'Resumed')
+        setFormData({
+          status: status,
+          ...ResumeBankApplication,
+          applicant: data.id,
+        })
+        setOpenFormModal(true);
       }
       if (status === 'screened') {
         handleSubmit({ id: data.id, status: status }, 'Screened')
@@ -248,12 +269,26 @@ const ViewApplicationDetail = ({
                 sheetCardExtension: false,
                 // sheetCardTitle: "Salary Details",
                 InputFields: [
-                  {
+                  ...(FormData.status === 'rejected' ? [{
                     InputField: TextAreaInput,
                     name: "rejection_reason",
                     required: true,
                     label: "Reason",
+                  }] : []),
+                  ...(FormData.status === 'resume_bank' ? [{
+                    InputField: SelectInputComponent,
+                    name: "recommended_department",
+                    options: Departments,
+                    required: true,
+                    label: "Recommended Department",
                   },
+                  {
+                    InputField: SelectInputComponent,
+                    name: "recommended_designation",
+                    required: true,
+                    label: "Recommended Designation",
+                    options: Designations,
+                  },] : []),
                 ].filter(Boolean),
               },
             ],
