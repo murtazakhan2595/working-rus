@@ -108,11 +108,11 @@ const DemographicsSheet = ({
         if (isMounted) {
           setFormData({
             ...response,
-            is_active: Boolean(response.is_active),
+            is_active: response.is_active ? "true" : "false",
           });
           setFormValues({
             ...response,
-            is_active: Boolean(response.is_active),
+          is_active: response.is_active ? "true" : "false",
           });
         }
       } catch (error) {
