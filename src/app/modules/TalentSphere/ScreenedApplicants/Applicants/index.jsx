@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CardHeader, CardTitle } from "components/ui/card";
 import { ApplicantsTable } from 'app/modules/TalentSphere/ScreenedApplicants';
+import { useDispatch } from 'react-redux';
+
+
 
 const Applicants = () => {
+     
   return (
      <>
      <CardHeader className="items-start p-6">

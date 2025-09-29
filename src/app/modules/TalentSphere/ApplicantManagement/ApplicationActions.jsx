@@ -1,26 +1,41 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { ViewApplicationDetail, AddUpdateRequisitionRequestForm, AddUpdateVacancyForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
+import {ScheduleInterviewSheet} from "app/modules/TalentSphere/ScreenedApplicants";
+import { useDispatch } from "react-redux";
 
 const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
     const isEditPermitted = HasAccess("MARK_ATTENDANCE");
+
+
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
+    const [interview, setInterview] = useState(null);
+   
     const handleView = () => {
         setView(true)
     };
     const handleEdit = () => {
         setEdit(true)
     };
+
+    const handleDelete = () => {    
+       setInterview(true)
+    }
+
+
+  
    
     return (
         <>
             <DropdownActionMenu
                 onView={handleView}
-                // onEdit={isEditPermitted && data.is_draft ? handleEdit : null}
+                onEdit={ handleEdit }
+                onDelete = {handleDelete}
                 viewText="View Application"
                 editText="Edit Application"
+                deleteText="Schedule Interview"
                 menuTooltip="Application Actions"
             />
 
@@ -51,6 +66,18 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                     id={data.id}
                 />
             )}
+            {interview && (
+                <ScheduleInterviewSheet
+                    isOpen={interview}
+                    setIsOpen={() => setInterview(false)}
+                    id={data.id}
+                    mode = "add"
+                    reloadData={reloadData}
+                    
+                    />
+
+                )}
+
         </>
     );
 };
