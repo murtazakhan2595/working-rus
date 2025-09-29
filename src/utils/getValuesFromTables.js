@@ -147,7 +147,7 @@ function DesignationName({ value, fallBackText }) {
 }
 
 function EmployeeName({ value, length }) {
-  const employees = useSelector((state) => state.emp.employees);
+  const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(value));
   const employeeName = employee ? employee.name : "N/A";
   const displayedName = length ? employeeName.slice(0, length) : employeeName;

@@ -1,6 +1,6 @@
 import { countries } from "country-data";
 import Config from "constants/config";
-import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
+import { StatusLabel } from "components/StatusLabel";
 import {
   fetchDepartments,
   fetchDesignations,
@@ -21,7 +21,6 @@ import {
   fetchEmployeesDetail,
   fetchUser,
 } from "state/slices/EmpSlice";
-import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import { fetchUserAttendanceDetails } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
@@ -90,6 +89,12 @@ export const ApprovalHierarchyRequestType = [
     : []),
   ...(Config.EMPLOYEE_TRANSFER
     ? [{ label: "Job Rotation By Employee", value: "JOB_ROTATION_EMPLOYEE" }]
+    : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Headcount Request", value: "HEADCOUNT_REQUEST" }]
+    : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Requisition Request", value: "REQUISTION_REQUEST" }]
     : []),
 ];
 
@@ -377,6 +382,25 @@ export const PriorityList = [
   },
 ];
 
+export const BudgetStatusOptions = [
+  {
+    value: "Within Budget",
+    label: (<StatusLabel status={'success'}>Within Budget</StatusLabel>),
+  },
+  {
+    value: "Approaching Limit",
+    label: (<StatusLabel status={'warning'}>Approaching Limit</StatusLabel>),
+  },
+  {
+    value: "Near Threshold",
+    label: (<StatusLabel status={'alarming'}>Near Threshold</StatusLabel>),
+  },
+  {
+    value: "Over Budget",
+    label: (<StatusLabel status={'error'}>Over Budget</StatusLabel>),
+  },
+];
+
 export const TaskStatus = [
   {
     value: "TODO",
@@ -422,7 +446,7 @@ export const clearanceStatusOptions = [
 
 export const clearanceRequestStatusOptions = [
   { value: "PENDING", label: "Pending" },
-  { value: "APPROVED", label: "Approved" },
+  { value: "APPROVED", label: "Clear" },
   { value: "NOT_APPLICABLE", label: "Not Applicable" },
   { value: "REJECTED", label: "Rejected" },
 ];
@@ -490,33 +514,12 @@ export const ProjectStatusList = [
   },
 ];
 
-export const status2Options = [
-  {
-    value: "Pending",
-    label: (
-      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10">
-        Pending
-      </div>
-    ),
-  },
-  {
-    value: "Inprogress",
-    label: (
-      <div className="items-center px-2 py-1 text-xs font-medium text-yellow-800 rounded-full bginline-flex bg-yellow-50 ring-1 ring-inset ring-yellow-600/20">
-        <Timer />
-        In Progress
-      </div>
-    ),
-  },
-  {
-    value: "Done",
-    label: (
-      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 rounded-full bg-green-50 ring-1 ring-inset ring-green-600/20">
-        Done
-      </div>
-    ),
-  },
-];
+export const RecruitmentApplicationSource =  [
+  { label: 'Cohrus', value: 'cohrus' }, 
+  { label: 'Indeed', value: 'indeed' },
+   { label: 'Linkedin', value: 'linkedin' }, 
+   { label: 'Other', value: 'other' },
+  ];
 
 export const workplaceTypes = [
   { label: "Remote", value: "REMOTE" },
@@ -814,22 +817,15 @@ export const handleUpdateProfile = async (dispatch, data) => {
   const ModuleList = await dispatch(fetchModules());
   const MyPermissions = await dispatch(fetchMyPermissions());
   await dispatch(fetchUser(userprofile.id));
-  await dispatch(
-    fetchUserPermittedModules({
-      modules: ModuleList.payload,
-      permissions: MyPermissions.payload,
-    })
-  );
-  await dispatch(fetchEmployees());
+  await dispatch(fetchUserPermittedModules({ modules: ModuleList.payload, permissions: MyPermissions.payload, }));
+  dispatch(fetchEmployees());
   dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
-  await dispatch(fetchCalendarHoliday(userprofile.id));
-  await dispatch(fetchDocumentCategory());
-  await dispatch(fetchUserRoles());
+  dispatch(fetchCalendarHoliday(userprofile.id));
+  dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
-  await dispatch(fetchUserAttendanceDetails(userprofile.id));
-  dispatch(fetchTaskLabels());
-  await dispatch(fetchProjects(userprofile));
+  dispatch(fetchUserAttendanceDetails(userprofile.id));
+  dispatch(fetchProjects(userprofile));
 };

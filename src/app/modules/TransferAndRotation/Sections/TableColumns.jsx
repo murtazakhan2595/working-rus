@@ -55,7 +55,7 @@ export const JobRotationColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Requested Time",
-        formatter: (cell, row) => renderDate(cell, '--'),
+        formatter: (cell, row) => renderDate(cell, '--', 'date-time'),
         dataSort: true,
         minWidth: "110px",
     },
@@ -165,6 +165,12 @@ export const JobRotationRecordsColumns = [
                 showDepartment={true}
             />
         ),
+        minWidth: "120px",
+    },
+    {
+        dataField: "branch_id",
+        text: "Branch",
+        formatter: (cell) => <BranchName value={cell} />,
         minWidth: "120px",
     },
     {

@@ -31,6 +31,7 @@ const Config = {
   TEAM_LEAVE_REQUEST: true,
   TEAM_EXIT_CLEARANCE: true,
   TEAM_PERFORMANCE_EVALUATION: true,
+  TEAM_TALENT_SPHERE: true,
 
   //-------------PROFIL_MANAGMENT-----------
   PEOPLE_TEAM: true,
@@ -75,8 +76,10 @@ const Config = {
   //-------------TALENT_SPHERE-----------
   TALENT_SPHERE: true,
   //Sub Modules
-  JOBS: true,
-  APPLICANTS: true,
+  MANPOWER_PLANNINGS: true,
+  REQUISITION_PLANNING: true,
+  // SETUP: true,
+  APPLICANTS:true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
@@ -94,7 +97,7 @@ const Config = {
   OFFICE_SETTING: true,
   //Sub Modules
   ORGANIZATION: true,
-  DEPARTMENTS: false,
+  TALENT_SPHERE_SETTING: true,
   DESIGNATIONS: false,
   BRANCHES: false,
   SHIFTS: false,
@@ -110,6 +113,7 @@ const Config = {
   GENERATE_FORM: true,
   PERFORMANCE_CYCLE_SETUP: true,
   PERFORMANCE_DASHBOARD: true,
+  PERFORMANCE_EVALUATION: true,
 
   //--------------Reports-----------
   REPORTS: true,
@@ -117,6 +121,9 @@ const Config = {
   PROFILE_MANAGEMENT_REPORTS: true,
   EXIT_AND_CLEARANCE_REPORTS: true,
   EMPLOYEE_CREATION_AND_HIRING: true,
+  HR_DOCUMENT_REPORTS: true,
+  TRANSFER_AND_ROTATIONS: true,
+  ATTENDANCE_AND_SHIFT_REPORTS: true,
 };
 
 export const URLS = [

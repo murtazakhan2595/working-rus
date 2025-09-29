@@ -22,18 +22,13 @@ const ClearanceChecklist = ({ reload }) => {
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedClearanceType, setSelectedClearanceType] = useState("");
-  const [selectedAssignmentScope, setSelectedAssignmentScope] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [clearanceTypeOptions,setClearanceTypeOptions] = useState([]);
 
   // Status options
   const statusOptions = [
-    { value: "active", label: "Active" },
-    { value: "inactive", label: "Inactive" },
+    { value: "ACTIVE", label: "Active" },
+    { value: "INACTIVE", label: "Inactive" },
   ];
 
   const onPageChange = (name, value) => {
@@ -55,7 +50,15 @@ const ClearanceChecklist = ({ reload }) => {
       const filters = { ...filterData };
       if(filters?.department){
         filters.department = [filters.department];
+        
       }
+      if(filters?.clearance_types){
+        filters.clearance_types = [filters.clearance_types];
+      }
+      if (filters?.status) {
+        filters.status = [filters.status];
+      }
+      console.log("Filters applied:", filters);
       const response = await getClearanceChecklistList({
         filterData: filters,
         options,
@@ -114,13 +117,6 @@ const ClearanceChecklist = ({ reload }) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-
-    if (filterName === "department") setSelectedDepartment(filterValue);
-    if (filterName === "clearance_type") setSelectedClearanceType(filterValue);
-    if (filterName === "assignment_scope")
-      setSelectedAssignmentScope(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -132,7 +128,6 @@ const ClearanceChecklist = ({ reload }) => {
     });
   };
 
-  console.log("INFO", ClearanceChecklistList)
 
   return (
     <div className="flex flex-col justify-end gap-4 w-full">
@@ -156,28 +151,28 @@ const ClearanceChecklist = ({ reload }) => {
                   placeholder: "Department",
                   name: "department",
                   option: Departments,
-                  values: selectedDepartment,
+                  values: filterData.department || [],
                 },
                 {
                   type: "select-two",
                   placeholder: "Clearance Type",
                   name: "clearance_types",
                   option: clearanceTypeOptions,
-                  values: selectedClearanceType,
+                  values: filterData.clearance_types || [],
                 },
                 {
                   type: "select-three",
                   placeholder: "Assignment Scope",
                   name: "assignment_scope",
                   option: assignmentScopeOptions,
-                  values: selectedAssignmentScope,
+                  values: filterData.assignment_scope || [],
                 },
                 {
                   type: "select-four",
                   placeholder: "Status",
                   name: "status",
                   option: statusOptions,
-                  values: selectedStatus,
+                  values: filterData.status || [],
                 },
               ]}
               className="justify-end"

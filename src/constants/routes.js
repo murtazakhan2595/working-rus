@@ -2,12 +2,13 @@ import Config from "constants/config";
 import Dashboard from "app/modules/Dashboard";
 import Login from "app/modules/Login";
 import {
-  Applications,
-  Jobs,
-  CreateUpdateJob,
-  JobDescription,
-  JobApplicationForm,
-} from "app/modules/RecruitmentData";
+  ManpowerPlanning,
+  TalentSphereSettingManagement,
+  RequisitionPlanning,
+  TeamTalentSphere,
+  DemoGraphics,
+  ApplicantManagement,
+} from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
   MyLeaveTracker,
@@ -26,7 +27,6 @@ import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import {
   TransferAndRotation,
-  JobRotationCalendar,
   MyJobRotations,
   MyTransfers,
   UserJobRotations,
@@ -47,6 +47,7 @@ import {
   ApprovalHierarchyHistoryLogs,
 } from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
+import { Applicants } from "../app/modules/TalentSphere/ScreenedApplicants";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import { EOSSettlementDetails } from "app/modules/SelfService/Exit";
 import {
@@ -76,7 +77,14 @@ import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import { OrganizationalTree } from "app/modules/OrganizationalChart";
-import { GenerateForm, PerformanceCycleSetup, MyPerformance, TeamPerformanceEvaluation } from "app/modules/PerformanceEdge";
+import {
+  GenerateForm,
+  PerformanceCycleSetup,
+  MyPerformance,
+  TeamPerformanceEvaluation,
+  PerformanceEvaluation,
+  EvaluationSummaryDetails
+} from "app/modules/PerformanceEdge";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
@@ -101,7 +109,10 @@ import { ManagerClearanceDashboard } from "app/modules/ClearanceAndHandOver/Sect
 import { PerformanceDashboard } from "app/modules/PerformanceEdge";
 import { ProfileManagementReports } from "app/modules/Reports";
 import { ExitAndClearanceReports } from "app/modules/Reports";
-import {EmployeeCreationAndHiringReports} from "app/modules/Reports";
+import { EmployeeCreationAndHiringReports } from "app/modules/Reports";
+import { HRDocumentsReports } from "app/modules/Reports";
+import { TransferAndRotationReports } from "app/modules/Reports";
+import { AttendanceAndShiftReports } from "app/modules/Reports";
 
 export const SidebarRoutes = [
   {
@@ -111,487 +122,519 @@ export const SidebarRoutes = [
   },
   ...(Config.SELF_SERVICE_HUB
     ? [
-        Config.MY_PROFILE && {
-          path: "/my-profile",
-          component: <ViewEmployee profileView />,
-          name: "MY_PROFILE",
-        },
-        Config.MY_ATTENDANCE && {
-          path: "/my-attendance",
-          component: <MyAttendance />,
-          name: "MY_ATTENDANCE",
-        },
-        Config.MY_ATTENDANCE && {
-          path: "/my-attendance-report/:id",
-          component: <EmployeeAttendanceReport />,
-          name: "VIEW_ATTENDANCE",
-        },
-        Config.DAILY_TASK_REPORT && {
-          path: "/my-dtr",
-          component: <MyDtr />,
-          name: "DAILY_TASK_REPORT",
-        },
-        Config.MY_LEAVE_TRACKER && {
-          path: "/my-leave-tracker",
-          component: <MyLeaveTracker />,
-          name: "MY_LEAVE_TRACKER",
-        },
-        Config.MY_PAYROLL && {
-          path: "/my-payroll",
-          component: <MyPayroll />,
-          name: "MY_PAYROLL",
-        },
-        Config.MY_CLAIMS && {
-          path: "/my-claims",
-          component: <MyClaims />,
-          name: "MY_CLAIMS",
-        },
-        Config.MY_TRANSFERS && {
-          path: "/my-tranfers",
-          component: <MyTransfers />,
-          name: "MY_TRANSFERS",
-        },
-        Config.DOCUMENTS && {
-          path: "/my-documents",
-          component: <MyDocuments />,
-          name: "DOCUMENTS",
-        },
-        Config.MY_LETTER_REQUEST && {
-          path: "/my-letter-requests",
-          component: <MyLetterRequests />,
-          name: "MY_LETTER_REQUEST",
-        },
-        Config.MY_ASSETS && {
-          path: "/my-assets",
-          component: <MyAssets />,
-          name: "MY_ASSETS",
-        },
-        Config.MY_SHIFT_CALENDAR && {
-          path: "/my-shift-calendar",
-          component: <MyShiftCalendar />,
-          name: "MY_SHIFT_CALENDAR",
-        },
-        Config.EXIT && {
-          path: "/exit-employee",
-          component: <EmployeeExit />,
-          name: "EXIT",
-        },
-        Config.MY_JOB_ROTATIONS && {
-          path: "/my-job-rotations",
-          component: <MyJobRotations />,
-          name: "MY_JOB_ROTATIONS",
-        },
-        Config.MY_CLEARANCE && {
-          path: "/my-clearance",
-          component: <MyClearanceTab />,
-          name: "MY_CLEARANCE",
-        },
-        Config.MANAGER_CLEARANCE_DASHBOARD && {
-          path: "/manager-clearance-dashboard",
-          component: <ManagerClearanceDashboard />,
-          name: "MANAGER_CLEARANCE_DASHBOARD",
-        },
+      Config.MY_PROFILE && {
+        path: "/my-profile",
+        component: <ViewEmployee profileView />,
+        name: "MY_PROFILE",
+      },
+      Config.MY_ATTENDANCE && {
+        path: "/my-attendance",
+        component: <MyAttendance />,
+        name: "MY_ATTENDANCE",
+      },
+      Config.MY_ATTENDANCE && {
+        path: "/my-attendance-report/:id",
+        component: <EmployeeAttendanceReport />,
+        name: "VIEW_ATTENDANCE",
+      },
+      Config.DAILY_TASK_REPORT && {
+        path: "/my-dtr",
+        component: <MyDtr />,
+        name: "DAILY_TASK_REPORT",
+      },
+      Config.MY_LEAVE_TRACKER && {
+        path: "/my-leave-tracker",
+        component: <MyLeaveTracker />,
+        name: "MY_LEAVE_TRACKER",
+      },
+      Config.MY_PAYROLL && {
+        path: "/my-payroll",
+        component: <MyPayroll />,
+        name: "MY_PAYROLL",
+      },
+      Config.MY_CLAIMS && {
+        path: "/my-claims",
+        component: <MyClaims />,
+        name: "MY_CLAIMS",
+      },
+      Config.MY_TRANSFERS && {
+        path: "/my-tranfers",
+        component: <MyTransfers />,
+        name: "MY_TRANSFERS",
+      },
+      Config.DOCUMENTS && {
+        path: "/my-documents",
+        component: <MyDocuments />,
+        name: "DOCUMENTS",
+      },
+      Config.MY_LETTER_REQUEST && {
+        path: "/my-letter-requests",
+        component: <MyLetterRequests />,
+        name: "MY_LETTER_REQUEST",
+      },
+      Config.MY_ASSETS && {
+        path: "/my-assets",
+        component: <MyAssets />,
+        name: "MY_ASSETS",
+      },
+      Config.MY_SHIFT_CALENDAR && {
+        path: "/my-shift-calendar",
+        component: <MyShiftCalendar />,
+        name: "MY_SHIFT_CALENDAR",
+      },
+      Config.EXIT && {
+        path: "/exit-employee",
+        component: <EmployeeExit />,
+        name: "EXIT",
+      },
+      Config.MY_JOB_ROTATIONS && {
+        path: "/my-job-rotations",
+        component: <MyJobRotations />,
+        name: "MY_JOB_ROTATIONS",
+      },
+      Config.MY_CLEARANCE && {
+        path: "/my-clearance",
+        component: <MyClearanceTab />,
+        name: "MY_CLEARANCE",
+      },
+      Config.MANAGER_CLEARANCE_DASHBOARD && {
+        path: "/manager-clearance-dashboard",
+        component: <ManagerClearanceDashboard />,
+        name: "MANAGER_CLEARANCE_DASHBOARD",
+      },
 
-        Config.MY_PERFORMANCE && {
-          path: "/my-performance",
-          component: <MyPerformance />,
-          name: "MY_PERFORMANCE",
-        },
-      ].filter(Boolean) // Filter out undefined routes
+      Config.MY_PERFORMANCE && {
+        path: "/my-performance",
+        component: <MyPerformance />,
+        name: "MY_PERFORMANCE",
+      },
+    ].filter(Boolean) // Filter out undefined routes
     : []),
   ...(Config.TEAM_MANAGEMENT
     ? [
-        Config.TEAM_PROFILE && {
-          path: "/team-profile-management",
-          component: <Employee isTeamView={true} />,
-          name: "TEAM_PROFILE",
-        },
-        Config.TEAM_LEAVE_REQUEST && {
-          path: "/team-leave-tracker",
-          component: <LeaveTracker isTeamView={true} />,
-          name: "TEAM_LEAVE_REQUEST",
-        },
-        Config.TEAM_EXIT_CLEARANCE && {
-          path: "/team-exit-clearance",
-          component: <ExitAndClearance isTeamView={true} />,
-          name: "TEAM_EXIT_CLEARANCE",
-        },
-        Config.TEAM_ATTENDANCE && {
-          path: "/team-attendance",
-          component: <Attendance isTeamView={true} />,
-          name: "TEAM_ATTENDANCE",
-        },
-        Config.TEAM_PERFORMANCE_EVALUATION && {
-          path: "/team-performance-evaluation",
-          component: <TeamPerformanceEvaluation />,
-          name: "TEAM_ATTENDANCE",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.TEAM_PROFILE && {
+        path: "/team-profile-management",
+        component: <Employee isTeamView={true} />,
+        name: "TEAM_PROFILE",
+      },
+      Config.TEAM_LEAVE_REQUEST && {
+        path: "/team-leave-tracker",
+        component: <LeaveTracker isTeamView={true} />,
+        name: "TEAM_LEAVE_REQUEST",
+      },
+      Config.TEAM_EXIT_CLEARANCE && {
+        path: "/team-exit-clearance",
+        component: <ExitAndClearance isTeamView={true} />,
+        name: "TEAM_EXIT_CLEARANCE",
+      },
+      Config.TEAM_ATTENDANCE && {
+        path: "/team-attendance",
+        component: <Attendance isTeamView={true} />,
+        name: "TEAM_ATTENDANCE",
+      },
+      Config.TEAM_PERFORMANCE_EVALUATION && {
+        path: "/team-performance-evaluation",
+        component: <TeamPerformanceEvaluation />,
+        name: "TEAM_PERFORMANCE_EVALUATION",
+      },
+      Config.TEAM_TALENT_SPHERE && {
+        path: "/team-talent-sphere",
+        component: <TeamTalentSphere />,
+        name: "TEAM_TALENT_SPHERE",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PEOPLE_TEAM
     ? [
-        Config.PROFILE_MANAGEMENT && {
-          path: "/profile-management",
-          component: <Employee />,
-          name: "PROFILE_MANAGEMENT",
-        },
-        Config.HR_DOCUMENTS && {
-          path: "/documents",
-          component: <HRDocuments />,
-          name: "HR_DOCUMENTS",
-        },
-        Config.HR_DOCUMENTS && {
-          path: "/documents/detail",
-          component: <DocumentDetails />,
-          name: "VIEW_HR_DOCUMENT_DETAILS",
-        },
+      Config.PROFILE_MANAGEMENT && {
+        path: "/profile-management",
+        component: <Employee />,
+        name: "PROFILE_MANAGEMENT",
+      },
+      Config.HR_DOCUMENTS && {
+        path: "/documents",
+        component: <HRDocuments />,
+        name: "HR_DOCUMENTS",
+      },
+      Config.HR_DOCUMENTS && {
+        path: "/documents/detail",
+        component: <DocumentDetails />,
+        name: "VIEW_HR_DOCUMENT_DETAILS",
+      },
 
-        Config.EMPLOYEE_TRANSFER && {
-          path: "/tranfer-rotations",
-          component: <TransferAndRotation />,
-          name: "EMPLOYEE_TRANSFER",
-        },
-        Config.EMPLOYEE_TRANSFER && {
-          path: "/user-job-rotations",
-          component: <UserJobRotations />,
-          name: "VIEW_JOB_ROTATION",
-        },
-        Config.EMPLOYEE_CREATION && {
-          path: "/create-employee",
-          component: <CreateUpdateEmployee />,
-          name: "EMPLOYEE_CREATION",
-        },
-        Config.PROFILE_MANAGEMENT && {
-          path: "/edit-employee/:id",
-          component: <CreateUpdateEmployee />,
-          name: "EDIT_EMPLOYEE",
-        },
-        Config.PROFILE_MANAGEMENT && {
-          path: "/profile/:id",
-          component: <EditEmployeeProfile />,
-          name: "EDIT_EMPLOYEE_PROFILE",
-        },
-        Config.PROFILE_MANAGEMENT && {
-          path: "/user/:id",
-          component: <ViewEmployee profileView={false} />,
-          name: "VIEW_EMPLOYEES",
-        },
-        Config.CLEARANCE_AND_HANDOVER && {
-          path: "/clearance-requests",
-          component: <ClearanceAndHandover />,
-          name: "CLEARANCE_AND_HANDOVER",
-        },
-        Config.EXIT_CLEARANCE && {
-          path: "/exit-clearance",
-          component: <ExitAndClearance />,
-          name: "EXIT_CLEARANCE",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.EMPLOYEE_TRANSFER && {
+        path: "/tranfer-rotations",
+        component: <TransferAndRotation />,
+        name: "EMPLOYEE_TRANSFER",
+      },
+      Config.EMPLOYEE_TRANSFER && {
+        path: "/user-job-rotations",
+        component: <UserJobRotations />,
+        name: "VIEW_JOB_ROTATION",
+      },
+      Config.EMPLOYEE_CREATION && {
+        path: "/create-employee",
+        component: <CreateUpdateEmployee />,
+        name: "EMPLOYEE_CREATION",
+      },
+      Config.PROFILE_MANAGEMENT && {
+        path: "/edit-employee/:id",
+        component: <CreateUpdateEmployee />,
+        name: "EDIT_EMPLOYEE",
+      },
+      Config.PROFILE_MANAGEMENT && {
+        path: "/profile/:id",
+        component: <EditEmployeeProfile />,
+        name: "EDIT_EMPLOYEE_PROFILE",
+      },
+      Config.PROFILE_MANAGEMENT && {
+        path: "/user/:id",
+        component: <ViewEmployee profileView={false} />,
+        name: "VIEW_EMPLOYEES",
+      },
+      Config.CLEARANCE_AND_HANDOVER && {
+        path: "/clearance-requests",
+        component: <ClearanceAndHandover />,
+        name: "CLEARANCE_AND_HANDOVER",
+      },
+      Config.EXIT_CLEARANCE && {
+        path: "/exit-clearance",
+        component: <ExitAndClearance />,
+        name: "EXIT_CLEARANCE",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.TASK_MANAGEMENT
     ? [
-        Config.PROJECT_BOARD && {
-          path: "/projects",
-          component: <Projects />,
-          name: "PROJECT_BOARD",
-        },
-        Config.PROJECT_BOARD && {
-          path: "/project-board/card/add",
-          component: <TaskEditAddViewDetails />,
-          name: "VIEW_OWN_PROJECTS",
-        },
-        Config.PROJECT_BOARD && {
-          path: "/project-board/card/:taskId",
-          component: <TaskEditAddViewDetails />,
-          name: "VIEW_OWN_PROJECTS",
-        },
-        Config.PROJECT_BOARD && {
-          path: "/project-board/card/:parentTaskId/subtask/:subtaskId",
-          component: <TaskEditAddViewDetails />,
-          name: "VIEW_OWN_PROJECTS",
-        },
-        Config.PROJECT_BOARD && {
-          path: "/project-board/:projectId",
-          component: <Board />,
-          name: "VIEW_OWN_PROJECTS",
-        },
-        Config.PROJECT_BOARD && {
-          path: "/project-board/user/:userId",
-          component: <UserProfileTaskDetails />,
-          name: "VIEW_OWN_PROJECTS",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.PROJECT_BOARD && {
+        path: "/projects",
+        component: <Projects />,
+        name: "PROJECT_BOARD",
+      },
+      Config.PROJECT_BOARD && {
+        path: "/project-board/card/add",
+        component: <TaskEditAddViewDetails />,
+        name: "VIEW_OWN_PROJECTS",
+      },
+      Config.PROJECT_BOARD && {
+        path: "/project-board/card/:taskId",
+        component: <TaskEditAddViewDetails />,
+        name: "VIEW_OWN_PROJECTS",
+      },
+      Config.PROJECT_BOARD && {
+        path: "/project-board/card/:parentTaskId/subtask/:subtaskId",
+        component: <TaskEditAddViewDetails />,
+        name: "VIEW_OWN_PROJECTS",
+      },
+      Config.PROJECT_BOARD && {
+        path: "/project-board/:projectId",
+        component: <Board />,
+        name: "VIEW_OWN_PROJECTS",
+      },
+      Config.PROJECT_BOARD && {
+        path: "/project-board/user/:userId",
+        component: <UserProfileTaskDetails />,
+        name: "VIEW_OWN_PROJECTS",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.LEAVE_MANAGEMENT
     ? [
-        Config.LEAVE_RECORDS && {
-          path: "/employee-leave-count",
-          component: <EmployeeLeaveCount />,
-          name: "LEAVE_RECORDS",
-        },
-        Config.LEAVE_REQUEST && {
-          path: "/leave-tracker",
-          component: <LeaveTracker />,
-          name: "LEAVE_REQUEST",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.LEAVE_RECORDS && {
+        path: "/employee-leave-count",
+        component: <EmployeeLeaveCount />,
+        name: "LEAVE_RECORDS",
+      },
+      Config.LEAVE_REQUEST && {
+        path: "/leave-tracker",
+        component: <LeaveTracker />,
+        name: "LEAVE_REQUEST",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.TALENT_SPHERE
     ? [
-        Config.JOBS && {
-          path: "/jobs",
-          component: <Jobs />,
-          name: "JOBS",
-        },
-        Config.JOBS && {
-          path: "/job-post",
-          component: <CreateUpdateJob />,
-          name: "JOBS",
-        },
-        Config.JOBS && {
-          path: "/edit-post/:id",
-          component: <CreateUpdateJob />,
-          name: "EDIT_JOBS",
-        },
-        Config.TALENT_SPHERE && {
-          path: "/applicants/:id",
-          component: <Applications />,
-          name: "Applicants",
-        },
-        Config.APPLICANTS && {
-          path: "/applicants",
-          component: <Applications />,
-          name: "APPLICANTS",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.MANPOWER_PLANNINGS && {
+        path: "/manpower-planning",
+        component: <ManpowerPlanning />,
+        name: "MANPOWER_PLANNINGS",
+      },
+      Config.APPLICANTS && {
+        path: "/talent-sphere/applicant-management",
+        component: <ApplicantManagement />,
+        name: "APPLICANTS",
+      },
+      Config.REQUISITION_PLANNING && {
+        path: "/office-settings/talent-sphere/requisition-planning",
+        component: <RequisitionPlanning />,
+        name: "REQUISITION_PLANNING",
+      },
+      Config.SETUP && {
+        path: "/office-settings/talent-sphere/Setup",
+        component: <DemoGraphics />,
+        name: "SETUP",
+      },
+   
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ASSET_MANAGEMENT
     ? [
-        Config.ASSETS && {
-          path: "/assets",
-          component: <Assets />,
-          name: "ASSETS",
-        },
-        Config.REQUEST_AND_ASSIGN && {
-          path: "/request-and-assign",
-          component: <RequestAndAssign />,
-          name: "REQUEST_AND_ASSIGN",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.ASSETS && {
+        path: "/assets",
+        component: <Assets />,
+        name: "ASSETS",
+      },
+      Config.REQUEST_AND_ASSIGN && {
+        path: "/request-and-assign",
+        component: <RequestAndAssign />,
+        name: "REQUEST_AND_ASSIGN",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.REPORTS
     ? [
-        Config.PROFILE_MANAGEMENT_REPORTS && {
-          path: "/profile-management-reports",
-          component: <ProfileManagementReports />,
-          name: "PROFILE_MANAGEMENT_REPORTS",
-        },
-        Config.EXIT_AND_CLEARANCE_REPORTS && {
-          path: "/exit-and-clearance-reports",
-          component: <ExitAndClearanceReports />,
-          name: "EXIT_AND_CLEARANCE_REPORTS",
-        },
-        Config.EMPLOYEE_CREATION_AND_HIRING && {
-          path: "/employee-creation-and-hiring",
-          component: <EmployeeCreationAndHiringReports />,
-          name: "EMPLOYEE_CREATION_AND_HIRING",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.PROFILE_MANAGEMENT_REPORTS && {
+        path: "/profile-management-reports",
+        component: <ProfileManagementReports />,
+        name: "PROFILE_MANAGEMENT_REPORTS",
+      },
+      Config.EXIT_AND_CLEARANCE_REPORTS && {
+        path: "/exit-and-clearance-reports",
+        component: <ExitAndClearanceReports />,
+        name: "EXIT_AND_CLEARANCE_REPORTS",
+      },
+      Config.EMPLOYEE_CREATION_AND_HIRING && {
+        path: "/employee-creation-and-hiring",
+        component: <EmployeeCreationAndHiringReports />,
+        name: "EMPLOYEE_CREATION_AND_HIRING",
+      },
+      Config.HR_DOCUMENT_REPORTS && {
+        path: "/hr-documents-reports",
+        component: <HRDocumentsReports />,
+        name: "HR_DOCUMENT_REPORTS",
+      },
+      Config.TRANSFER_AND_ROTATIONS && {
+        path: "/transfer-and-rotation-reports",
+        component: <TransferAndRotationReports />,
+        name: "TRANSFER_AND_ROTATIONS",
+      },
+      Config.ATTENDANCE_AND_SHIFT_REPORTS && {
+        path: "/attendance-and-shift-reports",
+        component: <AttendanceAndShiftReports />,
+        name: "ATTENDANCE_AND_SHIFT_REPORTS",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ATTENDANCE
     ? [
-        Config.EMPLOYEES_ATTENDANCE && {
-          path: "/attendance",
-          component: <Attendance />,
-          name: "EMPLOYEES_ATTENDANCE",
-        },
-        Config.ATTENDANCE_UPDATES && {
-          path: "/attendance-adjustment",
-          component: <AttendanceAdjustment />,
-          name: "ATTENDANCE_UPDATES",
-        },
-        Config.TIME_ADJUSTMENTS && {
-          path: "/time-adjustments",
-          component: <TimeAdjustments />,
-          name: "TIME_ADJUSTMENTS",
-        },
-        Config.TIME_ADJUSTMENTS && {
-          path: "time-adjustments/history",
-          component: <TimeAdjustments activeView="History & Logs" />,
-          name: "TIME_ADJUSTMENTS",
-        },
-        Config.TIME_ADJUSTMENTS && {
-          path: "/time-adjustments/history-details",
-          component: <TimeAdjustmentHistoryDetails />,
-          name: "VIEW_TIME_ADJ_LOGS",
-        },
-        Config.EMPLOYEE_DAILY_TASK_REPORT && {
-          path: "/employee-dtrs",
-          component: <EmployeeDTRs />,
-          name: "EMPLOYEE_DAILY_TASK_REPORT",
-        },
-        Config.SHIFT_CALENDAR && {
-          path: "/shift-calendar",
-          component: <ShiftCalendar />,
-          name: "SHIFT_CALENDAR",
-        },
-        Config.SHIFT_CALENDAR && {
-          path: "/shift-calendar/history-logs",
-          component: <ShiftCalendarHistoryLogs />,
-          name: "SHIFT_CALENDAR",
-        },
-        Config.EMPLOYEES_ATTENDANCE && {
-          path: "/attendance-reports/:id",
-          component: <EmployeeAttendanceReport />,
-          name: "VIEW_EMPLOYEE_ATTENDANCE",
-        },
-        Config.EMPLOYEES_ATTENDANCE && {
-          path: "/attendance/:id",
-          component: <EmployeeAttendance />,
-          name: "VIEW_EMPLOYEE_ATTENDANCE",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.EMPLOYEES_ATTENDANCE && {
+        path: "/attendance",
+        component: <Attendance />,
+        name: "EMPLOYEES_ATTENDANCE",
+      },
+      Config.ATTENDANCE_UPDATES && {
+        path: "/attendance-adjustment",
+        component: <AttendanceAdjustment />,
+        name: "ATTENDANCE_UPDATES",
+      },
+      Config.TIME_ADJUSTMENTS && {
+        path: "/time-adjustments",
+        component: <TimeAdjustments />,
+        name: "TIME_ADJUSTMENTS",
+      },
+      Config.TIME_ADJUSTMENTS && {
+        path: "time-adjustments/history",
+        component: <TimeAdjustments activeView="History & Logs" />,
+        name: "TIME_ADJUSTMENTS",
+      },
+      Config.TIME_ADJUSTMENTS && {
+        path: "/time-adjustments/history-details",
+        component: <TimeAdjustmentHistoryDetails />,
+        name: "VIEW_TIME_ADJ_LOGS",
+      },
+      Config.EMPLOYEE_DAILY_TASK_REPORT && {
+        path: "/employee-dtrs",
+        component: <EmployeeDTRs />,
+        name: "EMPLOYEE_DAILY_TASK_REPORT",
+      },
+      Config.SHIFT_CALENDAR && {
+        path: "/shift-calendar",
+        component: <ShiftCalendar />,
+        name: "SHIFT_CALENDAR",
+      },
+      Config.SHIFT_CALENDAR && {
+        path: "/shift-calendar/history-logs",
+        component: <ShiftCalendarHistoryLogs />,
+        name: "SHIFT_CALENDAR",
+      },
+      Config.EMPLOYEES_ATTENDANCE && {
+        path: "/attendance-reports/:id",
+        component: <EmployeeAttendanceReport />,
+        name: "VIEW_EMPLOYEE_ATTENDANCE",
+      },
+      Config.EMPLOYEES_ATTENDANCE && {
+        path: "/attendance/:id",
+        component: <EmployeeAttendance />,
+        name: "VIEW_EMPLOYEE_ATTENDANCE",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PAYROLL
     ? [
-        Config.PAY_RUN && {
-          path: "/payslip/:id",
-          component: <Payslip />,
-          name: "VIEW_PAYSLIPS",
-        },
-        Config.EMPLOYEES_PAYROLL && {
-          path: "/payroll",
-          component: <EmployeesPayroll />,
-          name: "EMPLOYEES_PAYROLL",
-        },
-        Config.EMPLOYEES_PAYROLL && {
-          path: "/payroll/:id",
-          component: <EmployeeSalaryDetails />,
-          name: "Payroll Details",
-        },
-        Config.SALARY_SETUP && {
-          path: "/payroll/salary-setup",
-          component: <SalarySetup />,
-          name: "SALARY_SETUP",
-        },
-        Config.CLAIM_REQUEST && {
-          path: "/claim-request",
-          component: <ClaimRequest />,
-          name: "CLAIM_REQUEST",
-        },
-        Config.PAY_RUN && {
-          path: "/pay-run",
-          component: <PayRun />,
-          name: "PAY_RUN",
-        },
-        Config.ON_HOLD_SALARIES && {
-          path: "/on-hold-salaries",
-          component: <OnHoldSalaries />,
-          name: "ON_HOLD_SALARIES",
-        },
-        Config.ON_HOLD_SALARIES && {
-          path: "/payroll/on-hold-salaries/:id",
-          component: <OnHoldSalaryDetails />,
-          name: "VIEW_ON_HOLD_SALARIES",
-        },
-        Config.END_OF_SERVICE && {
-          path: "/payroll/eos",
-          component: <EOSList />,
-          name: "END_OF_SERVICE",
-        },
-        Config.END_OF_SERVICE && {
-          path: "/payroll/eos/:id",
-          component: <EOSDetails />,
-          name: "VIEW_END_OF_SERVICE",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.PAY_RUN && {
+        path: "/payslip/:id",
+        component: <Payslip />,
+        name: "VIEW_PAYSLIPS",
+      },
+      Config.EMPLOYEES_PAYROLL && {
+        path: "/payroll",
+        component: <EmployeesPayroll />,
+        name: "EMPLOYEES_PAYROLL",
+      },
+      Config.EMPLOYEES_PAYROLL && {
+        path: "/payroll/:id",
+        component: <EmployeeSalaryDetails />,
+        name: "Payroll Details",
+      },
+      Config.SALARY_SETUP && {
+        path: "/payroll/salary-setup",
+        component: <SalarySetup />,
+        name: "SALARY_SETUP",
+      },
+      Config.CLAIM_REQUEST && {
+        path: "/claim-request",
+        component: <ClaimRequest />,
+        name: "CLAIM_REQUEST",
+      },
+      Config.PAY_RUN && {
+        path: "/pay-run",
+        component: <PayRun />,
+        name: "PAY_RUN",
+      },
+      Config.ON_HOLD_SALARIES && {
+        path: "/on-hold-salaries",
+        component: <OnHoldSalaries />,
+        name: "ON_HOLD_SALARIES",
+      },
+      Config.ON_HOLD_SALARIES && {
+        path: "/payroll/on-hold-salaries/:id",
+        component: <OnHoldSalaryDetails />,
+        name: "VIEW_ON_HOLD_SALARIES",
+      },
+      Config.END_OF_SERVICE && {
+        path: "/payroll/eos",
+        component: <EOSList />,
+        name: "END_OF_SERVICE",
+      },
+      Config.END_OF_SERVICE && {
+        path: "/payroll/eos/:id",
+        component: <EOSDetails />,
+        name: "VIEW_END_OF_SERVICE",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.OFFICE_SETTING
     ? [
-        Config.ROLE_PERMISSIONS && {
-          path: "/office-settings/role-permission",
-          component: <RoleAndPermissions />,
-          name: "ROLE_PERMISSIONS",
-        },
-        Config.ORGANIZATION && {
-          path: "/office-settings",
-          component: <OfficeSetting />,
-          name: "ORGANIZATION",
-        },
-        Config.ROLE_PERMISSIONS && {
-          path: "/office-settings/role-permission/user-role/add",
-          component: <AddUpdateUserRoleForm />,
-          name: "ADD_USER_ROLE",
-        },
-        Config.ROLE_PERMISSIONS && {
-          path: "/office-settings/assigned-roles",
-          component: <AssignedRoles />,
-          name: "Add User Role",
-        },
-        Config.ROLE_PERMISSIONS && {
-          path: "/office-settings/role-permission/user-role/edit",
-          component: <AddUpdateUserRoleForm />,
-          name: "EDIT_USER_ROLE",
-        },
-        Config.ROLE_PERMISSIONS && {
-          path: "/office-settings/role-permission/history-logs",
-          component: <RoleAssignmentEmployeeHistoryLogs />,
-          name: "VIEW_ROLE_HISTORY_LOGS",
-        },
-        Config.APPROVAL_HIERARCHY && {
-          path: "/office-settings/approval-hierarchy",
-          component: <ApprovalHierarchy />,
-          name: "APPROVAL_HIERARCHY",
-        },
-        Config.APPROVAL_HIERARCHY && {
-          path: "/office-settings/approval-hierarchy/history",
-          component: <ApprovalHierarchy active={"History & Logs"} />,
-          name: "APPROVAL_HIERARCHY",
-        },
-        Config.APPROVAL_HIERARCHY && {
-          path: "/office-settings/approval-hierarchy/hierarchy-detail",
-          component: <ApprovalHierarchyDetails />,
-          name: "APPROVAL_HIERARCHY",
-        },
-        Config.APPROVAL_HIERARCHY && {
-          path: "/office-settings/approval-hierarchy/history-logs",
-          component: <ApprovalHierarchyHistoryLogs />,
-          name: "APPROVAL_HIERARCHY",
-        },
-        Config.LEAVE_SETUP && {
-          path: "/office-settings/leave-setup",
-          component: <LeaveManagement />,
-          name: "LEAVE_SETUP",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.ROLE_PERMISSIONS && {
+        path: "/office-settings/role-permission",
+        component: <RoleAndPermissions />,
+        name: "ROLE_PERMISSIONS",
+      },
+      Config.ORGANIZATION && {
+        path: "/office-settings",
+        component: <OfficeSetting />,
+        name: "ORGANIZATION",
+      },
+      Config.ROLE_PERMISSIONS && {
+        path: "/office-settings/role-permission/user-role/add",
+        component: <AddUpdateUserRoleForm />,
+        name: "ADD_USER_ROLE",
+      },
+      Config.ROLE_PERMISSIONS && {
+        path: "/office-settings/assigned-roles",
+        component: <AssignedRoles />,
+        name: "Add User Role",
+      },
+      Config.ROLE_PERMISSIONS && {
+        path: "/office-settings/role-permission/user-role/edit",
+        component: <AddUpdateUserRoleForm />,
+        name: "EDIT_USER_ROLE",
+      },
+      Config.ROLE_PERMISSIONS && {
+        path: "/office-settings/role-permission/history-logs",
+        component: <RoleAssignmentEmployeeHistoryLogs />,
+        name: "VIEW_ROLE_HISTORY_LOGS",
+      },
+      Config.APPROVAL_HIERARCHY && {
+        path: "/office-settings/approval-hierarchy",
+        component: <ApprovalHierarchy />,
+        name: "APPROVAL_HIERARCHY",
+      },
+      Config.APPROVAL_HIERARCHY && {
+        path: "/office-settings/approval-hierarchy/history",
+        component: <ApprovalHierarchy active={"History & Logs"} />,
+        name: "APPROVAL_HIERARCHY",
+      },
+      Config.APPROVAL_HIERARCHY && {
+        path: "/office-settings/approval-hierarchy/hierarchy-detail",
+        component: <ApprovalHierarchyDetails />,
+        name: "APPROVAL_HIERARCHY",
+      },
+      Config.APPROVAL_HIERARCHY && {
+        path: "/office-settings/approval-hierarchy/history-logs",
+        component: <ApprovalHierarchyHistoryLogs />,
+        name: "APPROVAL_HIERARCHY",
+      },
+      Config.LEAVE_SETUP && {
+        path: "/office-settings/leave-setup",
+        component: <LeaveManagement />,
+        name: "LEAVE_SETUP",
+      },
+      Config.TALENT_SPHERE_SETTING && {
+        path: "/office-settings/talent-sphere-setting",
+        component: <TalentSphereSettingManagement />,
+        name: "TALENT_SPHERE_SETTING",
+      },
+
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ORGANIZATIONAL_CHART
     ? [
-        Config.ORGANIZATION_TREE && {
-          path: "/organizational-tree",
-          component: <OrganizationalTree />,
-          name: "ORGANIZATION_TREE",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.ORGANIZATION_TREE && {
+        path: "/organizational-tree",
+        component: <OrganizationalTree />,
+        name: "ORGANIZATION_TREE",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PERFORMANCE_EDGE
     ? [
-        Config.PERFORMANCE_DASHBOARD && {
-          path: "/performance-dashboard",
-          component: <PerformanceDashboard />,
-          name: "PERFORMANCE_DASHBOARD",
-        },
-        Config.GENERATE_FORM && {
-          path: "/performance-forms",
-          component: <GenerateForm />,
-          name: "GENERATE_FORM",
-        },
-        Config.PERFORMANCE_CYCLE_SETUP && {
-          path: "/performance-cycle-setup",
-          component: <PerformanceCycleSetup />,
-          name: "PERFORMANCE_CYCLE_SETUP",
-        },
-      ].filter(Boolean) // Filter out undefined route
+      Config.PERFORMANCE_DASHBOARD && {
+        path: "/performance-dashboard",
+        component: <PerformanceDashboard />,
+        name: "PERFORMANCE_DASHBOARD",
+      },
+      Config.GENERATE_FORM && {
+        path: "/performance-forms",
+        component: <GenerateForm />,
+        name: "GENERATE_FORM",
+      },
+      Config.PERFORMANCE_CYCLE_SETUP && {
+        path: "/performance-cycle-setup",
+        component: <PerformanceCycleSetup />,
+        name: "PERFORMANCE_CYCLE_SETUP",
+      },
+      Config.PERFORMANCE_EVALUATION && {
+        path: "/performance-evaluation",
+        component: <PerformanceEvaluation />,
+        name: "PERFORMANCE_EVALUATION",
+      },
+      Config.PERFORMANCE_EVALUATION && {
+        path: "/evaluatoin-summary/:id",
+        component: <EvaluationSummaryDetails />,
+        name: "PERFORMANCE_EVALUATION",
+      },
+    ].filter(Boolean) // Filter out undefined route
     : []),
   {
     path: "/change-password",
@@ -668,16 +711,6 @@ const GeneralRoutes = [
     path: "/style-guide",
     component: <StyleGuide />,
     name: "Style Guide",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/apply/:id",
-    component: <JobApplicationForm />,
-    name: "Job Application Form",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/job-description/:id",
-    component: <JobDescription />,
-    name: "Job Description",
   },
   {
     path: "/forgot-password",

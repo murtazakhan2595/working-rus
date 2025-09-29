@@ -39,6 +39,7 @@ const TransferAndRotation = ({ }) => {
   const [TransferStats, setTransferStats] = useState({});
   const [RotationStats, setRotationStats] = useState({});
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
+  const [reloadData, setReloadData] = useState({});
   const [permittedRotationViewFilterData, setPermittedRotationViewFilterData] = useState(null);
 
   useEffect(() => {
@@ -184,10 +185,10 @@ const TransferAndRotation = ({ }) => {
         </TabsList>
         <Card>
           <TabsContent value="Rotations">
-            <Rotations permittedViewFilterData={permittedRotationViewFilterData} />
+            <Rotations reload={reloadData['rotation']} permittedViewFilterData={permittedRotationViewFilterData} />
           </TabsContent>
           <TabsContent value="Transfers">
-            <EmployeeTransfer />
+            <EmployeeTransfer reload={reloadData['transfer']} />
           </TabsContent>
           <TabsContent value="Job Rotation Calendar">
             <JobRotationCalendar />
@@ -199,7 +200,12 @@ const TransferAndRotation = ({ }) => {
           isOpen={OpenTransferForm}
           setIsOpen={() => {
             setOpenTransferForm(false);
-            //fetchData(true);
+            setReloadData((prev) => {
+              return {
+                ...prev,
+                "transfer": !prev["transfer"],
+              };
+            })
           }}
           initiator={'MANAGER'}
         />
@@ -209,7 +215,12 @@ const TransferAndRotation = ({ }) => {
           isOpen={OpenRotationForm}
           setIsOpen={() => {
             setOpenRotationForm(false);
-            //fetchData(true);
+            setReloadData((prev) => {
+              return {
+                ...prev,
+                "rotation": !prev["rotation"],
+              };
+            })
           }}
           isAdminView={isRAdminView}
           isBranchView={isRBranchView}

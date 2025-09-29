@@ -3,7 +3,7 @@ import { ViewDetailSheetCardExtension, PageLoader } from "components";
 import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import axios from "axios";
+import { HasAccess } from "utils/PermissionUtils";
 
 const NavigationSheetComponent = ({
   // Main sheet props
@@ -12,11 +12,11 @@ const NavigationSheetComponent = ({
   title,
   currentItem_Id,
   dataList = [],
-  reloadData = () => {},
+  reloadData = () => { },
   allowEdit = true,
   allowDelete = true,
   ForceItemLoad = false, //forceLoad  the Item in case of updation
-
+  dataUniqueKey = 'id', //unique key in data list to view the details of
   // Content and actions
   children,
   editComponent: EditComponent,
@@ -25,7 +25,7 @@ const NavigationSheetComponent = ({
   apiEndpoint,
 
   // Data functions
-  fetchCurrentItemDetails = async () => {},
+  fetchCurrentItemDetails = async () => { },
 
   // Labels and text
   deleteItemName = "item",
@@ -34,13 +34,20 @@ const NavigationSheetComponent = ({
 
   // Callbacks
   additionalEditProps = {},
+
+  //Permissions
+  editPermissions = null,
+  deletePermissions = null,
 }) => {
+  //Permissions
+  const isEditPermitted = editPermissions ? HasAccess("EDIT_MANPOWER") : true;
+  const isDeletePermitted = deletePermissions ? HasAccess("DELETE_MANPOWER") : true;
+
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
   const [currentItemId, setCurrentItemId] = useState(currentItem_Id);
-  console.log(fetchCurrentItemDetails())
   // Reset to original data when sheet opens
   useEffect(() => {
     if (isOpen && currentItemId) {
@@ -69,13 +76,18 @@ const NavigationSheetComponent = ({
 
     if (currentIndex < validList.length - 1) {
       const nextItem = validList[currentIndex + 1];
-      setCurrentItemId(nextItem?.id);
+      setCurrentItemId(nextItem?.[dataUniqueKey]);
     } else {
       // Loop to first item
       const firstItem = validList[0];
-      setCurrentItemId(firstItem?.id);
+      setCurrentItemId(firstItem?.[dataUniqueKey]);
     }
   };
+
+  const handleClose = () => {
+    reloadData(true);
+    setIsOpen(false);
+  }
 
   const handlePrevious = () => {
     // Ensure dataList is an array
@@ -88,19 +100,21 @@ const NavigationSheetComponent = ({
 
     if (currentIndex > 0) {
       const prevItem = validList[currentIndex - 1];
-      setCurrentItemId(prevItem?.id);
+      setCurrentItemId(prevItem?.[dataUniqueKey]);
     } else {
       // Loop to last item
       const lastItem = validList[validList.length - 1];
-      setCurrentItemId(lastItem?.id);
+      setCurrentItemId(lastItem?.[dataUniqueKey]);
     }
   };
 
   const ReloadCurrentItemDetails = async (id, isMounted = true) => {
     try {
       setIsLoading(true);
-      const currentItem = await fetchCurrentItemDetails(id, isMounted);
-      setCurrentItem(currentItem);
+      if (id) {
+        const currentItem = await fetchCurrentItemDetails(id, isMounted);
+        setCurrentItem(currentItem);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -136,11 +150,7 @@ const NavigationSheetComponent = ({
       // Call the delete function
       await deleteRecord(deleteAPI, itemName);
       // Close the modal
-      setIsOpen(false);
-      // Refresh data if applicable
-      if (typeof reloadData === "function") {
-        reloadData(true);
-      }
+      handleClose(false);
     } catch (error) {
       console.error("Failed to delete item:", error);
     }
@@ -151,7 +161,7 @@ const NavigationSheetComponent = ({
     if (!Array.isArray(dataList) || dataList.length === 0) return null;
 
     const currentIndex = dataList.findIndex(
-      (item) => item.id === currentItemId
+      (item) => item?.[dataUniqueKey] === currentItemId
     );
     return `${currentIndex + 1} of ${dataList.length}`;
   };
@@ -160,7 +170,7 @@ const NavigationSheetComponent = ({
     <>
       <ViewDetailSheetCardExtension
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        setIsOpen={handleClose}
         title={title}
         handlePrevious={handlePrevious}
         handleNext={handleNext}
@@ -172,8 +182,8 @@ const NavigationSheetComponent = ({
           <div className="flex flex-col gap-4">
             <div className="flex justify-end mt-4 space-x-2">
               <CircularActionButtons
-                onEdit={allowEdit ? handleEdit : null}
-                onDelete={allowDelete ? handleDelete : null}
+                onEdit={allowEdit && isEditPermitted ? handleEdit : null}
+                onDelete={allowDelete && isDeletePermitted ? handleDelete : null}
                 editTooltip={allowEdit ? editTooltip : null}
                 deleteTooltip={allowDelete ? deleteTooltip : null}
               />

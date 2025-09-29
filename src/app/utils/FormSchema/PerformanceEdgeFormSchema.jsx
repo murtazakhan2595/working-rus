@@ -32,6 +32,9 @@ export const validatePerformanceFormSchema = (values) => {
         }
     });
 
+    if (errors.sections && errors.sections.length === 0)
+        delete errors.sections;
+
     return errors;
 };
 
@@ -53,7 +56,7 @@ export const validateAssessmentFormSchema = (values) => {
         }
 
         if (Object.keys(sectionErrors).length > 0) {
-            errors.sections[index] = sectionErrors;
+            errors.sections[index] = `sectionErrors`;
         }
     });
     if (Array.isArray(errors.sections) && errors.sections.length === 0)
@@ -61,3 +64,38 @@ export const validateAssessmentFormSchema = (values) => {
 
     return errors;
 };
+
+export const validateSubmitAssessmentFormSchema = (values) => {
+    const errors = {};
+    errors.sections = [];
+
+    values.sections.forEach((section, sectionIndex) => {
+        const sectionErrors = {};
+        sectionErrors.fields = []; // ✅ initialize fields as an array
+
+        section.fields.forEach((field, fieldIndex) => {
+            const fieldErrors = {};
+
+            if ((!field.answer_text || !field.answer_text.trim()) && !field.rating && !field.answer_choice) {
+                fieldErrors.answer = "Answer is required";
+            }
+
+            if (Object.keys(fieldErrors).length > 0) {
+                sectionErrors.fields[fieldIndex] = fieldErrors;
+            }
+        });
+
+        // remove empty fields array if no field errors
+        if (sectionErrors.fields.length > 0) {
+            errors.sections[sectionIndex] = `All field answers are required`;
+
+        }
+    });
+
+    if (errors.sections.length === 0) {
+        delete errors.sections;
+    }
+
+    return errors;
+};
+

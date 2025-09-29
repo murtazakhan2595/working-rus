@@ -22,9 +22,6 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
   const Designations = GetDispatchStateList("designations", "common") || [];
   const Departments = GetDispatchStateList("departments", "common") || [];
 
-  const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
-  const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
-
   const [isLoading, setIsLoading] = useState(true);
   const [JobRotationList, setJobRotationList] = useState(null);
   const [filterData, setFilterData] = useState({ request_status: "PENDING" });
@@ -59,7 +56,7 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       const filter = {
         ...filterData,
         ...permittedViewFilterData,
-        request_status: "PENDING",
+        status: "pending",
       };
       const response = await getJobRotationRequests({
         filterData: filter,
@@ -121,26 +118,48 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
             name: "employee",
             placeholder: "Employee ID/Name",
           },
-          ...(isAdminView || isBranchView
+          {
+            type: "select",
+            options: "employees",
+            name: "initiated_by",
+            placeholder: "Request Initiator",
+          },
+          ...(!permittedViewFilterData.department
             ? [
-                {
-                  type: "select",
-                  options: safeDepartments,
-                  name: "department",
-                  placeholder: "Requested Department",
-                },
-              ]
+              {
+                type: "select",
+                options: "departments",
+                name: "department",
+                placeholder: "Department",
+              },
+            ]
             : []),
-          ...(isAdminView || isBranchView
+          ...(!permittedViewFilterData.branch
             ? [
-                {
-                  type: "select",
-                  options: safeDesignations,
-                  name: "department_position",
-                  placeholder: "Requested Designation",
-                },
-              ]
+              {
+                type: "select",
+                options: "branches",
+                name: "new_branch",
+                placeholder: "Branch",
+              },
+            ]
             : []),
+          {
+            type: "select",
+            options: "managers",
+            name: "new_branch",
+            placeholder: "Manager",
+          },
+          {
+            type: "date-range",
+            name: "new_branch",
+            placeholder: "Request Date",
+          },
+          {
+            type: "date-range",
+            name: "new_branch",
+            placeholder: "Effective Date",
+          },
         ]}
         onChange={handleFilterChange}
         className="justify-end mb-4"

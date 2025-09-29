@@ -3,7 +3,7 @@ import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { cn } from "src/@/lib/utils";
 const DetailContent = ({ currentItem = {}, fields = [] }) => {
   return (
-    <div>
+    <div className="mb-4">
       {fields.map(
         ({
           field = [],
@@ -11,48 +11,52 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
           footerField,
           footerTitle,
           customContent = false,
-          renderContent = () => {},
+          renderContent = () => { },
+          renderSectionCondition = () => { return true;},
           className = "",
-        }) =>
-          customContent ? (
-            <div className={cn(className)}>{renderContent(currentItem)}</div>
-          ) : (
-            <DetailCard
-              detailCardTitle={title}
-              date={currentItem?.[footerField]}
-              dateTitle={footerTitle}
-            >
-              {field.map(
-                ({
-                  key,
-                  label,
-                  formatter,
-                  fallBackText = "N/A",
-                  fieldClassName = "",
-                }) => {
-                  const value =
-                    currentItem && currentItem[key] ? currentItem[key] : null;
-                  return label ? (
-                    <DetailBox
-                      key={key}
-                      label={label}
-                      value={
-                        formatter
-                          ? formatter(value, currentItem)
-                          : value ?? fallBackText
-                      }
-                    />
-                  ) : (
-                    <div className={cn("mt-2", fieldClassName)}>
-                      {formatter
-                        ? formatter(value, currentItem)
-                        : value ?? fallBackText}
-                    </div>
-                  );
+        }) => {
+          const renderSection = renderSectionCondition(currentItem);
+          if (!renderSection) return <></>;
+          if (customContent) {
+            return <div className={cn(className)}>{renderContent(currentItem)}</div>;
+          }
+          return <DetailCard
+            detailCardTitle={title}
+            date={currentItem?.[footerField]}
+            dateTitle={footerTitle}
+          >
+            {field.map(
+              ({
+                key,
+                label,
+                formatter,
+                fallBackText = "N/A",
+                fieldClassName = "",
+                renderCondition,
+              }) => {
+                const value =
+                  currentItem && (currentItem[key] !== null && currentItem[key] !== undefined) ? currentItem[key] : null;
+                if (renderCondition && typeof renderCondition === "function") {
+                  const renderEnable = renderCondition(value, currentItem);
+                  if (!renderEnable) return <></>;
                 }
-              )}
-            </DetailCard>
-          )
+                return label ? (
+                  <DetailBox
+                    key={key}
+                    label={label}
+                    value={formatter ? formatter(value, currentItem) : value ?? fallBackText}
+                  />
+                ) : (
+                  <div className={cn("mt-2", fieldClassName)}>
+                    {formatter
+                      ? formatter(value, currentItem)
+                      : value ?? fallBackText}
+                  </div>
+                );
+              }
+            )}
+          </DetailCard>
+        }
       )}
     </div>
   );

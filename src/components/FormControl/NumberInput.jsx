@@ -8,7 +8,7 @@ const NumberInput = React.memo(
     value,
     error,
     touch,
-    onChange,
+    onChange = () => { },
     label,
     disabled,
     required,
@@ -44,6 +44,7 @@ const NumberInput = React.memo(
           onChange={(event) => {
             const inputValue = event.target.value;
             if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
+              const numberInput = parseFloat(inputValue);
               onChange(name, inputValue);
             }
           }}

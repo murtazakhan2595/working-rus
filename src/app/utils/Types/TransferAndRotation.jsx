@@ -39,6 +39,8 @@ export const JobRotation = {
   old_branch: null,
   old_reporting_manager: null,
   approval_details: null,
+  hierarchy_request:null,
+  status:'pending',
 }
 
 

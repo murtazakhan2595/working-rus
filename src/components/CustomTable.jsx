@@ -205,7 +205,7 @@ export default function TableCustom({
                       columns.map((column, index) => (
                         <TableCell
                           key={index}
-                          className={`min-w-fit w-fit text-neutral-1200 overflow-hidden text-ellipsis ${column.onClick || column.rowExpandOnClick
+                          className={`min-w-[130px] w-fit text-neutral-1200 overflow-hidden text-ellipsis ${column.onClick || column.rowExpandOnClick
                             ? "cursor-pointer expandable-cell"
                             : ""
                             } ${column.dataAlign === "center" ? "text-center" : ""

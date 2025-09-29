@@ -16,7 +16,7 @@ import {
     SelfAssessmentForm,
     AddSelfAssessmentForm,
     PeerAssessmentForm,
-    PeerAssessmentActions
+    AddUpdatePeerAssesmentForm
 } from 'app/modules/PerformanceEdge';
 const GenerateForm = ({ }) => {
     // permissions for tranfer
@@ -135,7 +135,7 @@ const GenerateForm = ({ }) => {
                 />
             )}
             {OpenPeerAssessmentForm && (
-                <PeerAssessmentActions
+                <AddUpdatePeerAssesmentForm
                     isOpen={OpenPeerAssessmentForm}
                     setIsOpen={() => {
                         setOpenPeerAssessmentForm(false);

@@ -139,10 +139,11 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
         try {
             const payload = { ...values, created_by: isEmployee ? "employee" : "manager" };
             const response = await saveJobRotation(payload, id);
+            debugger
             if (response) {
                 const reason = values.custom_reason?.trim().toLowerCase();
                 if (reason) {
-                    const exists = RotationReasons.some(obj => obj.name.trim().toLowerCase() === reason);
+                    const exists = RotationReasons.some(obj => obj.value.trim().toLowerCase() === reason);
                     if (!exists) {
                         await saveRotationReasons({ name: reason });
                     }
@@ -301,6 +302,7 @@ const RotationRequestForm = ({ id, isOpen = true, setIsOpen = () => { }, isAdmin
                                 name: 'rotation_expiry_date',
                                 required: formValues?.rotation_type === 'temporary',
                                 renderCondition: formValues?.rotation_type === 'temporary',
+                                minDate: formValues?.effective_date || new Date(),
                             },
                             {
                                 InputField: NumberInput,

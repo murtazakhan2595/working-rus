@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { DateInput } from "components/FormControl";
 import { SpecialLeaves } from 'app/utils/Types/LeaveManagment';
 import { NumberInput } from "components/FormControl";
+import { SwitchInput } from "components/FormControl";
 
 const AddSpecialLeave = ({ isOpen, setIsOpen, exit_id }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -68,84 +69,93 @@ const AddSpecialLeave = ({ isOpen, setIsOpen, exit_id }) => {
         }
     };
     return (
-        <SheetUI
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            variant="sheet"
-            sheetConfig={FormSheetData}
-            formConfig={{
-                initialValues: SpecialLeaves,
-                enableReinitialize: true,
-                handleSubmit: handleSubmit,
-                validateFormSchema: () => { },
-                submitButtonText: "Submit",
-                cancelButtonText: "Cancel",
-                columns: 2,
-                disableSubmit: isSubmittingForm || isLoading,
-                loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-                formFields: [
-                    {
-                        sheetCardExtension: true,
-                        sheetCardTitle: "Employee Details",
-                        InputFields: [
-                            {
-                                InputField: SelectInputComponent,
-                                name: "employee",
-                                label: "Employee",
-                                required: true,
-                                options: Employees,
-                                onFieldUpdate: async (_, value) => {
-                                    const employee = value
-                                        ? Employees.find((obj) => obj.value === value)
-                                        : null;
+      <SheetUI
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        variant="sheet"
+        sheetConfig={FormSheetData}
+        formConfig={{
+          initialValues: SpecialLeaves,
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          validateFormSchema: () => {},
+          submitButtonText: "Submit",
+          cancelButtonText: "Cancel",
+          columns: 2,
+          disableSubmit: isSubmittingForm || isLoading,
+          loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+          formFields: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Employee Details",
+              InputFields: [
+                {
+                  InputField: SelectInputComponent,
+                  name: "employee",
+                  label: "Employee",
+                  required: true,
+                  options: Employees,
+                  onFieldUpdate: async (_, value) => {
+                    const employee = value
+                      ? Employees.find((obj) => obj.value === value)
+                      : null;
 
-                                    setSelectedEmployee(employee);
-                                },
-                            },
-                            ...(selectedEmployee ? [{
-                                InputField: EmployeeDetailUI,
-                                id: parseInt(selectedEmployee?.id),
-                                InformationKeys: ["name", "department", "branch"],
-                                variant: "FormView",
-                                colsSpan: 2,
-                                className: "grid grid-cols-2 gap-4",
-                            }] : []),
-                        ],
-                    },
-                    {
-                        sheetCardExtension: true,
-                        sheetCardTitle: "Leave Details",
-                        InputFields: [
-                            {
-                                InputField: TextInput,
-                                name: "name",
-                                label: "Leave Name",
-                                required: true,
-                            },
-                            {
-                                InputField: DateInput,
-                                name: "start_date",
-                                label: "Start Date",
-                                required: true,
-                            },
-                            {
-                                InputField: DateInput,
-                                name: "end_date",
-                                label: "End Date",
-                                required: true,
-                            },
-                            {
-                                InputField: NumberInput,
-                                name: "total_allotted_leave",
-                                label: "No. of Leave Alloted",
-                                required: true,
-                            },
-
-                        ].filter(Boolean),
-                    },
-                ],
-            }}
-        ></SheetUI>
+                    setSelectedEmployee(employee);
+                  },
+                },
+                ...(selectedEmployee
+                  ? [
+                      {
+                        InputField: EmployeeDetailUI,
+                        id: parseInt(selectedEmployee?.id),
+                        InformationKeys: ["name", "department", "branch"],
+                        variant: "FormView",
+                        colsSpan: 2,
+                        className: "grid grid-cols-2 gap-4",
+                      },
+                    ]
+                  : []),
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Leave Details",
+              InputFields: [
+                {
+                  InputField: TextInput,
+                  name: "name",
+                  label: "Leave Name",
+                  required: true,
+                },
+                {
+                  InputField: DateInput,
+                  name: "start_date",
+                  label: "Start Date",
+                  required: true,
+                },
+                {
+                  InputField: DateInput,
+                  name: "end_date",
+                  label: "End Date",
+                  required: true,
+                },
+                {
+                  InputField: NumberInput,
+                  name: "total_allotted_leave",
+                  label: "No. of Leave Alloted",
+                  required: true,
+                },
+                {
+                  InputField: SwitchInput,
+                  name: "clearance_required",
+                  label: "Clearance Required",
+                  required: true,
+                },
+              ].filter(Boolean),
+            },
+          ],
+        }}
+      ></SheetUI>
     );
 };
 

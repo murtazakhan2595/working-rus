@@ -44,10 +44,6 @@ const Attendance = ({ isTeamView = false }) => {
     department_name: user_department,
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
-  const previousFilters = React.useMemo(() => {
-    const stored = window.localStorage.getItem("attendance-filters");
-    return stored ? JSON.parse(stored) : null;
-  }, []);
 
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +51,7 @@ const Attendance = ({ isTeamView = false }) => {
   const [weeklySummary, setWeeklySummary] = useState([]);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState(previousFilters ? previousFilters : { start_date: moment().format("YYYY-MM-DD"), end_date: moment().format("YYYY-MM-DD"), });
+  const [filterData, setFilterData] = useState({ start_date: moment().format("YYYY-MM-DD"), end_date: moment().format("YYYY-MM-DD"), });
   const [ordering, setOrdering] = useState("emp_name");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
@@ -99,17 +95,24 @@ const Attendance = ({ isTeamView = false }) => {
       } else {
         updatedFilters[filterName] = filterValue;
       }
-      window.localStorage.setItem("attendance-filters", JSON.stringify(updatedFilters));
       return updatedFilters;
     });
   };
+
+  const tableOptions = React.useMemo(() => ({
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange,
+    onSortChange: (sortName) => setOrdering(sortName),
+  }), [options.page, options.sizePerPage]);
+
+
   const getAttendanceList = async (isMounted) => {
     setIsLoading(true);
     const filter = {
       ...filterData,
       ...permittedViewFilterData,
     };
-
     try {
       const attendanceData = await getAttendanceSummary({
         filterData: filter,
@@ -127,14 +130,7 @@ const Attendance = ({ isTeamView = false }) => {
       setIsLoading(false);
     }
   };
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-    onSortChange: (sortName) => {
-      setOrdering(sortName);
-    },
-  };
+
   useEffect(() => {
     let isMounted = true;
     if (permittedViewFilterData) getAttendanceList(isMounted);
@@ -205,7 +201,7 @@ const Attendance = ({ isTeamView = false }) => {
                     },
                     {
                       type: "select",
-                      options: Departments,
+                      options: 'Departments',
                       name: "department",
                       placeholder: "Department",
                     },
@@ -213,7 +209,7 @@ const Attendance = ({ isTeamView = false }) => {
                       ? [
                         {
                           type: "select",
-                          options: Branches,
+                          options: 'Branches',
                           name: "branch",
                           placeholder: "Branch",
                         },
@@ -224,7 +220,6 @@ const Attendance = ({ isTeamView = false }) => {
                       name: "range_date",
                     },
                   ]}
-                  filterValues={filterData}
                   onChange={handleFilterChange}
                   className='justify-end mb-4'
                 />

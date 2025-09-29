@@ -52,7 +52,9 @@ export function mapRotationPayloadData(data) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      payload[key] = data[key];
+      if (key === 'rotation_cap_time')
+        payload[key] = Number(data[key]);
+      else payload[key] = data[key];
     }
   }
 
@@ -90,10 +92,10 @@ export async function mapTransferStatsData(data) {
 export async function mapRotationStatsData(data) {
   if (!data || data.length === 0)
     return { Pending: 0, Approved: 0, Rejected: 0, Total: 0 };
-  const Pending = calculateTotalCount(data, "status", "PENDING");
+  const Pending = calculateTotalCount(data, "status", "pending");
   const Total = data.length || 0;
-  const Approved = calculateTotalCount(data, "status", "APPROVED");
-  const Rejected = calculateTotalCount(data, "status", "REJECTED");
+  const Approved = calculateTotalCount(data, "status", "approved");
+  const Rejected = calculateTotalCount(data, "status", "rejected");
 
   return { Pending, Approved, Rejected, Total };
 }
