@@ -1,8 +1,9 @@
 import React from "react";
-import { FormatID, BranchName, DepartmentName } from "utils/getValuesFromTables";
-import { renderRange } from "utils/renderValues";
+import { FormatID, BranchName, DepartmentName,EmployeeName } from "utils/getValuesFromTables";
+import { renderRange,renderDate } from "utils/renderValues";
 import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
+import { RecruitmentApplicationSource } from "data/Data";
 
 export const RequisitionViewFields = [
     {
@@ -155,4 +156,149 @@ export const RequisitionViewFields = [
             },
         ],
     },
+];
+
+
+export const ApplicantDetails = [
+  {
+    customContent: true,
+    renderContent: (data) => {
+      return (
+        <div className="flex flex-wrap justify-end gap-2 items-center">
+          <div className="flex justify-end gap-2 flex-wrap">
+            <StatusLabel status={data.status}>
+              {data?.status?.toLowerCase()}
+            </StatusLabel>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    title: "Candidate Information",
+    field: [
+      {
+        key: "candidate_name",
+        label: "Candidate Name",
+      },
+      {
+        key: "candidate_id",
+        label: "Candidate ID",
+      },
+      {
+        key: "email",
+        label: "Email Address",
+      },
+      {
+        key: "contact_number",
+        label: "Contact Number",
+      },
+      {
+        key: "emiratization_flag",
+        label: "Emiration Eligibity",
+        formatter: (cell) => cell ? 'Yes' : 'No',
+      },
+    ],
+  },
+  {
+    title: `Application Details`,
+    footerTitle: "Request At",
+    footerField: "created_at",
+    field: [
+      {
+        key: "id",
+        label: "Id",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
+      },
+      {
+        key: "job_title",
+        label: "Job Title",
+        // formatter: (cell) => renderDate(cell),
+      },
+      {
+        key: "job_description",
+        label: "Job Description",
+        // formatter: (cell) => renderDate(cell),
+      },
+
+      {
+        key: "department",
+        label: "Department",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+      {
+        key: "location",
+        label: "Location",
+      },
+      {
+        key: "job_type_name",
+        label: "Job Type",
+      },
+      {
+        key: "career_level_name",
+        label: "Career Level",
+      },
+      {
+        key: "education",
+        label: "Education Requirement",
+      },
+      {
+        key: "notice_period",
+        label: "Experience Requirement",
+      },
+      {
+        key: "application_source",
+        label: "Application Source",
+        formatter: (cell) => {
+          return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+        },
+      },
+      {
+        key: "application_date",
+        label: "Application Date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+    ],
+  },
+  {
+    title: `Resume/Attachment`,
+    field: [
+      {
+        key: "attachment",
+        formatter: (cell, data) =>
+          cell ? (
+            <AttachmentUI
+              attachment={cell}
+              name={`${data.candidate_name} Resume`}
+              viewOnly={true}
+            />
+          ) : (
+            <div className="text-neutral-1000 text-sm">No letter attached</div>
+          ),
+      },
+    ],
+  },
+  {
+    title: "Rejection Information",
+    renderSectionCondition: (data) => {
+      if (data.status === 'rejected' || data.rejected_by) return true;
+      return false;
+    },
+    field: [
+      {
+        key: "rejected_by",
+        label: "Rejected By",
+        formatter: (cell) => <EmployeeName value={cell} />
+      },
+      {
+        key: "rejected_on",
+        label: "Date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+      {
+        key: "rejection_reason",
+        label: "Reason",
+      },
+    ],
+  },
 ];

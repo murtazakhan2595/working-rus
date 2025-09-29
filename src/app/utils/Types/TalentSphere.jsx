@@ -168,7 +168,7 @@ export const PublishVacancy = {
 }
 
 export const Applicants = {
-    id:null,
+    id: null,
     published_vacancy: null,
     candidate_id: null,
     candidate_name: null,
@@ -183,4 +183,13 @@ export const Applicants = {
     rejection_reason: null,
     application_date: null,
     location: null,
+}
+
+export const RejectedApplication = {
+    id: null,
+    applicant: null,
+    rejection_reason: null,
+    remarks: null,
+    rejected_by: null,
+    rejected_on: null,
 }
