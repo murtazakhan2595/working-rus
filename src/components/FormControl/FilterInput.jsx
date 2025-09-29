@@ -47,9 +47,12 @@ const FilterInput = ({
   const [openDepartment, setOpenDepartment] = useState(false);
   const [resetFields, setResetFields] = useState(false);
 
-  const handleInputChange = (field, value) => {
-    onChange(field, value);
-  };
+  const handleInputChange = React.useCallback(
+    (field, value) => {
+      onChange(field, value);
+    },
+    [onChange]
+  );
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
     // Add "All" option to the options array if it exists
@@ -465,9 +468,9 @@ const RenderDateRangeFilterField = React.memo(
       return () => {
         isMounted = false;
       };
-    }, [resetField, handleInputChange, name]);
+    }, [resetField, name]);
     return (
-      <div className={`${className} ${height} w-fit relative`}>
+      <div className={`${className} ${height} h-full w-fit relative`}>
         <DateRangeFilter
           activeDateRange={activeTab}
           className={`rounded-sm text-neutral-1000`}

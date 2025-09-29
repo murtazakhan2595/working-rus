@@ -75,6 +75,8 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [shiftList, setShiftList] = useState([]);
   const [customShiftData, setCustomShiftData] = useState(null);
+  const [probation_period, setProbationPeriod] = useState(null);
+  const [confirmation_date, setConfirmationDate] = useState(null);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
@@ -539,8 +541,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   required: true,
                   label: "Joining Date",
                   onFieldUpdate: async (_, value, __, handleChange) => {
-                    handleChange("probation_start_date", value);
-                    handleChange("probation_end_date", null);
+                    await handleChange("probation_date_range", value);
                   },
                 },
                 {
@@ -548,41 +549,27 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   name: "probation_date_range",
                   required: true,
                   label: "Probation Date Range",
-                  value:
-                    FormValues.probation_start_date ||
-                    FormValues.probation_end_date
-                      ? `${FormValues.probation_start_date},${FormValues.probation_end_date}`
-                      : null,
                   minDate: FormValues.joining_date,
-                  onFieldUpdate: async (_, value, __, handleChange) => {
+                  onFieldUpdate: async (_, value) => {
                     const [start_date, end_date] = value?.split(",") || "";
-                    handleChange("probation_start_date", start_date || null);
-                    handleChange("probation_end_date", end_date || null);
                     if (end_date && start_date) {
-                      handleChange(
-                        "confirmation_date",
-                        moment(end_date).add(1, "days").format("YYYY-MM-DD")
-                      );
-                      handleChange(
-                        "probation_period",
-                        formatDaysDuration(start_date, end_date)
-                      );
+                      setConfirmationDate(moment(end_date).add(1, "days").format("YYYY-MM-DD"));
+                      setProbationPeriod(formatDaysDuration(start_date, end_date));
                     }
                   },
                 },
                 {
                   InputField: TextInput,
                   name: "probation_period",
-                  required: true,
                   disabled: true,
+                  value: probation_period || FormValues.probation_period,
                   label: "Probation Period",
                 },
                 {
                   InputField: DateInput,
                   name: "confirmation_date",
-                  required: true,
                   disabled: true,
-                  label: "Confirmation Date",
+                  value: confirmation_date || FormValues.confirmation_date,
                 },
                 {
                   InputField: CheckBoxInput,
@@ -626,54 +613,53 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
             },
             ...(Config.SHIFT_CALENDAR
               ? [
-                  {
-                    sheetCardExtension: true,
-                    sheetCardTitle: `Shift Details`,
-                    InputFields: [
-                      {
-                        InputField: SelectInputComponent,
-                        name: "shift_assignment",
-                        options: shiftList,
-                        required: false,
-                        label: "Shift",
-                      },
-                      {
-                        InputField: AddCustomShift,
-                        customShiftData: customShiftData,
-                        setCustomShiftData: setCustomShiftData,
-                        colsSpan: 2,
-                      },
-                    ],
-                  },
-                ]
+                {
+                  sheetCardExtension: true,
+                  sheetCardTitle: `Shift Details`,
+                  InputFields: [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "shift_assignment",
+                      options: shiftList,
+                      required: false,
+                      label: "Shift",
+                    },
+                    {
+                      InputField: AddCustomShift,
+                      customShiftData: customShiftData,
+                      setCustomShiftData: setCustomShiftData,
+                      colsSpan: 2,
+                    },
+                  ],
+                },
+              ]
               : []),
             ...(SalarySetupAllowed
               ? [
-                  {
-                    sheetCardExtension: true,
-                    sheetCardTitle: `Salary Details`,
-                    InputFields: [
-                      {
-                        InputField: SelectInputComponent,
-                        name: "salary_type",
-                        options: SalaryTypeOptions,
-                        required: true,
-                        label: "Salary Type",
-                      },
-                      {
-                        InputField: NumberInput,
-                        name: "salary",
-                        options: shiftList,
-                        required: true,
-                        label: `Employee ${
-                          FormValues.salary_type === "hourly"
-                            ? "Hourly"
-                            : "Monthly"
+                {
+                  sheetCardExtension: true,
+                  sheetCardTitle: `Salary Details`,
+                  InputFields: [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "salary_type",
+                      options: SalaryTypeOptions,
+                      required: true,
+                      label: "Salary Type",
+                    },
+                    {
+                      InputField: NumberInput,
+                      name: "salary",
+                      options: shiftList,
+                      required: true,
+                      label: `Employee ${FormValues.salary_type === "hourly"
+                        ? "Hourly"
+                        : "Monthly"
                         } Salary`,
-                      },
-                    ],
-                  },
-                ]
+                    },
+                  ],
+                },
+              ]
               : []),
             {
               sheetCardExtension: true,
