@@ -24,6 +24,28 @@ export const Benefit = {
     created_by: null,
     updated_by: null,
 }
+export const EmailTemplate = {
+    id: null,
+    created_by: null,
+    name: null,
+    subject: null,
+    body: null,
+    signature: null,
+    template_type: null,
+    is_active: true,
+    created_on: null,
+    created_by: null,
+    updated_on: null,
+}
+export const OfferLetterTemplate = {
+    name: null,
+    body: null,
+    is_active: null,
+    id: null,
+    created_by: null,
+    created_on: null,
+    updated_on: null,
+}
 
 export const RemoteWorkChecklist = {
     id: null,

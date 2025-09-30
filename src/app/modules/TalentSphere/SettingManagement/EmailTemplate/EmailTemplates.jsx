@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import { getFeedBackFormList } from "app/hooks/talentSphere";
+import { getEmailTemplateList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
-import { FeedBackFormsColumns } from "app/modules/TalentSphere/Sections";
+import { EmailTemplatesColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 
-const FeedBackForms = ({ reload }) => {
-    const [FeedBackFormList, setFeedBackFormList] = useState({});
+const EmailTemplates = ({ reload }) => {
+    const [EmailTemplateList, setEmailTemplateList] = useState({});
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -29,13 +29,13 @@ const FeedBackForms = ({ reload }) => {
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
-            const response = await getFeedBackFormList({
+            const response = await getEmailTemplateList({
                 filterData,
                 options,
                 ordering,
             });
             if (isMounted && response) {
-                setFeedBackFormList(response);
+                setEmailTemplateList(response);
                 setFilteredData(response.results || []);
             }
         } catch (error) {
@@ -79,9 +79,9 @@ const FeedBackForms = ({ reload }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle >Feedback Forms</CardTitle>
+                <CardTitle >Email Templates</CardTitle>
                 <CardDescription>
-                    Here you can add, edit, and delete customizable feedback forms for interview evaluations, So that panelists can submit structured and consistent feedback after each interview.
+                    Here you can add, update, and delete predefined email templates So that emails are automatically sent to applicants during different recruitment stages without writing emails manually each time.
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
@@ -95,13 +95,7 @@ const FeedBackForms = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options: [{ value: 'ACTIVE', label: 'Active' }, { value: 'INACTIVE', label: 'Inactive' },]
-                            },
-                            {
-                                type: "select",
-                                placeholder: "Created By",
-                                name: "created_by",
-                                options: 'employees',
+                                options:[{value:'Active',label:'Active'},{value:'Inactive',label:'Inactive'},]
                             },
                             {
                                 type: "date-range",
@@ -119,10 +113,10 @@ const FeedBackForms = ({ reload }) => {
                     <PageLoader />
                 ) : (
                     <TableCustom
-                        columns={FeedBackFormsColumns(fetchData)}
+                        columns={EmailTemplatesColumns(fetchData)}
                         data={filteredData}
                         tableOptions={tableOptions}
-                        dataTotalSize={FeedBackFormList?.count || 0}
+                        dataTotalSize={EmailTemplateList?.count || 0}
                         pagination={true}
                         className="organization-table"
                     />
@@ -132,4 +126,4 @@ const FeedBackForms = ({ reload }) => {
     );
 };
 
-export default FeedBackForms;
+export default EmailTemplates;

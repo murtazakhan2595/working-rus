@@ -9,9 +9,6 @@ import {
   Image,
 } from "lucide-react";
 import { Button } from "components/ui/button";
-import { AiOutlinePaperClip } from "react-icons/ai";
-// import { iconButtonClasses } from "@mui/material";
-import AttachmentUI from "components/ui/AttachmentUI";
 import "./style.css";
 import {
   Command,
@@ -26,9 +23,9 @@ const TextEditorIconClassName = "w-4 h-4";
 
 function TextEditorInputField({
   handleSubmitContent,
-  content = "",
+  value: content = "",
   upload,
-  setContent = () => { },
+  onChange: setContent = () => { },
   setAttachments = () => { },
   removeAttachment = () => { },
   attachments = [],
@@ -164,7 +161,7 @@ function TextEditorInputField({
     caretPosition.insertNode(img); // Insert image at the restored position
     caretPosition.collapse(false); // Move cursor after image
     // Update content state
-    setContent(editorRef.current.innerHTML);
+    setContent(name, editorRef.current.innerHTML);
     // Save updated caret position
     setLastCaretPosition(caretPosition);
   };
@@ -273,7 +270,7 @@ function TextEditorInputField({
   const handleInput = useCallback(
     (e) => {
       const text = e.target.innerHTML;
-      setContent(text);
+      setContent(name, text);
       saveCaretPosition();
 
       if (!allowMentions) return;

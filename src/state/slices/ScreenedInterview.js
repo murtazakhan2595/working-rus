@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getApplicantsList,
   getInterviewTypesList,
-  getEmailTemplatesList,
+  getEmailTemplateList,
 } from "app/hooks/talentSphere";
 
 import {getEmployeeList} from "app/hooks/general"
@@ -16,7 +16,7 @@ export const fetchInterviewOptions = createAsyncThunk(
         getApplicantsList(),
         getInterviewTypesList(),
         getEmployeeList(),
-        getEmailTemplatesList(),
+        getEmailTemplateList(),
       ]);
 
     return {

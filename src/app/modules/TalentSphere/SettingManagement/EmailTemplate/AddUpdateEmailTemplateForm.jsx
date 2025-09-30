@@ -1,0 +1,158 @@
+import { saveUpdateEmailTemplate, getEmailTemplateList, getEmailTemplateData } from "app/hooks/talentSphere";
+import { EmailTemplate } from "app/utils/Types/TalentSphere";
+import { SheetUI } from "components";
+import { TextInput, TextEditorInputField, RadioGroupInput } from "components/FormControl";
+import React, { useEffect, useState, useCallback } from "react";
+import { toast } from "react-toastify";
+
+const AddUpdateEmailTemplateForm = ({
+  id = false,
+  reloadData = () => { },
+  isOpen = false,
+  setIsOpen = () => { },
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [FormData, setFormData] = useState(EmailTemplate);
+  const [EmailTemplateList, setEmailTemplateList] = useState(null);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const isEditMode = Boolean(id);
+
+  const FormSheetData = {
+    triggerText: `${isEditMode ? "Edit" : "Add"} Email Template`,
+    title: `${isEditMode ? "Edit" : "Add"} Email Template`,
+    description: null,
+    footer: null,
+  };
+
+
+
+  useEffect(() => {
+    const fetchEmailTemplateData = async (isMounted) => {
+      try {
+        setIsLoading(true);
+        // Add organizationId to filter if available
+
+        const response = await getEmailTemplateList();
+
+        if (isMounted) {
+          setEmailTemplateList(response.results);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    let isMounted = true;
+    fetchEmailTemplateData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const fetchData = async (isMounted, id) => {
+      try {
+        setIsLoading(true);
+        const response = await getEmailTemplateData(id);
+        if (isMounted) {
+          setFormData(response);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    let isMounted = true;
+    if (id) fetchData(isMounted, id);
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    reloadData(true);
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      setIsSubmittingForm(true);
+      const response = await saveUpdateEmailTemplate(values, id);
+      if (response) {
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: `Email Template ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          description: `Email Template is ${isEditMode ? "updated" : "added"} successfully.`,
+        };
+      }
+    } catch (error) {
+      console.error("ERROR", error);
+    } finally {
+      setIsSubmittingForm(false);
+    }
+  };
+
+
+  return (
+    <SheetUI
+      isOpen={isOpen}
+      setIsOpen={handleClose}
+      variant="sheet"
+      sheetConfig={FormSheetData}
+      formConfig={{
+        initialValues: FormData,
+        enableReinitialize: true,
+        handleSubmit: handleSubmit,
+        validateFormSchema: () => { },
+        DataList: EmailTemplateList,
+        submitButtonText: "Submit",
+        cancelButtonText: "Cancel",
+        columns: 1,
+        disableSubmit: isLoading || isSubmittingForm,
+        loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+        formFields: [
+          {
+            sheetCardExtension: true,
+            sheetCardTitle: `Template Details`,
+            InputFields: [
+              {
+                InputField: RadioGroupInput,
+                name: "status",
+                label: "Status",
+                options: [
+                  { value: 'active', label: 'Active' },
+                  { value: 'inactive', label: "Inactive" },
+                ],
+              },
+              {
+                InputField: TextInput,
+                name: "name",
+                required: true,
+                label: "Name",
+                validateDuplicate: true,
+              },
+              {
+                InputField: TextInput,
+                name: "subject",
+                required: true,
+                label: "Email Subject Line",
+              },
+              {
+                InputField: TextEditorInputField,
+                name: "body",
+                required: true,
+                label: "Email Body",
+              },
+            ],
+          },
+        ],
+      }}
+    />
+  );
+};
+
+export default AddUpdateEmailTemplateForm;

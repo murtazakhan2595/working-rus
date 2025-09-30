@@ -13,6 +13,7 @@ import {
     ResumeBankApplication,
     InterviewType,
     FeedBackForm,
+    EmailTemplate,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -705,6 +706,54 @@ export function mapFeedBackFormPayloadData(data, id) {
             data[key] !== undefined
         ) {
             if (key === "name") payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+//-------------EmailTemplates ---------------
+
+export function mapEmailTemplateData(data) {
+    const RecordDetails = Object.keys(EmailTemplate).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapEmailTemplateList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapEmailTemplateData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapEmailTemplatePayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the EmailTemplate object
+    for (const key in EmailTemplate) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
     }

@@ -38,6 +38,12 @@ import {
     FeedBackFormStatusTogle,
     FeedBackFormActions,
 } from './FeedBackForms';
+import {
+    EmailTemplates,
+    AddUpdateEmailTemplateForm,
+    EmailTemplateStatusTogle,
+    EmailTemplateActions,
+} from './EmailTemplate'
 export {
     TalentSphereSettingManagement,
     Benefits,
@@ -45,6 +51,10 @@ export {
     BenefitStatusTogle,
     BenefitActions,
     InterviewTypes,
+    EmailTemplates,
+    AddUpdateEmailTemplateForm,
+    EmailTemplateStatusTogle,
+    EmailTemplateActions,
     AddUpdateInterviewTypeForm,
     InterviewTypeStatusTogle,
     InterviewTypeActions,

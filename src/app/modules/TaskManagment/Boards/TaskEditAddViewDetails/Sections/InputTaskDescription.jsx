@@ -22,9 +22,7 @@ const InputTaskDescription = React.memo(
         {editingMode ? (
           <TextEditorInputField
             content={value}
-            setContent={(value) => {
-              onChange(name, value);
-            }}
+            onChange={onChange}
             name={name}
             setAttachments={setAttachment}
             attachments={attachments}

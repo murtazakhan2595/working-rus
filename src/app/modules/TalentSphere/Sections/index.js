@@ -15,10 +15,14 @@ import {
     InterviewTypesColumns,
     InProgressInterviewColumns,
     FeedBackFormsColumns,
+    EmailTemplatesColumns,
 } from './TableColumns';
 import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
-import { AddNewSection, AddNewSectionField ,RemoveSection} from './FormSections';
+import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
+import { SETTING_TAB_CONFIG } from './TabsList';
+
 export {
+    SETTING_TAB_CONFIG,
     ManpowerPlanningColumns,
     BenefitsColumns,
     RemoteWorkChecklistsColumns,
@@ -40,5 +44,6 @@ export {
     FeedBackFormsColumns,
     AddNewSection,
     AddNewSectionField,
-    RemoveSection
+    RemoveSection,
+    EmailTemplatesColumns,
 }

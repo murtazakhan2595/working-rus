@@ -4,6 +4,8 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    EmailTemplateStatusTogle,
+    EmailTemplateActions,
     FeedBackFormStatusTogle,
     FeedBackFormActions,
     InterviewTypeStatusTogle,
@@ -174,6 +176,65 @@ export const BenefitsColumns = (reloadData) => [
     },
 ];
 
+/**
+ * EmailTemplatesColumns
+ *
+ * Returns an array of column definitions for the EmailTemplatesColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const EmailTemplatesColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"ET-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Template Name",
+        dataSort: true,
+    },
+    {
+        dataField: "subject",
+        text: "Email Subject",
+        dataSort: true,
+    },
+    {
+        dataField: "created_on",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+
+    {
+        dataField: "updated_on",
+        text: "Last Modified",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "is_active",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <EmailTemplateStatusTogle data={row} is_active={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <EmailTemplateActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
 
 /**
  * FeedBackFormsColumns
@@ -186,7 +247,7 @@ export const FeedBackFormsColumns = (reloadData) => [
     {
         dataField: "id",
         text: "ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"TSB-"} />,
+        formatter: (cell, row) => <FormatID value={cell} prefix={"FBF-"} />,
     },
     {
         dataField: "name",
@@ -787,7 +848,7 @@ export const PublishedVacancyColumns = (reloadData) => [
         text: "Posted On",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
     },
-    
+
     {
         dataField: "total_applications",
         text: "Total Applications",
@@ -881,12 +942,12 @@ export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "",
         text: "",
-        
+
 
         formatter: (_, row, data_list) => (
             <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
-        
+
         width: "50px",
     },
 ];
@@ -983,12 +1044,12 @@ export const ResumeBankColumns = (reloadData) => [
     {
         dataField: "recommended_department",
         text: "Recommended Department",
-        formatter:(cell)=><DepartmentName value={cell}/>
+        formatter: (cell) => <DepartmentName value={cell} />
     },
     {
         dataField: "recommended_designation",
         text: "Recommended Designation",
-        formatter:(cell)=><DesignationName value={cell}/>
+        formatter: (cell) => <DesignationName value={cell} />
     },
     {
         dataField: "job_title_applied_for",
@@ -1039,14 +1100,14 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "id",
         text: "Candidate Name",
     },
- {
+    {
         dataField: "job_title_applied_for",
         text: "Applied Job Title",
-    },   
- {
+    },
+    {
         dataField: "interview_type",
         text: "Interview Type",
-    }, 
+    },
     {
         dataField: "scheduled_datetime",
         text: "Scheduled Date & Time",
@@ -1061,12 +1122,12 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "posted_portals",
         text: "AI Match Score",
     },
-     {
+    {
         dataField: "status",
         text: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
-      {
+    {
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
