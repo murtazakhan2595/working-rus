@@ -4,11 +4,10 @@ import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import {
   getLetterRequestList,
-  addUpdateLetterRequest,
 } from "app/hooks/hrDocuments";
 import CustomTable from "components/CustomTable";
 import { Header } from "components";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardTitle, CardHeader } from "components/ui/card";
 import AddUpdateLetterRequest from "./AddUpdateLetterRequest";
 import { MyLetterRequestColumns } from "./LetterRequestColumn";
 
@@ -59,81 +58,7 @@ const MyLetterRequests = ({ userProfile }) => {
     fetchData();
   }, [userProfile.id, tableOptions.page, tableOptions.sizePerPage, ordering]);
 
-  // Handle acknowledgment
-  const handleAcknowledgment = async (requestId) => {
-    try {
-      const response = await addUpdateLetterRequest(
-        {
-          is_emp_ack: true,
-          status: "ACCEPTED",
-          id:requestId,
-        },
-        requestId
-      );
 
-      if (response) {
-        toast.success("Request acknowledged successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        fetchData(); // Refresh the table
-      } else {
-        throw new Error("Failed to acknowledge request");
-      }
-    } catch (error) {
-      console.error("Error acknowledging request:", error);
-      toast.error("Failed to acknowledge request", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  };
-
- const enhancedColumns = [
-   ...MyLetterRequestColumns,
-   {
-     dataField: "",
-     text: "Actions",
-     formatter: (cell, row) => {
-       // DEBUG: Log the row data to see what fields we're getting
-       console.log("Row data:", row);
-       console.log("Status:", row.status);
-       console.log("is_acknowledgment:", row.is_acknowledgment);
-       console.log("is_emp_ack:", row.is_emp_ack);
-
-       // Show acknowledgment button if needed
-       if (
-         row.status === "PENDING" &&
-         row.is_acknowledgment &&
-         !row.is_emp_ack
-       ) {
-         return (
-           <Button
-             size="sm"
-             onClick={() => handleAcknowledgment(row.id)}
-           >
-             Acknowledge
-           </Button>
-         );
-       }
-
-       // DEBUG: Show what condition failed
-       if (row.status === "PENDING") {
-         if (!row.is_acknowledgment) {
-           return (
-             <span className="text-xs ">No ack required</span>
-           );
-         }
-         if (row.is_emp_ack) {
-           return <span className="text-xs ">Already acked</span>;
-         }
-       }
-
-       return <span className="text-xs ">No action needed</span>;
-     },
-     width: "150px",
-     headerAlign: "center",
-     align: "center",
-   },
- ];
   const myRequestsTableOptions = {
     page: tableOptions.page,
     sizePerPage: tableOptions.sizePerPage,
@@ -153,10 +78,13 @@ const MyLetterRequests = ({ userProfile }) => {
         }
       />
       <Card>
+        <CardHeader>
+          <CardTitle>My Letter Requests</CardTitle>
+        </CardHeader>
         <CardContent>
           <CustomTable
             data={requests}
-            columns={enhancedColumns}
+            columns={MyLetterRequestColumns(fetchData, true)}
             pagination={true}
             dataTotalSize={totalCount}
             tableOptions={myRequestsTableOptions}

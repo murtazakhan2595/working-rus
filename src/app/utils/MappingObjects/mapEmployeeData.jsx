@@ -13,6 +13,9 @@ import {
 } from "app/utils/Types/Employee";
 import { calculateTotalCount } from "utils/renderValues";
 import { mapDefaultShiftData } from 'app/utils/MappingObjects/mapShiftManagementData';
+import moment from 'moment';
+import { formatDaysDuration } from "utils/DateTimeUtils";
+
 
 export function mapEmployeePayloadData(data, id) {
   // Initialize an empty payload object
@@ -22,7 +25,15 @@ export function mapEmployeePayloadData(data, id) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      payload[key] = data[key];
+      if (key === 'probation_start_date' || key === 'probation_end_date') {
+        const [start_date, end_date] = data['probation_date_range']?.split(",") || "";
+        payload['probation_start_date'] = start_date;
+        payload['probation_end_date'] = end_date;
+        payload['probation_period'] = formatDaysDuration(start_date, end_date);
+      } else if (key === 'confirmation_date') {
+        payload[key] = moment(payload['probation_end_date']).add(1, "days").format("YYYY-MM-DD")
+      }
+      else payload[key] = data[key];
     }
   }
 

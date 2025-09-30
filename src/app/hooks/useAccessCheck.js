@@ -37,19 +37,19 @@ const useAccessCheck = () => {
             setHasAccess(false);
             console.log('❌ Access denied - Organization not found or inactive');
             console.log('Reason:', message);
-            navigate('/access-denied');
+            // navigate('/access-denied');
           }
         } else {
           setHasAccess(false);
           console.log('❌ API returned non-200 status:', response.status);
-          navigate('/access-denied');
+          // navigate('/access-denied');
         }
       } catch (error) {
         console.error('❌ Access check failed:', error);
         alert('API Error: ' + error.message);
         setHasAccess(false);
         console.log('❌ API failed - redirecting to access-denied');
-        navigate('/access-denied');
+        // navigate('/access-denied');
       } finally {
         setIsChecking(false);
       }
