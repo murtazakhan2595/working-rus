@@ -1,33 +1,37 @@
-import React, { useState,useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "components/ui/button";
 import { CardHeader, CardTitle } from "components/ui/card";
-import DemoGraphicsTable from './DemographicsTable';
-import DemographicsSheet from './DemographicsSheet'
-import { getDemographicFormsList } from 'app/hooks/talentSphere';
+import DemoGraphicsTable from "./DemographicsTable";
+import DemographicsSheet from "./DemographicsSheet";
+import { getDemographicFormsList } from "app/hooks/talentSphere";
 
 const DemoGraphics = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [formsList, setFormsList] = useState(true);
 
+  // 👇 trigger for reload
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const tableRef = useRef();
+
   const handleAdd = () => {
     setSelectedId(null);
     setIsOpen(true);
   };
 
-  useEffect(()=>{
-   const fetchdata = async()=>{
-    const res = await getDemographicFormsList();
-    if(res.count > 0){
-      setFormsList(true)
-    }else{
-      setFormsList(false)
-    }
-   }
-   fetchdata()
-  },[])
+  useEffect(() => {
+    const fetchdata = async () => {
+      const res = await getDemographicFormsList();
+      setFormsList(res.count > 0);
+    };
+    fetchdata();
+  }, [reloadKey]);
 
-  const tableRef = useRef();
+  const handleReload = () => {
+    tableRef.current?.reload();
+    setReloadKey((prev) => prev + 1); 
+  };
 
   return (
     <>
@@ -37,21 +41,27 @@ const DemoGraphics = () => {
             Talent Sphere
           </div>
           <div className="flex flex-row gap-4">
-            <Button onClick={handleAdd} disabled={formsList? true : false}>
-              {formsList?"Already Exit":"Add"} Demographics Form
+            <Button onClick={handleAdd} disabled={formsList}>
+              {formsList ? "Already Exist" : "Add"} Demographics Form
             </Button>
           </div>
         </CardTitle>
       </CardHeader>
 
-      <DemoGraphicsTable ref={tableRef} setIsOpen={setIsOpen} setSelectedId={setSelectedId} />
+      <DemoGraphicsTable
+        ref={tableRef}
+        setIsOpen={setIsOpen}
+        setSelectedId={setSelectedId}
+          onDataChange={() => setReloadKey((prev) => prev + 1)}
+
+      />
 
       {/* Sheet Component */}
       <DemographicsSheet
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         id={selectedId}
-        reloadData={() => { tableRef.current.reload() }}
+        reloadData={handleReload} 
       />
     </>
   );
