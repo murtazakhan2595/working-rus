@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { JobRotationColumns } from "app/modules/TransferAndRotation/Sections";
 
 export default function MyJobRotations() {
-  const userRole = useSelector((state) => state.user.userProfile.role);
   const userId = useSelector((state) => state.user.userProfile.id);
   const [MyTransferData, setMyTransferData] = useState({
     results: [],
@@ -19,10 +18,8 @@ export default function MyJobRotations() {
   });
   const [OpenRotationForm, setOpenRotationForm] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
-  const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState({ employee_id: userId });
+  const [filterData, setFilterData] = useState({ employee: userId });
   const [statsData, setStatsData] = useState({});
 
   const onPageChange = (name, value) => {
@@ -36,16 +33,13 @@ export default function MyJobRotations() {
     onSortChange: (sortName) => {
       setOrdering(sortName);
     },
-    onRowClick: (row) => {
-      setOpenTransferDetailID(row.id);
-    },
   };
 
   useEffect(() => {
     let isMounted = true;
     const fetchStatData = async () => {
       try {
-        const filter = { employee_id: userId };
+        const filter = { employee: userId };
         const response = await getRotationStats({
           filterData: filter,
         });
