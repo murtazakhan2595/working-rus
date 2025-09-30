@@ -12,6 +12,7 @@ import {
     RejectedApplication,
     ResumeBankApplication,
     InterviewType,
+    FeedBackForm,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -659,4 +660,55 @@ export async function mapResumeBankApplicantsList(data) {
     });
 
     return DataList;
+}
+
+
+//-------------FeedBackForms ---------------
+
+export function mapFeedBackFormData(data) {
+    const RecordDetails = Object.keys(FeedBackForm).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name") acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+    const total_sections = (data.sections || 0).length || 0;
+    const total_fields = (data.sections || []).reduce((count, section) => {
+        return count + ((section?.fields || [])?.length || 0);
+    }, 0);
+
+    return { ...RecordDetails, total_sections,total_fields };
+}
+export async function mapFeedBackFormList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapFeedBackFormData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapFeedBackFormPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the FeedBackForm object
+    for (const key in FeedBackForm) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name") payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
 }

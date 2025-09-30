@@ -4,6 +4,8 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    FeedBackFormStatusTogle,
+    FeedBackFormActions,
     InterviewTypeStatusTogle,
     InterviewTypeActions,
     CareerLevelActions,
@@ -167,6 +169,63 @@ export const BenefitsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <BenefitActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+
+/**
+ * FeedBackFormsColumns
+ *
+ * Returns an array of column definitions for the FeedBackFormsColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const FeedBackFormsColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"TSB-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Name",
+        dataSort: true,
+    },
+    {
+        dataField: "total_sections",
+        text: "Section Count",
+    },
+    {
+        dataField: "total_fields",
+        text: "Total Field",
+    },
+    {
+        dataField: "created_on",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <FeedBackFormStatusTogle data={row} status={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <FeedBackFormActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
     },

@@ -32,7 +32,12 @@ import {
     AddUpdateCareerLevelForm,
     CareerLevelActions,
 } from './CareerLevels'
-
+import {
+    FeedBackForms,
+    AddUpdateFeedBackForm,
+    FeedBackFormStatusTogle,
+    FeedBackFormActions,
+} from './FeedBackForms';
 export {
     TalentSphereSettingManagement,
     Benefits,
@@ -56,4 +61,8 @@ export {
     CareerLevels,
     AddUpdateCareerLevelForm,
     CareerLevelActions,
+    FeedBackForms,
+    AddUpdateFeedBackForm,
+    FeedBackFormStatusTogle,
+    FeedBackFormActions,
 };

@@ -84,6 +84,25 @@ export const InterviewType = {
     updated_by_name: null,
 }
 
+export const FeedBackForm = {
+    id: null,
+    name: null,
+    status: 'ACTIVE',
+    created_by: null,
+    created_on: null,
+    sections: [{
+        id: null,
+        title: null,
+        fields: [{
+            id: null,
+            label: null,
+            field_type: null,
+            rating_scale_max: null,
+            radio_options: null,
+        }],
+    }]
+}
+
 export const HeadcountRequest = {
     id: null,
     branch_name: null,

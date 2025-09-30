@@ -14,8 +14,10 @@ import {
     ResumeBankColumns,
     InterviewTypesColumns,
     InProgressInterviewColumns,
+    FeedBackFormsColumns,
 } from './TableColumns';
 import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
+import { AddNewSection, AddNewSectionField ,RemoveSection} from './FormSections';
 export {
     ManpowerPlanningColumns,
     BenefitsColumns,
@@ -35,4 +37,8 @@ export {
     InterviewTypesColumns,
     InProgressInterviewColumns,
     InterviewDetails,
+    FeedBackFormsColumns,
+    AddNewSection,
+    AddNewSectionField,
+    RemoveSection
 }

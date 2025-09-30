@@ -32,6 +32,10 @@ import {
     AddUpdateInterviewTypeForm,
     InterviewTypeStatusTogle,
     InterviewTypeActions,
+    FeedBackForms,
+    AddUpdateFeedBackForm,
+    FeedBackFormStatusTogle,
+    FeedBackFormActions,
 } from './SettingManagement';
 
 import {
@@ -123,4 +127,8 @@ export {
     InterviewTypeStatusTogle,
     InterviewTypeActions,
     InterviewTracker,
+    FeedBackForms,
+    AddUpdateFeedBackForm,
+    FeedBackFormStatusTogle,
+    FeedBackFormActions,
 };
