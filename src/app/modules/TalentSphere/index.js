@@ -40,6 +40,10 @@ import {
     AddUpdateEmailTemplateForm,
     EmailTemplateStatusTogle,
     EmailTemplateActions,
+     OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
 } from './SettingManagement';
 
 import {
@@ -139,4 +143,8 @@ export {
     AddUpdateEmailTemplateForm,
     EmailTemplateStatusTogle,
     EmailTemplateActions,
+     OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
 };

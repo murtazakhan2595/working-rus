@@ -2,6 +2,8 @@
 import {
     Benefits,
     AddUpdateBenefitForm,
+    OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
     FeedBackForms,
     AddUpdateFeedBackForm,
     InterviewTypes,
@@ -91,5 +93,13 @@ export const SETTING_TAB_CONFIG = [
         addPerm: "ADD_TS_BENEFITS",
         list: (reload) => <EmailTemplates reload={reload} />,
         form: AddUpdateEmailTemplateForm,
+    },
+       {
+        key: "offer-letter-template",
+        label: "Offer Letter Templates",
+        viewPerm: "VIEW_TS_BENEFITS",
+        addPerm: "ADD_TS_BENEFITS",
+        list: (reload) => <OfferLetterTemplates reload={reload} />,
+        form: AddUpdateOfferLetterTemplateForm,
     },
 ];

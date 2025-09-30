@@ -1,6 +1,7 @@
 import {
     ManpowerPlanning,
     Benefit,
+    OfferLetterTemplate,
     RemoteWorkChecklist,
     JobType,
     Education,
@@ -746,6 +747,53 @@ export function mapEmailTemplatePayloadData(data, id) {
     const payload = {};
     // Iterate over the keys in the EmailTemplate object
     for (const key in EmailTemplate) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+//-------------OfferLetterTemplates ---------------
+
+export function mapOfferLetterTemplateData(data) {
+    const RecordDetails = Object.keys(OfferLetterTemplate).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapOfferLetterTemplateList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapOfferLetterTemplateData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapOfferLetterTemplatePayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the OfferLetterTemplate object
+    for (const key in OfferLetterTemplate) {
         // Check if the key exists in the data object
         if (
             data.hasOwnProperty(key) &&

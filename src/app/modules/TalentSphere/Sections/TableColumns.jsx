@@ -4,6 +4,8 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
     EmailTemplateStatusTogle,
     EmailTemplateActions,
     FeedBackFormStatusTogle,
@@ -171,6 +173,73 @@ export const BenefitsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <BenefitActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+/**
+ * OfferLetterTemplatesColumns
+ *
+ * Returns an array of column definitions for the OfferLetterTemplatesColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const OfferLetterTemplatesColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"OLT-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Template Name",
+        dataSort: true,
+    },
+    {
+        dataField: "attachment_url",
+        text: "Letter Head",
+        formatter: (cell) => (
+            <>
+                <AttachmentUI
+                    attachment={cell}
+                    viewOnly={true}
+                    variant={'preview-only'}
+                    fallBackText='--'
+                />
+            </>
+        ),
+    },
+    {
+        dataField: "updated_on",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+
+    {
+        dataField: "updated_on",
+        text: "Last Updated On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <OfferLetterTemplateStatusTogle data={row} status={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <OfferLetterTemplateActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
     },

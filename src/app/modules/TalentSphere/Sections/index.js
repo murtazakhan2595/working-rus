@@ -16,6 +16,7 @@ import {
     InProgressInterviewColumns,
     FeedBackFormsColumns,
     EmailTemplatesColumns,
+    OfferLetterTemplatesColumns,
 } from './TableColumns';
 import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
 import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
@@ -46,4 +47,5 @@ export {
     AddNewSectionField,
     RemoveSection,
     EmailTemplatesColumns,
+    OfferLetterTemplatesColumns,
 }
