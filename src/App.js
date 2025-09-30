@@ -17,7 +17,7 @@ import "./index.css";
 import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
 import { getNodeExistInTree } from "utils/renderValues";
 import Error from "app/modules/Error";
-import useAccessCheck from "app/hooks/useAccessCheck";
+// import useAccessCheck from "app/hooks/useAccessCheck";
 import {fetchInterviewOptions} from "./state/slices/ScreenedInterview";
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
   }, [ModuleList]);
 
   // API access check - runs on every page load
-  const { isChecking, hasAccess } = useAccessCheck();
+  // const { isChecking, hasAccess } = useAccessCheck();
 
   const token = window.localStorage.getItem("token");
   const baseUrl = useSelector((state) => state.user.baseUrl);
