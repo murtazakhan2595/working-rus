@@ -293,8 +293,8 @@ const LeaveRequest = ({ id, reloadData = () => { } }) => {
                     required: true,
                     minDate: new Date(),
                     disableHolidays: true,
-                    onFieldUpdate: async (_, value, __, handleChange) => {
-                      await handleChange("end_date", value);
+                    onFieldUpdate: (_, value, __, handleChange) => {
+                      handleChange("end_date", value);
                     },
                   },
                   {
