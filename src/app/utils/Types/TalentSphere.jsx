@@ -75,7 +75,6 @@ export const InterviewType = {
     id: null,
     created_at: null,
     updated_at: null,
-    status: 'active',
     is_active: true,
     name: null,
     description: null,
@@ -83,6 +82,25 @@ export const InterviewType = {
     updated_by: null,
     created_by_name: null,
     updated_by_name: null,
+}
+
+export const FeedBackForm = {
+    id: null,
+    name: null,
+    status: 'ACTIVE',
+    created_by: null,
+    created_on: null,
+    sections: [{
+        id: null,
+        title: null,
+        fields: [{
+            id: null,
+            label: null,
+            field_type: null,
+            rating_scale_max: null,
+            radio_options: null,
+        }],
+    }]
 }
 
 export const HeadcountRequest = {
@@ -219,4 +237,18 @@ export const ResumeBankApplication = {
     recommended_designation: null,
     added_on: null,
     added_by: null,
+}
+
+export const Interview = {
+    id: null,
+    applicant: null,
+    interview_type: null,
+    scheduled_datetime: null,
+    panel: null,
+    email_template: null,
+    generate_meeting_link: null,
+    require_demographics: null,
+    created_by: null,
+    created_at: null,
+    status: null,
 }

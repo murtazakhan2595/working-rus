@@ -78,7 +78,7 @@ const Config = {
   //Sub Modules
   MANPOWER_PLANNINGS: true,
   REQUISITION_PLANNING: true,
-  // SETUP: true,
+  APPLICANT_INTERVIEW_TRACKER: true,
   APPLICANTS:true,
 
   //-------------ASSET_MANAGEMENT-----------

@@ -8,6 +8,7 @@ import {
   TeamTalentSphere,
   DemoGraphics,
   ApplicantManagement,
+  InterviewTracker,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -365,9 +366,14 @@ export const SidebarRoutes = [
         name: "APPLICANTS",
       },
       Config.REQUISITION_PLANNING && {
-        path: "/office-settings/talent-sphere/requisition-planning",
+        path: "/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,
         name: "REQUISITION_PLANNING",
+      },
+      Config.APPLICANT_INTERVIEW_TRACKER && {
+        path: "/talent-sphere/interview-tracker",
+        component: <InterviewTracker />,
+        name: "APPLICANT_INTERVIEW_TRACKER",
       },
       Config.SETUP && {
         path: "/office-settings/talent-sphere/Setup",
