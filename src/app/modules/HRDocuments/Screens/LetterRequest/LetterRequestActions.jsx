@@ -3,7 +3,7 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { ViewLetterRequest } from "./ViewLetterRequest";
 import { AcceptRejectLetterForm } from "./AcceptRejectLetterForm";
 
-export const LetterRequestActions = ({ request, reloadData = () => {} }) => {
+export const LetterRequestActions = ({ request, reloadData = () => {},isEmpView=false }) => {
   const [viewRequest, setViewRequest] = useState(false);
   const [acceptRejectForm, setAcceptRejectForm] = useState(false);
 
@@ -39,6 +39,7 @@ export const LetterRequestActions = ({ request, reloadData = () => {} }) => {
             setViewRequest(false);
             reloadData(true);
           }}
+          isEmpView={isEmpView}
         />
       )}
 

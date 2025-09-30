@@ -4,7 +4,9 @@ import {
   StatusLabel,
   EmployeeOverview,
 } from "components";
-import { getLetterRequestData } from "app/hooks/hrDocuments";
+import { Button } from "components/ui/button";
+import { toast } from "react-toastify";
+import { getLetterRequestData, addUpdateLetterRequest } from "app/hooks/hrDocuments";
 import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 import { renderDate } from "utils/renderValues";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -12,7 +14,8 @@ import AttachmentUI from "components/ui/AttachmentUI";
 export const ViewLetterRequest = ({
   requestId = null,
   isOpen = true,
-  setIsOpen = () => {},
+  setIsOpen = () => { },
+  isEmpView = false,
 }) => {
   const [currentRequest, setCurrentRequest] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -48,6 +51,34 @@ export const ViewLetterRequest = ({
     return status;
   };
 
+  // Handle acknowledgment
+  const handleAcknowledgment = async (requestId) => {
+    try {
+      const response = await addUpdateLetterRequest(
+        {
+          is_emp_ack: true,
+          status: "ACCEPTED",
+          id: requestId,
+        },
+        requestId
+      );
+
+      if (response) {
+        toast.success("Request acknowledged successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        fetchData(); // Refresh the table
+      } else {
+        throw new Error("Failed to acknowledge request");
+      }
+    } catch (error) {
+      console.error("Error acknowledging request:", error);
+      toast.error("Failed to acknowledge request", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <ViewDetailSheetCardExtension
@@ -80,8 +111,8 @@ export const ViewLetterRequest = ({
           )}
         >
           {currentRequest?.status === "PENDING" &&
-          currentRequest?.is_acknowledgment &&
-          !currentRequest?.is_emp_ack
+            currentRequest?.is_acknowledgment &&
+            !currentRequest?.is_emp_ack
             ? "Acknowledgment Needed"
             : currentRequest?.status?.toLowerCase() || "N/A"}
         </StatusLabel>
@@ -89,19 +120,19 @@ export const ViewLetterRequest = ({
     },
     ...(currentRequest?.is_acknowledgment !== null
       ? [
-          {
-            label: "Requires Acknowledgment",
-            value: currentRequest?.is_acknowledgment ? "Yes" : "No",
-          },
-        ]
+        {
+          label: "Requires Acknowledgment",
+          value: currentRequest?.is_acknowledgment ? "Yes" : "No",
+        },
+      ]
       : []),
     ...(currentRequest?.is_acknowledgment && currentRequest?.is_emp_ack !== null
       ? [
-          {
-            label: "Employee Acknowledged",
-            value: currentRequest?.is_emp_ack ? "Yes" : "No",
-          },
-        ]
+        {
+          label: "Employee Acknowledged",
+          value: currentRequest?.is_emp_ack ? "Yes" : "No",
+        },
+      ]
       : []),
   ].filter(Boolean);
 
@@ -131,20 +162,30 @@ export const ViewLetterRequest = ({
                   )}
                 >
                   {currentRequest?.status === "PENDING" &&
-                  currentRequest?.is_acknowledgment &&
-                  !currentRequest?.is_emp_ack
+                    currentRequest?.is_acknowledgment &&
+                    !currentRequest?.is_emp_ack
                     ? "Acknowledgment Needed"
                     : currentRequest?.status?.toLowerCase() || "N/A"}
                 </StatusLabel>
               </div>
             </div>
+            {currentRequest.status === "PENDING" &&
+              currentRequest.is_acknowledgment &&
+              !currentRequest.is_emp_ack && isEmpView && (
+                <Button
+                  size="sm"
+                  onClick={() => handleAcknowledgment(currentRequest.id)}
+                >
+                  Acknowledge
+                </Button>
+              )}
           </div>
         </section>
 
         <section>
           <div className="mt-6">
             <SheetCardExtension title="Request Details">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {labelList.map((data, index) => (
                   <DetailBox
                     key={index}
