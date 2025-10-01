@@ -11,6 +11,7 @@ import {
     PublishVacancy,
     Applicants,
     RejectedApplication,
+    ShortlistedApplicant,
     ResumeBankApplication,
     InterviewType,
     FeedBackForm,
@@ -612,6 +613,26 @@ export function mapRejectedApplicationPayloadData(data) {
     const payload = {};
     // Iterate over the keys in the Applicants object
     for (const key in RejectedApplication) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "rejection_reason") payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+//--------------- Shortlisted Application--------------------
+export function mapShortlistedApplicantPayloadData(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Applicants object
+    for (const key in ShortlistedApplicant) {
         // Check if the key exists in the data object
         if (
             data.hasOwnProperty(key) &&

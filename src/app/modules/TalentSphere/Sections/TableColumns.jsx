@@ -957,7 +957,7 @@ export const PublishedVacancyColumns = (reloadData) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const ApplicantsColumns = (reloadData) => [
+export const ApplicantsColumns = (reloadData ) => [
     {
         dataField: "id",
         text: "Sr. No.",
@@ -1040,7 +1040,7 @@ export const ApplicantsColumns = (reloadData) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const ApplicationColumns = (reloadData) => [
+export const ApplicationColumns = (reloadData, variant) => [
     {
         dataField: "id",
         text: "Application ID",

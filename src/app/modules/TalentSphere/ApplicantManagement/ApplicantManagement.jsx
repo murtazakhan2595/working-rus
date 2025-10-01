@@ -14,7 +14,7 @@ import Error from "app/modules/Error";
 
 export default function ApplicantManagement() {
     const isViewApplicantsPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
+    const isViewShortlistedPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isViewScreenedPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isViewResumedPermitted = HasAccess("VIEW_RESUME_BANK_APPLICATION");
     const isViewRejectedPermitted = HasAccess("VIEW_REJECTED_APPLICATION");
@@ -23,14 +23,14 @@ export default function ApplicantManagement() {
 
     const TabListArray = React.useMemo(() => [
         ...(isViewApplicantsPermitted ? ["All Applicants"] : []),
-        ...(isViewRejectedPermitted ? ["Rejected Applications"] : []),
-        ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
-        ...(isViewScreenedPermitted ? ["Screened Application"] : []),
-        // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+        ...(isViewRejectedPermitted ? ["Rejected"] : []),
+        ...(isViewResumedPermitted ? ["Resume Bank"] : []),
+        ...(isViewScreenedPermitted ? ["Screened"] : []),
+        ...(isViewShortlistedPermitted ? ["Shortlisted"] : []),
 
-    ], [isViewApplicantsPermitted, isViewCareerLevelsPermitted, isViewScreenedPermitted, isViewResumedPermitted, isViewRejectedPermitted]);
+    ], [isViewApplicantsPermitted, isViewShortlistedPermitted, isViewScreenedPermitted, isViewResumedPermitted, isViewRejectedPermitted]);
 
-    if (!isViewApplicantsPermitted && !isViewCareerLevelsPermitted && !isViewScreenedPermitted && !isViewResumedPermitted && !isViewRejectedPermitted)
+    if (!isViewApplicantsPermitted && !isViewShortlistedPermitted && !isViewScreenedPermitted && !isViewResumedPermitted && !isViewRejectedPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -55,16 +55,16 @@ export default function ApplicantManagement() {
                     <TabsContent value={'All Applicants'}>
                         <AllApplicants reload={reloadData['benefits']} />
                     </TabsContent>
-                    <TabsContent value={'Career Level'}>
-                        <CareerLevels reload={reloadData['career-level']} />
+                    <TabsContent value={'Shortlisted'}>
+                        <AllApplicants variant='shortlisted'/>
                     </TabsContent>
-                    <TabsContent value={'Screened Application'}>
+                    <TabsContent value={'Screened'}>
                         <Applicants />
                     </TabsContent>
-                    <TabsContent value={'Resume Bank Application'}>
+                    <TabsContent value={'Resume Bank'}>
                         <ResumeBankApplicants reload={reloadData['resume']} />
                     </TabsContent>
-                    <TabsContent value={'Rejected Applications'}>
+                    <TabsContent value={'Rejected'}>
                         <AllApplicants reload={reloadData['rejected']} variant='rejected' />
                     </TabsContent>
                 </Card>

@@ -278,34 +278,11 @@ export const ApplicantDetails = [
       },
     ],
   },
-  {
-    title: "Rejection Information",
-    renderSectionCondition: (data) => {
-      if (data.status === 'rejected') return true;
-      return false;
-    },
-    field: [
-      {
-        key: "rejected_by",
-        label: "Rejected By",
-        formatter: (cell) => <EmployeeName value={cell} />
-      },
 
-      {
-        key: "rejected_on",
-        label: "Date",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-      {
-        key: "rejection_reason",
-        label: "Reason",
-      },
-    ],
-  },
   {
     title: "Resume Bank Information",
     renderSectionCondition: (data) => {
-      if (data.status === 'Resume Bank') return true;
+      if (data.status !== 'new') return true;
       return false;
     },
     field: [
@@ -329,7 +306,66 @@ export const ApplicantDetails = [
         label: "Added Date",
         formatter: (cell) => renderDate(cell, "--"),
       },
+      {
+        title: "Rejection Information",
+        renderSectionCondition: (data) => {
+          if (data.status === 'rejected') return true;
+          return false;
+        },
+        field: [
+          {
+            key: "rejected_by",
+            label: "Rejected By",
+            formatter: (cell) => <EmployeeName value={cell} />
+          },
 
+          {
+            key: "rejected_on",
+            label: "Date",
+            formatter: (cell) => renderDate(cell, "--"),
+          },
+          {
+            key: "rejection_reason",
+            label: "Reason",
+          },
+          {
+            key: "remarks",
+            label: "Remarks",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Shortlisting Info",
+    renderSectionCondition: (data) => {
+      if (data.status === 'shortlisted') return true;
+      return false;
+    },
+    field: [
+      {
+        key: "shortlisted_by",
+        label: "Shortlisted By",
+        formatter: (cell) => <EmployeeName value={cell} />
+      },
+      {
+        key: "shortlisted_on",
+        label: "Date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+      {
+        key: "desired_salary",
+        label: "Desired Salary",
+      },
+      {
+        key: "expected_joining_date",
+        label: "Expected Joining Date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+      {
+        key: "remarks",
+        label: "Remarks",
+      },
     ],
   },
 ];
@@ -428,12 +464,12 @@ export const InterviewDetails = [
       {
         key: "interview_type_name",
         label: "Generated Meeting Link",
-        renderCondition: (_,data) => Boolean(data.generate_meeting_link),
+        renderCondition: (_, data) => Boolean(data.generate_meeting_link),
       },
       {
         key: "interview_type_name",
         label: "Required Demographics",
-        renderCondition: (_,data) => Boolean(data.require_demographics),
+        renderCondition: (_, data) => Boolean(data.require_demographics),
       },
     ],
   },
