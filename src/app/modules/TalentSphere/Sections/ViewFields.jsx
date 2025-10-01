@@ -370,11 +370,11 @@ export const InterviewDetails = [
         label: "Contact Number",
       },
       {
-        key: "emiratization_flag",
+        key: "ai_missing_skills",
         label: "AI Suggested Label",
       },
       {
-        key: "emiratization_flag",
+        key: "ai_match_score",
         label: "AI Matched Score",
       },
     ],

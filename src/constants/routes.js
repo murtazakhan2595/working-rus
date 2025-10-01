@@ -372,7 +372,7 @@ export const SidebarRoutes = [
       Config.APPLICANT_INTERVIEW_TRACKER && {
         path: "/talent-sphere/interview-tracker",
         component: <InterviewTracker />,
-        name: "REQUISITION_PLANNING",
+        name: "APPLICANT_INTERVIEW_TRACKER",
       },
       // Config.SETUP && {
       //   path: "/office-settings/talent-sphere/Setup",

@@ -277,6 +277,13 @@ export const Interview = {
     status: null,
     job_title: null,
     candidate_name: null,
+    candidate_id: null,
+    contact_number: null,
+    email: null,
+    ai_match_score: null,
+    ai_matched_skills: null,
+    ai_missing_skills: null,
+    ai_suggested: null,
 }
 
 export const InterviewFeedback = {
@@ -288,5 +295,5 @@ export const InterviewFeedback = {
     is_submitted: null,
     recommendation: null,
     id: null,
-    responses:null,
+    responses: null,
 }
