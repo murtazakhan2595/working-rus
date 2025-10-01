@@ -36,6 +36,15 @@ import {
     AddUpdateFeedBackForm,
     FeedBackFormStatusTogle,
     FeedBackFormActions,
+    EmailTemplates,
+    AddUpdateEmailTemplateForm,
+    EmailTemplateStatusTogle,
+    EmailTemplateActions,
+    OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
+    ViewEmailTemplateDetail,
 } from './SettingManagement';
 
 import {
@@ -131,4 +140,13 @@ export {
     AddUpdateFeedBackForm,
     FeedBackFormStatusTogle,
     FeedBackFormActions,
+    EmailTemplates,
+    AddUpdateEmailTemplateForm,
+    EmailTemplateStatusTogle,
+    EmailTemplateActions,
+    OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
+    ViewEmailTemplateDetail,
 };

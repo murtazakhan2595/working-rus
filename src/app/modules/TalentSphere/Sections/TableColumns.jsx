@@ -4,6 +4,10 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
+    EmailTemplateStatusTogle,
+    EmailTemplateActions,
     FeedBackFormStatusTogle,
     FeedBackFormActions,
     InterviewTypeStatusTogle,
@@ -21,7 +25,7 @@ import {
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
-import { BudgetStatusOptions, RecruitmentApplicationSource } from "data/Data";
+import { BudgetStatusOptions, RecruitmentApplicationSource ,RecruitmentEmailTemplateType} from "data/Data";
 import { MultiStatusLabel } from "components";
 import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -173,6 +177,139 @@ export const BenefitsColumns = (reloadData) => [
         width: '50px'
     },
 ];
+/**
+ * OfferLetterTemplatesColumns
+ *
+ * Returns an array of column definitions for the OfferLetterTemplatesColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const OfferLetterTemplatesColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"OLT-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Template Name",
+        dataSort: true,
+    },
+    {
+        dataField: "attachment_url",
+        text: "Letter Head",
+        formatter: (cell) => (
+            <>
+                <AttachmentUI
+                    attachment={cell}
+                    viewOnly={true}
+                    variant={'preview-only'}
+                    fallBackText='--'
+                />
+            </>
+        ),
+    },
+    {
+        dataField: "updated_on",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+
+    {
+        dataField: "updated_on",
+        text: "Last Updated On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <OfferLetterTemplateStatusTogle data={row} status={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <OfferLetterTemplateActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+/**
+ * EmailTemplatesColumns
+ *
+ * Returns an array of column definitions for the EmailTemplatesColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const EmailTemplatesColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"ET-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Template Name",
+        dataSort: true,
+    },
+    {
+        dataField: "subject",
+        text: "Email Subject",
+        dataSort: true,
+    },
+    {
+        dataField: "template_type",
+        text: "Template Type",
+        formatter: (cell) => {
+            return (RecruitmentEmailTemplateType.find(obj => obj.value === cell) || {}).label || '--';
+        },
+    },
+    {
+        dataField: "created_on",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+
+    {
+        dataField: "updated_on",
+        text: "Last Modified",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "is_active",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <EmailTemplateStatusTogle data={row} is_active={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <EmailTemplateActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
 
 
 /**
@@ -186,7 +323,7 @@ export const FeedBackFormsColumns = (reloadData) => [
     {
         dataField: "id",
         text: "ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"TSB-"} />,
+        formatter: (cell, row) => <FormatID value={cell} prefix={"FBF-"} />,
     },
     {
         dataField: "name",
@@ -792,7 +929,7 @@ export const PublishedVacancyColumns = (reloadData) => [
         text: "Posted On",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
     },
-    
+
     {
         dataField: "total_applications",
         text: "Total Applications",
@@ -988,12 +1125,12 @@ export const ResumeBankColumns = (reloadData) => [
     {
         dataField: "recommended_department",
         text: "Recommended Department",
-        formatter:(cell)=><DepartmentName value={cell}/>
+        formatter: (cell) => <DepartmentName value={cell} />
     },
     {
         dataField: "recommended_designation",
         text: "Recommended Designation",
-        formatter:(cell)=><DesignationName value={cell}/>
+        formatter: (cell) => <DesignationName value={cell} />
     },
     {
         dataField: "job_title_applied_for",
@@ -1044,14 +1181,14 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "id",
         text: "Candidate Name",
     },
- {
+    {
         dataField: "job_title_applied_for",
         text: "Applied Job Title",
-    },   
- {
+    },
+    {
         dataField: "interview_type",
         text: "Interview Type",
-    }, 
+    },
     {
         dataField: "scheduled_datetime",
         text: "Scheduled Date & Time",
@@ -1066,12 +1203,12 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "posted_portals",
         text: "AI Match Score",
     },
-     {
+    {
         dataField: "status",
         text: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
-      {
+    {
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
