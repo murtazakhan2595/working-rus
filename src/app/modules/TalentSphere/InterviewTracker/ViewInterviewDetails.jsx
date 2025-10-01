@@ -87,9 +87,9 @@ const ViewInterviewDetails = ({
           if (!data) return null;
           const isInterViewDone = moment(data.scheduled_datetime).startOf('day').isSameOrBefore(moment().startOf('day'));
           if (!isInterViewDone) return null;
-          console.log(data, 'APPLICATION DATA', isAddFeedbackPermitted, isInterViewDone)
           const panelist_included = (data.panel || []).includes(user_id);
           const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
+          console.log(data, 'APPLICATION DATA', isAddFeedbackPermitted, isInterViewDone, feedback_submitted, panelist_included)
           return (<>
             {(isAddFeedbackPermitted && !feedback_submitted && panelist_included) &&
               <Button
@@ -173,7 +173,7 @@ const ViewInterviewDetails = ({
           setIsOpen={() => {
             setOpenViewFeedback(false);
           }}
-          currentId={CurrentData?.feedback?.id}
+          currentId={CurrentData?.id}
         />
       }
       {OpenScheduleInterview &&
