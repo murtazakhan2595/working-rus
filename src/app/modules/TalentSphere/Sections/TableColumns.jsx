@@ -1178,15 +1178,15 @@ export const ResumeBankColumns = (reloadData) => [
  */
 export const InProgressInterviewColumns = (reloadData) => [
     {
-        dataField: "id",
+        dataField: "candidate_name",
         text: "Candidate Name",
     },
     {
-        dataField: "job_title_applied_for",
+        dataField: "job_title",
         text: "Applied Job Title",
     },
     {
-        dataField: "interview_type",
+        dataField: "interview_type_name",
         text: "Interview Type",
     },
     {
@@ -1195,12 +1195,12 @@ export const InProgressInterviewColumns = (reloadData) => [
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
     {
-        dataField: "panel",
+        dataField: "panel_name",
         text: "Interview Panel",
-        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
     },
     {
-        dataField: "posted_portals",
+        dataField: "ai_match_score",
         text: "AI Match Score",
     },
     {

@@ -78,7 +78,9 @@ import {
     InterviewTracker,
     InProgressInterviews,
     InterviewActions,
-    ViewInterviewDetails
+    ViewInterviewDetails,
+    AddInterviewFeedback,
+    ViewInterviewFeedback,
 } from './InterviewTracker';
 export {
     AllApplicants,
@@ -149,4 +151,6 @@ export {
     OfferLetterTemplateStatusTogle,
     OfferLetterTemplateActions,
     ViewEmailTemplateDetail,
+    AddInterviewFeedback,
+    ViewInterviewFeedback,
 };

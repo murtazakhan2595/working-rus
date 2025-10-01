@@ -133,7 +133,7 @@ const ViewRequisitionRequest = ({
                 if (isTeamView) return null;
                 return (
                     <StatusButtons
-                        permissionKey={'MANAGE_HEADCOUNT_REQUESTS'}
+                        permissionKey={'MANAGE_REQUISITION_REQUEST'}
                         status={data?.status}
                         current_approver={data.current_approver}
                         final_approver={data.final_approvers || []}

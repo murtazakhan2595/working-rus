@@ -90,7 +90,7 @@ const ScheduleInterviewSheet = ({
               ? new Date(response.scheduled_datetime).toISOString().slice(0, 16)
               : "",
             panel: response.panel || [],
-             status: response.status || "scheduled"
+            status: response.status || "scheduled"
           }
           setFormData(formattedData)
           setFormValues(formattedData)
@@ -108,16 +108,15 @@ const ScheduleInterviewSheet = ({
 
   const handleClose = () => {
     setIsOpen(false)
-    reloadData()
   }
 
   const validateForm = (values) => {
-   
+
     if (!values.scheduled_datetime) {
       toast.error("Please select a scheduled date and time")
       return false
     }
-    if ( new Date(values.scheduled_datetime) <= new Date()) {
+    if (new Date(values.scheduled_datetime) <= new Date()) {
       toast.error("Scheduled date and time must be in the future")
       return false
     }
@@ -145,7 +144,7 @@ const ScheduleInterviewSheet = ({
       const savedInterview = await saveUpdateInterview(payload)
       if (!savedInterview) throw new Error("Failed to save interview")
       toast.success(`Interview Schedule successfully`)
-      handleClose()
+      reloadData(true)
     } catch (error) {
       console.error("Interview save error:", error)
       toast.error(error.message || "Failed to save interview")
@@ -158,7 +157,7 @@ const ScheduleInterviewSheet = ({
     sheetCardExtension: true,
     sheetCardTitle: "Interview Details",
     InputFields: [
-    
+
       {
         InputField: SelectInputComponent,
         name: "interview_type",

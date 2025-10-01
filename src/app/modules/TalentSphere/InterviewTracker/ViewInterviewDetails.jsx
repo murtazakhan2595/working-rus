@@ -1,131 +1,75 @@
-import { toast } from "react-toastify";
 import React, { useState } from "react";
-import { FormatID } from "utils/getValuesFromTables";
-import { getApplicantsData, saveUpdateApplication, saveUpdateResumeBankApplication, saveUpdateRejectedApplication } from "app/hooks/talentSphere";
-import {
-  ClearanceSheet,
-  UploadExitInterviewDetails,
-} from "app/modules/ExitAndClearance";
+import { getInterviewById, saveUpdateInterview } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
-// import { CoverFileUpload } from "components/FormControl";
 import {
-  EmployeeOverview,
-  SheetUI,
-  StatusLabel,
   NavigationSheetComponent,
   DetailContent,
-  StatusList,
-  StatusButtons,
 } from "components";
-import { RejectedApplication, ResumeBankApplication } from "app/utils/Types/TalentSphere";
-import { renderDate } from "utils/renderValues";
-import { GetDispatchStateList } from "utils/Lists";
 import { InterviewDetails } from "app/modules/TalentSphere/Sections";
-import { TextAreaInput } from "components/FormControl";
-import { SelectInputComponent } from "components/FormControl";
-
-const StatusConfig = {
-  'rejected': {
-    successMessage: "Application Rejected Successfully!",
-    saveUpdateApplicationResponse: saveUpdateRejectedApplication,
-    FormSheetData: { title: 'Rejection Reson', },
-  },
-  'resume_bank': {
-    successMessage: "Application Moved to Resume Bank Successfully!",
-    saveUpdateApplicationResponse: saveUpdateResumeBankApplication,
-    FormSheetData: { title: 'Add to Resume Bank', },
-  },
-  'screened': {
-    successMessage: "Application Screened Successfully!",
-    saveUpdateApplicationResponse: saveUpdateApplication,
-    FormSheetData: { title: 'Add to Screen', },
-  },
-}
+import { AddInterviewFeedback, ViewInterviewFeedback, ViewApplicationDetail } from "app/modules/TalentSphere";
+import { useSelector } from "react-redux";
+import { HasAccess } from "utils/PermissionUtils";
+import moment from "moment";
+import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplicants";
 
 const ViewInterviewDetails = ({
   currentId,
-  isResignation = true,
   DataList = [],
   reloadData = () => { },
   isOpen,
   setIsOpen = () => { },
-  handleUploadClearanceReportClick = () => { },
 }) => {
-  const Designations = GetDispatchStateList('branches', 'common');
-  const Departments = GetDispatchStateList('departments', 'common');
+  const isAddFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
+  const isViewFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
+  const isSchedulePermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
+  const isUpdateStatusPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
+
+  const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
-  const [FormData, setFormData] = useState({});
-  const [OpenFormModal, setOpenFormModal] = useState(false);
-  const [openexitInterviewForm, setOpenexitInterviewForm] = useState(false);
-  const [currentItemId, setCurrentItemId] = useState(null);
-  const [exitData, setExitData] = useState(null);
-  const handleSubmit = async (values) => {
+  const [OpenScheduleInterview, setOpenScheduleInterview] = useState(false);
+  const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
+  const [OpenViewFeedback, setOpenViewFeedback] = useState(false);
+  const [OpenApplicationDetails, setOpenApplicationDetails] = useState(false);
+  const [CurrentData, setCurrentData] = useState(null);
+
+  const handleSubmit = async (values, id) => {
     try {
-      debugger
-      const { status, id } = values;
-      const { saveUpdateApplicationResponse, successMessage } = StatusConfig[status];
-      const response = await saveUpdateApplicationResponse(values, id);
-      // return
+      const response = await saveUpdateInterview(values, id);
       if (response) {
-        if (status !== 'screened')
-          await saveUpdateApplication({ status: values.status }, values.applicant);
-        // toast.success(successMessage);
         setForceLoad(!forceLoad);
-        return {
-          status: true,
-          messageType: "SUCCESS",
-          title: successMessage,
-          description: `Applicant status is updated successfully.`,
-        }
       }
     } catch (error) {
       // Handle errors and rollback form data
       console.error(error);
     } finally {
-      setOpenFormModal(false)
-      setFormData({})
+
     }
-  };
+  }
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
       event.preventDefault();
       event.stopPropagation();
-      setCurrentItemId(data.id);
-      if (status === 'resume_bank') {
-        setFormData({
-          status: status,
-          ...ResumeBankApplication,
-          applicant: data.id,
-        })
-        setOpenFormModal(true);
+      setCurrentData(data);
+      if (status === 'add-feedback') {
+        setOpenFeedbackForm(true);
       }
-      if (status === 'screened') {
-        handleSubmit({ id: data.id, status: status })
+      else if (status === 'view-feedback') {
+        setOpenViewFeedback(true);
       }
-      if (status === "rejected") {
-        setFormData({
-          status: status,
-          ...RejectedApplication,
-          applicant: data.id,
-        })
-        setOpenFormModal(true);
-      } else if (status === "COMPLETED") {
-        handleUploadClearanceReportClick(data.id);
-        setIsOpen(false)
-        reloadData(true)
+      else if (status === 'reschedule-interview') {
+        setOpenScheduleInterview(true);
       }
-      else if (status === "EXIT_INTERVIEW") {
-        setOpenexitInterviewForm(true);
-        setExitData(data)
+      else if (status === 'update-status') {
+        setOpenApplicationDetails(true);
       }
     },
-    [setOpenFormModal, handleSubmit, setCurrentItemId]
+    [setOpenViewFeedback, setOpenFeedbackForm, setCurrentData]
   );
 
   const fetchData = async (id, isMounted) => {
     try {
-      const response = await getApplicantsData(id);
+      const response = await getInterviewById(id);
       if (isMounted) return response;
     } catch (error) {
       console.error("Error fetching exit data:", error);
@@ -140,101 +84,52 @@ const ViewInterviewDetails = ({
         customContent: true,
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
-          console.log(data, 'APPLICATION DATA')
           if (!data) return null;
-          if (
-            data.status &&
-            data.status.toLowerCase() === "new"
-          )
-            return (<>
+          const isInterViewDone = moment(data.scheduled_datetime).startOf('day').isSameOrBefore(moment().startOf('day'));
+          if (!isInterViewDone) return null;
+          console.log(data, 'APPLICATION DATA', isAddFeedbackPermitted, isInterViewDone)
+          const panelist_included = (data.panel || []).includes(user_id);
+          const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
+          return (<>
+            {(isAddFeedbackPermitted && !feedback_submitted && panelist_included) &&
               <Button
                 variant="outline"
-                onClick={(event) => handleClick(event, "resume_bank", data)}
+                onClick={(event) => handleClick(event, "add-feedback", data)}
               >
-                Resume Bank
+                Add Feedback
               </Button>
-              <Button
-                variant="success"
-                onClick={(event) => handleClick(event, "screened", data)}
-              >
-                Screened Candidate
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={(event) => handleClick(event, "rejected", data)}
-              >
-                Reject
-              </Button>
-            </>
-            );
-          if (
-            data.clearance_status &&
-            data.clearance_status.toLowerCase() === "initiated"
-          )
-            return (
-              <Button
-                variant="outline"
-                onClick={(event) => handleClick(event, "COMPLETED", data)}
-              >
-                Complete Clearance
-              </Button>
-            );
-          // Completed clearance - check if exit interview is available
-          if (
-            data.clearance_status &&
-            data.clearance_status.toLowerCase() === "completed"
-          ) {
-            // Check if this is resignation/termination AND clearance is fully done
-            const isExitType = ["RESIGNATION", "TERMINATION"].includes(
-              data.exit_category
-            );
-
-            const isClearanceCompleted = data?.is_clearance_handover === true; // Your boolean flag
-
-            if (isExitType && isClearanceCompleted) {
-              return (
-                <div className="space-y-2">
-                  <div className="text-sm text-green-600 font-medium">
-                    ✓ Exit Interview form is now available.
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
-                  >
-                    Proceed for Exit Interview
-                  </Button>
-                </div>
-              );
-            } else {
-              return (
-                <div className="space-y-2">
-                  <Button
-                    variant="outline"
-                    disabled={true}
-                  >
-                    Exit Interview
-                  </Button>
-                  <div className="text-sm text-amber-600">
-                    {!isExitType
-                      ? "Exit interview not applicable for this clearance type"
-                      : "Waiting for all clearance items to be completed"
-                    }
-                  </div>
-                </div>
-              );
             }
-          }
+            {(isViewFeedbackPermitted && feedback_submitted && panelist_included) &&
+              <Button
+                variant="outline"
+                onClick={(event) => handleClick(event, "view-feedback", { ...data, feedback: feedback_submitted })}
+              >
+                View Feedback
+              </Button>
+            }
+            {isSchedulePermitted &&
+              <Button
+                // variant="outline"
+                onClick={(event) => handleClick(event, "reschedule-interview", { ...data, })}
+              >
+                Reschedule Interview
+              </Button>
+            }
+            {isUpdateStatusPermitted &&
+              <Button
+                variant="continue"
+                onClick={(event) => handleClick(event, "update-status", { ...data, })}
+              >
+                Update Status
+              </Button>
+            }
 
-
+          </>
+          );
         },
       },
     ],
-    [
-      handleClick,
-      isResignation,
-      forceLoad,
-      setForceLoad,
-    ]
+    [handleClick,]
   );
 
   return (
@@ -250,58 +145,67 @@ const ViewInterviewDetails = ({
         allowEdit={false}
         allowDelete={false}
         fetchCurrentItemDetails={fetchData}
-        // dataUniqueKey='applicant_id'
+      // dataUniqueKey='applicant_id'
       >
         <DetailContent fields={fields} />
       </NavigationSheetComponent>
-      {OpenFormModal && (
-        <SheetUI
-          isOpen={OpenFormModal}
-          setIsOpen={setOpenFormModal}
-          variant="modal"
-          sheetConfig={StatusConfig[FormData.status]?.FormSheetData}
-          formConfig={{
-            initialValues: FormData,
-            enableReinitialize: true,
-            handleSubmit: handleSubmit,
-            validateFormSchema: () => {
-              const error = {};
-              return error;
-            },
-            submitButtonText: "Confirm",
-            cancelButtonText: "Cancel",
-            columns: 1,
-            formFields: [
-              {
-                sheetCardExtension: false,
-                // sheetCardTitle: "Salary Details",
-                InputFields: [
-                  ...(FormData.status === 'rejected' ? [{
-                    InputField: TextAreaInput,
-                    name: "rejection_reason",
-                    required: true,
-                    label: "Reason",
-                  }] : []),
-                  ...(FormData.status === 'resume_bank' ? [{
-                    InputField: SelectInputComponent,
-                    name: "recommended_department",
-                    options: Departments,
-                    required: true,
-                    label: "Recommended Department",
-                  },
-                  {
-                    InputField: SelectInputComponent,
-                    name: "recommended_designation",
-                    required: true,
-                    label: "Recommended Designation",
-                    options: Designations,
-                  },] : []),
-                ].filter(Boolean),
-              },
-            ],
+      {OpenFeedbackForm &&
+        <AddInterviewFeedback
+          isOpen={OpenFeedbackForm}
+          reloadData={() => {
+            setForceLoad(!forceLoad);
+            setOpenFeedbackForm(false);
           }}
-        ></SheetUI>
-      )}
+          setIsOpen={() => {
+            setOpenFeedbackForm(false);
+          }}
+          feedbackForm={CurrentData.form}
+          id={CurrentData.id}
+        />
+      }
+      {OpenViewFeedback &&
+        <ViewInterviewFeedback
+          isOpen={OpenViewFeedback}
+          reloadData={() => {
+            setForceLoad(!forceLoad);
+            setOpenViewFeedback(false);
+          }}
+          setIsOpen={() => {
+            setOpenViewFeedback(false);
+          }}
+          currentId={CurrentData?.feedback?.id}
+        />
+      }
+      {OpenScheduleInterview &&
+        <ScheduleInterviewSheet
+          isOpen={OpenScheduleInterview}
+          reloadData={() => {
+            setOpenScheduleInterview(false);
+            handleSubmit({ status: 'rescheduled' }, CurrentData.id)
+          }}
+          setIsOpen={() => {
+            setOpenScheduleInterview(false);
+          }}
+          id={CurrentData?.applicant}
+          mode="add"
+        />
+      }
+      {OpenApplicationDetails &&
+        <ViewApplicationDetail
+          isOpen={OpenApplicationDetails}
+          reloadData={() => {
+            setOpenApplicationDetails(false);
+          }}
+          setIsOpen={() => {
+            setOpenApplicationDetails(false);
+          }}
+          statusUpdated={(flag) => {
+            if (flag)
+              handleSubmit({ status: 'completed' }, CurrentData.id)
+          }}
+          currentId={CurrentData?.applicant}
+        />
+      }
     </>
   );
 };

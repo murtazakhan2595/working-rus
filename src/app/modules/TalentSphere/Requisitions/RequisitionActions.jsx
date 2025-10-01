@@ -4,7 +4,8 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
-    const isEditPermitted = HasAccess("MARK_ATTENDANCE");
+    const isEditPermitted = HasAccess("EDIT_REQUISITION_REQUEST");
+    const isPublishPermitted = HasAccess("PUBLISH_VACANCY");
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [openPublishVacancyForm, setopenPublishVacancyForm] = useState(null);
@@ -25,7 +26,7 @@ const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTea
                 viewText="View Requisition"
                 editText="Edit Requisition"
                 menuTooltip="Requisition Actions"
-                additionalOptionsConfig={[...(data.is_draft === 'approved' ? [{ text: 'Publish Vacancy', action: handlePublish }] : []),]}
+                additionalOptionsConfig={[...(data.is_draft === 'approved' && isPublishPermitted ? [{ text: 'Publish Vacancy', action: handlePublish }] : []),]}
             />
 
             {view && (

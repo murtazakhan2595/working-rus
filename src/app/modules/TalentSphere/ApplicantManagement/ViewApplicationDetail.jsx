@@ -40,6 +40,10 @@ const StatusConfig = {
     saveUpdateApplicationResponse: saveUpdateApplication,
     FormSheetData: { title: 'Add to Screen', },
   },
+  'default': {
+    successMessage: "Application Holded Successfully!",
+    saveUpdateApplicationResponse: saveUpdateApplication,
+  },
 }
 
 const ViewApplicationDetail = ({
@@ -49,7 +53,7 @@ const ViewApplicationDetail = ({
   reloadData = () => { },
   isOpen,
   setIsOpen = () => { },
-  handleUploadClearanceReportClick = () => { },
+  statusUpdated = () => { },
 }) => {
   const Designations = GetDispatchStateList('branches', 'common');
   const Departments = GetDispatchStateList('departments', 'common');
@@ -61,16 +65,15 @@ const ViewApplicationDetail = ({
   const [exitData, setExitData] = useState(null);
   const handleSubmit = async (values) => {
     try {
-      debugger
       const { status, id } = values;
-      const { saveUpdateApplicationResponse, successMessage } = StatusConfig[status];
+      const { saveUpdateApplicationResponse, successMessage } = StatusConfig[status] || StatusConfig['default'];
       const response = await saveUpdateApplicationResponse(values, id);
       // return
       if (response) {
-        if (status !== 'screened')
+        if (status !== 'screened' && status !== 'hold' && status !== 'blacklisted')
           await saveUpdateApplication({ status: values.status }, values.applicant);
-        // toast.success(successMessage);
         setForceLoad(!forceLoad);
+        statusUpdated(true);
         return {
           status: true,
           messageType: "SUCCESS",
@@ -110,15 +113,7 @@ const ViewApplicationDetail = ({
           applicant: data.id,
         })
         setOpenFormModal(true);
-      } else if (status === "COMPLETED") {
-        handleUploadClearanceReportClick(data.id);
-        setIsOpen(false)
-        reloadData(true)
-      }
-      else if (status === "EXIT_INTERVIEW") {
-        setOpenexitInterviewForm(true);
-        setExitData(data)
-      }
+      } else { handleSubmit({ id: data.id, status: status }) }
     },
     [setOpenFormModal, handleSubmit, setCurrentItemId]
   );
@@ -142,10 +137,7 @@ const ViewApplicationDetail = ({
         renderContent: (data) => {
           console.log(data, 'APPLICATION DATA')
           if (!data) return null;
-          if (
-            data.status &&
-            data.status.toLowerCase() === "new"
-          )
+          if (data.status && data.status.toLowerCase() === "new")
             return (<>
               <Button
                 variant="outline"
@@ -167,65 +159,33 @@ const ViewApplicationDetail = ({
               </Button>
             </>
             );
-          if (
-            data.clearance_status &&
-            data.clearance_status.toLowerCase() === "initiated"
-          )
-            return (
+          else if (data.status && data.status.toLowerCase() === "in progress")
+            return <>
               <Button
-                variant="outline"
-                onClick={(event) => handleClick(event, "COMPLETED", data)}
+                variant="continue"
+                onClick={(event) => handleClick(event, "hold", data)}
               >
-                Complete Clearance
+                Hold
               </Button>
-            );
-          // Completed clearance - check if exit interview is available
-          if (
-            data.clearance_status &&
-            data.clearance_status.toLowerCase() === "completed"
-          ) {
-            // Check if this is resignation/termination AND clearance is fully done
-            const isExitType = ["RESIGNATION", "TERMINATION"].includes(
-              data.exit_category
-            );
-
-            const isClearanceCompleted = data?.is_clearance_handover === true; // Your boolean flag
-
-            if (isExitType && isClearanceCompleted) {
-              return (
-                <div className="space-y-2">
-                  <div className="text-sm text-green-600 font-medium">
-                    ✓ Exit Interview form is now available.
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
-                  >
-                    Proceed for Exit Interview
-                  </Button>
-                </div>
-              );
-            } else {
-              return (
-                <div className="space-y-2">
-                  <Button
-                    variant="outline"
-                    disabled={true}
-                  >
-                    Exit Interview
-                  </Button>
-                  <div className="text-sm text-amber-600">
-                    {!isExitType
-                      ? "Exit interview not applicable for this clearance type"
-                      : "Waiting for all clearance items to be completed"
-                    }
-                  </div>
-                </div>
-              );
-            }
-          }
-
-
+              <Button
+                variant="success"
+                onClick={(event) => handleClick(event, "shortlisted", data)}
+              >
+                Shortlisted
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={(event) => handleClick(event, "rejected", data)}
+              >
+                Reject
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={(event) => handleClick(event, "blacklisted", data)}
+              >
+                Blacklisted
+              </Button>
+            </>
         },
       },
     ],

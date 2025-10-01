@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import { getInterviewsList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
+import { getInterviewsList, getInterviewTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
 import { InProgressInterviewColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
-import { RecruitmentApplicationSource } from "data/Data";
+import { RecruitmentApplicationSource,RecruitmentApplicantStatusOption } from "data/Data";
 
 const InProgressInterviews = ({ reload, variant = 'all' }) => {
     const [ResumeBankList, setResumeBankList] = useState({});
@@ -13,7 +13,7 @@ const InProgressInterviews = ({ reload, variant = 'all' }) => {
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [isLoading, setIsLoading] = useState(false);
-    const [JobTypeList, setJobTypeList] = useState([]);
+    const [InterviewTypeList, setInterviewTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -27,6 +27,29 @@ const InProgressInterviews = ({ reload, variant = 'all' }) => {
             setOrdering(sortName);
         },
     };
+
+    
+        useEffect(() => {
+            const fetchBenefitData = async (isMounted) => {
+                try {
+                    setIsLoading(true);
+                    // Add organizationId to filter if available
+                    const job_type = await getInterviewTypeList();
+                    if (isMounted) {
+                        setInterviewTypeList(job_type.results);
+                    }
+                } catch (error) {
+                    console.error("Error fetching roles:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            let isMounted = true;
+            fetchBenefitData(isMounted);
+            return () => {
+                isMounted = false;
+            };
+        }, []);
 
     const fetchData = async (isMounted) => {
         setIsLoading(true);
@@ -87,7 +110,7 @@ const InProgressInterviews = ({ reload, variant = 'all' }) => {
             <CardHeader>
                 <CardTitle >In Progress Interviews</CardTitle>
                 <CardDescription>
-                    Here you can view the list of all the in progress interviews with applicants screened.
+                    Here you can view details, update candidate status, schedule follow-up interviews, collect feedback from interview panellists, and manage the entire interview lifecycle efficiently all candidates whose interviews have been scheduled.
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
@@ -98,37 +121,22 @@ const InProgressInterviews = ({ reload, variant = 'all' }) => {
                                 placeholder: "Job Title",
                             },
                             {
-                                type: "search",
-                                name: "candidate_name_or_id",
-                                placeholder: "Candidate Name/Id",
+                                type: "select",
+                                options: InterviewTypeList,
+                                name: "interview_type",
+                                placeholder: "Interview Type",
                             },
                             {
                                 type: "select",
-                                options: "Departments",
-                                name: "recommended_department",
-                                placeholder: "Recommended Department",
+                                options: RecruitmentApplicantStatusOption,
+                                name: "status",
+                                placeholder: "Status",
                             },
                             {
-                                type: "select",
-                                options: "designations",
-                                name: "recommended_designation",
-                                placeholder: "Recommended Designation",
-                            },
-                            {
-                                type: "select",
-                                options: RecruitmentApplicationSource,
-                                name: "application_source",
-                                placeholder: "Application Source",
-                            },
-                            {
-                                type: "select",
-                                options: [
-                                    { value: 'required', label: 'Required' },
-                                    { value: 'not_required', label: "Not Reqiured" },
-                                    { value: 'remote', label: "Remote" },
-                                ],
-                                name: "emiratization_flag",
-                                placeholder: "Emiratization Role",
+                                type: "select-multiple",
+                                options: 'employees',
+                                name: "panel",
+                                placeholder: "Panel Members",
                             },
                             {
                                 type: "date-range",
@@ -137,8 +145,8 @@ const InProgressInterviews = ({ reload, variant = 'all' }) => {
                             },
                             {
                                 type: "date-range",
-                                name: "added_on",
-                                placeholder: "Added On Date",
+                                name: "scheduled_datetime",
+                                placeholder: "Scheduled Date",
                             },
 
                         ]}

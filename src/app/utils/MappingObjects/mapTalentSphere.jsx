@@ -15,6 +15,8 @@ import {
     InterviewType,
     FeedBackForm,
     EmailTemplate,
+    Interview,
+    InterviewFeedback,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -680,7 +682,7 @@ export function mapFeedBackFormData(data) {
         return count + ((section?.fields || [])?.length || 0);
     }, 0);
 
-    return { ...RecordDetails, total_sections,total_fields };
+    return { ...RecordDetails, total_sections, total_fields };
 }
 export async function mapFeedBackFormList(data) {
     const DataList = await data?.map((Record) => {
@@ -802,6 +804,99 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
         ) {
             if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+
+//-------------Interview ---------------
+
+export function mapInterviewData(data) {
+    const RecordDetails = Object.keys(Interview).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapInterviewList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapInterviewData(Record);
+        return {
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapInterviewPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the EmailTemplate object
+    for (const key in Interview) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+
+//-------------InterviewFeedbacks ---------------
+
+export function mapInterviewFeedbackData(data) {
+    const RecordDetails = Object.keys(InterviewFeedback).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapInterviewFeedbackList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapInterviewFeedbackData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapInterviewFeedbackPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the InterviewFeedback object
+    for (const key in InterviewFeedback) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === 'comments') payload[key] = data[key].trim();
             else payload[key] = data[key];
         }
     }

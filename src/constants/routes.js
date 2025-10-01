@@ -48,7 +48,6 @@ import {
   ApprovalHierarchyHistoryLogs,
 } from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
-import { Applicants } from "../app/modules/TalentSphere/ScreenedApplicants";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import { EOSSettlementDetails } from "app/modules/SelfService/Exit";
 import {
@@ -375,11 +374,11 @@ export const SidebarRoutes = [
         component: <InterviewTracker />,
         name: "APPLICANT_INTERVIEW_TRACKER",
       },
-      Config.SETUP && {
-        path: "/office-settings/talent-sphere/Setup",
-        component: <DemoGraphics />,
-        name: "SETUP",
-      },
+      // Config.SETUP && {
+      //   path: "/office-settings/talent-sphere/Setup",
+      //   component: <DemoGraphics />,
+      //   name: "SETUP",
+      // },
    
     ].filter(Boolean) // Filter out undefined route
     : []),
