@@ -43,11 +43,14 @@ import {
     AddUpdateEmailTemplateForm,
     EmailTemplateStatusTogle,
     EmailTemplateActions,
+    ViewEmailTemplateDetail,
 } from './EmailTemplate'
-import { OfferLetterTemplates,
+import {
+    OfferLetterTemplates,
     AddUpdateOfferLetterTemplateForm,
     OfferLetterTemplateStatusTogle,
-    OfferLetterTemplateActions,} from './OfferLetterTemplate';
+    OfferLetterTemplateActions,
+} from './OfferLetterTemplate';
 export {
     TalentSphereSettingManagement,
     Benefits,
@@ -79,8 +82,9 @@ export {
     AddUpdateFeedBackForm,
     FeedBackFormStatusTogle,
     FeedBackFormActions,
-     OfferLetterTemplates,
-        AddUpdateOfferLetterTemplateForm,
-        OfferLetterTemplateStatusTogle,
-        OfferLetterTemplateActions,
+    OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
+    OfferLetterTemplateStatusTogle,
+    OfferLetterTemplateActions,
+    ViewEmailTemplateDetail,
 };

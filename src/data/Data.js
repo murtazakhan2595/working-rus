@@ -528,38 +528,15 @@ export const workplaceTypes = [
   { label: "Onsite", value: "ON_SITE" },
 ];
 
-export const dropdownStyles = {
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-  control: (provided, state) => ({
-    ...provided,
-    backgroundColor: "#fafbfc",
-    border: "none",
-    boxShadow: "none",
-    minWidth: "8rem",
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    fontSize: "16px",
-    fontWeight: state.isSelected ? "bold" : "normal",
-    color: state.isSelected ? "#000" : "#777",
-    padding: "8px 12px",
-    backgroundColor: state.isSelected ? "#FAFBFC" : "#FAFBFC",
-  }),
-  menu: (provided) => ({
-    ...provided,
-    borderRadius: "8px",
-    overflow: "hidden",
-  }),
-  scrollbarWidth: (base) => ({
-    ...base,
-    borderRadius: "8px",
-    backgroundColor: "#FAFBFC",
-  }),
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: "#555",
-  }),
-};
+export const RecruitmentEmailTemplateType = [
+  { label: "Application Received", value: "APPLICATION_RECEIVED" },
+  { label: "Interview Scheduled", value: "INTERVIEW_SCHEDULED" },
+  { label: "Interview Rejected", value: "REJECTED" },
+  { label: "Shortlisted", value: "SHORTLISTED" },
+  { label: "Offer Letter Sent", value: "OFFER_SENT" },
+  { label: "On Hold", value: "ON_HOLD" },
+
+];
 
 export const JobSortingFilters = [
   {

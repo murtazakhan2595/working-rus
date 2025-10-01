@@ -34,6 +34,7 @@ export const EmailTemplate = {
     template_type: null,
     is_active: true,
     created_on: null,
+    created_by: null,
     updated_on: null,
 }
 export const OfferLetterTemplate = {

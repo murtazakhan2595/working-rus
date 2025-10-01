@@ -1,9 +1,10 @@
 import { saveUpdateEmailTemplate, getEmailTemplateList, getEmailTemplateData } from "app/hooks/talentSphere";
 import { EmailTemplate } from "app/utils/Types/TalentSphere";
 import { SheetUI } from "components";
+import { SelectInputComponent } from "components/FormControl";
 import { TextInput, TextEditorInputField, RadioGroupInput } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
+import { RecruitmentEmailTemplateType } from "data/Data";
 
 const AddUpdateEmailTemplateForm = ({
   id = false,
@@ -136,6 +137,13 @@ const AddUpdateEmailTemplateForm = ({
                 validateDuplicate: true,
               },
               {
+                InputField: SelectInputComponent,
+                name: "template_type",
+                options:RecruitmentEmailTemplateType,
+                label: "Template Type",
+                description: 'Select the type for specific recruitment events',
+              },
+              {
                 InputField: TextInput,
                 name: "subject",
                 required: true,
@@ -146,6 +154,20 @@ const AddUpdateEmailTemplateForm = ({
                 name: "body",
                 required: true,
                 label: "Email Body",
+                description: <div>
+                  Use the following placeholders to insert dynamic data:
+                  <ul className="[list-style:disc] ml-4">
+                    <li>Applicant Name → <code>{'{{ applicant_name }}'}</code></li>
+                    <li>Designation / Job Position → <code>{'{{ designation }}'}</code></li>
+                    <li>Salary → <code>{'{{ salary }}'}</code></li>
+                    <li>Joining Date → <code>{'{{ joining_date }}'}</code></li>
+                  </ul>
+                </div>
+              },
+               {
+                InputField: TextInput,
+                name: "signature",
+                label: "Email Signature",
               },
             ],
           },

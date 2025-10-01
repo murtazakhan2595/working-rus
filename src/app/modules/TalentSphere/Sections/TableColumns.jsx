@@ -25,7 +25,7 @@ import {
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
-import { BudgetStatusOptions, RecruitmentApplicationSource } from "data/Data";
+import { BudgetStatusOptions, RecruitmentApplicationSource ,RecruitmentEmailTemplateType} from "data/Data";
 import { MultiStatusLabel } from "components";
 import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -267,6 +267,13 @@ export const EmailTemplatesColumns = (reloadData) => [
         dataField: "subject",
         text: "Email Subject",
         dataSort: true,
+    },
+    {
+        dataField: "template_type",
+        text: "Template Type",
+        formatter: (cell) => {
+            return (RecruitmentEmailTemplateType.find(obj => obj.value === cell) || {}).label || '--';
+        },
     },
     {
         dataField: "created_on",

@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import {AddUpdateEmailTemplateForm} from "app/modules/TalentSphere";
+import { AddUpdateEmailTemplateForm, ViewEmailTemplateDetail } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const EmailTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
     const isEditPermitted = HasAccess("EDIT_TS_EmailTemplateS");
     const isDeletePermitted = HasAccess("DELETE_TS_EmailTemplateS");
-    // const isViewPermitted = HasAccess("VIEW_MANPOWER");
-    // const [view, setView] = useState(null);
+    const isViewPermitted = HasAccess("VIEW_MANPOWER");
+    const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
     const [deleteForm, setDeleteForm] = useState(null);
 
-   
-
     const handleEdit = (e) => {
         setOpenEditForm(true)
+    };
+    const handleView = (e) => {
+        setView(true)
     };
 
     const handleDelete = () => {
@@ -36,7 +37,7 @@ const EmailTemplateActions = ({ data, DataList = [], reloadData = () => { } }) =
     return (
         <>
             <DropdownActionMenu
-                // onView={isViewPermitted ? handleView : null}
+                onView={isViewPermitted ? handleView : null}
                 onEdit={isEditPermitted ? handleEdit : null}
                 onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="View Template"
@@ -68,6 +69,20 @@ const EmailTemplateActions = ({ data, DataList = [], reloadData = () => { } }) =
                         setOpenEditForm(false);
                     }}
                     id={data.id}
+                />
+            )}
+            {view && (
+                <ViewEmailTemplateDetail
+                    isOpen={view}
+                    reloadData={() => {
+                        reloadData(true);
+                        setView(false);
+                    }}
+                    setIsOpen={() => {
+                        setView(false);
+                    }}
+                    currentId={data.id}
+                    DataList={DataList}
                 />
             )}
         </>

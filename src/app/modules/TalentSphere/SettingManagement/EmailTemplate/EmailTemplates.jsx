@@ -5,6 +5,7 @@ import { CardContent } from "components/ui/card";
 import { EmailTemplatesColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
+import { RecruitmentEmailTemplateType } from "data/Data";
 
 const EmailTemplates = ({ reload }) => {
     const [EmailTemplateList, setEmailTemplateList] = useState({});
@@ -93,14 +94,26 @@ const EmailTemplates = ({ reload }) => {
                             },
                             {
                                 type: "select",
+                                placeholder: "Template Type",
+                                name: "template_type",
+                                options: RecruitmentEmailTemplateType,
+                            },
+                            {
+                                type: "select",
+                                placeholder: "Created By",
+                                name: "created_by",
+                                options: 'employees',
+                            },
+                            {
+                                type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options:[{value:'Active',label:'Active'},{value:'Inactive',label:'Inactive'},]
+                                options: [{ value: true, label: 'Active' }, { value: false, label: 'Inactive' },]
                             },
                             {
                                 type: "date-range",
                                 placeholder: "Creation Date",
-                                name: "created_at",
+                                name: "created_on",
                             },
                         ]}
                         className="justify-end"
