@@ -52,7 +52,7 @@ const ViewInterviewFeedback = ({
     const fields = React.useMemo(() =>
         (CurrentData || []).map(
             ({ panel_member_name, panel_member, responses, recommendation, rating, comments }) => ({
-                title: `${panel_member_name} Feedback`,
+                title: ``,
                 field: [
                     {
                         key: "panel_member",
