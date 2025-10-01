@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import React, { useState } from "react";
 import { FormatID } from "utils/getValuesFromTables";
-import { getInterviewFeedbackData, saveUpdateApplication, saveUpdateResumeBankApplication, saveUpdateRejectedApplication } from "app/hooks/talentSphere";
+import { getFeedBackFormList, getInterviewById } from "app/hooks/talentSphere";
 import {
     ClearanceSheet,
     UploadExitInterviewDetails,
@@ -34,13 +34,13 @@ const ViewInterviewFeedback = ({
     isOpen,
     setIsOpen = () => { },
 }) => {
-    const [CurrentData, setCurrentData] = useState(false);
+    const [CurrentData, setCurrentData] = useState([]);
 
     const fetchData = async (id, isMounted) => {
         try {
-            const response = await getInterviewFeedbackData(id);
+            const response = await getInterviewById(id);
             if (isMounted) {
-                setCurrentData(response);
+                setCurrentData(response.interview_feedbacks || []);
                 return response;
             }
         } catch (error) {
@@ -49,54 +49,61 @@ const ViewInterviewFeedback = ({
         return null; // Always return something
     };
 
-    const fields = React.useMemo(() => [
-        {
-            title: "Panel Member Details",
-            field: [
-                {
-                    key: "panel_member",
-                    label: "",
-                    formatter: (cell) => (
-                        <EmployeeDetailUI
-                            id={cell}
-                            InformationKeys={["name", "department", "position", "branch",]}
-                            ViewVariant={"vertical"}
-                            className
-                        />
-                    ),
-                },
-            ],
-        },
-        {
-            title: "General Feedback",
-            field: [
-                {
-                    key: "comments",
-                    label: "Comments / Observations",
-                },
-                {
-                    key: "rating",
-                    label: "Rating",
-                },
-                {
-                    key: "recommendation",
-                    label: "Recommendation",
-                },
-            ],
-        },
-        {
-            title: "Feedback Form Responses",
-            field: CurrentData?.responses
-                ? (CurrentData.responses || []).map(({ field_label, response_numeric, response_text }) => ({
-                    key: `${response_numeric || response_text}`,
-                    label: `${field_label}`,
-                    formatter: () => response_numeric || response_text,
-                }))
-                : [],
-        },
+    const fields = React.useMemo(() =>
+        (CurrentData || []).map(
+            ({ panel_member_name, panel_member, responses, recommendation, rating, comments }) => ({
+                title: ``,
+                field: [
+                    {
+                        key: "panel_member",
+                        formatter: () => (
+                            <EmployeeDetailUI
+                                id={panel_member}
+                                InformationKeys={["name", "department", "position", "branch"]}
+                                ViewVariant="vertical"
+                                className="w-full"
+                            />
+                        ),
+                    },
+                    {
+                        key: "comments",
+                        label: "Comments / Observations",
+                        formatter: () => comments || "—",
+                    },
+                    {
+                        key: "rating",
+                        label: "Rating",
+                        formatter: () => rating ?? "N/A",
+                    },
+                    {
+                        key: "recommendation",
+                        label: "Recommendation",
+                        formatter: () => recommendation ?? "N/A",
+                    },
+                    {
+                        key: "responses",
+                        label: "Feedback Responses",
+                        formatter: () =>
+                            responses && responses.length > 0 ? (
+                                <ul className="list-disc pl-4 space-y-1">
+                                    {responses.map(({ field_label, response_numeric, response_text }, idx) => (
+                                        <li key={idx}>
+                                            {field_label}:{" "}
+                                            <strong> {response_numeric ?? response_text ?? "—"}</strong>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                "No responses"
+                            ),
+                    },
+                ],
+            })
+        ),
+        [CurrentData]
+    );
 
-    ], []);
-
+    console.log(CurrentData, fields)
     return (
         <>
             <NavigationSheetComponent
