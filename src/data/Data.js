@@ -514,12 +514,20 @@ export const ProjectStatusList = [
   },
 ];
 
-export const RecruitmentApplicationSource =  [
-  { label: 'Cohrus', value: 'cohrus' }, 
+export const RecruitmentApplicationSource = [
+  { label: 'Cohrus', value: 'cohrus' },
   { label: 'Indeed', value: 'indeed' },
-   { label: 'Linkedin', value: 'linkedin' }, 
-   { label: 'Other', value: 'other' },
-  ];
+  { label: 'Linkedin', value: 'linkedin' },
+  { label: 'Other', value: 'other' },
+];
+
+export const RecruitmentApplicantStatusOption = [
+  { label: 'In Progress', value: 'in_progress' },
+  { label: 'Shortlisted', value: 'shortlisted' },
+  { label: 'Rejected', value: 'rejected' },
+  { label: 'Blacklisted', value: 'blacklisted' },
+];
+
 
 export const workplaceTypes = [
   { label: "Remote", value: "REMOTE" },

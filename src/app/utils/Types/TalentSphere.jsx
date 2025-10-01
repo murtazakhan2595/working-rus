@@ -265,12 +265,28 @@ export const Interview = {
     id: null,
     applicant: null,
     interview_type: null,
+    interview_type_name: null,
     scheduled_datetime: null,
     panel: null,
+    panel_name: null,
     email_template: null,
     generate_meeting_link: null,
     require_demographics: null,
     created_by: null,
     created_at: null,
     status: null,
+    job_title: null,
+    candidate_name: null,
+}
+
+export const InterviewFeedback = {
+    interview: null,
+    panel_member: null,
+    feedback_form: null,
+    rating: null,
+    comments: null,
+    is_submitted: null,
+    recommendation: null,
+    id: null,
+    responses:null,
 }

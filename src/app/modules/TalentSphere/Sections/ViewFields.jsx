@@ -371,68 +371,11 @@ export const InterviewDetails = [
       },
       {
         key: "emiratization_flag",
-        label: "Emiration Eligibity",
-        formatter: (cell) => cell ? 'Yes' : 'No',
-      },
-    ],
-  },
-  {
-    title: `Application Details`,
-    footerTitle: "Request At",
-    footerField: "created_at",
-    field: [
-      {
-        key: "id",
-        label: "Id",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
+        label: "AI Suggested Label",
       },
       {
-        key: "job_title",
-        label: "Job Title",
-        // formatter: (cell) => renderDate(cell),
-      },
-      {
-        key: "job_description",
-        label: "Job Description",
-        // formatter: (cell) => renderDate(cell),
-      },
-
-      {
-        key: "department",
-        label: "Department",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-      {
-        key: "location",
-        label: "Location",
-      },
-      {
-        key: "job_type_name",
-        label: "Job Type",
-      },
-      {
-        key: "career_level_name",
-        label: "Career Level",
-      },
-      {
-        key: "education",
-        label: "Education Requirement",
-      },
-      {
-        key: "notice_period",
-        label: "Experience Requirement",
-      },
-      {
-        key: "application_source",
-        label: "Application Source",
-        formatter: (cell) => {
-          return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
-        },
-      },
-      {
-        key: "application_date",
-        label: "Application Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        key: "emiratization_flag",
+        label: "AI Matched Score",
       },
     ],
   },
@@ -455,57 +398,43 @@ export const InterviewDetails = [
     ],
   },
   {
-    title: "Rejection Information",
-    renderSectionCondition: (data) => {
-      if (data.status === 'rejected') return true;
-      return false;
-    },
+    title: `Vacancy Details`,
     field: [
       {
-        key: "rejected_by",
-        label: "Rejected By",
-        formatter: (cell) => <EmployeeName value={cell} />
-      },
-
-      {
-        key: "rejected_on",
-        label: "Date",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-      {
-        key: "rejection_reason",
-        label: "Reason",
+        key: "job_title",
+        label: "Job Title",
+        // formatter: (cell) => renderDate(cell),
       },
     ],
   },
   {
-    title: "Resume Bank Information",
-    renderSectionCondition: (data) => {
-      if (data.status === 'Resume Bank') return true;
-      return false;
-    },
+    title: "Interview Information",
     field: [
       {
-        key: "recommended_department",
-        label: "Recommended Department",
-        formatter: (cell) => <DepartmentName value={cell} />
-      },
-      {
-        key: "recommended_designation",
-        label: "Recommended Designation",
-        formatter: (cell) => <DesignationName value={cell} />
-      },
-      {
-        key: "added_by",
-        label: "Added By",
+        key: "interview_type_name",
+        label: "Interview Type",
         formatter: (cell) => <EmployeeName value={cell} />
       },
       {
-        key: "added_on",
-        label: "Added Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        key: "scheduled_datetime",
+        label: "Date & Time",
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
       },
-
+      {
+        key: "panel_name",
+        label: "Panel Members",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
+      },
+      {
+        key: "interview_type_name",
+        label: "Generated Meeting Link",
+        renderCondition: (_,data) => Boolean(data.generate_meeting_link),
+      },
+      {
+        key: "interview_type_name",
+        label: "Required Demographics",
+        renderCondition: (_,data) => Boolean(data.require_demographics),
+      },
     ],
   },
 ];
