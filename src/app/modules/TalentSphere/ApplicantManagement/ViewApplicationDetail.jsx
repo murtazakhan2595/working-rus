@@ -1,34 +1,35 @@
-import { toast } from "react-toastify";
 import React, { useState } from "react";
-import { FormatID } from "utils/getValuesFromTables";
-import { getApplicantsData, saveUpdateApplication, saveUpdateResumeBankApplication, saveUpdateRejectedApplication } from "app/hooks/talentSphere";
 import {
-  ClearanceSheet,
-  UploadExitInterviewDetails,
-} from "app/modules/ExitAndClearance";
+  getApplicantsData, saveUpdateApplication,
+  saveUpdateResumeBankApplication,
+  saveUpdateRejectedApplication,
+  saveUpdateShortlistedApplicant
+} from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
 // import { CoverFileUpload } from "components/FormControl";
 import {
-  EmployeeOverview,
   SheetUI,
-  StatusLabel,
   NavigationSheetComponent,
   DetailContent,
-  StatusList,
-  StatusButtons,
 } from "components";
-import { RejectedApplication, ResumeBankApplication } from "app/utils/Types/TalentSphere";
-import { renderDate } from "utils/renderValues";
+import { RejectedApplication, ResumeBankApplication, ShortlistedApplicant } from "app/utils/Types/TalentSphere";
 import { GetDispatchStateList } from "utils/Lists";
 import { ApplicantDetails } from "app/modules/TalentSphere/Sections";
 import { TextAreaInput } from "components/FormControl";
 import { SelectInputComponent } from "components/FormControl";
+import { NumberInput } from "components/FormControl";
+import { DateInput } from "components/FormControl";
 
 const StatusConfig = {
   'rejected': {
     successMessage: "Application Rejected Successfully!",
     saveUpdateApplicationResponse: saveUpdateRejectedApplication,
-    FormSheetData: { title: 'Rejection Reson', },
+    FormSheetData: { title: 'Rejection Reason', },
+  },
+  'shortlisted': {
+    successMessage: "Application Rejected Successfully!",
+    saveUpdateApplicationResponse: saveUpdateShortlistedApplicant,
+    FormSheetData: { title: 'Add Shortlisting Details', },
   },
   'resume_bank': {
     successMessage: "Application Moved to Resume Bank Successfully!",
@@ -113,7 +114,15 @@ const ViewApplicationDetail = ({
           applicant: data.id,
         })
         setOpenFormModal(true);
-      } else { handleSubmit({ id: data.id, status: status }) }
+      } if (status === "shortlisted") {
+        setFormData({
+          status: status,
+          ...ShortlistedApplicant,
+          applicant: data.id,
+        })
+        setOpenFormModal(true);
+      }
+      else { handleSubmit({ id: data.id, status: status }) }
     },
     [setOpenFormModal, handleSubmit, setCurrentItemId]
   );
@@ -236,12 +245,19 @@ const ViewApplicationDetail = ({
                 sheetCardExtension: false,
                 // sheetCardTitle: "Salary Details",
                 InputFields: [
-                  ...(FormData.status === 'rejected' ? [{
-                    InputField: TextAreaInput,
-                    name: "rejection_reason",
-                    required: true,
-                    label: "Reason",
-                  }] : []),
+                  ...(FormData.status === 'rejected' ? [
+                    {
+                      InputField: TextAreaInput,
+                      name: "rejection_reason",
+                      required: true,
+                      label: "Reason",
+                    },
+                    {
+                      InputField: TextAreaInput,
+                      name: "remarks",
+                      label: "Remarks",
+                    },
+                  ] : []),
                   ...(FormData.status === 'resume_bank' ? [{
                     InputField: SelectInputComponent,
                     name: "recommended_department",
@@ -255,6 +271,24 @@ const ViewApplicationDetail = ({
                     required: true,
                     label: "Recommended Designation",
                     options: Designations,
+                  },] : []),
+                  ...(FormData.status === 'shortlisted' ? [{
+                    InputField: NumberInput,
+                    name: "desired_salary",
+                    required: true,
+                    label: "Desired Salary",
+                  },
+                  {
+                    InputField: DateInput,
+                    name: "expected_joining_date",
+                    required: true,
+                    label: "Expected Joining Date",
+                  },
+                  {
+                    InputField: TextAreaInput,
+                    name: "remarks",
+                    required: true,
+                    label: "Remarks",
                   },] : []),
                 ].filter(Boolean),
               },

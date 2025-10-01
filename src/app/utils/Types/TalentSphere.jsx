@@ -227,7 +227,6 @@ export const Applicants = {
     candidate_name: null,
     email: null,
     contact_number: null,
-    department: null,
     application_source: null,
     emiratization_flag: null,
     status: null,
@@ -236,6 +235,7 @@ export const Applicants = {
     rejection_reason: null,
     application_date: null,
     location: null,
+    job_title: null,
 }
 
 export const RejectedApplication = {
@@ -296,4 +296,14 @@ export const InterviewFeedback = {
     recommendation: null,
     id: null,
     responses: null,
+}
+
+export const ShortlistedApplicant = {
+    id: null,
+    applicant: null,
+    desired_salary: null,
+    expected_joining_date: null,
+    remarks: null,
+    shortlisted_by: null,
+    shortlisted_on: null,
 }

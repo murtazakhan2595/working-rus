@@ -54,6 +54,7 @@ import {
   mapRejectedApplicationPayloadData,
   mapResumeBankApplicantsList,
   mapInterviewData,
+  mapShortlistedApplicantPayloadData
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -1147,9 +1148,10 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
       const VacancyData = await getVacancyData(Response.published_vacancy);
-      const RejectedData = await getRejectedApplicantById(Response.id);
+      const RejectedData = Response.status === 'rejected' ? await getRejectedApplicantById(Response.id) : {};
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
-      return { ...VacancyData, ...(RejectedData || {}), ...(ResumeBankData || {}), ...ResponseData, };
+      const ShortlistData = Response.status === 'shortlisted' ? await getShortlistedApplicantById(Response.id) : {};
+      return { ...VacancyData, ...(RejectedData || {}), ...(ResumeBankData || {}), ...(ShortlistData || {}), ...ResponseData, };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1266,6 +1268,83 @@ export const saveUpdateRejectedApplication = async (payload, id) => {
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapRejectedApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+// ==================== Shortlisted Applications ====================
+
+
+export const getShortlistedApplicantList = async (payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  const URL = `/recruitment-shortlist/?` +
+    `${ordering ? `ordering=${ordering}&` : ""}` +
+    `${pageNo ? `page=${pageNo}&` : ""}` +
+    `${pageSize ? `page_size=${pageSize}&` : ""}` +
+    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return false;
+  }
+};
+
+export const getShortlistedApplicantById = async (applicant) => {
+  try {
+    const response = await getShortlistedApplicantList({ filterData: { applicant: applicant } });
+    if (response) {
+      const ResponseList = response.results;
+      if (ResponseList.length > 0) {
+        const ResponseData = ResponseList.find(obj => obj.applicant === applicant);
+        return ResponseData;
+      }
+      return {};
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return {};
+  }
+};
+
+export const saveUpdateShortlistedApplicant = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-shortlist/${id}/`
+      : `${baseUrl}/recruitment-shortlist/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapShortlistedApplicantPayloadData(payload);
     const response = await axios({
       method,
       url,
