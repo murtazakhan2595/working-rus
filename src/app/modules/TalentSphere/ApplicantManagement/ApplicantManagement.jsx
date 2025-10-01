@@ -16,8 +16,8 @@ export default function ApplicantManagement() {
     const isViewApplicantsPermitted = HasAccess("VIEW_TS_BENEFITS");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isViewScreenedPermitted = HasAccess("VIEW_TS_EDUCATION");
-    const isViewResumedPermitted = HasAccess("VIEW_TS_JOB_TYPE");
-    const isViewRejectedPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+    const isViewResumedPermitted = HasAccess("VIEW_RESUME_BANK_APPLICATION");
+    const isViewRejectedPermitted = HasAccess("VIEW_REJECTED_APPLICATION");
     const [activeTab, setActiveTab] = useState(null);
     const [reloadData, setReloadData] = useState({});
 

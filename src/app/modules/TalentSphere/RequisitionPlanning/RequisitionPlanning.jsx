@@ -19,13 +19,13 @@ import {
 import Error from "app/modules/Error";
 
 export default function RequisitionPlanning() {
-    const isViewRequisitionPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isAddRequisitionPermitted = HasAccess("ADD_TS_BENEFITS");
+    const isViewRequisitionPermitted = HasAccess("VIEW_GENERATED_REQUISITION");
+    const isAddRequisitionPermitted = HasAccess("GENERATE_REQUISITION");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
-    const isViewPublishedVacanciesPermitted = HasAccess("VIEW_TS_JOB_TYPE");
+    const isViewPublishedVacanciesPermitted = HasAccess("VIEW_PUBLISHED_VACANCIES");
     const isAddPublishedVacanciesPermitted = HasAccess("ADD_TS_JOB_TYPE");
     const isViewRequisitionRequestPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
