@@ -116,7 +116,7 @@ const ScheduleInterviewSheet = ({
       toast.error("Please select a scheduled date and time")
       return false
     }
-    if (new Date(values.scheduled_datetime) <= new Date()) {
+    if (new Date(values.scheduled_datetime) < new Date()) {
       toast.error("Scheduled date and time must be in the future")
       return false
     }
