@@ -5,46 +5,20 @@ import {
   StatusList,
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
-import { StatusLabel, SheetUI, EmployeeDetailUI } from "components";
+import { StatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import { getLeaveData } from "app/hooks/leaveTracker";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
-import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { handleRequest } from "app/hooks/general";
-import { HasAccess } from "utils/PermissionUtils";
 
 const ViewLeaveDetails = ({
   isOpen,
   setIsOpen,
   currentId,
-  reloadData = () => {},
+  reloadData = () => { },
   DataList = [],
 }) => {
-  const managePermitted = HasAccess("MANAGE_LEAVE_REQUEST");
-  const { id: user_id, role: user_role } = useSelector(
-    (state) => state.user.userProfile
-  );
   const [forceLoad, setForceLoad] = useState(false);
-  const handleSubmit = async (status, { request_id }) => {
-    try {
-      const response = await handleRequest(request_id, status === "Approved");
-      // return
-      if (response) {
-        toast.success(`Request ${status} Successfully!`);
-        setForceLoad(!forceLoad);
-      }
-    } catch (error) {
-      // Handle errors and rollback form data
-      console.error(error);
-    }
-  };
-  const handleClick = (event, status, data) => {
-    event.preventDefault();
-    event.stopPropagation();
-    handleSubmit(status, data);
-  };
+  
   // Define the fields to display
   const fields = [
     {
@@ -156,28 +130,20 @@ const ViewLeaveDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        if (!managePermitted) return null;
-        if (!data || !data.status || data.status?.toLowerCase() !== "pending")
-          return null;
-        if (!data.current_approver) return null;
-        if (data.current_approver.includes(user_id) || user_role.includes(1))
-          return (
-            <div className="flex flex-wrap justify-end gap-2 my-5">
-              <Button
-                variant="success"
-                onClick={(event) => handleClick(event, "Approved", data)}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={(event) => handleClick(event, "Rejected", data)}
-              >
-                Reject
-              </Button>
-            </div>
-          );
-        return null;
+        return (
+          <StatusButtons
+            permissionKey={'MANAGE_LEAVE_REQUEST'}
+            status={data?.status}
+            current_approver={data.current_approver}
+            final_approver={data.final_approvers}
+            request_id={data.request_id}
+            setResponse={(response, status) => {
+              if (response) {
+                setForceLoad(!forceLoad);
+              }
+            }}
+          />
+        );
       },
     },
   ];

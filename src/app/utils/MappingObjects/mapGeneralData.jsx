@@ -65,18 +65,26 @@ export async function mapApproverDetails({
       level_number,
       time: null,
     };
+    const assignment_type = level.assignment_type.replace('_', ' ').toLowerCase();
     // If this is the current active level
     if (log) {
       levelDetail.status = log?.action_type || "UNKNOWN";
-      levelDetail.info = log?.changed_by ? (
-        <EmployeeDetailUI
-          id={log?.changed_by}
-          ViewVariant={"simple-text"}
-          InformationKeys={["name", "position"]}
-        />
-      ) : (
-        "Unknown"
-      );
+      if (log?.action_type.toUpperCase() === 'SKIPPED') {
+        levelDetail.info = (<>{level?.designation_name || assignment_type}</>)
+        levelDetail.infoPrefix = 'At'
+        levelDetail.description = 'No active approver was found';
+      } else {
+        levelDetail.info = log?.changed_by ? (
+          <EmployeeDetailUI
+            id={log?.changed_by}
+            ViewVariant={"simple-text"}
+            InformationKeys={["name", "position"]}
+          />
+        ) : (
+          "Unknown"
+        );
+      }
+
       levelDetail.time = log?.timestamp || null;
     } else if (parseInt(current_level) === level_number) {
       if (
@@ -98,7 +106,6 @@ export async function mapApproverDetails({
             );
           })
         );
-        const assignment_type = level.assignment_type.replace('_', ' ').toLowerCase();
         levelDetail.info = (
           <>
             {approverInfos} - {level?.designation_name || assignment_type}
