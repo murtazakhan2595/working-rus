@@ -123,7 +123,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 name: "application_source",
                                 placeholder: "Application Source",
                             },
-                            (variant === 'all' ? [{
+                            ...(variant === 'all' ? [{
                                 type: "select",
                                 options: [
                                     { value: 'new', label: 'New' },
@@ -153,6 +153,11 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 type: "date-range",
                                 name: "rejection_date",
                                 placeholder: "Rejection Date",
+                            },] : []),
+                            ...(variant === 'shortlisted' ? [{
+                                type: "date-range",
+                                name: "expected_joining_date",
+                                placeholder: "Joining Date",
                             },] : []),
                             ...(variant === 'blacklisted' ? [{
                                 type: "date-range",

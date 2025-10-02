@@ -6,8 +6,8 @@ import {
   DetailContent,
 } from "components";
 import { ApplicantDetails } from "app/modules/TalentSphere/Sections";
-import { UpdateApplicantStatus } from "app/modules/TalentSphere";
-
+import { UpdateApplicantStatus, ViewInterviewFeedback } from "app/modules/TalentSphere";
+import { ApplicantStatusList } from './StatusList'
 
 const ViewApplicationDetail = ({
   currentId,
@@ -20,16 +20,23 @@ const ViewApplicationDetail = ({
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
   const [OpenFormModal, setOpenFormModal] = useState(false);
+  const [OpenViewFeedback, setOpenViewFeedback] = useState(false);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
       event.preventDefault();
       event.stopPropagation();
+      if (status === 'view-feedback') {
+        setOpenViewFeedback(true);
+        const interview_ids = (data.interviews || []).map(interview => interview.id);
+        setFormData({ id: interview_ids });
+        return null;
+      }
       const FormData = {
         status: status,
         applicant: data.id,
         status_variant: status,
-        initialData:{},
+        initialData: {},
       }
       if (status === 'hold')
         FormData.status_variant = 'default';
@@ -41,7 +48,7 @@ const ViewApplicationDetail = ({
       setFormData(FormData)
       setOpenFormModal(true);
     },
-    [setOpenFormModal, setFormData]
+    [setOpenFormModal, setFormData, setOpenViewFeedback]
   );
 
   const fetchData = async (id, isMounted) => {
@@ -62,66 +69,17 @@ const ViewApplicationDetail = ({
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
           console.log(data, 'APPLICATION DATA')
-          if (!data) return null;
-          if (data.status && data.status.toLowerCase() === "new")
-            return (<>
-              <Button
-                variant="outline"
-                onClick={(event) => handleClick(event, "resume_bank", data)}
-              >
-                Resume Bank
-              </Button>
-              <Button
-                variant="success"
-                onClick={(event) => handleClick(event, "screened", data)}
-              >
-                Screened Candidate
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={(event) => handleClick(event, "rejected", data)}
-              >
-                Reject
-              </Button>
-            </>
-            );
-          else if (data.status && data.status.toLowerCase() === "in progress")
-            return <>
-              <Button
-                variant="continue"
-                onClick={(event) => handleClick(event, "hold", data)}
-              >
-                Hold
-              </Button>
-              <Button
-                variant="success"
-                onClick={(event) => handleClick(event, "shortlisted", data)}
-              >
-                Shortlisted
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={(event) => handleClick(event, "rejected", data)}
-              >
-                Reject
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={(event) => handleClick(event, "blacklisted", data)}
-              >
-                Blacklisted
-              </Button>
-            </>
-          else if (data.status && data.status.toLowerCase() === "blacklisted")
-            return <>
-              <Button
-                variant="continue"
-                onClick={(event) => handleClick(event, "remove_blacklist", data)}
-              >
-                Remove from Blacklist
-              </Button>
-
-            </>
+          if (!data || !data.status || !data.status.toLowerCase()) return null;
+          const Options = ApplicantStatusList[data.status.toLowerCase()];
+          return (Options || []).map((option, index) => (
+            <Button
+              variant={option.variant}
+              key={`applicant-${option.status}-${index}`}
+              onClick={(event) => handleClick(event, option.status, data)}
+            >
+              {option.label}
+            </Button>
+          ))
         },
       },
     ], [handleClick,]
@@ -156,6 +114,19 @@ const ViewApplicationDetail = ({
           initialData={FormData.initialData}
         />
       )}
+      {OpenViewFeedback &&
+        <ViewInterviewFeedback
+          isOpen={OpenViewFeedback}
+          reloadData={() => {
+            setForceLoad(!forceLoad);
+            setOpenViewFeedback(false);
+          }}
+          setIsOpen={() => {
+            setOpenViewFeedback(false);
+          }}
+          currentId={FormData?.id}
+        />
+      }
     </>
   );
 };

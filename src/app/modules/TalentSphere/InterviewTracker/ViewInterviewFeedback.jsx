@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import React, { useState } from "react";
 import { FormatID } from "utils/getValuesFromTables";
-import { getFeedBackFormList, getInterviewById } from "app/hooks/talentSphere";
+import { getInterviewFeedbackList, getInterviewById } from "app/hooks/talentSphere";
 import {
     ClearanceSheet,
     UploadExitInterviewDetails,
@@ -38,9 +38,9 @@ const ViewInterviewFeedback = ({
 
     const fetchData = async (id, isMounted) => {
         try {
-            const response = await getInterviewById(id);
+            const response = await getInterviewFeedbackList({ filterData: { interview: id } });
             if (isMounted) {
-                setCurrentData(response.interview_feedbacks || []);
+                setCurrentData(response.results || []);
                 return response;
             }
         } catch (error) {

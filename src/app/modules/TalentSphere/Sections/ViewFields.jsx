@@ -313,7 +313,7 @@ export const ApplicantDetails = [
   {
     title: "Interview Info",
     renderSectionCondition: (data) => {
-      if (data.interviews) return true;
+      if (data.interviews && Array.isArray(data.interviews) && data.interviews.length > 0) return true;
       return false;
     },
     field: [
@@ -329,24 +329,24 @@ export const ApplicantDetails = [
             <DetailBox
               key={`${index}-interview-time`}
               label={"Date & Time"}
-              value={renderDate(interview?.scheduled_datetime,'--','date-time')}
+              value={renderDate(interview?.scheduled_datetime, '--', 'date-time')}
             />
-             <DetailBox
+            <DetailBox
               key={`${index}-interview-type`}
               label={"Interview Type"}
               value={interview?.interview_type_name}
             />
-             <DetailBox
+            <DetailBox
               key={`${index}-interview-member`}
               label={"Panel Members"}
               value={<MultiStatusLabel statusList={interview.panel_name} variant="info" displayAll={true} />}
             />
-             <DetailBox
+            <DetailBox
               key={`${index}-interview-link`}
               label={"Meeting Link"}
               value={interview?.meeting_link}
             />
-             <DetailBox
+            <DetailBox
               key={`${index}-interview-status`}
               label={"Status"}
               value={interview?.status}

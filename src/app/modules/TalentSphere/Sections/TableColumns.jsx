@@ -1125,22 +1125,12 @@ export const ApplicationColumns = (reloadData, variant) => [
                 <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
                 <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
                 <div><span className="font-bold">Department: </span>{row.contact_number}</div>
+                <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
             </div>
             );
         },
-        minWidth: '250px',
+        minWidth: '200px',
     },
-    {
-        dataField: "emiratization_flag",
-        text: "Emiratization Flag",
-        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
-    },
-    ...(variant === 'blacklisted' ? [
-        {
-            dataField: "feed_back",
-            text: "Feedback Summary",
-        },
-    ] : []),
     ...(variant === 'blacklisted' ? [
         {
             dataField: "blacklist",
@@ -1161,6 +1151,29 @@ export const ApplicationColumns = (reloadData, variant) => [
             dataField: "blacklist",
             text: "Blacklist On",
             formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+        },
+    ] : []),
+    ...(variant === 'shortlisted' ? [
+        {
+            dataField: "recruitment_shortlist",
+            text: "Shortlisting Info",
+            minWidth: '300px',
+            formatter: (cell) => {
+                // const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+                return (<div>
+                    <div><span className="font-bold">Desired Salary: </span>{cell.desired_salary}</div>
+                    <div><span className="font-bold">Expected Joining Date: </span>{renderDate(cell.expected_joining_date, '--', 'date')}</div>
+                    <div><span className="font-bold">Shortlisted By: </span><EmployeeName value={cell?.shortlisted_by} /></div>
+                    <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--")}</div>
+                </div>
+                );
+            },
+        },
+    ] : []),
+    ...(variant !== 'all' ? [
+        {
+            dataField: "feed_back",
+            text: "Feedback Summary",
         },
     ] : []),
     {
