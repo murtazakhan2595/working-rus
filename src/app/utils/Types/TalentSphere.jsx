@@ -236,6 +236,10 @@ export const Applicants = {
     application_date: null,
     location: null,
     job_title: null,
+    blacklist: null,
+    recruitment_shortlist: null,
+    interviews: null,
+    recruitment_rejected: null,
 }
 
 export const RejectedApplication = {
@@ -289,6 +293,7 @@ export const Interview = {
 export const InterviewFeedback = {
     interview: null,
     panel_member: null,
+    panel_member_name: null,
     feedback_form: null,
     rating: null,
     comments: null,
@@ -306,4 +311,28 @@ export const ShortlistedApplicant = {
     remarks: null,
     shortlisted_by: null,
     shortlisted_on: null,
+}
+
+
+export const BlacklistApplicant = {
+    id: null,
+    applicant: null,
+    reasons: null,
+    reason_ids: null,
+    remarks: null,
+    blacklisted_by: null,
+    blacklisted_on: null,
+    removed_by: null,
+    removed_on: null,
+}
+
+
+export const BlacklistReason = {
+    id: null,
+    name: null,
+    description: null,
+    is_active: null,
+    created_at: null,
+    created_by: null,
+    remove: null,
 }

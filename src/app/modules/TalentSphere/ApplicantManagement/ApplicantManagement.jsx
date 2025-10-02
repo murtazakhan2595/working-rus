@@ -1,74 +1,52 @@
+import React, { useState, useMemo } from "react";
+import { usePermissions } from "utils/PermissionUtils";
 import { Header } from "components";
-import React, { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
-import { HasAccess } from "utils/PermissionUtils";
-import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
-import {
-    AllApplicants,
-    CareerLevels,
-    Educations,
-    ResumeBankApplicants,
-} from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
+import {APPLICANT_TAB_CONFIG} from 'app/modules/TalentSphere/Sections';
+
+
 
 export default function ApplicantManagement() {
-    const isViewApplicantsPermitted = HasAccess("VIEW_TS_BENEFITS");
-    const isViewShortlistedPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
-    const isViewScreenedPermitted = HasAccess("VIEW_TS_EDUCATION");
-    const isViewResumedPermitted = HasAccess("VIEW_RESUME_BANK_APPLICATION");
-    const isViewRejectedPermitted = HasAccess("VIEW_REJECTED_APPLICATION");
-    const [activeTab, setActiveTab] = useState(null);
-    const [reloadData, setReloadData] = useState({});
+  const { hasAccess } = usePermissions();
+  const [activeTab, setActiveTab] = useState(null);
+  const [reloadData, setReloadData] = useState({});
 
-    const TabListArray = React.useMemo(() => [
-        ...(isViewApplicantsPermitted ? ["All Applicants"] : []),
-        ...(isViewRejectedPermitted ? ["Rejected"] : []),
-        ...(isViewResumedPermitted ? ["Resume Bank"] : []),
-        ...(isViewScreenedPermitted ? ["Screened"] : []),
-        ...(isViewShortlistedPermitted ? ["Shortlisted"] : []),
+  // Filter tabs based on user permissions
+  const availableTabs = useMemo(
+    () => APPLICANT_TAB_CONFIG.filter((tab) => hasAccess(tab.permission)),
+    [hasAccess]
+  );
 
-    ], [isViewApplicantsPermitted, isViewShortlistedPermitted, isViewScreenedPermitted, isViewResumedPermitted, isViewRejectedPermitted]);
+  // If no permission -> show error page
+  if (!availableTabs.length) return <Error errorType={401} />;
 
-    if (!isViewApplicantsPermitted && !isViewShortlistedPermitted && !isViewScreenedPermitted && !isViewResumedPermitted && !isViewRejectedPermitted)
-        return <Error errorType={401} />
-    return (
-        <div className="flex flex-col gap-4">
-            <Header />
+  const currentTab = activeTab || availableTabs[0].label;
 
-            <Tabs
-                value={activeTab || TabListArray[0]}
-                onValueChange={setActiveTab}
-                defaultValue="All Applicants"
-            >
-                <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
-                    <TabsList>
-                        {TabListArray.map((tab) => (
-                            <TabsTrigger key={tab} value={tab}>
-                                {tab}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </div>
+  return (
+    <div className="flex flex-col gap-4">
+      <Header />
 
-                <Card>
-                    <TabsContent value={'All Applicants'}>
-                        <AllApplicants reload={reloadData['benefits']} />
-                    </TabsContent>
-                    <TabsContent value={'Shortlisted'}>
-                        <AllApplicants variant='shortlisted'/>
-                    </TabsContent>
-                    <TabsContent value={'Screened'}>
-                        <Applicants />
-                    </TabsContent>
-                    <TabsContent value={'Resume Bank'}>
-                        <ResumeBankApplicants reload={reloadData['resume']} />
-                    </TabsContent>
-                    <TabsContent value={'Rejected'}>
-                        <AllApplicants reload={reloadData['rejected']} variant='rejected' />
-                    </TabsContent>
-                </Card>
-            </Tabs>
+      <Tabs value={currentTab} onValueChange={setActiveTab}>
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
+          <TabsList>
+            {availableTabs.map((tab) => (
+              <TabsTrigger key={tab.label} value={tab.label}>
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
         </div>
-    );
+
+        <Card>
+          {availableTabs.map((tab) => (
+            <TabsContent key={tab.label} value={tab.label}>
+              {tab.component(reloadData)}
+            </TabsContent>
+          ))}
+        </Card>
+      </Tabs>
+    </div>
+  );
 }

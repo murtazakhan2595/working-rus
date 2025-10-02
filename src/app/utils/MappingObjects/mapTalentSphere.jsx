@@ -1,6 +1,7 @@
 import {
     ManpowerPlanning,
     Benefit,
+    BlacklistReason,
     OfferLetterTemplate,
     RemoteWorkChecklist,
     JobType,
@@ -12,6 +13,7 @@ import {
     Applicants,
     RejectedApplication,
     ShortlistedApplicant,
+    BlacklistApplicant,
     ResumeBankApplication,
     InterviewType,
     FeedBackForm,
@@ -574,6 +576,15 @@ export function mapApplicantsData(data) {
                     acc[key] = 'In Progress';
                 else acc[key] = data[key];
             }
+            else if (key === 'blacklist') {
+                acc[key] = data[key] ? mapBlacklistApplicantData(data[key]) : null;
+            }
+            else if (key === 'recruitment_shortlist') {
+                acc[key] = data[key] ? mapShortlistedApplicantData(data[key]) : null;
+            }
+            // else if (key === 'interviews') {
+            //     acc[key] = data[key] ? mapShortlistedApplicantData(data[key]) : null;
+            // }
             else acc[key] = data[key];
         }
         return acc;
@@ -646,6 +657,53 @@ export function mapShortlistedApplicantPayloadData(data) {
 
     // Return the constructed payload
     return payload;
+}
+
+export function mapShortlistedApplicantData(data) {
+    const RecordDetails = Object.keys(ShortlistedApplicant).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === 'remarks') acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+
+//--------------- Blacklist Application--------------------
+export function mapBlacklistApplicantPayloadData(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Applicants object
+    for (const key in BlacklistApplicant) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "remarks") payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+export function mapBlacklistApplicantData(data) {
+    const RecordDetails = Object.keys(BlacklistApplicant).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === 'remarks') acc[key] = data[key].trim()
+            else if (key === "reasons") {
+                acc[key] = ((data[key] || []).map(reason => reason.name) || [])
+            }
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
 }
 //--------------- Resume Bank Application--------------------
 export function mapResumeBankApplicationPayloadData(data) {
@@ -918,6 +976,53 @@ export function mapInterviewFeedbackPayloadData(data, id) {
             data[key] !== undefined
         ) {
             if (key === 'comments') payload[key] = data[key].trim();
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+
+//-------------BlacklistReasons ---------------
+
+export function mapBlacklistReasonData(data) {
+    const RecordDetails = Object.keys(BlacklistReason).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapBlacklistReasonList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapBlacklistReasonData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapBlacklistReasonPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the BlacklistReason object
+    for (const key in BlacklistReason) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else payload[key] = data[key];
         }
     }

@@ -4,6 +4,7 @@ import { renderRange, renderDate } from "utils/renderValues";
 import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
+import { DetailBox, DetailCard } from "components/SheetCardExtension";
 
 export const RequisitionViewFields = [
   {
@@ -306,61 +307,140 @@ export const ApplicantDetails = [
         label: "Added Date",
         formatter: (cell) => renderDate(cell, "--"),
       },
-      {
-        title: "Rejection Information",
-        renderSectionCondition: (data) => {
-          if (data.status === 'rejected') return true;
-          return false;
-        },
-        field: [
-          {
-            key: "rejected_by",
-            label: "Rejected By",
-            formatter: (cell) => <EmployeeName value={cell} />
-          },
 
-          {
-            key: "rejected_on",
-            label: "Date",
-            formatter: (cell) => renderDate(cell, "--"),
-          },
-          {
-            key: "rejection_reason",
-            label: "Reason",
-          },
-          {
-            key: "remarks",
-            label: "Remarks",
-          },
-        ],
+    ],
+  },
+  {
+    title: "Interview Info",
+    renderSectionCondition: (data) => {
+      if (data.interviews) return true;
+      return false;
+    },
+    field: [
+      {
+        key: "interviews",
+        formatter: (cell) => (cell || []).map((interview, index) => {
+          return <>
+            <DetailBox
+              key={`${index}-interview-type`}
+              label={"Interview Type"}
+              value={interview?.interview_type_name}
+            />
+            <DetailBox
+              key={`${index}-interview-time`}
+              label={"Date & Time"}
+              value={renderDate(interview?.scheduled_datetime,'--','date-time')}
+            />
+             <DetailBox
+              key={`${index}-interview-type`}
+              label={"Interview Type"}
+              value={interview?.interview_type_name}
+            />
+             <DetailBox
+              key={`${index}-interview-member`}
+              label={"Panel Members"}
+              value={<MultiStatusLabel statusList={interview.panel_name} variant="info" displayAll={true} />}
+            />
+             <DetailBox
+              key={`${index}-interview-link`}
+              label={"Meeting Link"}
+              value={interview?.meeting_link}
+            />
+             <DetailBox
+              key={`${index}-interview-status`}
+              label={"Status"}
+              value={interview?.status}
+            />
+          </>
+        })
       },
     ],
   },
   {
     title: "Shortlisting Info",
     renderSectionCondition: (data) => {
-      if (data.status === 'shortlisted') return true;
+      if (data.recruitment_shortlist) return true;
       return false;
     },
     field: [
       {
-        key: "shortlisted_by",
+        key: "recruitment_shortlist",
         label: "Shortlisted By",
-        formatter: (cell) => <EmployeeName value={cell} />
+        formatter: (cell) => <EmployeeName value={cell?.shortlisted_by} />
       },
       {
-        key: "shortlisted_on",
+        key: "recruitment_shortlist",
+        label: "Date",
+        formatter: (cell) => renderDate(cell?.shortlisted_on, "--"),
+      },
+      {
+        key: "recruitment_shortlist",
+        label: "Desired Salary",
+        formatter: (cell) => cell?.desired_salary,
+      },
+      {
+        key: "recruitment_shortlist",
+        label: "Expected Joining Date",
+        formatter: (cell) => renderDate(cell?.expected_joining_date, "--"),
+      },
+      {
+        key: "recruitment_shortlist",
+        label: "Remarks",
+        formatter: (cell) => cell?.remarks,
+      },
+    ],
+  },
+  {
+    title: "Blacklisted Info",
+    renderSectionCondition: (data) => {
+      if (data.blacklist) return true;
+      return false;
+    },
+    field: [
+      {
+        key: "blacklist",
+        label: "Blacklisted By",
+        formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
+      },
+      {
+        key: "blacklist",
+        label: "Date",
+        formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+      },
+      {
+        key: "blacklist",
+        label: "Reasons",
+        formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
+      },
+
+      {
+        key: "blacklist",
+        label: "Remarks",
+        formatter: (cell) => cell?.remarks,
+      },
+    ],
+  },
+  {
+    title: "Rejection Information",
+    renderSectionCondition: (data) => {
+      if (data.status === 'rejected') return true;
+      return false;
+    },
+    field: [
+      {
+        key: "rejected_by",
+        label: "Rejected By",
+        formatter: (cell) => <EmployeeName value={cell} />
+      },
+
+      {
+        key: "rejected_on",
         label: "Date",
         formatter: (cell) => renderDate(cell, "--"),
       },
       {
-        key: "desired_salary",
-        label: "Desired Salary",
-      },
-      {
-        key: "expected_joining_date",
-        label: "Expected Joining Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        key: "rejection_reason",
+        label: "Reason",
       },
       {
         key: "remarks",

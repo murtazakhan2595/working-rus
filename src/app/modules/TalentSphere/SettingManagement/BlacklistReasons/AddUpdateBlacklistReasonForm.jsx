@@ -18,8 +18,8 @@ const AddUpdateBlacklistReasonForm = ({
   const isEditMode = Boolean(id);
 
   const FormSheetData = {
-    triggerText: `${isEditMode ? "Edit" : "Add"} BlacklistReason`,
-    title: `${isEditMode ? "Edit" : "Add"} BlacklistReason`,
+    triggerText: `${isEditMode ? "Edit" : "Add"} Blacklist Reason`,
+    title: `${isEditMode ? "Edit" : "Add"} Blacklist Reason`,
     description: null,
     footer: null,
   };
@@ -85,8 +85,8 @@ const AddUpdateBlacklistReasonForm = ({
         return {
           status: true,
           messageType: "SUCCESS",
-          title: `BlacklistReason ${isEditMode ? "Updated" : "Added"} Successfully!`,
-          description: `BlacklistReason is ${isEditMode ? "updated" : "added"} successfully.`,
+          title: `Blacklist Reason ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          description: `Blacklist reason is ${isEditMode ? "updated" : "added"} successfully.`,
         };
       }
     } catch (error) {
@@ -117,15 +117,15 @@ const AddUpdateBlacklistReasonForm = ({
         formFields: [
           {
             sheetCardExtension: true,
-            sheetCardTitle: `BlacklistReason Details`,
+            sheetCardTitle: `Reason Details`,
             InputFields: [
               {
                 InputField: RadioGroupInput,
-                name: "status",
+                name: "is_active",
                 label: "Status",
                 options: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: "Inactive" },
+                  { value: true, label: 'Active' },
+                  { value: false, label: "Inactive" },
                 ],
               },
               {

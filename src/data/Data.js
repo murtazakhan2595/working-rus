@@ -7,6 +7,7 @@ import {
   fetchProjects,
   fetchBranches,
   fetchCalendarHoliday,
+  fetchCountries
 } from "state/slices/CommonSlice";
 import {
   fetchModules,
@@ -806,6 +807,7 @@ export const handleUpdateProfile = async (dispatch, data) => {
   await dispatch(fetchEmployees());
   await dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
+  dispatch(fetchCountries());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
   dispatch(fetchCalendarHoliday(userprofile.id));

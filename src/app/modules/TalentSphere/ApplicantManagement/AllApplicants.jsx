@@ -35,6 +35,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                 ...filterData,
                 ...(variant === 'rejected' ? { status: 'rejected' } : {}),
                 ...(variant === 'shortlisted' ? { status: 'shortlisted' } : {}),
+                ...(variant === 'blacklisted' ? { status: 'blacklisted' } : {}),
             }
             const response = await getApplicantsList({
                 filterData: filters,
@@ -110,19 +111,19 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 name: "department",
                                 placeholder: "Department",
                             },
-                            {
-                                type: "select",
-                                options: "nationalities",
-                                name: "location",
-                                placeholder: "Location",
-                            },
+                            // {
+                            //     type: "select",
+                            //     options: "nationalities",
+                            //     name: "location",
+                            //     placeholder: "Location",
+                            // },
                             {
                                 type: "select",
                                 options: RecruitmentApplicationSource,
                                 name: "application_source",
                                 placeholder: "Application Source",
                             },
-                            {
+                            (variant === 'all' ? [{
                                 type: "select",
                                 options: [
                                     { value: 'new', label: 'New' },
@@ -132,7 +133,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 ],
                                 name: "status",
                                 placeholder: "Status",
-                            },
+                            }] : []),
                             {
                                 type: "select",
                                 options: [
@@ -148,11 +149,22 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 name: "application_date",
                                 placeholder: "Application Date",
                             },
-                            (variant === 'rejected' ? [{
+                            ...(variant === 'rejected' ? [{
                                 type: "date-range",
                                 name: "rejection_date",
                                 placeholder: "Rejection Date",
-                            },] : [])
+                            },] : []),
+                            ...(variant === 'blacklisted' ? [{
+                                type: "date-range",
+                                name: "blacklisted_on",
+                                placeholder: "Blacklisted Date",
+                            },
+                            {
+                                type: "select",
+                                name: "blacklisted_by",
+                                placeholder: "Blacklisted By",
+                                option: 'employees',
+                            }] : [])
 
                         ]}
                         className="justify-end"

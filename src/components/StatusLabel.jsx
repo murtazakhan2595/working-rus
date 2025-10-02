@@ -70,11 +70,13 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("alarming")) return "alarming";
+  else if (status.includes("blacklist")) return "alarming";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info-secondary";
   else if (status.includes("no")) return "error";
   else if (status.includes("yes")) return "success";
+  else if (status.includes("shortlist")) return "success";
   else if (status.includes("new")) return "info";
   else if (status.includes("progress")) return "info";
   else if (status.includes("scheduled")) return "info-secondary";
