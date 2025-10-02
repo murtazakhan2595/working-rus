@@ -25,7 +25,7 @@ const JobTypeActions = ({ data, DataList = [], reloadData = () => { } }) => {
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/benefits/${data.id}`, `${data.name}`);
+            await deleteRecord(`/job-types/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {

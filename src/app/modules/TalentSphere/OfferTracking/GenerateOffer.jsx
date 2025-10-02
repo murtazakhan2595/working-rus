@@ -1,8 +1,8 @@
-import { saveManpowerPanning, getManpowerById, getOfferLetterTemplateList } from 'app/hooks/talentSphere';
+import { saveUpdateOfferLetter, getOfferLetterData, getOfferLetterTemplateList } from 'app/hooks/talentSphere';
 import { getEmployeeList } from 'app/hooks/general';
 import { OfferLetter } from "app/utils/Types/TalentSphere";
 import {
-    TextAreaInput,
+    TextInput,
     SelectInputComponent,
     NumberInput,
 } from "components/FormControl";
@@ -16,15 +16,15 @@ import { calculateTotal, calculatePercentage } from 'utils/renderValues';
 import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 import { DateInput } from 'components/FormControl';
 
-const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, applicant }) => {
+const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData }) => {
     const Designations = GetDispatchStateList('designations', 'common');
     const Countries = GetDispatchStateList('countries', 'common');
     const Employees = GetDispatchStateList('employees', 'emp');
-    const [FormValues, setFormValues] = useState(OfferLetter);
+    const [FormValues, setFormValues] = useState({ ...OfferLetter, ...initialData });
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-    const [formData, setFormData] = useState(OfferLetter);
+    const [formData, setFormData] = useState({ ...OfferLetter, ...initialData });
     const [ManpowerExist, setManpowerExist] = useState(false);
     const [TemplateList, setTemplateList] = useState([]);
 
@@ -39,7 +39,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         const fetchData = async (isMounted, id) => {
             try {
                 setIsLoading(true);
-                const response = await getManpowerById(id);
+                const response = await getOfferLetterData(id);
                 if (isMounted) {
                     setFormData({ ...response });
                     setFormValues({ ...response });
@@ -63,7 +63,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                 setIsLoading(true);
                 const response = await getOfferLetterTemplateList();
                 if (isMounted) {
-                    setTemplateList(response.results||[]);
+                    setTemplateList(response.results || []);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -83,17 +83,20 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         reloadData(true);
     };
 
-    const handleSubmit = async (values) => {
+    const handleSubmit = async (values, isDraft) => {
         setIsSubmittingForm(true);
         try {
-            const payload = { ...values, };
-            const response = await saveManpowerPanning(payload, id);
+            const payload = {
+                ...values,
+                status: isDraft === 'draft' ? 'draft' : 'pending_approval',
+            };
+            const response = await saveUpdateOfferLetter(payload, id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Manpower Submitted Successfully!`,
-                    description: `Manpower planing has been submitted successfully.`,
+                    title: `Offer Letter Submitted Successfully!`,
+                    description: `Offer letter has been submitted successfully waiting for approval.`,
                 }
             }
         } catch (error) {
@@ -114,20 +117,48 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                 initialValues: formData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: (values) => {
-                    const errors = validateManpowerPlanningFormSchema(values);
-                    if (ManpowerExist) errors.manpower_planning = 'Manpower Planning for selected fiscal year already exist form same branch and department.'
-                    return errors;
-                },
-                submitButtonText: "Submit",
+                // validateFormSchema: validateManpowerPlanningFormSchema,
+                submitButtonText: "Submit & Send for Approval",
                 cancelButtonText: "Cancel",
                 columns: 2,
-                renderUpdatedFormValues: (values) => {
-                    setFormValues(values);
-                },
+                additionalButtonConfig: [
+                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, 'draft'), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
+                ],
+                renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
+                    {
+                        sheetCardExtension: true,
+                        sheetCardTitle: "Applicant Details",
+                        // sheetCardName: "manpower_planning",
+                        InputFields: [
+                            {
+                                InputField: TextInput,
+                                name: `candidate_id`,
+                                label: "Candidate Id",
+                                disabled: true,
+                            },
+                            {
+                                InputField: TextInput,
+                                name: `candidate_name`,
+                                label: "Candidate Name",
+                                disabled: true,
+                            },
+                            {
+                                InputField: TextInput,
+                                name: `email`,
+                                label: "Email",
+                                disabled: true,
+                            },
+                            {
+                                InputField: TextInput,
+                                name: `contact_number`,
+                                label: "Contact No.",
+                                disabled: true,
+                            },
+                        ],
+                    },
                     {
                         sheetCardExtension: true,
                         sheetCardTitle: "Offer Details",
@@ -173,7 +204,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                         sheetCardTitle: "Template Details",
                         // sheetCardName: "manpower_planning",
                         InputFields: [
-                           
+
                             {
                                 InputField: SelectInputComponent,
                                 name: "template",

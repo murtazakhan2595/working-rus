@@ -6,7 +6,7 @@ import {
   TalentSphereSettingManagement,
   RequisitionPlanning,
   TeamTalentSphere,
-  DemoGraphics,
+  OfferTracking,
   ApplicantManagement,
   InterviewTracker,
 } from 'app/modules/TalentSphere';
@@ -374,12 +374,12 @@ export const SidebarRoutes = [
         component: <InterviewTracker />,
         name: "APPLICANT_INTERVIEW_TRACKER",
       },
-      // Config.SETUP && {
-      //   path: "/office-settings/talent-sphere/Setup",
-      //   component: <DemoGraphics />,
-      //   name: "SETUP",
-      // },
-   
+      Config.TS_OFFER_TRACKING && {
+        path: "/office-settings/talent-sphere/offer-tracking",
+        component: <OfferTracking />,
+        name: "TS_OFFER_TRACKING",
+      },
+
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.ASSET_MANAGEMENT

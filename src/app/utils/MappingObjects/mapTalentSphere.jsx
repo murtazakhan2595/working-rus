@@ -20,6 +20,7 @@ import {
     EmailTemplate,
     Interview,
     InterviewFeedback,
+    OfferLetter,
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
@@ -884,6 +885,46 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
             if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+//-------------OfferLetter ---------------
+
+export function mapOfferLetterData(data) {
+    const RecordDetails = Object.keys(OfferLetter).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapOfferLetterList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapOfferLetterData(Record);
+        return { ...Details, };
+    });
+
+    return DataList;
+}
+
+export function mapOfferLetterPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the OfferLetter object
+    for (const key in OfferLetter) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            payload[key] = data[key];
         }
     }
 

@@ -25,7 +25,7 @@ const FeedBackFormActions = ({ data, DataList = [], reloadData = () => { } }) =>
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/benefits/${data.id}`, `${data.name}`);
+            await deleteRecord(`/feedback-forms/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {

@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import {AddUpdateEducationForm} from "app/modules/TalentSphere";
+import { AddUpdateEmailTemplateForm, ViewEmailTemplateDetail,GenerateOffer } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
-const EducationActions = ({ data, DataList = [], reloadData = () => { } }) => {
-    const isEditPermitted = HasAccess("EDIT_TS_EDUCATION");
-    const isDeletePermitted = HasAccess("DELETE_TS_EDUCATION");
-    // const isViewPermitted = HasAccess("VIEW_MANPOWER");
-    // const [view, setView] = useState(null);
+const OfferRequestActions = ({ data, DataList = [], reloadData = () => { } }) => {
+    const isEditPermitted = HasAccess("ADD_TS_BENEFITS");
+    // const isDeletePermitted = HasAccess("ADD_TS_BENEFITS");
+    const isViewPermitted = HasAccess("VIEW_MANPOWER");
+    const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
     const [deleteForm, setDeleteForm] = useState(null);
 
-   
-
     const handleEdit = (e) => {
         setOpenEditForm(true)
+    };
+    const handleView = (e) => {
+        setView(true)
     };
 
     const handleDelete = () => {
@@ -25,7 +26,7 @@ const EducationActions = ({ data, DataList = [], reloadData = () => { } }) => {
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/recruitment-education/${data.id}`, `${data.name}`);
+            await deleteRecord(`/recruitment-email-templates/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {
@@ -36,13 +37,13 @@ const EducationActions = ({ data, DataList = [], reloadData = () => { } }) => {
     return (
         <>
             <DropdownActionMenu
-                // onView={isViewPermitted ? handleView : null}
-                onEdit={isEditPermitted ? handleEdit : null}
-                onDelete={isDeletePermitted ? handleDelete : null}
-                viewText="View Education"
-                editText="Edit Education"
-                deleteText="Delete Education"
-                menuTooltip="Education Actions"
+                onView={isViewPermitted ? handleView : null}
+                onEdit={isEditPermitted && data?.status==='draft' ? handleEdit : null}
+               // onDelete={isDeletePermitted ? handleDelete : null}
+                viewText="View Offer"
+                editText="Edit Offer"
+                deleteText="Delete Offer"
+                menuTooltip="Offer Actions"
             />
 
             {deleteForm && (
@@ -58,7 +59,7 @@ const EducationActions = ({ data, DataList = [], reloadData = () => { } }) => {
             )}
 
             {openEditForm && (
-                <AddUpdateEducationForm
+                <GenerateOffer
                     isOpen={openEditForm}
                     reloadData={() => {
                         reloadData(true);
@@ -70,7 +71,21 @@ const EducationActions = ({ data, DataList = [], reloadData = () => { } }) => {
                     id={data.id}
                 />
             )}
+            {view && (
+                <ViewEmailTemplateDetail
+                    isOpen={view}
+                    reloadData={() => {
+                        reloadData(true);
+                        setView(false);
+                    }}
+                    setIsOpen={() => {
+                        setView(false);
+                    }}
+                    currentId={data.id}
+                    DataList={DataList}
+                />
+            )}
         </>
     );
 };
-export default EducationActions;
+export default OfferRequestActions;

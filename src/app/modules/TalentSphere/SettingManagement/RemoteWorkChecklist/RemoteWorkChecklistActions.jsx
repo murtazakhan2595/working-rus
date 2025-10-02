@@ -25,7 +25,7 @@ const RemoteWorkChecklistActions = ({ data, DataList = [], reloadData = () => { 
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/benefits/${data.id}`, `${data.name}`);
+            await deleteRecord(`/remote-work-checklist/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {
