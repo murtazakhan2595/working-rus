@@ -6,7 +6,7 @@ import {
   DetailContent,
 } from "components";
 import { ApplicantDetails } from "app/modules/TalentSphere/Sections";
-import { UpdateApplicantStatus, ViewInterviewFeedback } from "app/modules/TalentSphere";
+import { UpdateApplicantStatus, ViewInterviewFeedback, GenerateOffer } from "app/modules/TalentSphere";
 import { ApplicantStatusList } from './StatusList'
 
 const ViewApplicationDetail = ({
@@ -21,17 +21,25 @@ const ViewApplicationDetail = ({
   const [FormData, setFormData] = useState({});
   const [OpenFormModal, setOpenFormModal] = useState(false);
   const [OpenViewFeedback, setOpenViewFeedback] = useState(false);
+  const [OpenOfferForm, setOpenOfferForm] = useState(false);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
       event.preventDefault();
       event.stopPropagation();
       if (status === 'view-feedback') {
-        setOpenViewFeedback(true);
         const interview_ids = (data.interviews || []).map(interview => interview.id);
         setFormData({ id: interview_ids });
+        setOpenViewFeedback(true);
+
         return null;
       }
+      if (status === 'generate-offer') {
+        setFormData({ applicant: data.id });
+        setOpenOfferForm(true);
+        return null;
+      }
+
       const FormData = {
         status: status,
         applicant: data.id,
@@ -41,7 +49,6 @@ const ViewApplicationDetail = ({
       if (status === 'hold')
         FormData.status_variant = 'default';
       if (status === 'remove_blacklist') {
-        debugger
         FormData.status = 'rejected';
         FormData.initialData = data?.blacklist ?? {};
       }
@@ -125,6 +132,19 @@ const ViewApplicationDetail = ({
             setOpenViewFeedback(false);
           }}
           currentId={FormData?.id}
+        />
+      }
+      {OpenOfferForm &&
+        <GenerateOffer
+          isOpen={OpenOfferForm}
+          reloadData={() => {
+            setForceLoad(!forceLoad);
+            setOpenOfferForm(false);
+          }}
+          setIsOpen={() => {
+            setOpenOfferForm(false);
+          }}
+          applicant={FormData?.applicant}
         />
       }
     </>

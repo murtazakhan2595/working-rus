@@ -87,8 +87,11 @@ import {
     AddInterviewFeedback,
     ViewInterviewFeedback,
 } from './InterviewTracker';
+
+import { GenerateOffer } from './OfferTracking';
 export {
     AllApplicants,
+    GenerateOffer,
     UpdateApplicantStatus,
     InProgressInterviews,
     ViewInterviewDetails,

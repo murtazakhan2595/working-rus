@@ -103,8 +103,9 @@ const StatusConfig = {
         successMessage: "Application Screened Successfully!",
         saveStatusAuditLogs: saveUpdateApplication,
         sheet: { title: "Add to Screen" },
-        initialForm: RejectedApplication,
+        initialForm: {},
         fields: () => [],
+        isDefault: true,
     },
     blacklisted: {
         successMessage: "Application Blacklisted Successfully!",
@@ -150,7 +151,7 @@ const UpdateApplicantStatus = ({
     setIsOpen = () => { },
     statusUpdated = () => { },
 }) => {
-    // const { id: user_id } = GetDispatchStateList("userProfile", "user");
+    const { id: user_id } = GetDispatchStateList("userProfile", "user");
     const Designations = GetDispatchStateList("branches", "common");
     const Departments = GetDispatchStateList("departments", "common");
 
@@ -182,7 +183,9 @@ const UpdateApplicantStatus = ({
 
     useEffect(() => {
         if (status_variant === "remove_blacklist") {
-            handleSubmit({ ...initialData,remove:true })
+            handleSubmit({ ...initialData, remove: true })
+        } else if (status_variant === 'screened') {
+            handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
         }
     }, [status_variant]);
 
