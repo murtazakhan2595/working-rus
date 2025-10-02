@@ -4,6 +4,8 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    BlacklistReasonStatusTogle,
+    BlacklistReasonActions,
     OfferLetterTemplateStatusTogle,
     OfferLetterTemplateActions,
     EmailTemplateStatusTogle,
@@ -25,7 +27,7 @@ import {
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
-import { BudgetStatusOptions, RecruitmentApplicationSource ,RecruitmentEmailTemplateType} from "data/Data";
+import { BudgetStatusOptions, RecruitmentApplicationSource, RecruitmentEmailTemplateType } from "data/Data";
 import { MultiStatusLabel } from "components";
 import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -177,6 +179,60 @@ export const BenefitsColumns = (reloadData) => [
         width: '50px'
     },
 ];
+
+/**
+ * BlacklistReasonsColumns
+ *
+ * Returns an array of column definitions for the BlacklistReasonsColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const BlacklistReasonsColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"BLR-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Name",
+        dataSort: true,
+    },
+    {
+        dataField: "description",
+        text: "Description",
+        dataSort: true,
+    },
+    {
+        dataField: "created_at",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "created_by",
+        text: "Created By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        dataSort: true,
+    },
+    {
+        dataField: "is_active",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <BlacklistReasonStatusTogle data={row} status={cell} reloadData={reloadData} />
+            );
+        },
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <BlacklistReasonActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
 /**
  * OfferLetterTemplatesColumns
  *
@@ -957,7 +1013,7 @@ export const PublishedVacancyColumns = (reloadData) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const ApplicantsColumns = (reloadData ) => [
+export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "id",
         text: "Sr. No.",
@@ -1060,26 +1116,53 @@ export const ApplicationColumns = (reloadData, variant) => [
         minWidth: '250px',
     },
     {
-        dataField: "job_title",
-        text: "Job Title",
-    },
-    {
         dataField: "application_source",
-        text: "Application Source",
-        formatter: (cell) => {
-            return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+        text: "Application",
+        formatter: (cell, row) => {
+            const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+            return (<div>
+                <div><span className="font-bold">Source: </span>{source}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row.contact_number}</div>
+            </div>
+            );
         },
+        minWidth: '250px',
     },
     {
         dataField: "emiratization_flag",
         text: "Emiratization Flag",
         formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
     },
-    {
-        dataField: "application_date",
-        text: "Application Date",
-        formatter: (cell) => renderDate(cell, '--', 'date'),
-    },
+    ...(variant === 'blacklisted' ? [
+        {
+            dataField: "feed_back",
+            text: "Feedback Summary",
+        },
+    ] : []),
+    ...(variant === 'blacklisted' ? [
+        {
+            dataField: "blacklist",
+            text: "Blacklist Reasons",
+            formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
+        },
+        {
+            dataField: "blacklist",
+            text: "Blacklist Remarks",
+            formatter: (cell) => cell?.remarks,
+        },
+        {
+            dataField: "blacklist",
+            text: "Blacklisted By",
+            formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
+        },
+        {
+            dataField: "blacklist",
+            text: "Blacklist On",
+            formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+        },
+    ] : []),
     {
         dataField: "status",
         text: "Status",

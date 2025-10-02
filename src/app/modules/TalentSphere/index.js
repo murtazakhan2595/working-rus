@@ -45,6 +45,10 @@ import {
     OfferLetterTemplateStatusTogle,
     OfferLetterTemplateActions,
     ViewEmailTemplateDetail,
+    BlacklistReasons,
+    AddUpdateBlacklistReasonForm,
+    BlacklistReasonStatusTogle,
+    BlacklistReasonActions,
 } from './SettingManagement';
 
 import {
@@ -72,6 +76,7 @@ import {
     ApplicationActions,
     ViewApplicationDetail,
     ResumeBankApplicants,
+    UpdateApplicantStatus,
 } from './ApplicantManagement';
 
 import {
@@ -84,6 +89,7 @@ import {
 } from './InterviewTracker';
 export {
     AllApplicants,
+    UpdateApplicantStatus,
     InProgressInterviews,
     ViewInterviewDetails,
     InterviewActions,
@@ -153,4 +159,8 @@ export {
     ViewEmailTemplateDetail,
     AddInterviewFeedback,
     ViewInterviewFeedback,
+    BlacklistReasons,
+    AddUpdateBlacklistReasonForm,
+    BlacklistReasonStatusTogle,
+    BlacklistReasonActions,
 };

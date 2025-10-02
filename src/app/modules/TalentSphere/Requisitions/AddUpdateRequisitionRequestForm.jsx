@@ -1,3 +1,5 @@
+import { getCitiesList } from "app/hooks/general";
+import { getRequisitionRequestList } from "app/hooks/talentSphere";
 import {
     saveUpdateRequisitionRequest,
     getBenefitList,
@@ -25,6 +27,7 @@ const AddUpdateRequisitionRequestForm = ({
 }) => {
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
+    const Countries = GetDispatchStateList('countries', 'common');
     const { id: employee_id } = GetDispatchStateList('userProfile', 'user');
     const [isLoading, setIsLoading] = useState(false);
     const [FormData, setFormData] = useState({ ...Requisition, approval_required: approvalRequired });
@@ -33,10 +36,11 @@ const AddUpdateRequisitionRequestForm = ({
     const [EducationList, setEducationList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
     const [RemoteWorkCheckList, setRemoteWorkCheckList] = useState([]);
+    const [RequisitionList, setRequisitionList] = useState([]);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+    const [Cities, setCities] = useState([]);
     const isEditMode = Boolean(id);
     const [FormValues, setFormValues] = useState({ ...Requisition, approval_required: approvalRequired });
-
     const FormSheetData = {
         triggerText: `${isEditMode ? "Edit" : "Add"} Requisition`,
         title: `${isEditMode ? "Edit" : "Add"} Requisition`,
@@ -54,12 +58,14 @@ const AddUpdateRequisitionRequestForm = ({
                 const career_level = await getCareerLevelList();
                 const remote_work_checklist = await getRemoteWorkChecklistList();
                 const job_type = await getJobTypeList();
+                const requisition = await getRequisitionRequestList();
                 if (isMounted) {
                     setBenefitList(benefits.results);
                     setJobTypeList(job_type.results);
                     setEducationList(education.results);
                     setCareerLevelList(career_level.results);
                     setRemoteWorkCheckList(remote_work_checklist.results);
+                    setRequisitionList(requisition.results);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -102,10 +108,27 @@ const AddUpdateRequisitionRequestForm = ({
         reloadData(true);
     };
 
+    const getCitiesDropdown = async (country) => {
+        try {
+            setIsLoading(true);
+            const country_id = ((Countries || []).find(obj => obj.name === country) || {})?.id;
+            if (country_id) {
+                const cities = await getCitiesList({}, country_id);
+                if (cities) {
+                    setCities(cities.results);
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const handleSubmit = async (values, is_draft = false) => {
         try {
             setIsSubmittingForm(true);
-            const response = await saveUpdateRequisitionRequest({ ...values, is_draft: Boolean(is_draft===true) }, id);
+            const response = await saveUpdateRequisitionRequest({ ...values, is_draft: Boolean(is_draft === true) }, id);
             if (response) {
                 return {
                     status: true,
@@ -136,7 +159,7 @@ const AddUpdateRequisitionRequestForm = ({
                 renderUpdatedFormValues: (values) => {
                     setFormValues(values);
                 },
-                DataList: BenefitList,
+                DataList: RequisitionList,
                 submitButtonText: "Submit Request",
                 cancelButtonText: "Cancel",
                 columns: 2,
@@ -144,7 +167,7 @@ const AddUpdateRequisitionRequestForm = ({
                     { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, true), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
                 ],
                 disableSubmit: isLoading || isSubmittingForm,
-                loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+                loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
                 formFields: [
                     {
                         sheetCardExtension: true,
@@ -170,10 +193,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 required: true,
                                 label: "Branch",
                                 options: Branches,
-                                // onFieldUpdate: async (_, value, __, handleChange) => {
-                                //     await getExistingHeadCount(value, FormValues?.department, handleChange);
-                                //     await ValidateExistingRecord(value, FormValues?.department, FormValues.fiscal_year);
-                                // },
+
                             },
                             {
                                 InputField: SelectInputComponent,
@@ -237,18 +257,18 @@ const AddUpdateRequisitionRequestForm = ({
                                     name: "country",
                                     required: true,
                                     label: "Country",
-                                    options: Branches,
-                                    // onFieldUpdate: async (_, value, __, handleChange) => {
-                                    //     await getExistingHeadCount(value, FormValues?.department, handleChange);
-                                    //     await ValidateExistingRecord(value, FormValues?.department, FormValues.fiscal_year);
-                                    // },
+                                    options: Countries,
+                                    onFieldUpdate: async (_, value, __, handleChange) => {
+                                        getCitiesDropdown(value);
+                                        handleChange('city', null);
+                                    },
                                 },
                                 {
                                     InputField: SelectInputComponent,
                                     name: "city",
                                     required: true,
                                     label: "City",
-                                    options: Departments,
+                                    options: Cities,
                                 },
                                 {
                                     InputField: CheckBoxInput,
@@ -295,7 +315,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 label: "Job Type",
                                 options: JobTypeList,
                             },
-                         
+
                             {
                                 InputField: NumberInput,
                                 name: "min_age",
@@ -344,7 +364,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 required: true,
                                 label: "Maximum Salary",
                             },
-                               {
+                            {
                                 InputField: SelectInputComponent,
                                 name: "gender_preference",
                                 required: true,

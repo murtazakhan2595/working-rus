@@ -9,6 +9,9 @@ import {
   mapBenefitList,
   mapBenefitData,
   mapBenefitPayloadData,
+  mapBlacklistReasonList,
+  mapBlacklistReasonData,
+  mapBlacklistReasonPayloadData,
   mapOfferLetterTemplateList,
   mapOfferLetterTemplateData,
   mapOfferLetterTemplatePayloadData,
@@ -54,7 +57,8 @@ import {
   mapRejectedApplicationPayloadData,
   mapResumeBankApplicantsList,
   mapInterviewData,
-  mapShortlistedApplicantPayloadData
+  mapShortlistedApplicantPayloadData,
+  mapBlacklistApplicantPayloadData,
 } from "app/utils/MappingObjects/mapTalentSphere";
 
 export const getManpowerPlanningList = async (payload) => {
@@ -1148,10 +1152,7 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
       const VacancyData = await getVacancyData(Response.published_vacancy);
-      const RejectedData = Response.status === 'rejected' ? await getRejectedApplicantById(Response.id) : {};
-      const ResumeBankData = await getResumeBankApplicantById(Response.id);
-      const ShortlistData = Response.status === 'shortlisted' ? await getShortlistedApplicantById(Response.id) : {};
-      return { ...VacancyData, ...(RejectedData || {}), ...(ResumeBankData || {}), ...(ShortlistData || {}), ...ResponseData, };
+      return { ...VacancyData, ...ResponseData, };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1268,6 +1269,39 @@ export const saveUpdateRejectedApplication = async (payload, id) => {
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapRejectedApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+// ==================== Blacklist Applications ====================
+
+export const saveUpdateBlacklistApplicant = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-blacklist-info/${id}/`
+      : `${baseUrl}/recruitment-blacklist-info/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapBlacklistApplicantPayloadData(payload);
     const response = await axios({
       method,
       url,
@@ -1920,6 +1954,84 @@ export const saveUpdateInterviewFeedback = async (payload, id) => {
       return response.data;
     }
     renderErrorMessages(response?.data);
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+
+export const getBlacklistReasonList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/recruitment-blacklist-reasons/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapBlacklistReasonList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getBlacklistReasonData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment-blacklist-reasons/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = mapBlacklistReasonData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateBlacklistReason = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-blacklist-reasons/${id}/`
+      : `${baseUrl}/recruitment-blacklist-reasons/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapBlacklistReasonPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+
     return false;
   } catch (error) {
     console.error("API error in saveUpdate:", error);

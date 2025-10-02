@@ -9,7 +9,7 @@ import {
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
 import { renderErrorMessages } from "utils/renderErrors";
-import { fetchDepartments } from "state/slices/CommonSlice";
+import { mapCountriesList, mapCitiesList } from "app/utils/MappingObjects/mapGeneralData";
 
 export const baseUrl = initialState.baseUrl;
 export const headers = () => ({
@@ -670,6 +670,66 @@ const getWorkingHours = async (payload) => {
     if (response.status === 200) {
       const workingHours = response.data;
       return workingHours;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+
+export const getCountriesList = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const URL = `/countries/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapCountriesList(Response.results);
+      return { count: Response.count, results: ResponseData };
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+export const getCitiesList = async (payload, country) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = {
+      ...(payload?.filterData ?? {}),
+      ...(country ? { country: country } : {}),
+    };
+    const URL = `/cities/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapCitiesList(Response.results);
+      return { count: Response.count, results: ResponseData };
     } else {
       return [];
     }
