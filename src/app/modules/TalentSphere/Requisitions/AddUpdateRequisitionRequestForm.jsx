@@ -8,6 +8,7 @@ import {
     getEducationList,
     getRemoteWorkChecklistList,
     getJobTypeList,
+    getSkillList,
 } from "app/hooks/talentSphere";
 import { Requisition } from "app/utils/Types/TalentSphere";
 import { SheetUI, EmployeeDetailUI } from "components";
@@ -15,7 +16,7 @@ import { CheckBoxInput } from "components/FormControl";
 import { CoverFileUpload } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
 import { TextInput, TextAreaInput, RadioGroupInput, SelectInputComponent, SwitchInput, SelectMultiInputComponent } from "components/FormControl";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 
 const AddUpdateRequisitionRequestForm = ({
@@ -32,6 +33,7 @@ const AddUpdateRequisitionRequestForm = ({
     const [isLoading, setIsLoading] = useState(false);
     const [FormData, setFormData] = useState({ ...Requisition, approval_required: approvalRequired });
     const [BenefitList, setBenefitList] = useState([]);
+    const [SkillList, setSkillList] = useState([]);
     const [JobTypeList, setJobTypeList] = useState([]);
     const [EducationList, setEducationList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
@@ -52,13 +54,14 @@ const AddUpdateRequisitionRequestForm = ({
         const fetchBenefitData = async (isMounted) => {
             try {
                 setIsLoading(true);
-                // Add organizationId to filter if available
-                const benefits = await getBenefitList();
-                const education = await getEducationList();
-                const career_level = await getCareerLevelList();
-                const remote_work_checklist = await getRemoteWorkChecklistList();
-                const job_type = await getJobTypeList();
+                const filterData = { status: true };
+                const benefits = await getBenefitList({ filterData });
+                const education = await getEducationList({ filterData });
+                const career_level = await getCareerLevelList({ filterData });
+                const remote_work_checklist = await getRemoteWorkChecklistList({ filterData });
+                const job_type = await getJobTypeList({ filterData });
                 const requisition = await getRequisitionRequestList();
+                const skills = await getSkillList();
                 if (isMounted) {
                     setBenefitList(benefits.results);
                     setJobTypeList(job_type.results);
@@ -66,6 +69,7 @@ const AddUpdateRequisitionRequestForm = ({
                     setCareerLevelList(career_level.results);
                     setRemoteWorkCheckList(remote_work_checklist.results);
                     setRequisitionList(requisition.results);
+                    setSkillList(skills.results);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -211,10 +215,10 @@ const AddUpdateRequisitionRequestForm = ({
                             },
                             {
                                 InputField: SelectInputComponent,
-                                name: "required_skills",
+                                name: "required_skillset",
                                 required: true,
                                 label: "Skills Required",
-                                options: Departments,
+                                options: SkillList,
                             },
                             {
                                 InputField: TextAreaInput,

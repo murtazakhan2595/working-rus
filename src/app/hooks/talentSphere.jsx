@@ -9,6 +9,9 @@ import {
   mapBenefitList,
   mapBenefitData,
   mapBenefitPayloadData,
+  mapSkillList,
+  mapSkillData,
+  mapSkillPayloadData,
   mapBlacklistReasonList,
   mapBlacklistReasonData,
   mapBlacklistReasonPayloadData,
@@ -196,6 +199,83 @@ export const saveUpdateBenefit = async (payload, id) => {
     const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
     const finalPayload = mapBenefitPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+export const getSkillList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/recruitment-skills/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapSkillList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getSkillData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment-skills/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = mapSkillData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateSkill = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/recruitment-skills/${id}/`
+      : `${baseUrl}/recruitment-skills/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapSkillPayloadData(payload);
     const response = await axios({
       method,
       url,
