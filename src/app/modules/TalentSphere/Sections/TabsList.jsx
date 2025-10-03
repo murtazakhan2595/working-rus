@@ -30,6 +30,7 @@ import {
 import {
     GenerateOffer,
     OfferRequests,
+    OffersSend,
 } from 'app/modules/TalentSphere/OfferTracking';
 
 
@@ -172,5 +173,14 @@ export const OFFER_TAB_CONFIG = [
         list: (reload) => <OfferRequests reload={reload} />,
         form: GenerateOffer,
         addLabel:'Generate Offer'
+    },
+    {
+        key: "offer-send",
+        label: "Offer Send",
+        viewPerm: "VIEW_TS_BENEFITS",
+        // addPerm: "ADD_TS_BENEFITS",
+        list: (reload) => <OffersSend reload={reload} />,
+        // form: GenerateOffer,
+        // addLabel:'Generate Offer'
     },
 ];

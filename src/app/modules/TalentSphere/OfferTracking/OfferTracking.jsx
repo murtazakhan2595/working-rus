@@ -24,7 +24,7 @@ export default function OfferTracking() {
     // 🔹 Button in header (Add New)
     const HeaderButton = () => {
         const currentTab = permittedTabs.find((t) => t.label === (activeTab || permittedTabs[0].label));
-        if (!currentTab) return null;
+        if (!currentTab || !currentTab.form) return null;
 
         if (currentTab.addPerm && hasAccess(currentTab.addPerm)) {
             return (

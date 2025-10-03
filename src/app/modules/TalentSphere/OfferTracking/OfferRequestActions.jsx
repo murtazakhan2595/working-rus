@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import { AddUpdateEmailTemplateForm, ViewEmailTemplateDetail,GenerateOffer } from "app/modules/TalentSphere";
+import { ViewFinalOffer, ViewOfferGenerated, GenerateOffer } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
-const OfferRequestActions = ({ data, DataList = [], reloadData = () => { } }) => {
+const OfferRequestActions = ({ data, DataList = [], reloadData = () => { }, isOfferSent = false }) => {
     const isEditPermitted = HasAccess("ADD_TS_BENEFITS");
     // const isDeletePermitted = HasAccess("ADD_TS_BENEFITS");
     const isViewPermitted = HasAccess("VIEW_MANPOWER");
@@ -38,8 +38,8 @@ const OfferRequestActions = ({ data, DataList = [], reloadData = () => { } }) =>
         <>
             <DropdownActionMenu
                 onView={isViewPermitted ? handleView : null}
-                onEdit={isEditPermitted && data?.status==='draft' ? handleEdit : null}
-               // onDelete={isDeletePermitted ? handleDelete : null}
+                onEdit={isEditPermitted && data?.status === 'draft' ? handleEdit : null}
+                // onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="View Offer"
                 editText="Edit Offer"
                 deleteText="Delete Offer"
@@ -71,8 +71,22 @@ const OfferRequestActions = ({ data, DataList = [], reloadData = () => { } }) =>
                     id={data.id}
                 />
             )}
-            {view && (
-                <ViewEmailTemplateDetail
+            {view && !isOfferSent && (
+                <ViewOfferGenerated
+                    isOpen={view}
+                    reloadData={() => {
+                        reloadData(true);
+                        setView(false);
+                    }}
+                    setIsOpen={() => {
+                        setView(false);
+                    }}
+                    currentId={data.id}
+                    DataList={DataList}
+                />
+            )}
+            {view && isOfferSent && (
+                <ViewFinalOffer
                     isOpen={view}
                     reloadData={() => {
                         reloadData(true);

@@ -1,6 +1,6 @@
-import { saveUpdateOfferLetter, getOfferLetterData, getOfferLetterTemplateList } from 'app/hooks/talentSphere';
+import { saveUpdateOfferTracking, getOfferTrackingData, getEmailTemplateList } from 'app/hooks/talentSphere';
 import { getEmployeeList } from 'app/hooks/general';
-import { OfferLetter } from "app/utils/Types/TalentSphere";
+import { OfferTracking } from "app/utils/Types/TalentSphere";
 import {
     TextInput,
     SelectInputComponent,
@@ -16,21 +16,21 @@ import { calculateTotal, calculatePercentage } from 'utils/renderValues';
 import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 import { DateInput } from 'components/FormControl';
 
-const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData }) => {
+const SentOfferForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData }) => {
     const Designations = GetDispatchStateList('designations', 'common');
     const Countries = GetDispatchStateList('countries', 'common');
     const Employees = GetDispatchStateList('employees', 'emp');
-    const [FormValues, setFormValues] = useState({ ...OfferLetter, ...initialData });
+    const [FormValues, setFormValues] = useState({ ...OfferTracking, ...initialData });
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-    const [formData, setFormData] = useState({ ...OfferLetter, ...initialData });
+    const [formData, setFormData] = useState({ ...OfferTracking, ...initialData });
     const [ManpowerExist, setManpowerExist] = useState(false);
     const [TemplateList, setTemplateList] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
-        title: `${isEditMode ? "Edit" : "Generate"} Offer Letter`,
+        title: `${isEditMode ? "Edit" : "Send"} Offer Letter`,
         description: null,
         footer: null,
     };
@@ -39,7 +39,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         const fetchData = async (isMounted, id) => {
             try {
                 setIsLoading(true);
-                const response = await getOfferLetterData(id);
+                const response = await getOfferTrackingData(id);
                 if (isMounted) {
                     setFormData({ ...response });
                     setFormValues({ ...response });
@@ -61,7 +61,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         const fetchDataOptions = async (isMounted) => {
             try {
                 setIsLoading(true);
-                const response = await getOfferLetterTemplateList();
+                const response = await getEmailTemplateList({ filterData: { is_active: true, template_type: 'OFFER_SENT' } });
                 if (isMounted) {
                     setTemplateList(response.results || []);
                 }
@@ -83,20 +83,19 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         reloadData(true);
     };
 
-    const handleSubmit = async (values, isDraft) => {
+    const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
         try {
             const payload = {
                 ...values,
-                status: isDraft === 'draft' ? 'draft' : 'pending',
             };
-            const response = await saveUpdateOfferLetter(payload, id);
+            const response = await saveUpdateOfferTracking(payload, id);
             if (response) {
                 return {
                     status: true,
                     messageType: "SUCCESS",
-                    title: `Offer Letter Submitted Successfully!`,
-                    description: `Offer letter has been submitted successfully waiting for approval.`,
+                    title: `Offer Letter Send Successfully!`,
+                    description: `Offer letter has been send to applicant successfully, waiting for approval.`,
                 }
             }
         } catch (error) {
@@ -118,99 +117,37 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
                 // validateFormSchema: validateManpowerPlanningFormSchema,
-                submitButtonText: "Submit & Send for Approval",
+                submitButtonText: "Save & Send to Applicant",
                 cancelButtonText: "Cancel",
                 columns: 2,
-                additionalButtonConfig: [
-                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, 'draft'), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
-                ],
                 renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
                     {
                         sheetCardExtension: true,
-                        sheetCardTitle: "Applicant Details",
-                        // sheetCardName: "manpower_planning",
-                        InputFields: [
-                            {
-                                InputField: TextInput,
-                                name: `candidate_id`,
-                                label: "Candidate Id",
-                                disabled: true,
-                            },
-                            {
-                                InputField: TextInput,
-                                name: `candidate_name`,
-                                label: "Candidate Name",
-                                disabled: true,
-                            },
-                            {
-                                InputField: TextInput,
-                                name: `email`,
-                                label: "Email",
-                                disabled: true,
-                            },
-                            {
-                                InputField: TextInput,
-                                name: `contact_number`,
-                                label: "Contact No.",
-                                disabled: true,
-                            },
-                        ],
-                    },
-                    {
-                        sheetCardExtension: true,
                         sheetCardTitle: "Offer Details",
                         // sheetCardName: "manpower_planning",
                         InputFields: [
                             {
-                                InputField: NumberInput,
-                                name: `offered_salary`,
-                                label: "Offered Salary",
+                                InputField: DateInput,
+                                name: `validity_date`,
+                                label: "Validity Date",
                                 required: true,
                             },
                             {
                                 InputField: DateInput,
-                                name: `expected_joining_date`,
-                                label: "Expected Joining Date",
+                                name: `joining_date`,
+                                label: "Joining Date",
                                 required: true,
                             },
                             {
                                 InputField: SelectInputComponent,
-                                name: "designation",
-                                required: true,
-                                label: "Designation",
-                                options: Designations,
-                            },
-                            {
-                                InputField: SelectInputComponent,
-                                name: "reporting_manager",
-                                required: true,
-                                label: "Reporting Manager",
-                                options: Employees,
-                            },
-                            {
-                                InputField: SelectInputComponent,
-                                name: "work_location",
-                                required: true,
-                                label: "Work Location",
-                                options: Countries,
-                            },
-                        ],
-                    },
-                    {
-                        sheetCardExtension: true,
-                        sheetCardTitle: "Template Details",
-                        // sheetCardName: "manpower_planning",
-                        InputFields: [
-
-                            {
-                                InputField: SelectInputComponent,
-                                name: "template",
-                                required: true,
+                                name: `offer_letter_id`,
                                 label: "Template",
+                                required: true,
                                 options: TemplateList,
+                                description: "If template option is empty, create an email template with the template type set as “Offer Send” from the Talent Sphere → Organizational Setup module."
                             },
                         ],
                     },
@@ -222,4 +159,4 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
 };
 
 
-export default GenerateOffer;
+export default SentOfferForm;

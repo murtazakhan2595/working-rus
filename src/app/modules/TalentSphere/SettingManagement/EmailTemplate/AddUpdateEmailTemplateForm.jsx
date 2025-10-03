@@ -142,6 +142,7 @@ const AddUpdateEmailTemplateForm = ({
                 options:RecruitmentEmailTemplateType,
                 label: "Template Type",
                 description: 'Select the type for specific recruitment events',
+                validateDuplicate: true,
               },
               {
                 InputField: TextInput,

@@ -347,7 +347,6 @@ export const OfferLetter = {
     work_location: null,
     remarks: null,
     generated_on: null,
-    rejection_remarks: null,
     final_letter_body: null,
     applicant: null,
     template: null,
@@ -363,4 +362,22 @@ export const OfferLetter = {
     rejection_remarks: null,
     last_updated_on: null,
     status: null,
+    approval_details: null,
+    final_letter_pdf: null,
+}
+
+export const OfferTracking = {
+    id: null,
+    applicant: null,
+    applicant_name: null,
+    offer_letter_id: null,
+    status: null,
+    validity_date: null,
+    joining_date: null,
+    sent_by: null,
+    sent_on: null,
+    updated_by: null,
+    updated_on: null,
+    audit_logs: null,
+    offer_letter:null,
 }

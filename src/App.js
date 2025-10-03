@@ -74,7 +74,7 @@ function App() {
         // // Token expired or invalid
         const protectedRoutes = [
           "/apply",
-          "/job-description",
+          "/applicant-offer",
           "/forgot-password",
           "/confirm-password",
           "/access-denied"

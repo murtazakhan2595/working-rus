@@ -822,28 +822,30 @@ export const SubmitResetPassword = async (payload) => {
 
 export const getCurrentRequestApprover = async (request_id) => {
   try {
-    const URL = `/requests/${request_id}/`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const ResponseData = response.data;
-      const ReturnData = {
-        current_level: ResponseData.current_level,
-        level_status: ResponseData.status,
-        current_approver:
-          ResponseData.current_approvers &&
-            Array.isArray(ResponseData.current_approvers)
-            ? ResponseData.current_approvers
-            : [],
-        final_approvers:
-          ResponseData.final_approvers &&
-            Array.isArray(ResponseData.final_approvers)
-            ? ResponseData.final_approvers
-            : [],
-      };
-      return ReturnData;
-    } else return {};
+    if (request_id) {
+      const URL = `/requests/${request_id}/`;
+      const response = await axios.get(`${baseUrl}${URL}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        const ResponseData = response.data;
+        const ReturnData = {
+          current_level: ResponseData.current_level,
+          level_status: ResponseData.status,
+          current_approver:
+            ResponseData.current_approvers &&
+              Array.isArray(ResponseData.current_approvers)
+              ? ResponseData.current_approvers
+              : [],
+          final_approvers:
+            ResponseData.final_approvers &&
+              Array.isArray(ResponseData.final_approvers)
+              ? ResponseData.final_approvers
+              : [],
+        };
+        return ReturnData;
+      }
+    };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
   }
