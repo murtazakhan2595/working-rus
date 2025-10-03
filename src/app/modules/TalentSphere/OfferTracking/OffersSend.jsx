@@ -21,7 +21,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Requests" }) => {
     } = GetDispatchStateList("user_details", "emp") || {};
 
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState();
+    const [filterData, setFilterData] = useState({status:'pending'});
     const [isLoading, setIsLoading] = useState(true);
     const [OfferLetterList, setOfferLetterList] = useState();
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -83,17 +83,17 @@ const OffersSend = ({ isTeamView = false, activeView = "Requests" }) => {
     };
 
     const handleTabChange = (tab) => {
-        // if (tab === "Requests") {
-        //     setFilterData((prev) => ({
-        //         ...prev,
-        //         // status: "pending",
-        //     }));
-        // } else if (tab === "Records") {
-        //     setFilterData((prev) => ({
-        //         ...prev,
-        //         status: "approved,rejected",
-        //     }));
-        // }
+        if (tab === "Not Joined") {
+            setFilterData((prev) => ({
+                ...prev,
+                // status: "pending",
+            }));
+        } else {
+            setFilterData((prev) => ({
+                ...prev,
+                status: tab.toLowerCase(),
+            }));
+        }
     };
 
     return (
@@ -119,7 +119,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Requests" }) => {
             </TabsList>
             <CardHeader className="flex flex-row justify-between items-center gap-4">
                 <div>
-                    <CardTitle className="text-primary">Offer Letter {activeTab}</CardTitle>
+                    <CardTitle className="text-primary">{activeTab} Offers</CardTitle>
                     <CardDescription className="text-neutral-1100">
                         Here you can {activeTab === 'Requests' ? 'view' : 'approve, or reject'} the offer letters
                     </CardDescription>
