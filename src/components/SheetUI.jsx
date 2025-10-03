@@ -44,7 +44,7 @@ const SheetUI = forwardRef(
       initialValues,
       enableReinitialize,
       handleSubmit,
-      validateFormSchema,
+      validateFormSchema = () => { },
       submitButtonText = "Submit",
       additionalButtonConfig = [],
       cancelButtonText,
@@ -187,10 +187,7 @@ const SheetUI = forwardRef(
               }
 
               // Merge with schema-based validations
-              const schemaErrors =
-                typeof validateFormSchema === "function"
-                  ? validateFormSchema(values || {})
-                  : {};
+              const schemaErrors = typeof validateFormSchema === "function" ? validateFormSchema(values || {}) : {};
 
               if (schemaErrors && typeof schemaErrors === "object") {
                 errors = { ...errors, ...schemaErrors };

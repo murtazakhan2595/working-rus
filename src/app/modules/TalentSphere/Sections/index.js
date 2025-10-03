@@ -17,14 +17,17 @@ import {
     FeedBackFormsColumns,
     EmailTemplatesColumns,
     OfferLetterTemplatesColumns,
-    BlacklistReasonsColumns
+    BlacklistReasonsColumns,
+    OfferLetterRequestColumns,
 } from './TableColumns';
 import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
 import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
-import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG } from './TabsList';
+import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG,OFFER_TAB_CONFIG } from './TabsList';
 
 export {
     SETTING_TAB_CONFIG,
+    OFFER_TAB_CONFIG,
+    OfferLetterRequestColumns,
     ManpowerPlanningColumns,
     BenefitsColumns,
     RemoteWorkChecklistsColumns,

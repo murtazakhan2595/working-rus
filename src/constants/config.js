@@ -80,6 +80,7 @@ const Config = {
   REQUISITION_PLANNING: true,
   APPLICANT_INTERVIEW_TRACKER: true,
   APPLICANTS:true,
+  TS_OFFER_TRACKING:true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,

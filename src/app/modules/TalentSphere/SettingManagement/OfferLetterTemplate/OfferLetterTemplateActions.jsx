@@ -25,7 +25,7 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/recruitment-email-templates/${data.id}`, `${data.name}`);
+            await deleteRecord(`/recruitment-offer-letter-templates/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {

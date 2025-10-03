@@ -240,8 +240,8 @@ export const Applicants = {
     recruitment_shortlist: null,
     interviews: null,
     recruitment_rejected: null,
-    screened_by:null,
-    screened_date:null,
+    screened_by: null,
+    screened_date: null,
 }
 
 export const RejectedApplication = {
@@ -351,4 +351,16 @@ export const OfferLetter = {
     final_letter_body: null,
     applicant: null,
     template: null,
+    generated_by: null,
+    approved_by: null,
+    rejected_by: null,
+    last_updated_by: null,
+    request: null,
+    id: null,
+    generated_on: null,
+    approved_on: null,
+    rejected_on: null,
+    rejection_remarks: null,
+    last_updated_on: null,
+    status: null,
 }

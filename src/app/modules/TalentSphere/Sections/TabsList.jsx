@@ -27,6 +27,11 @@ import {
     AllApplicants,
     ResumeBankApplicants,
 } from "app/modules/TalentSphere";
+import {
+    GenerateOffer,
+    OfferRequests,
+} from 'app/modules/TalentSphere/OfferTracking';
+
 
 // 🔹 Central config for all tabs
 export const SETTING_TAB_CONFIG = [
@@ -154,5 +159,18 @@ export const APPLICANT_TAB_CONFIG = [
         label: "Blacklisted",
         permission: "VIEW_REJECTED_APPLICATION",
         component: () => <AllApplicants variant="blacklisted" />,
+    },
+];
+
+
+export const OFFER_TAB_CONFIG = [
+    {
+        key: "offer-request",
+        label: "Offer Letter Requests",
+        viewPerm: "VIEW_TS_BENEFITS",
+        addPerm: "ADD_TS_BENEFITS",
+        list: (reload) => <OfferRequests reload={reload} />,
+        form: GenerateOffer,
+        addLabel:'Generate Offer'
     },
 ];

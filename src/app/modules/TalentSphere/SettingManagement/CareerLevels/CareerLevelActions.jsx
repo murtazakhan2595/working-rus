@@ -25,7 +25,7 @@ const CareerLevelActions = ({ data, DataList = [], reloadData = () => { } }) => 
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/benefits/${data.id}`, `${data.name}`);
+            await deleteRecord(`/recruitment-career-levels/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {

@@ -35,7 +35,14 @@ const ViewApplicationDetail = ({
         return null;
       }
       if (status === 'generate-offer') {
-        setFormData({ applicant: data.id });
+        setFormData({
+          applicant: data.id,
+          expected_joining_date: data?.recruitment_shortlist?.expected_joining_date,
+          contact_number:data.contact_number,
+          candidate_name:data.candidate_name,
+          candidate_id:data.candidate_id,
+          email:data.email,
+        });
         setOpenOfferForm(true);
         return null;
       }
@@ -144,7 +151,7 @@ const ViewApplicationDetail = ({
           setIsOpen={() => {
             setOpenOfferForm(false);
           }}
-          applicant={FormData?.applicant}
+          initialData={FormData}
         />
       }
     </>
