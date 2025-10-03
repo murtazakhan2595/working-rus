@@ -4,6 +4,7 @@ import {
     ManpowerPlanningActions,
     BenefitStatusTogle,
     BenefitActions,
+    SkillActions,
     BlacklistReasonStatusTogle,
     BlacklistReasonActions,
     OfferLetterTemplateStatusTogle,
@@ -176,6 +177,43 @@ export const BenefitsColumns = (reloadData) => [
         text: "",
         formatter: (_, row, data_list) => (
             <BenefitActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+/**
+ * SkillsColumns
+ *
+ * Returns an array of column definitions for the SkillsColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const SkillsColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"TSB-"} />,
+    },
+    {
+        dataField: "name",
+        text: "Name",
+        dataSort: true,
+    },
+    {
+        dataField: "description",
+        text: "Description",
+        dataSort: true,
+    },
+    {
+        dataField: "created_at",
+        text: "Created On",
+        formatter: (cell) => renderDate(cell),
+    },
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <SkillActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
         width: '50px'
     },

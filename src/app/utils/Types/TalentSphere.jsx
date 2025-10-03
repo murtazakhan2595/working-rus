@@ -24,6 +24,13 @@ export const Benefit = {
     created_by: null,
     updated_by: null,
 }
+export const Skill = {
+    id: null,
+    name: null,
+    description: null,
+    created_at: null,
+    updated_at: null,
+}
 export const EmailTemplate = {
     id: null,
     created_by: null,
@@ -159,7 +166,7 @@ export const Requisition = {
     updated_at: null,
     job_title: null,
     job_description: null,
-    required_skills: null,
+    required_skillset: null,
     work_mode: 'onsite',
     number_of_positions: null,
     gender_preference: null,
@@ -379,5 +386,5 @@ export const OfferTracking = {
     updated_by: null,
     updated_on: null,
     audit_logs: null,
-    offer_letter:null,
+    offer_letter: null,
 }

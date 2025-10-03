@@ -1,6 +1,7 @@
 import {
     ManpowerPlanning,
     Benefit,
+    Skill,
     BlacklistReason,
     OfferLetterTemplate,
     OfferTracking,
@@ -25,6 +26,7 @@ import {
 } from 'app/utils/Types/TalentSphere';
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
+import { FormatID } from "utils/getValuesFromTables";
 
 export function mapManpowerPayloadData(data) {
     // Initialize an empty payload object
@@ -124,6 +126,51 @@ export function mapBenefitPayloadData(data, id) {
         ) {
             if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
+            else payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+//-------------Skills ---------------
+
+export function mapSkillData(data) {
+    const RecordDetails = Object.keys(Skill).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
+
+    return RecordDetails;
+}
+export async function mapSkillList(data) {
+    const DataList = await data?.map((Record) => {
+        const Details = mapSkillData(Record);
+        return {
+            value: Details.id,
+            label: Details.name,
+            ...Details,
+        };
+    });
+
+    return DataList;
+}
+
+export function mapSkillPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the Skill object
+    for (const key in Skill) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') payload[key] = data[key].trim();
             else payload[key] = data[key];
         }
     }
@@ -568,7 +615,10 @@ export function mapVacancyPayloadData(data, id) {
 export function mapApplicantsData(data) {
     const RecordDetails = Object.keys(Applicants).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === 'id') acc['applicant_id'] = data[key];
+            if (key === 'id') {
+                acc['applicant_id'] = data[key];
+                acc['serial_id'] = FormatID({ value: data[key], prefix: 'APP' });
+            }
             if (key === "candidate_id" || key === 'candidate_name') acc[key] = data[key].trim()
             else if (key === "status") {
                 const status = data[key];

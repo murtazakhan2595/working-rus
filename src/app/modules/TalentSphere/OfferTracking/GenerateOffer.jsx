@@ -15,17 +15,19 @@ import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentS
 import { calculateTotal, calculatePercentage } from 'utils/renderValues';
 import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 import { DateInput } from 'components/FormControl';
+import { getApplicantsList } from 'app/hooks/talentSphere';
+import { getDropdownList } from 'utils/Lists';
 
-const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData }) => {
+const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData={}}) => {
     const Designations = GetDispatchStateList('designations', 'common');
     const Countries = GetDispatchStateList('countries', 'common');
     const Employees = GetDispatchStateList('employees', 'emp');
-    const [FormValues, setFormValues] = useState({ ...OfferLetter, ...initialData });
+    const [FormValues, setFormValues] = useState({ ...OfferLetter, ...initialData});
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-    const [formData, setFormData] = useState({ ...OfferLetter, ...initialData });
-    const [ManpowerExist, setManpowerExist] = useState(false);
+    const [formData, setFormData] = useState({ ...OfferLetter, ...initialData});
+    const [Applicants, setApplicants] = useState(false);
     const [TemplateList, setTemplateList] = useState([]);
 
     const FormSheetData = {
@@ -62,8 +64,11 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
             try {
                 setIsLoading(true);
                 const response = await getOfferLetterTemplateList();
+                const applicants = await getApplicantsList({ filterData: { status: 'shortlisted' } });
                 if (isMounted) {
                     setTemplateList(response.results || []);
+                    const applicant_dropdown = getDropdownList(applicants.results, 'serial_id', 'id', 'candidate_name', '-');
+                    setApplicants(applicant_dropdown);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -134,28 +139,12 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                         // sheetCardName: "manpower_planning",
                         InputFields: [
                             {
-                                InputField: TextInput,
-                                name: `candidate_id`,
-                                label: "Candidate Id",
-                                disabled: true,
-                            },
-                            {
-                                InputField: TextInput,
-                                name: `candidate_name`,
-                                label: "Candidate Name",
-                                disabled: true,
-                            },
-                            {
-                                InputField: TextInput,
-                                name: `email`,
-                                label: "Email",
-                                disabled: true,
-                            },
-                            {
-                                InputField: TextInput,
-                                name: `contact_number`,
-                                label: "Contact No.",
-                                disabled: true,
+                                InputField: SelectInputComponent,
+                                name: `applicant`,
+                                label: "Applicant",
+                                required: true,
+                                options: Applicants,
+                                disabled: initialData.applicant,
                             },
                         ],
                     },

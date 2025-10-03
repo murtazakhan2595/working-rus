@@ -2,6 +2,8 @@
 import {
     Benefits,
     AddUpdateBenefitForm,
+    Skills,
+    AddUpdateSkillForm,
     BlacklistReasons,
     AddUpdateBlacklistReasonForm,
     OfferLetterTemplates,
@@ -45,28 +47,20 @@ export const SETTING_TAB_CONFIG = [
         form: AddUpdateBenefitForm,
     },
     {
-        key: "feedback-form",
-        label: "Feedback Forms",
-        viewPerm: "VIEW_TS_BENEFITS",
-        addPerm: "ADD_TS_BENEFITS",
-        list: (reload) => <FeedBackForms reload={reload} />,
-        form: AddUpdateFeedBackForm,
-    },
-    {
-        key: "interview-type",
-        label: "Interview Types",
-        viewPerm: "ADD_TS_BENEFITS",
-        addPerm: "ADD_TS_BENEFITS",
-        list: (reload) => <InterviewTypes reload={reload} />,
-        form: AddUpdateInterviewTypeForm,
-    },
-    {
         key: "career-level",
         label: "Career Level",
         viewPerm: "VIEW_TS_CAREER_LEVEL",
         addPerm: "ADD_TS_CAREER_LEVEL",
         list: (reload) => <CareerLevels reload={reload} />,
         form: AddUpdateCareerLevelForm,
+    },
+    {
+        key: "skills",
+        label: "Skills",
+        viewPerm: "VIEW_TS_CAREER_LEVEL",
+        addPerm: "ADD_TS_CAREER_LEVEL",
+        list: (reload) => <Skills reload={reload} />,
+        form: AddUpdateSkillForm,
     },
     {
         key: "education",
@@ -98,6 +92,22 @@ export const SETTING_TAB_CONFIG = [
         // no permissions required
         list: () => <Demographics />,
         form: null,
+    },
+    {
+        key: "feedback-form",
+        label: "Feedback Forms",
+        viewPerm: "VIEW_TS_BENEFITS",
+        addPerm: "ADD_TS_BENEFITS",
+        list: (reload) => <FeedBackForms reload={reload} />,
+        form: AddUpdateFeedBackForm,
+    },
+    {
+        key: "interview-type",
+        label: "Interview Types",
+        viewPerm: "ADD_TS_BENEFITS",
+        addPerm: "ADD_TS_BENEFITS",
+        list: (reload) => <InterviewTypes reload={reload} />,
+        form: AddUpdateInterviewTypeForm,
     },
     {
         key: "email-template",

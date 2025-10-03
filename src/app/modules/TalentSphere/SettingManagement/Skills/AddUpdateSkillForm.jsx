@@ -1,25 +1,25 @@
-import { saveUpdateBenefit, getBenefitList, getBenefitData } from "app/hooks/talentSphere";
-import { Benefit } from "app/utils/Types/TalentSphere";
+import { saveUpdateSkill, getSkillList, getSkillData } from "app/hooks/talentSphere";
+import { Skill } from "app/utils/Types/TalentSphere";
 import { SheetUI } from "components";
 import { TextInput, TextAreaInput, RadioGroupInput } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
-const AddUpdateBenefitForm = ({
+const AddUpdateSkillForm = ({
   id = false,
   reloadData = () => { },
   isOpen = false,
   setIsOpen = () => { },
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [FormData, setFormData] = useState(Benefit);
-  const [BenefitList, setBenefitList] = useState(null);
+  const [FormData, setFormData] = useState(Skill);
+  const [SkillList, setSkillList] = useState(null);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const isEditMode = Boolean(id);
 
   const FormSheetData = {
-    triggerText: `${isEditMode ? "Edit" : "Add"} Benefit`,
-    title: `${isEditMode ? "Edit" : "Add"} Benefit`,
+    triggerText: `${isEditMode ? "Edit" : "Add"} Skill`,
+    title: `${isEditMode ? "Edit" : "Add"} Skill`,
     description: null,
     footer: null,
   };
@@ -27,15 +27,15 @@ const AddUpdateBenefitForm = ({
 
 
   useEffect(() => {
-    const fetchBenefitData = async (isMounted) => {
+    const fetchSkillData = async (isMounted) => {
       try {
         setIsLoading(true);
         // Add organizationId to filter if available
 
-        const response = await getBenefitList();
+        const response = await getSkillList();
 
         if (isMounted) {
-          setBenefitList(response.results);
+          setSkillList(response.results);
         }
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -44,7 +44,7 @@ const AddUpdateBenefitForm = ({
       }
     };
     let isMounted = true;
-    fetchBenefitData(isMounted);
+    fetchSkillData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -55,7 +55,7 @@ const AddUpdateBenefitForm = ({
     const fetchData = async (isMounted, id) => {
       try {
         setIsLoading(true);
-        const response = await getBenefitData(id);
+        const response = await getSkillData(id);
         if (isMounted) {
           setFormData(response);
         }
@@ -80,13 +80,13 @@ const AddUpdateBenefitForm = ({
   const handleSubmit = async (values) => {
     try {
       setIsSubmittingForm(true);
-      const response = await saveUpdateBenefit(values, id);
+      const response = await saveUpdateSkill(values, id);
       if (response) {
         return {
           status: true,
           messageType: "SUCCESS",
-          title: `Benefit ${isEditMode ? "Updated" : "Added"} Successfully!`,
-          description: `Benefit is ${isEditMode ? "updated" : "added"} successfully.`,
+          title: `Skill ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          description: `Skill is ${isEditMode ? "updated" : "added"} successfully.`,
         };
       }
     } catch (error) {
@@ -108,7 +108,7 @@ const AddUpdateBenefitForm = ({
         enableReinitialize: true,
         handleSubmit: handleSubmit,
         validateFormSchema: () => { },
-        DataList: BenefitList,
+        DataList: SkillList,
         submitButtonText: "Submit",
         cancelButtonText: "Cancel",
         columns: 1,
@@ -117,7 +117,7 @@ const AddUpdateBenefitForm = ({
         formFields: [
           {
             sheetCardExtension: true,
-            sheetCardTitle: `Benefit Details`,
+            sheetCardTitle: `Skill Details`,
             InputFields: [
               {
                 InputField: RadioGroupInput,
@@ -149,4 +149,4 @@ const AddUpdateBenefitForm = ({
   );
 };
 
-export default AddUpdateBenefitForm;
+export default AddUpdateSkillForm;
