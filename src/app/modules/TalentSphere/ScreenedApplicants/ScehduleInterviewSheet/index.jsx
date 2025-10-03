@@ -108,6 +108,7 @@ const ScheduleInterviewSheet = ({
 
   const handleClose = () => {
     setIsOpen(false)
+    reloadData();
   }
 
   const validateForm = (values) => {
@@ -145,6 +146,8 @@ const ScheduleInterviewSheet = ({
       if (!savedInterview) throw new Error("Failed to save interview")
       toast.success(`Interview Schedule successfully`)
       reloadData(true)
+      setIsOpen(false)
+
     } catch (error) {
       console.error("Interview save error:", error)
       toast.error(error.message || "Failed to save interview")
