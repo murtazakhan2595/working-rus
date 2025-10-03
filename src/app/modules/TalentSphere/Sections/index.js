@@ -19,6 +19,7 @@ import {
     OfferLetterTemplatesColumns,
     BlacklistReasonsColumns,
     OfferLetterRequestColumns,
+    OfferTrackingColumns,
 } from './TableColumns';
 import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
 import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
@@ -27,6 +28,7 @@ import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG,OFFER_TAB_CONFIG } from './Tab
 export {
     SETTING_TAB_CONFIG,
     OFFER_TAB_CONFIG,
+    OfferTrackingColumns,
     OfferLetterRequestColumns,
     ManpowerPlanningColumns,
     BenefitsColumns,

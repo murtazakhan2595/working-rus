@@ -9,6 +9,7 @@ import {
   OfferTracking,
   ApplicantManagement,
   InterviewTracker,
+  ApplicantOffer,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -731,6 +732,11 @@ const GeneralRoutes = [
     path: "/access-denied",
     component: <AccessDenied />,
     name: "Access Denied",
+  },
+  {
+    path: "/applicant-offer/:id",
+    component: <ApplicantOffer />,
+    name: "Applicant Offer",
   },
 ].filter(Boolean); // Filter out undefined routes
 

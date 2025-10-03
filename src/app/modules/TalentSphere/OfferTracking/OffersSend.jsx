@@ -7,13 +7,13 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
-import { getOfferLetterList } from "app/hooks/talentSphere";
-import { OfferLetterRequestColumns } from "app/modules/TalentSphere/Sections";
+import { getOfferTrackingList } from "app/hooks/talentSphere";
+import { OfferTrackingColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
+const OffersSend = ({ isTeamView = false, activeView = "Requests" }) => {
     const {
         id: user_id,
         branch_id: user_branch,
@@ -21,14 +21,14 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
     } = GetDispatchStateList("user_details", "emp") || {};
 
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState();
+    const [filterData, setFilterData] = useState({status:'pending'});
     const [isLoading, setIsLoading] = useState(true);
     const [OfferLetterList, setOfferLetterList] = useState();
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
 
     const OuterTabList = useMemo(() => {
-        return ["Requests", "Records"];
+        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Hired", "Not Joined"];
     }, []);
 
     const onPageChange = (name, value) => {
@@ -46,7 +46,7 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
     const fetchData = async (isMounted) => {
         try {
             setIsLoading(true);
-            const OfferLetterList = await getOfferLetterList({ filterData, options, ordering, });
+            const OfferLetterList = await getOfferTrackingList({ filterData, options, ordering, });
             if (OfferLetterList && isMounted) {
                 setOfferLetterList(OfferLetterList);
             }
@@ -71,14 +71,7 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
             const updatedFilters = { ...prevFilters };
             // Handle other filters normally
             if (filterValue === "" || filterValue === null) {
-                if (filterName === "status") {
-                    if (activeTab === "Requests") {
-                        updatedFilters[filterName] = "pending";
-                    } else if (activeTab === "Records") {
-                        updatedFilters[filterName] =
-                            "approved,rejected";
-                    }
-                } else delete updatedFilters[filterName];
+                delete updatedFilters[filterName];
             } else {
                 if (filterName === "status")
                     updatedFilters[filterName] = filterValue.toLowerCase();
@@ -90,15 +83,15 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
     };
 
     const handleTabChange = (tab) => {
-        if (tab === "Requests") {
+        if (tab === "Not Joined") {
             setFilterData((prev) => ({
                 ...prev,
                 // status: "pending",
             }));
-        } else if (tab === "Records") {
+        } else {
             setFilterData((prev) => ({
                 ...prev,
-                status: "approved,rejected",
+                status: tab.toLowerCase(),
             }));
         }
     };
@@ -126,7 +119,7 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
             </TabsList>
             <CardHeader className="flex flex-row justify-between items-center gap-4">
                 <div>
-                    <CardTitle className="text-primary">Offer Letter {activeTab}</CardTitle>
+                    <CardTitle className="text-primary">{activeTab} Offers</CardTitle>
                     <CardDescription className="text-neutral-1100">
                         Here you can {activeTab === 'Requests' ? 'view' : 'approve, or reject'} the offer letters
                     </CardDescription>
@@ -199,7 +192,7 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
                 ) : (
                     <TableCustom
                         data={OfferLetterList?.results || []}
-                        columns={OfferLetterRequestColumns(fetchData, activeTab === 'Records')}
+                        columns={OfferTrackingColumns(fetchData)}
                         pagination={true}
                         dataTotalSize={OfferLetterList?.count || 0}
                         tableOptions={tableOptions}
@@ -210,4 +203,4 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
     );
 };
 
-export default OfferRequests;
+export default OffersSend;

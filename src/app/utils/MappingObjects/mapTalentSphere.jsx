@@ -3,6 +3,7 @@ import {
     Benefit,
     BlacklistReason,
     OfferLetterTemplate,
+    OfferTracking,
     RemoteWorkChecklist,
     JobType,
     Education,
@@ -377,7 +378,7 @@ export function mapCareerLevelPayloadData(data, id) {
 
 //-------------HeadcountRequests ---------------
 
-export async function mapHeadcountRequestData(data, fetchApprovalDetails) {
+export async function mapHeadcountRequestData(data, fetchApprovalDetails = true) {
     const RecordDetails = {};
     for (const key of Object.keys(HeadcountRequest)) {
         if (key === "approval_details" && fetchApprovalDetails) {
@@ -906,10 +907,10 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
     return payload;
 }
 
-//-------------OfferLetter ---------------
+//-------------OfferTrackings ---------------
 
-export function mapOfferLetterData(data) {
-    const RecordDetails = Object.keys(OfferLetter).reduce((acc, key) => {
+export function mapOfferTrackingData(data) {
+    const RecordDetails = Object.keys(OfferTracking).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             acc[key] = data[key];
         }
@@ -918,13 +919,64 @@ export function mapOfferLetterData(data) {
 
     return RecordDetails;
 }
-export async function mapOfferLetterList(data) {
+export async function mapOfferTrackingList(data) {
     const DataList = await data?.map((Record) => {
-        const Details = mapOfferLetterData(Record);
-        return { ...Details, };
+        const Details = mapOfferTrackingData(Record);
+        return {
+            ...Details,
+        };
     });
 
     return DataList;
+}
+
+export function mapOfferTrackingPayloadData(data, id) {
+    // Initialize an empty payload object
+    const payload = {};
+    // Iterate over the keys in the OfferTracking object
+    for (const key in OfferTracking) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            payload[key] = data[key];
+        }
+    }
+
+    // Return the constructed payload
+    return payload;
+}
+
+//-------------OfferLetter ---------------
+
+export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
+    const RecordDetails = {};
+    for (const key of Object.keys(OfferLetter)) {
+        if (key === "approval_details" && fetchApprovalDetails) {
+            RecordDetails[key] = await mapApproverDetails({ ...data, });
+        } else {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                RecordDetails[key] = data[key];
+            }
+        }
+    }
+    return RecordDetails;
+}
+export async function mapOfferLetterList(data) {
+    if (!Array.isArray(data) || data.length === 0) return [];
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapOfferLetterData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 
 export function mapOfferLetterPayloadData(data, id) {

@@ -33,6 +33,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
         try {
             const filters = {
                 ...filterData,
+                ...(variant === 'all' ? { status: 'new' } : {}),
                 ...(variant === 'rejected' ? { status: 'rejected' } : {}),
                 ...(variant === 'shortlisted' ? { status: 'shortlisted' } : {}),
                 ...(variant === 'blacklisted' ? { status: 'blacklisted' } : {}),
@@ -111,29 +112,12 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                                 name: "department",
                                 placeholder: "Department",
                             },
-                            // {
-                            //     type: "select",
-                            //     options: "nationalities",
-                            //     name: "location",
-                            //     placeholder: "Location",
-                            // },
                             {
                                 type: "select",
                                 options: RecruitmentApplicationSource,
                                 name: "application_source",
                                 placeholder: "Application Source",
                             },
-                            ...(variant === 'all' ? [{
-                                type: "select",
-                                options: [
-                                    { value: 'new', label: 'New' },
-                                    { value: 'rejected', label: "Rejected" },
-                                    { value: 'resume_bank', label: "Resume Bank" },
-                                    { value: 'screened', label: "Screened" },
-                                ],
-                                name: "status",
-                                placeholder: "Status",
-                            }] : []),
                             {
                                 type: "select",
                                 options: [
