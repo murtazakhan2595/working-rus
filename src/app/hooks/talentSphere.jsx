@@ -38,6 +38,7 @@ import {
   mapInterviewTypePayloadData,
   mapCareerLevelList,
   mapCareerLevelData,
+  mapInterviewList,
   mapCareerLevelPayloadData,
   mapRemoteWorkChecklistList,
   mapRemoteWorkChecklistData,
@@ -1239,7 +1240,9 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       if (applicant_details_only) return ResponseData;
       const VacancyData = await getVacancyData(Response.published_vacancy);
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
-      return { resume_bank: ResumeBankData, vacancy_details: VacancyData, ...ResponseData, };
+      const interview_ids = (Response.interviews || []).map(interview => interview.id);
+      const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
+      return { interview_feedbacks: Feedbacks.results || [], resume_bank: ResumeBankData, vacancy_details: VacancyData, ...ResponseData, };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1584,7 +1587,12 @@ export const getInterviewsList = async (payload = {}) => {
 
   try {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
-    if (response.status === 200) return response.data;
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapInterviewList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+
+    }
   } catch (error) {
     console.error("Error fetching interviews list:", error);
     if (error?.response?.status === 401) HandleLogout();

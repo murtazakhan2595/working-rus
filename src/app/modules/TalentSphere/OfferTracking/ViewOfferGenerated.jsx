@@ -77,7 +77,7 @@ const ViewOfferGenerated = ({
                     label: "Contact Number",
                 },
                 {
-                    key: "requested_by_name",
+                    key: "designation",
                     label: "Job Title",
                 },
             ],
@@ -104,12 +104,6 @@ const ViewOfferGenerated = ({
                 {
                     key: "designation",
                     label: "Designation",
-                    formatter: (cell) => <DesignationName value={cell} />,
-                },
-                {
-                    key: "reporting_manager",
-                    label: "Reporting Manager",
-                    formatter: (cell) => <EmployeeName value={cell} />
                 },
                 {
                     key: "work_location",

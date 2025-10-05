@@ -1155,8 +1155,8 @@ export const ApplicationColumns = (reloadData, variant) => [
                 <div><span className="font-bold">Source: </span>{source}</div>
                 <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
                 <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
-                <div><span className="font-bold">Department: </span>{row.contact_number}</div>
-                <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
+                <div><span className="font-bold">Department: </span>{row.vacancy_department}</div>
+                <div><span className="font-bold">Emiratization Flag: </span>{row.emiratization_flag ? 'Yes' : 'No'}</div>
             </div>
             );
         },
@@ -1201,10 +1201,31 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
+    ...(variant === 'in_progress' ? [
+        {
+            dataField: "interviews",
+            text: "Interview Info",
+            minWidth: '300px',
+            formatter: (cell) => {
+                const interview = (cell?.[cell.length - 1]||{});
+                console.log(interview)
+                return (<div>
+                    <div><span className="font-bold">Interview Type: </span>{interview.interview_type_name}</div>
+                    <div><span className="font-bold">Date & Time: </span>{renderDate(interview.scheduled_datetime, '--', 'date-time')}</div>
+                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={interview?.panel_name} variant="info"  /></div>
+                </div>
+                );
+            },
+        },
+    ] : []),
     ...(variant !== 'all' ? [
         {
             dataField: "feed_back",
             text: "Feedback Summary",
+        },
+        {
+            dataField: "ai_match_score",
+            text: "AI Match Score",
         },
     ] : []),
     {
@@ -1249,6 +1270,21 @@ export const ResumeBankColumns = (reloadData) => [
         minWidth: '250px',
     },
     {
+        dataField: "application_source",
+        text: "Application",
+        formatter: (cell, row) => {
+            const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+            return (<div>
+                <div><span className="font-bold">Source: </span>{source}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Job Title: </span>{row.job_title_applied_for}</div>
+                <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
+            </div>
+            );
+        },
+        minWidth: '250px',
+    },
+    {
         dataField: "recommended_department",
         text: "Recommended Department",
         formatter: (cell) => <DepartmentName value={cell} />
@@ -1259,29 +1295,8 @@ export const ResumeBankColumns = (reloadData) => [
         formatter: (cell) => <DesignationName value={cell} />
     },
     {
-        dataField: "job_title_applied_for",
-        text: "Job Title",
-    },
-    {
-        dataField: "application_source",
-        text: "Application Source",
-        formatter: (cell) => {
-            return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
-        },
-    },
-    {
-        dataField: "emiratization_flag",
-        text: "Emiratization Flag",
-        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
-    },
-    {
-        dataField: "application_date",
-        text: "Application Date",
-        formatter: (cell) => renderDate(cell, '--', 'date'),
-    },
-    {
         dataField: "added_on",
-        text: "Added to Resume Bank On",
+        text: "Added On",
         formatter: (cell) => renderDate(cell, '--', 'date'),
     },
     {
@@ -1357,7 +1372,7 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
         text: "Applicant Name",
     },
     {
-        dataField: "job_title",
+        dataField: "designation",
         text: "Job Title",
     },
     {
@@ -1478,7 +1493,7 @@ export const OfferTrackingColumns = (reloadData, isRecord = false) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <OfferRequestActions data={row} reloadData={reloadData} DataList={data_list} isOfferSent={true}/>
+            <OfferRequestActions data={row} reloadData={reloadData} DataList={data_list} isOfferSent={true} />
         ),
         width: '50px'
     },

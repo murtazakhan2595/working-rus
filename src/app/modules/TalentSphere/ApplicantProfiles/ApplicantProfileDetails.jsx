@@ -24,6 +24,7 @@ export default function ApplicantProfileDetails() {
             try {
                 const response = await getApplicantsData(id);
                 if (isMounted && response) {
+                    console.log(response);
                     setApplicantData(response);
                 }
             } catch (error) {
@@ -58,7 +59,7 @@ export default function ApplicantProfileDetails() {
                         title={candidate_name}
                         subtitle={serial_id}
                         additionalInfo={[candidate_id, <StatusLabel status={status}>{status}</StatusLabel>]}
-                        avatarProps={{ size:16,fallbackText: candidate_name.split(" ").map((word) => word.charAt(0).toUpperCase()).join("") }}
+                        avatarProps={{ size:16,fallbackText: (candidate_name?.split(" ")||[]).map((word) => word.charAt(0).toUpperCase()).join("") }}
                     />
                 </CardContent>
             </Card>

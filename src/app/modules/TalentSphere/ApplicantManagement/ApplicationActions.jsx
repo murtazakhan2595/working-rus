@@ -70,10 +70,10 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                 <ScheduleInterviewSheet
                     isOpen={interview}
                     setIsOpen={() => setInterview(false)}
-                    id={data.id}
+                    // id={data.id}
+                    applicant={data.id}
                     mode="add"
                     reloadData={reloadData}
-
                 />
 
             )}

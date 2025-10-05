@@ -328,30 +328,55 @@ export const BlacklistedInformation = [
 
     field: [
       {
-        key: "blacklist",
+        key: "blacklisted_by",
         label: "Blacklisted By",
-        formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
+        formatter: (cell) => <EmployeeName value={cell} />
       },
       {
-        key: "blacklist",
+        key: "blacklisted_on",
         label: "Date",
-        formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+        formatter: (cell) => renderDate(cell, "--"),
       },
       {
-        key: "blacklist",
+        key: "reasons",
         label: "Reasons",
-        formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
       },
 
       {
-        key: "blacklist",
+        key: "remarks",
         label: "Remarks",
-        formatter: (cell) => cell?.remarks,
       },
     ],
   },
 ]
+export const RejectedInformation = [
+  {
+    title: "Rejection Information",
 
+    field: [
+      {
+        key: "rejected_by",
+        label: "Rejected By",
+        formatter: (cell) => <EmployeeName value={cell} />
+      },
+
+      {
+        key: "rejected_on",
+        label: "Date",
+        formatter: (cell) => renderDate(cell, "--"),
+      },
+      {
+        key: "rejection_reason",
+        label: "Reason",
+      },
+      {
+        key: "remarks",
+        label: "Remarks",
+      },
+    ],
+  },
+]
 export const ResumeBankInformation = [
   {
     title: "Resume Bank Information",
@@ -381,7 +406,91 @@ export const ResumeBankInformation = [
 
   },
 ]
-
+export const InterviewDetails = [
+  {
+    title: "Interview Information",
+    field: [
+      {
+        key: "interview_type_name",
+        label: "Interview Type",
+        formatter: (cell) => <EmployeeName value={cell} />
+      },
+      {
+        key: "scheduled_datetime",
+        label: "Date & Time",
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "panel_name",
+        label: "Panel Members",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
+      },
+      {
+        key: "meeting_link",
+        label: "Generated Meeting Link",
+        renderCondition: (_, data) => Boolean(data.generate_meeting_link),
+      },
+      {
+        key: "interview_type_name",
+        label: "Required Demographics",
+        renderCondition: (_, data) => Boolean(data.require_demographics),
+      },
+      {
+        key: "status",
+        label: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+      },
+    ],
+  },
+];
+export const FeebackDetails = [
+  {
+    title: "Feedback Information",
+    field: [
+      {
+        key: "panel_member",
+        formatter: (cell) => (
+          <EmployeeDetailUI
+            id={cell}
+            InformationKeys={["name", "department", "position", "branch"]}
+            ViewVariant="vertical"
+            className="w-full"
+          />
+        ),
+      },
+      {
+        key: "comments",
+        label: "Comments / Observations",
+      },
+      {
+        key: "rating",
+        label: "Rating",
+      },
+      {
+        key: "recommendation",
+        label: "Recommendation",
+        formatter: (cell) => <div className="text-capitalize">{cell || '--'}</div>,
+      },
+      {
+        key: "responses",
+        label: "Feedback Responses",
+        formatter: (cell) =>
+          cell && cell.length > 0 ? (
+            <ul className="list-disc pl-4 space-y-1">
+              {cell.map(({ field_label, response_numeric, response_text }, idx) => (
+                <li key={idx}>
+                  {field_label}:{" "}
+                  <strong> {response_numeric ?? response_text ?? "—"}</strong>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            "No responses"
+          ),
+      },
+    ],
+  },
+];
 export const ApplicantDetails = [
   {
     customContent: true,
@@ -426,50 +535,19 @@ export const ApplicantDetails = [
   },
   ...(ScreeningInfomation),
   {
-    title: "Interview Info",
+    customContent: true,
     renderSectionCondition: (data) => {
       if (data.interviews && Array.isArray(data.interviews) && data.interviews.length > 0) return true;
       return false;
     },
-    field: [
-      {
-        key: "interviews",
-        formatter: (cell) => (cell || []).map((interview, index) => {
-          return <>
-            <DetailBox
-              key={`${index}-interview-type`}
-              label={"Interview Type"}
-              value={interview?.interview_type_name}
-            />
-            <DetailBox
-              key={`${index}-interview-time`}
-              label={"Date & Time"}
-              value={renderDate(interview?.scheduled_datetime, '--', 'date-time')}
-            />
-            <DetailBox
-              key={`${index}-interview-type`}
-              label={"Interview Type"}
-              value={interview?.interview_type_name}
-            />
-            <DetailBox
-              key={`${index}-interview-member`}
-              label={"Panel Members"}
-              value={<MultiStatusLabel statusList={interview.panel_name} variant="info" displayAll={true} />}
-            />
-            <DetailBox
-              key={`${index}-interview-link`}
-              label={"Meeting Link"}
-              value={interview?.meeting_link}
-            />
-            <DetailBox
-              key={`${index}-interview-status`}
-              label={"Status"}
-              value={interview?.status}
-            />
-          </>
-        })
-      },
-    ],
+    renderContent: ({ interviews }) => (interviews || []).map((interview, index) => {
+      return <>
+        <DetailContent
+          fields={InterviewDetails}
+          currentItem={{ ...interview, index } || {}}
+        />
+      </>
+    }),
   },
   {
     customContent: true,
@@ -504,134 +582,49 @@ export const ApplicantDetails = [
   {
     title: "Rejection Information",
     renderSectionCondition: (data) => {
-      if (data.status === 'rejected') return true;
+      if (data.recruitment_rejected) return true;
       return false;
     },
-    field: [
-      {
-        key: "rejected_by",
-        label: "Rejected By",
-        formatter: (cell) => <EmployeeName value={cell} />
-      },
-
-      {
-        key: "rejected_on",
-        label: "Date",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-      {
-        key: "rejection_reason",
-        label: "Reason",
-      },
-      {
-        key: "remarks",
-        label: "Remarks",
-      },
-    ],
-  },
-];
-
-
-export const InterviewDetails = [
-  {
-    customContent: true,
     renderContent: (data) => {
       return (
-        <div className="flex flex-wrap justify-end gap-2 items-center">
-          <div className="flex justify-end gap-2 flex-wrap">
-            <StatusLabel status={data.status}>
-              {data?.status?.toLowerCase()}
-            </StatusLabel>
-          </div>
-        </div>
+        <DetailContent
+          fields={RejectedInformation}
+          currentItem={data?.recruitment_rejected || {}}
+        />
       );
     },
   },
-  {
-    title: "Candidate Information",
-    field: [
-      {
-        key: "candidate_name",
-        label: "Candidate Name",
-      },
-      {
-        key: "candidate_id",
-        label: "Candidate ID",
-      },
-      {
-        key: "email",
-        label: "Email Address",
-      },
-      {
-        key: "contact_number",
-        label: "Contact Number",
-      },
-      {
-        key: "ai_missing_skills",
-        label: "AI Suggested Label",
-      },
-      {
-        key: "ai_match_score",
-        label: "AI Matched Score",
-      },
-    ],
-  },
-  {
-    title: `Resume/Attachment`,
-    field: [
-      {
-        key: "attachment",
-        formatter: (cell, data) =>
-          cell ? (
-            <AttachmentUI
-              attachment={cell}
-              name={`${data.candidate_name} Resume`}
-              viewOnly={true}
-            />
-          ) : (
-            <div className="text-neutral-1000 text-sm">No document attached</div>
-          ),
-      },
-    ],
-  },
-  {
-    title: `Vacancy Details`,
-    field: [
-      {
-        key: "job_title",
-        label: "Job Title",
-        // formatter: (cell) => renderDate(cell),
-      },
-    ],
-  },
-  {
-    title: "Interview Information",
-    field: [
-      {
-        key: "interview_type_name",
-        label: "Interview Type",
-        formatter: (cell) => <EmployeeName value={cell} />
-      },
-      {
-        key: "scheduled_datetime",
-        label: "Date & Time",
-        formatter: (cell) => renderDate(cell, "--", 'date-time'),
-      },
-      {
-        key: "panel_name",
-        label: "Panel Members",
-        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
-      },
-      {
-        key: "interview_type_name",
-        label: "Generated Meeting Link",
-        renderCondition: (_, data) => Boolean(data.generate_meeting_link),
-      },
-      {
-        key: "interview_type_name",
-        label: "Required Demographics",
-        renderCondition: (_, data) => Boolean(data.require_demographics),
-      },
-    ],
-  },
 ];
+
+export const AllInterviewDetails = [{
+  customContent: true,
+  renderSectionCondition: (data) => {
+    if (data.interviews && Array.isArray(data.interviews) && data.interviews.length > 0) return true;
+    return false;
+  },
+  renderContent: ({ interviews }) => (interviews || []).map((interview, index) => {
+    return <>
+      <DetailContent
+        fields={InterviewDetails}
+        currentItem={{ ...interview, index } || {}}
+      />
+    </>
+  }),
+},];
+export const AllFeedbackDetails = [{
+  customContent: true,
+  renderSectionCondition: (data) => {
+    if (data.interview_feedbacks && Array.isArray(data.interview_feedbacks) && data.interview_feedbacks.length > 0) return true;
+    return false;
+  },
+  renderContent: ({ interview_feedbacks }) => (interview_feedbacks || []).map((interview_feedback, index) => {
+    return <>
+      <DetailContent
+        fields={FeebackDetails}
+        currentItem={{ ...interview_feedback, index } || {}}
+      />
+    </>
+  }),
+},];
+
+

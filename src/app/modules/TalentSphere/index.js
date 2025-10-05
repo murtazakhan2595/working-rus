@@ -106,9 +106,10 @@ import { ResumeBankApplicants } from './ResumeBankApplicants';
 import { ApplicantProfiles ,ApplicantProfileActions,
     ApplicantProfileDetails
 } from './ApplicantProfiles';
-
+import {ScheduleInterviewSheet} from './ScreenedApplicants';
 export {
     TalentSphereDashboard,
+    ScheduleInterviewSheet,
     ApplicantProfileActions,
     ApplicantProfiles,
     ApplicantOffer,

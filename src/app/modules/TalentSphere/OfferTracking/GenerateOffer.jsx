@@ -92,7 +92,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         try {
             const payload = {
                 ...values,
-                status: isDraft === 'draft' ? 'draft' : 'pending',
+                status: isDraft === 'draft' ? 'draft' : 'pending_approval',
             };
             const response = await saveUpdateOfferLetter(payload, id);
             if (response) {

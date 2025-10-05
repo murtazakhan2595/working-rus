@@ -6,8 +6,10 @@ import {
   DetailContent,
 } from "components";
 import { ApplicantDetails } from "app/modules/TalentSphere/Sections";
-import { UpdateApplicantStatus, ViewInterviewFeedback, GenerateOffer } from "app/modules/TalentSphere";
+import { UpdateApplicantStatus, ViewInterviewFeedback, GenerateOffer, ScheduleInterviewSheet, AddInterviewFeedback } from "app/modules/TalentSphere";
 import { ApplicantStatusList } from './StatusList'
+import moment from "moment";
+import { useSelector } from "react-redux";
 
 const ViewApplicationDetail = ({
   currentId,
@@ -17,11 +19,14 @@ const ViewApplicationDetail = ({
   setIsOpen = () => { },
   statusUpdated = () => { },
 }) => {
+  const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
   const [OpenFormModal, setOpenFormModal] = useState(false);
   const [OpenViewFeedback, setOpenViewFeedback] = useState(false);
   const [OpenOfferForm, setOpenOfferForm] = useState(false);
+  const [OpenInterviewForm, setOpenInterviewForm] = useState(false);
+  const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
@@ -31,15 +36,32 @@ const ViewApplicationDetail = ({
         const interview_ids = (data.interviews || []).map(interview => interview.id);
         setFormData({ id: interview_ids });
         setOpenViewFeedback(true);
-
+        return null;
+      }
+      if (status === 'reschedule-interview') {
+        const latest_interview = data?.interviews?.[data?.interviews?.length - 1]?.id;
+        setFormData({
+          applicant: data.id,
+          id: latest_interview,
+        });
+        setOpenInterviewForm(true);
+        return null;
+      }
+      if (status === 'add-feedback') {
+        const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
+        setFormData({
+          form: latest_interview.feedback_form,
+          id: latest_interview.id,
+        });
+        setOpenFeedbackForm(true);
         return null;
       }
       if (status === 'generate-offer') {
         setFormData({
           applicant: data.id,
           expected_joining_date: data?.recruitment_shortlist?.expected_joining_date,
-          designation:data.job_title,
-          work_location:data.location,
+          designation: data.job_title,
+          work_location: data.location,
         });
         setOpenOfferForm(true);
         return null;
@@ -82,7 +104,18 @@ const ViewApplicationDetail = ({
         renderContent: (data) => {
           console.log(data, 'APPLICATION DATA')
           if (!data || !data.status || !data.status.toLowerCase()) return null;
-          const Options = ApplicantStatusList[data.status.toLowerCase()];
+          const status = data.status.toLowerCase();
+          let statusKey = status;
+          if (status === 'in progress') {
+            const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
+            if (!latest_interview || latest_interview.status !== 'scheduled') return null;
+            const isInterViewDone = moment(latest_interview.scheduled_datetime).startOf('day').isSameOrBefore(moment().startOf('day'));
+            if (!isInterViewDone) return null;
+            const panelist_included = (latest_interview.panel || []).includes(user_id);
+            const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
+            if (panelist_included && !feedback_submitted) statusKey = 'feedack';
+          }
+          const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => (
             <Button
               variant={option.variant}
@@ -150,6 +183,30 @@ const ViewApplicationDetail = ({
             setOpenOfferForm(false);
           }}
           initialData={FormData}
+        />
+      }
+      {OpenInterviewForm &&
+        <ScheduleInterviewSheet
+          isOpen={OpenInterviewForm}
+          setIsOpen={() => setOpenInterviewForm(false)}
+          id={FormData.id}
+          applicant={FormData.applicant}
+          mode="add"
+          reloadData={reloadData}
+        />
+      }
+      {OpenFeedbackForm &&
+        <AddInterviewFeedback
+          isOpen={OpenFeedbackForm}
+          reloadData={() => {
+            setForceLoad(!forceLoad);
+            setOpenFeedbackForm(false);
+          }}
+          setIsOpen={() => {
+            setOpenFeedbackForm(false);
+          }}
+          feedbackForm={FormData.form}
+          id={FormData.id}
         />
       }
     </>

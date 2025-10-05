@@ -25,10 +25,7 @@ import {
 } from "app/modules/TalentSphere/SettingManagement";
 import Demographics from "app/modules/TalentSphere/DemographicsForm";
 import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
-import {
-    AllApplicants,
-    ResumeBankApplicants,
-} from "app/modules/TalentSphere";
+import { AllApplicants, } from "app/modules/TalentSphere";
 import {
     GenerateOffer,
     OfferRequests,
@@ -38,6 +35,11 @@ import {
     ApplicantInformation,
     ShortlistingInfomation,
     ScreeningInfomation,
+    VacancyDetails,
+    AllInterviewDetails,
+    AllFeedbackDetails,
+   BlacklistedInformation,
+    RejectedInformation,
 } from 'app/modules/TalentSphere/Sections';
 
 // 🔹 Central config for all tabs
@@ -143,27 +145,22 @@ export const APPLICANT_TAB_CONFIG = [
     {
         label: "All Applicants",
         permission: "VIEW_TS_BENEFITS",
-        component: (reload) => <AllApplicants reload={reload?.benefits} />,
-    },
-    {
-        label: "Rejected",
-        permission: "VIEW_REJECTED_APPLICATION",
-        component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
-    },
-    {
-        label: "Resume Bank",
-        permission: "VIEW_RESUME_BANK_APPLICATION",
-        component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
+        component: () => <AllApplicants />,
     },
     {
         label: "Screened",
         permission: "VIEW_TS_EDUCATION",
-        component: () => <Applicants />,
+        component: () => <AllApplicants variant="screened" />,
     },
     {
         label: "Shortlisted",
         permission: "VIEW_TS_CAREER_LEVEL",
         component: () => <AllApplicants variant="shortlisted" />,
+    },
+    {
+        label: "Rejected",
+        permission: "VIEW_REJECTED_APPLICATION",
+        component: () => <AllApplicants variant="rejected" />,
     },
     {
         label: "Blacklisted",
@@ -198,7 +195,8 @@ export const OFFER_TAB_CONFIG = [
 export const APPLICANT_PROFILE_TAB_CONFIG = [
     {
         label: "Vacancy Details",
-        infoFields: ApplicantInformation,
+        infoFields: VacancyDetails,
+        dataKey: 'vacancy_details',
     },
     {
         label: "Applicant Info",
@@ -210,27 +208,27 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
     },
     {
         label: "Interview Details",
-        infoFields: ApplicantInformation,
+        infoFields: AllInterviewDetails,
+        // dataKey: 'interviews',
     },
     {
         label: "Feedback",
-        infoFields: ApplicantInformation,
-        dataKey:'interviews',
+        infoFields: AllFeedbackDetails,
     },
     {
         label: "Shortlising Info",
         infoFields: ShortlistingInfomation,
-        dataKey:'recruitment_shortlist',
+        dataKey: 'recruitment_shortlist',
     },
     {
         label: "Rejection Details",
-        infoFields: ShortlistingInfomation,
-        dataKey:'recruitment_rejected',
+        infoFields: RejectedInformation,
+        dataKey: 'recruitment_rejected',
     },
     {
         label: "Backlisting Info",
-        infoFields: ShortlistingInfomation,
-        dataKey:'blacklist',
+        infoFields: BlacklistedInformation,
+        dataKey: 'blacklist',
     },
     // {
     //     label: "Rejected",

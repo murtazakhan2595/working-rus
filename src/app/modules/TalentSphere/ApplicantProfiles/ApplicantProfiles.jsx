@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { TableCustom, PageLoader ,Header} from "components";
+import { TableCustom, PageLoader, Header } from "components";
 import { getApplicantsList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { ApplicantsColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
-import { CardContent,Card,CardHeader, CardTitle, CardDescription } from "components/ui/card";
+import { CardContent, Card, CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
 
 const ApplicantProfiles = ({ reload, variant = 'all' }) => {
@@ -32,7 +32,7 @@ const ApplicantProfiles = ({ reload, variant = 'all' }) => {
         try {
             const filters = {
                 ...filterData,
-                // status:'in_progress,shortlisted,hired,screened'
+                status: ["in_progress", "shortlisted", "hired", "screened"]
             }
             const response = await getApplicantsList({
                 filterData: filters,

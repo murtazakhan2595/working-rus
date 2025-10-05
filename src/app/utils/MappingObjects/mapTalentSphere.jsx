@@ -1033,6 +1033,7 @@ export function mapOfferLetterPayloadData(data, id) {
 export function mapInterviewData(data) {
     const RecordDetails = Object.keys(Interview).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
+            if (key === "applicant") acc['applicant_id'] = data[key];
             acc[key] = data[key];
         }
         return acc;

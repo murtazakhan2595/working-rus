@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ViewInterviewDetails, AddUpdateRequisitionRequestForm, AddUpdateVacancyForm } from "app/modules/TalentSphere";
+import { ViewInterviewDetails, ViewApplicationDetail, AddUpdateVacancyForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplicants";
@@ -38,7 +38,6 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
     const handleUpdateStatus = () => {
         setInterview(true)
     }
-
     return (
         <>
             <DropdownActionMenu
@@ -58,7 +57,7 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
             />
 
             {view && (
-                <ViewInterviewDetails
+                <ViewApplicationDetail
                     isOpen={view}
                     reloadData={() => {
                         reloadData(true);
@@ -67,7 +66,7 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
                     setIsOpen={() => {
                         setView(false);
                     }}
-                    currentId={data.id}
+                    currentId={data.applicant_id}
                     DataList={DataList}
                 />
             )}
@@ -91,7 +90,6 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
                     id={data.id}
                     mode="add"
                     reloadData={reloadData}
-
                 />
 
             )}

@@ -30,7 +30,7 @@ const StatusConfig = {
         saveStatusAuditLogs: saveUpdateRejectedApplication,
         sheet: { title: "Rejection Reason" },
         initialForm: RejectedApplication,
-        fields: (BlacklistReasons) => [
+        fields: () => [
             {
                 InputField: TextAreaInput,
                 name: "rejection_reason",
@@ -41,13 +41,6 @@ const StatusConfig = {
                 InputField: TextAreaInput,
                 name: "remarks",
                 label: "Remarks",
-            },
-            {
-                InputField: SelectMultiInputComponent,
-                name: "reason_ids",
-                required: true,
-                label: "Blacklist Reasons",
-                options: BlacklistReasons,
             },
         ],
     },
