@@ -71,7 +71,7 @@ const NavigationSheetComponent = ({
     if (validList.length === 0) return;
 
     const currentIndex = validList.findIndex(
-      (item) => item.id === currentItemId
+      (item) => item?.[dataUniqueKey] === currentItemId
     );
 
     if (currentIndex < validList.length - 1) {
@@ -95,7 +95,7 @@ const NavigationSheetComponent = ({
     if (validList.length === 0) return;
 
     const currentIndex = validList.findIndex(
-      (item) => item.id === currentItemId
+      (item) => item?.[dataUniqueKey] === currentItemId
     );
 
     if (currentIndex > 0) {

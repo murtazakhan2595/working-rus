@@ -38,10 +38,8 @@ const ViewApplicationDetail = ({
         setFormData({
           applicant: data.id,
           expected_joining_date: data?.recruitment_shortlist?.expected_joining_date,
-          contact_number:data.contact_number,
-          candidate_name:data.candidate_name,
-          candidate_id:data.candidate_id,
-          email:data.email,
+          designation:data.job_title,
+          work_location:data.location,
         });
         setOpenOfferForm(true);
         return null;

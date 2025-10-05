@@ -23,10 +23,10 @@ export default function InterviewTracker() {
 
     const TabListArray = React.useMemo(() => [
         ...(isViewInProgressPermitted ? ["In Progress"] : []),
-        ...(isViewRejectedPermitted ? ["Rejected Applications"] : []),
-        ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
-        ...(isViewScreenedPermitted ? ["Screened Application"] : []),
-        // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+        // ...(isViewRejectedPermitted ? ["Rejected Applications"] : []),
+        // ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
+        // ...(isViewScreenedPermitted ? ["Screened Application"] : []),
+        // // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
     ], [isViewInProgressPermitted, isViewCareerLevelsPermitted, isViewScreenedPermitted, isViewResumedPermitted, isViewRejectedPermitted]);
 

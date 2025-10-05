@@ -34,7 +34,11 @@ import {
     OfferRequests,
     OffersSend,
 } from 'app/modules/TalentSphere/OfferTracking';
-
+import {
+    ApplicantInformation,
+    ShortlistingInfomation,
+    ScreeningInfomation,
+} from 'app/modules/TalentSphere/Sections';
 
 // 🔹 Central config for all tabs
 export const SETTING_TAB_CONFIG = [
@@ -135,11 +139,6 @@ export const SETTING_TAB_CONFIG = [
     },
 ];
 
-
-
-// -----------------
-// Tab Configuration
-// -----------------
 export const APPLICANT_TAB_CONFIG = [
     {
         label: "All Applicants",
@@ -182,7 +181,7 @@ export const OFFER_TAB_CONFIG = [
         addPerm: "ADD_TS_BENEFITS",
         list: (reload) => <OfferRequests reload={reload} />,
         form: GenerateOffer,
-        addLabel:'Generate Offer'
+        addLabel: 'Generate Offer'
     },
     {
         key: "offer-send",
@@ -193,4 +192,69 @@ export const OFFER_TAB_CONFIG = [
         // form: GenerateOffer,
         // addLabel:'Generate Offer'
     },
+];
+
+
+export const APPLICANT_PROFILE_TAB_CONFIG = [
+    {
+        label: "Vacancy Details",
+        infoFields: ApplicantInformation,
+    },
+    {
+        label: "Applicant Info",
+        infoFields: ApplicantInformation,
+    },
+    {
+        label: "Screening Info",
+        infoFields: ScreeningInfomation,
+    },
+    {
+        label: "Interview Details",
+        infoFields: ApplicantInformation,
+    },
+    {
+        label: "Feedback",
+        infoFields: ApplicantInformation,
+        dataKey:'interviews',
+    },
+    {
+        label: "Shortlising Info",
+        infoFields: ShortlistingInfomation,
+        dataKey:'recruitment_shortlist',
+    },
+    {
+        label: "Rejection Details",
+        infoFields: ShortlistingInfomation,
+        dataKey:'recruitment_rejected',
+    },
+    {
+        label: "Backlisting Info",
+        infoFields: ShortlistingInfomation,
+        dataKey:'blacklist',
+    },
+    // {
+    //     label: "Rejected",
+    //     permission: "VIEW_REJECTED_APPLICATION",
+    //     component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
+    // },
+    // {
+    //     label: "Resume Bank",
+    //     permission: "VIEW_RESUME_BANK_APPLICATION",
+    //     component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
+    // },
+    // {
+    //     label: "Screened",
+    //     permission: "VIEW_TS_EDUCATION",
+    //     component: () => <Applicants />,
+    // },
+    // {
+    //     label: "Shortlisted",
+    //     permission: "VIEW_TS_CAREER_LEVEL",
+    //     component: () => <AllApplicants variant="shortlisted" />,
+    // },
+    // {
+    //     label: "Blacklisted",
+    //     permission: "VIEW_REJECTED_APPLICATION",
+    //     component: () => <AllApplicants variant="blacklisted" />,
+    // },
 ];

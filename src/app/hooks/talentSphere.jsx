@@ -1238,7 +1238,8 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
       const VacancyData = await getVacancyData(Response.published_vacancy);
-      return { ...VacancyData, ...ResponseData, };
+      const ResumeBankData = await getResumeBankApplicantById(Response.id);
+      return { resume_bank: ResumeBankData, vacancy_details: VacancyData, ...ResponseData, };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1526,12 +1527,12 @@ export const getResumeBankApplicantById = async (applicant) => {
         const ResponseData = ResponseList.find(obj => obj.applicant === applicant);
         return ResponseData;
       }
-      return {};
+      return null;
     }
   } catch (error) {
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
-    return {};
+    return null;
   }
 };
 
@@ -2309,5 +2310,23 @@ export const saveUpdateBlacklistReason = async (payload, id) => {
     }
     renderErrorMessages(error?.response?.data);
     return false; // To be caught and handled in UI/component
+  }
+};
+
+export const getTalentSphereSummary = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/top-summary/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      return Response;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
   }
 };

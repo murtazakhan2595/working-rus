@@ -152,7 +152,7 @@ const UpdateApplicantStatus = ({
     statusUpdated = () => { },
 }) => {
     const { id: user_id } = GetDispatchStateList("userProfile", "user");
-    const Designations = GetDispatchStateList("branches", "common");
+    const Designations = GetDispatchStateList("designations", "common");
     const Departments = GetDispatchStateList("departments", "common");
 
     const [BlacklistReasons, setBlacklistReasons] = useState([]);

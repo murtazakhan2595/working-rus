@@ -34,7 +34,7 @@ export function mapManpowerPayloadData(data) {
     // Iterate over the keys in the Task object
     for (const key in ManpowerPlanning) {
         // Check if the key exists in the data object
-        if (data.hasOwnProperty(key) && data[key]) {
+        if (data.hasOwnProperty(key) && data[key] !== null && data[key] !== undefined) {
             // Add the key and its value to the payload
             if (key === 'justification') payload[key] = data[key].trim();
             else payload[key] = data[key];
@@ -524,20 +524,13 @@ export function mapRequisitionRequestPayloadData(data, id) {
                 if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
                 else if (key === 'attachment') {
                     if (data[key] instanceof File) formData.append(key, data[key])
-                } else if (key === 'remote_work_checklist') {
+                } else if (['remote_work_checklist', 'benefits',].includes(key)) {
                     if (Array.isArray(data[key]) && data[key].length > 0) {
-                        for (const checklist of data[key]) {
-                            formData.append(key, checklist)
+                        for (const value of data[key]) {
+                            formData.append(key, value)
                         }
                     }
-                } else if (key === 'benefits') {
-                    if (Array.isArray(data[key]) && data[key].length > 0) {
-                        for (const benefit of data[key]) {
-                            formData.append(key, benefit)
-                        }
-                    }
-                }
-                else formData.append(key, data[key])
+                } else formData.append(key, data[key])
             }
         }
     }

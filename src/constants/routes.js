@@ -10,6 +10,10 @@ import {
   ApplicantManagement,
   InterviewTracker,
   ApplicantOffer,
+  TalentSphereDashboard,
+  ApplicantProfiles,
+  ResumeBankApplicants,
+  ApplicantProfileDetails,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -376,9 +380,29 @@ export const SidebarRoutes = [
         name: "APPLICANT_INTERVIEW_TRACKER",
       },
       Config.TS_OFFER_TRACKING && {
-        path: "/office-settings/talent-sphere/offer-tracking",
+        path: "/talent-sphere/offer-tracking",
         component: <OfferTracking />,
         name: "TS_OFFER_TRACKING",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/dashboard",
+        component: <TalentSphereDashboard />,
+        name: "TS_DASHBOARD",
+      },
+      Config.TS_APPLICANTS_PROFILE && {
+        path: "/talent-sphere/applicants-profile",
+        component: <ApplicantProfiles />,
+        name: "TS_APPLICANTS_PROFILE",
+      },
+      Config.TS_APPLICANTS_PROFILE && {
+        path: "/talent-sphere/applicant/:id",
+        component: <ApplicantProfileDetails />,
+        name: "TS_VIEW_APPLICANT_PROFILE",
+      },
+      Config.TS_RESUME_BANK && {
+        path: "/talent-sphere/resume-bank-applicants",
+        component: <ResumeBankApplicants />,
+        name: "TS_RESUME_BANK",
       },
 
     ].filter(Boolean) // Filter out undefined route

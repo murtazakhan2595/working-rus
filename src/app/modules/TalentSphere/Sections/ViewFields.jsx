@@ -1,7 +1,7 @@
 import React from "react";
 import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName } from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, StatusButtons, EmployeeDetailUI } from "components";
+import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
@@ -37,7 +37,7 @@ export const RequisitionViewFields = [
         label: "Job Description",
       },
       {
-        key: "required_skills",
+        key: "required_skillset_name",
         label: "Required Skills",
       },
     ],
@@ -115,7 +115,7 @@ export const RequisitionViewFields = [
         formatter: (cell, row) => renderRange(cell, row.max_age, 'Not Defined', 'Years'),
       },
       {
-        key: "education",
+        key: "education_name",
         label: "Education Requirement",
       },
       {
@@ -159,22 +159,7 @@ export const RequisitionViewFields = [
   },
 ];
 
-
-export const ApplicantDetails = [
-  {
-    customContent: true,
-    renderContent: (data) => {
-      return (
-        <div className="flex flex-wrap justify-end gap-2 items-center">
-          <div className="flex justify-end gap-2 flex-wrap">
-            <StatusLabel status={data.status}>
-              {data?.status?.toLowerCase()}
-            </StatusLabel>
-          </div>
-        </div>
-      );
-    },
-  },
+export const ApplicantInformation = [
   {
     title: "Candidate Information",
     field: [
@@ -202,7 +187,7 @@ export const ApplicantDetails = [
     ],
   },
   {
-    title: `Application Details`,
+    title: "Application Details",
     footerTitle: "Request At",
     footerField: "created_at",
     field: [
@@ -212,40 +197,8 @@ export const ApplicantDetails = [
         formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
       },
       {
-        key: "job_title",
-        label: "Job Title",
-        // formatter: (cell) => renderDate(cell),
-      },
-      {
-        key: "job_description",
-        label: "Job Description",
-        // formatter: (cell) => renderDate(cell),
-      },
-
-      {
-        key: "department",
-        label: "Department",
-        formatter: (cell) => renderDate(cell, "--"),
-      },
-      {
         key: "location",
         label: "Location",
-      },
-      {
-        key: "job_type_name",
-        label: "Job Type",
-      },
-      {
-        key: "career_level_name",
-        label: "Career Level",
-      },
-      {
-        key: "education",
-        label: "Education Requirement",
-      },
-      {
-        key: "notice_period",
-        label: "Experience Requirement",
       },
       {
         key: "application_source",
@@ -265,7 +218,7 @@ export const ApplicantDetails = [
     title: `Resume/Attachment`,
     field: [
       {
-        key: "attachment",
+        key: "resume",
         formatter: (cell, data) =>
           cell ? (
             <AttachmentUI
@@ -279,13 +232,129 @@ export const ApplicantDetails = [
       },
     ],
   },
+]
+export const ShortlistingInfomation = [{
+  title: "Shortlisting Info",
+  field: [
+    {
+      key: "shortlisted_by",
+      label: "Shortlisted By",
+      formatter: (cell) => <EmployeeName value={cell} />
+    },
+    {
+      key: "shortlisted_on",
+      label: "Date",
+      formatter: (cell) => renderDate(cell, "--"),
+    },
+    {
+      key: "desired_salary",
+      label: "Desired Salary",
+      formatter: (cell) => cell,
+    },
+    {
+      key: "expected_joining_date",
+      label: "Expected Joining Date",
+      formatter: (cell) => renderDate(cell, "--"),
+    },
+    {
+      key: "remarks",
+      label: "Remarks",
+      formatter: (cell) => cell,
+    },
+  ],
+},
+]
+export const ScreeningInfomation = [{
+  title: "Screening Info",
+  renderSectionCondition: (data) => {
+    if (data.screened_by) return true;
+    return false;
+  },
+  field: [
+    {
+      key: "screened_by",
+      label: "Screened By",
+      formatter: (cell) => <EmployeeName value={cell} />
+    },
+    {
+      key: "screened_date",
+      label: "Date",
+      formatter: (cell) => renderDate(cell, "--"),
+    },
+  ],
+},
+]
+export const VacancyDetails = [
+  {
+    title: `Vacancy Details`,
+    field: [
+      {
+        key: "job_title",
+        label: "Job Title",
+        // formatter: (cell) => renderDate(cell),
+      },
+      {
+        key: "job_description",
+        label: "Job Description",
+        // formatter: (cell) => renderDate(cell),
+      },
+      {
+        key: "department",
+        label: "Department",
+      },
+      {
+        key: "job_type_name",
+        label: "Job Type",
+      },
+      {
+        key: "career_level_name",
+        label: "Career Level",
+      },
+      {
+        key: "education_name",
+        label: "Education Requirement",
+      },
+      {
+        key: "experience_min",
+        label: "Experience Requirement",
+        formatter: (cell, row) => renderRange(cell, row.experience_max, 'Not Defined', 'Years'),
+      },
+    ],
+  },
+]
+export const BlacklistedInformation = [
+  {
+    title: "Blacklisted Info",
 
+    field: [
+      {
+        key: "blacklist",
+        label: "Blacklisted By",
+        formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
+      },
+      {
+        key: "blacklist",
+        label: "Date",
+        formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+      },
+      {
+        key: "blacklist",
+        label: "Reasons",
+        formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
+      },
+
+      {
+        key: "blacklist",
+        label: "Remarks",
+        formatter: (cell) => cell?.remarks,
+      },
+    ],
+  },
+]
+
+export const ResumeBankInformation = [
   {
     title: "Resume Bank Information",
-    renderSectionCondition: (data) => {
-      if (data.status !== 'new') return true;
-      return false;
-    },
     field: [
       {
         key: "recommended_department",
@@ -309,7 +378,53 @@ export const ApplicantDetails = [
       },
 
     ],
+
   },
+]
+
+export const ApplicantDetails = [
+  {
+    customContent: true,
+    renderContent: (data) => {
+      return (
+        <div className="flex flex-wrap justify-end gap-2 items-center">
+          <div className="flex justify-end gap-2 flex-wrap">
+            <StatusLabel status={data.status}>
+              {data?.status?.toLowerCase()}
+            </StatusLabel>
+          </div>
+        </div>
+      );
+    },
+  },
+  ...(ApplicantInformation),
+  {
+    customContent: true,
+    renderContent: (data) => {
+      return (
+        <DetailContent
+          fields={VacancyDetails}
+          currentItem={data?.vacancy_details || {}}
+        />
+      );
+    },
+  },
+  {
+    customContent: true,
+    renderSectionCondition: (data) => {
+      if (data.resume_bank) return true;
+      return false;
+    },
+    renderContent: (data) => {
+      return (
+        <DetailContent
+          fields={ResumeBankInformation}
+          currentItem={data?.resume_bank || {}}
+        />
+      );
+    },
+  },
+  ...(ScreeningInfomation),
   {
     title: "Interview Info",
     renderSectionCondition: (data) => {
@@ -357,68 +472,34 @@ export const ApplicantDetails = [
     ],
   },
   {
-    title: "Shortlisting Info",
+    customContent: true,
     renderSectionCondition: (data) => {
       if (data.recruitment_shortlist) return true;
       return false;
     },
-    field: [
-      {
-        key: "recruitment_shortlist",
-        label: "Shortlisted By",
-        formatter: (cell) => <EmployeeName value={cell?.shortlisted_by} />
-      },
-      {
-        key: "recruitment_shortlist",
-        label: "Date",
-        formatter: (cell) => renderDate(cell?.shortlisted_on, "--"),
-      },
-      {
-        key: "recruitment_shortlist",
-        label: "Desired Salary",
-        formatter: (cell) => cell?.desired_salary,
-      },
-      {
-        key: "recruitment_shortlist",
-        label: "Expected Joining Date",
-        formatter: (cell) => renderDate(cell?.expected_joining_date, "--"),
-      },
-      {
-        key: "recruitment_shortlist",
-        label: "Remarks",
-        formatter: (cell) => cell?.remarks,
-      },
-    ],
+    renderContent: (data) => {
+      return (
+        <DetailContent
+          fields={ShortlistingInfomation}
+          currentItem={data?.recruitment_shortlist || {}}
+        />
+      );
+    },
   },
   {
-    title: "Blacklisted Info",
+    customContent: true,
     renderSectionCondition: (data) => {
       if (data.blacklist) return true;
       return false;
     },
-    field: [
-      {
-        key: "blacklist",
-        label: "Blacklisted By",
-        formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
-      },
-      {
-        key: "blacklist",
-        label: "Date",
-        formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
-      },
-      {
-        key: "blacklist",
-        label: "Reasons",
-        formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
-      },
-
-      {
-        key: "blacklist",
-        label: "Remarks",
-        formatter: (cell) => cell?.remarks,
-      },
-    ],
+    renderContent: (data) => {
+      return (
+        <DetailContent
+          fields={BlacklistedInformation}
+          currentItem={data?.blacklist || {}}
+        />
+      );
+    },
   },
   {
     title: "Rejection Information",
@@ -508,7 +589,7 @@ export const InterviewDetails = [
               viewOnly={true}
             />
           ) : (
-            <div className="text-neutral-1000 text-sm">No letter attached</div>
+            <div className="text-neutral-1000 text-sm">No document attached</div>
           ),
       },
     ],

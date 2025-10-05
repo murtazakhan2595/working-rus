@@ -25,7 +25,8 @@ import {
     PublishVacancyActions,
     ApplicationActions,
     InterviewActions,
-    OfferRequestActions
+    OfferRequestActions,
+    ApplicantProfileActions
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
@@ -1060,28 +1061,21 @@ export const ApplicantsColumns = (reloadData) => [
     },
     {
         dataField: "candidate_id",
-        text: "Candidate ID",
-        dataSort: true,
+        text: "Candidate",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
+                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+            </div>
+        ),
+        minWidth: '250px',
     },
     {
-        dataField: "candidate_name",
-        text: "Candidate Name",
-        dataSort: true,
-    },
-    {
-        dataField: "email",
-        text: "Email",
-        formatter: (cell) => <TextUI text={cell} maxLength={50} />,
-    },
-    {
-        dataField: "contact_number",
-        text: "Contact Number",
-        dataSort: true,
-    },
-    {
-        dataField: "department",
+        dataField: "vacancy_department",
         text: "Department",
-        formatter: (cell) => <DepartmentName value={cell} />,
+        // formatter: (cell) => <DepartmentName value={cell} />,
     },
     {
         dataField: "application_source",
@@ -1104,24 +1098,22 @@ export const ApplicantsColumns = (reloadData) => [
         text: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
-    {
-        dataField: "created_by",
-        text: "Created By",
-        formatter: (cell) => <EmployeeName value={cell} />,
-    },
-    {
-        dataField: "created_at",
-        text: "Created On",
-        formatter: (cell) => renderDate(cell),
-        dataSort: true,
-    },
+    // {
+    //     dataField: "created_by",
+    //     text: "Created By",
+    //     formatter: (cell) => <EmployeeName value={cell} />,
+    // },
+    // {
+    //     dataField: "created_at",
+    //     text: "Created On",
+    //     formatter: (cell) => renderDate(cell),
+    //     dataSort: true,
+    // },
     {
         dataField: "",
         text: "",
-
-
         formatter: (_, row, data_list) => (
-            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
+            <ApplicantProfileActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
 
         width: "50px",
@@ -1245,11 +1237,10 @@ export const ResumeBankColumns = (reloadData) => [
         formatter: (cell, row) => <FormatID value={cell} prefix={"RBA-"} />,
     },
     {
-        dataField: "candidate_id",
+        dataField: "candidate_name",
         text: "Candidate",
-        formatter: (cell, row) => (
+        formatter: (_, row) => (
             <div>
-                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
                 <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
                 <div><span className="font-bold">Email: </span>{row.email}</div>
                 <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>

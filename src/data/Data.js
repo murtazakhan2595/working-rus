@@ -816,6 +816,6 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchCalendarHoliday(userprofile.id));
   dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
-  dispatch(fetchUserAttendanceDetails(userprofile.id));
+  // dispatch(fetchUserAttendanceDetails(userprofile.id));
   dispatch(fetchProjects(userprofile));
 };
