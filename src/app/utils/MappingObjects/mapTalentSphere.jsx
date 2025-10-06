@@ -627,16 +627,30 @@ export function mapApplicantsData(data) {
             else if (key === 'recruitment_shortlist') {
                 acc[key] = data[key] ? mapShortlistedApplicantData(data[key]) : null;
             }
-            // else if (key === 'interviews') {
-            //     acc[key] = data[key] ? mapShortlistedApplicantData(data[key]) : null;
-            // }
             else acc[key] = data[key];
         }
         return acc;
     }, {});
 
+    if (data.hasOwnProperty('ai_suggested')) {
+        RecordDetails.ai_suggested = data.ai_suggested;
+    }
+
+    if (data.hasOwnProperty("ai_matched_skills")){
+         RecordDetails.ai_matched_skills = data.ai_matched_skills;
+    }
+    
+    if (data.hasOwnProperty("ai_missing_skills")){
+         RecordDetails.ai_missing_skills = data.ai_missing_skills;
+    }
+
+    if (data.hasOwnProperty("ai_match_score")){
+        RecordDetails.ai_match_score = data.ai_match_score;
+    }
+
     return RecordDetails;
 }
+
 export async function mapApplicantsList(data) {
     const DataList = await data?.map((Record) => {
         const Details = mapApplicantsData(Record);

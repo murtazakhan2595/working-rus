@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getApplicantsData, } from "app/hooks/talentSphere";
+import { getApplicantsData } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
 import {
   NavigationSheetComponent,
@@ -32,8 +32,10 @@ const ViewApplicationDetail = ({
     async (event, status, data) => {
       event.preventDefault();
       event.stopPropagation();
-      if (status === 'view-feedback') {
-        const interview_ids = (data.interviews || []).map(interview => interview.id);
+      if (status === "view-feedback") {
+        const interview_ids = (data.interviews || []).map(
+          (interview) => interview.id
+        );
         setFormData({ id: interview_ids });
         setOpenViewFeedback(true);
         return null;
@@ -56,7 +58,7 @@ const ViewApplicationDetail = ({
         setOpenFeedbackForm(true);
         return null;
       }
-      if (status === 'generate-offer') {
+      if (status === "generate-offer") {
         setFormData({
           applicant: data.id,
           expected_joining_date: data?.recruitment_shortlist?.expected_joining_date,
@@ -72,14 +74,13 @@ const ViewApplicationDetail = ({
         applicant: data.id,
         status_variant: status,
         initialData: {},
-      }
-      if (status === 'hold')
-        FormData.status_variant = 'default';
-      if (status === 'remove_blacklist') {
-        FormData.status = 'rejected';
+      };
+      if (status === "hold") FormData.status_variant = "default";
+      if (status === "remove_blacklist") {
+        FormData.status = "rejected";
         FormData.initialData = data?.blacklist ?? {};
       }
-      setFormData(FormData)
+      setFormData(FormData);
       setOpenFormModal(true);
     },
     [setOpenFormModal, setFormData, setOpenViewFeedback]
@@ -92,7 +93,7 @@ const ViewApplicationDetail = ({
     } catch (error) {
       console.error("Error fetching exit data:", error);
     }
-    return null; // Always return something
+    return null;
   };
 
   const fields = React.useMemo(
@@ -127,9 +128,10 @@ const ViewApplicationDetail = ({
           ))
         },
       },
-    ], [handleClick,]
-  );
-
+    },
+  ],
+  [handleClick]
+);
   return (
     <>
       <NavigationSheetComponent
@@ -143,23 +145,28 @@ const ViewApplicationDetail = ({
         allowEdit={false}
         allowDelete={false}
         fetchCurrentItemDetails={fetchData}
-        dataUniqueKey='applicant_id'
+        dataUniqueKey="applicant_id"
       >
         <DetailContent fields={fields} />
       </NavigationSheetComponent>
+
       {OpenFormModal && (
         <UpdateApplicantStatus
           status={FormData.status}
           status_variant={FormData.status_variant}
           applicant={FormData.applicant}
-          reloadData={() => { reloadData(true); setForceLoad(!forceLoad) }}
+          reloadData={() => {
+            reloadData(true);
+            setForceLoad(!forceLoad);
+          }}
           isOpen={OpenFormModal}
           setIsOpen={setOpenFormModal}
           statusUpdated={statusUpdated}
           initialData={FormData.initialData}
         />
       )}
-      {OpenViewFeedback &&
+
+      {OpenViewFeedback && (
         <ViewInterviewFeedback
           isOpen={OpenViewFeedback}
           reloadData={() => {
@@ -171,8 +178,9 @@ const ViewApplicationDetail = ({
           }}
           currentId={FormData?.id}
         />
-      }
-      {OpenOfferForm &&
+      )}
+
+      {OpenOfferForm && (
         <GenerateOffer
           isOpen={OpenOfferForm}
           reloadData={() => {
