@@ -8,27 +8,22 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
-import { getRequisitionRequestList, getRequisitionStats, getJobTypeList } from "app/hooks/talentSphere";
+import { getRequisitionRequestList, getRequisitionStats, getJobTypeList ,getCareerLevelList} from "app/hooks/talentSphere";
 import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
 const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests" }) => {
-    const {
-        id: user_id,
-        branch_id: user_branch,
-        department_name: user_department,
-    } = GetDispatchStateList("user_details", "emp") || {};
-
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({});
+    const [filterData, setFilterData] = useState({status:'pending'});
     const [isLoading, setIsLoading] = useState(true);
     const [HeadCountRequestList, setHeadCountRequestList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
     const [statsData, setStatsData] = useState({});
     const [JobTypeList, setJobTypeList] = useState([]);
+    const [CareerLevelList, setCareerLevelList] = useState([]);
     const OuterTabList = useMemo(() => {
         return ["Requests", "Records"];
     }, []);
@@ -51,8 +46,10 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                 setIsLoading(true);
                 // Add organizationId to filter if available
                 const job_type = await getJobTypeList();
+                const careere_level = await getCareerLevelList();
                 if (isMounted) {
                     setJobTypeList(job_type.results);
+                    setCareerLevelList(careere_level.results);
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -219,7 +216,11 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                     <CardContent>
                         <FilterInput
                             filters={[
-
+                                {
+                                    type: "search",
+                                    name: "job_title",
+                                    placeholder: "Job Title",
+                                },
                                 {
                                     type: "select",
                                     options: "Departments",
@@ -231,6 +232,12 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                                     options: JobTypeList,
                                     name: "job_type",
                                     placeholder: "Job Type",
+                                },
+                                {
+                                    type: "select",
+                                    options: CareerLevelList,
+                                    name: "career_level",
+                                    placeholder: "Career Level",
                                 },
                                 {
                                     type: "select",

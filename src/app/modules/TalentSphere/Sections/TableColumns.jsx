@@ -1220,7 +1220,7 @@ export const ApplicationColumns = (reloadData, variant) => [
     ] : []),
     ...(variant !== 'all' ? [
         {
-            dataField: "feed_back",
+            dataField: "ai_feedback_summary",
             text: "Feedback Summary",
         },
         {

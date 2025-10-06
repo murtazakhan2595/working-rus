@@ -22,6 +22,7 @@ import {
     AddUpdateRemoteWorkChecklistForm,
     EmailTemplates,
     AddUpdateEmailTemplateForm,
+
 } from "app/modules/TalentSphere/SettingManagement";
 import Demographics from "app/modules/TalentSphere/DemographicsForm";
 import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
@@ -37,8 +38,8 @@ import {
     ScreeningInfomation,
     VacancyDetails,
     AllInterviewDetails,
-    AllFeedbackDetails,
-   BlacklistedInformation,
+    AllOfferDetails,
+    BlacklistedInformation,
     RejectedInformation,
 } from 'app/modules/TalentSphere/Sections';
 
@@ -212,8 +213,8 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         // dataKey: 'interviews',
     },
     {
-        label: "Feedback",
-        infoFields: AllFeedbackDetails,
+        label: "Offer Details",
+        infoFields: AllOfferDetails,
     },
     {
         label: "Shortlising Info",

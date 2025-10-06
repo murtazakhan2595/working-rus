@@ -251,11 +251,14 @@ export const Applicants = {
     screened_date: null,
     vacancy_department: null,
     resume: null,
+    offers_tracking: null,
     ai_match_score: null,
     ai_matched_skills: null,
     ai_missing_skills: null,
     ai_suggested: null,
-
+    ai_feedback_confidence: null,
+    ai_feedback_recommendation: null,
+    ai_feedback_summary: null,
 }
 
 export const RejectedApplication = {
@@ -279,7 +282,7 @@ export const ResumeBankApplication = {
     recommended_designation: null,
     added_on: null,
     added_by: null,
-    application_source:null,
+    application_source: null,
 }
 
 export const Interview = {
@@ -378,6 +381,10 @@ export const OfferLetter = {
     status: null,
     approval_details: null,
     final_letter_pdf: null,
+    candidate_name: null,
+    candidate_contact: null,
+    candidate_email: null,
+    candidate_location: null,
 }
 
 export const OfferTracking = {

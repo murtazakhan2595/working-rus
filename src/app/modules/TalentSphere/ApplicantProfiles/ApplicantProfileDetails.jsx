@@ -23,6 +23,7 @@ export default function ApplicantProfileDetails() {
             try {
                 const response = await getApplicantsData(id);
                 if (isMounted && response) {
+                    console.log(response);
                     setApplicantData(response);
                 }
             } catch (error) {
