@@ -81,6 +81,9 @@ const Config = {
   APPLICANT_INTERVIEW_TRACKER: true,
   APPLICANTS:true,
   TS_OFFER_TRACKING:true,
+  TS_DASHBOARD:true,
+  TS_APPLICANTS_PROFILE:true,
+  TS_RESUME_BANK:true,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,

@@ -37,6 +37,8 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                 ...(variant === 'rejected' ? { status: 'rejected' } : {}),
                 ...(variant === 'shortlisted' ? { status: 'shortlisted' } : {}),
                 ...(variant === 'blacklisted' ? { status: 'blacklisted' } : {}),
+                ...(variant === 'screened' ? { status: 'screened' } : {}),
+                ...(variant === 'in_progress' ? { status: 'in_progress' } : {}),
             }
             const response = await getApplicantsList({
                 filterData: filters,
@@ -59,7 +61,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
         return () => {
             isMounted = false;
         };
-    }, [filterData, ordering, options]);
+    }, [filterData, ordering, options, variant]);
 
     useEffect(() => {
         let isMounted = true;

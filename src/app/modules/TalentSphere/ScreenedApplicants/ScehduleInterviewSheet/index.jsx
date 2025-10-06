@@ -1,9 +1,8 @@
-"use client"
 
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { toast } from "react-toastify"
-
+import { GetDispatchStateList } from "utils/Lists";
 import { SheetUI } from "components"
 import {
   DateInput,
@@ -16,6 +15,8 @@ import {
   saveUpdateInterview,
   getInterviewById,
 } from "app/hooks/talentSphere"
+import { getEmailTemplateList } from "app/hooks/talentSphere";
+import { getInterviewTypeList } from "app/hooks/talentSphere";
 
 
 const INTERVIEW_FORM_STRUCTURE = {
@@ -47,25 +48,16 @@ const ScheduleInterviewSheet = ({
   id,
   reloadData,
   mode,
+  applicant,
 }) => {
   const dispatch = useDispatch()
-
+  const Employees = GetDispatchStateList("employees_detail", "emp");
   const [formValues, setFormValues] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState(INTERVIEW_FORM_STRUCTURE)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
-
-  const isEditMode = Boolean(id)
-  const userId = useSelector((state) => state.user.userProfile.id)
-
-  const {
-    applicants,
-    interviewTypes,
-    panelMembers,
-    emailTemplates,
-    isLoading,
-    isLoaded,
-  } = useSelector((state) => state.interview)
-
+  const [emailTemplates, setEmailTemplateOptions] = useState([]);
+  const [InterviewTypeOptions, setInterviewTypeOptions] = useState([]);
 
   const FormSheetData = {
     triggerText: "",
@@ -75,7 +67,29 @@ const ScheduleInterviewSheet = ({
   }
 
 
-
+  useEffect(() => {
+    const fetchOptionData = async (isMounted) => {
+      try {
+        setIsLoading(true);
+        const filterData = { };
+        const template = await getEmailTemplateList({ filterData });
+        const types = await getInterviewTypeList({ filterData });
+        if (isMounted) {
+          setInterviewTypeOptions(types.results);
+          setEmailTemplateOptions(template.results);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    let isMounted = true;
+    fetchOptionData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   // Fetch interview data for edit mode
   useEffect(() => {
     let isMounted = true
@@ -133,7 +147,7 @@ const ScheduleInterviewSheet = ({
     try {
       if (!validateForm(values)) return
       const payload = {
-        applicant: id,
+        applicant: applicant,
         interview_type: values.interview_type || null,
         scheduled_datetime: new Date(values.scheduled_datetime).toISOString(),
         panel: values.panel,
@@ -143,6 +157,9 @@ const ScheduleInterviewSheet = ({
         status: values.status || "scheduled",
       }
       const savedInterview = await saveUpdateInterview(payload)
+      if(savedInterview && id) {
+        await saveUpdateInterview({status:'rescheduled'},id)
+      }
       if (!savedInterview) throw new Error("Failed to save interview")
       toast.success(`Interview Schedule successfully`)
       reloadData(true)
@@ -165,7 +182,7 @@ const ScheduleInterviewSheet = ({
         InputField: SelectInputComponent,
         name: "interview_type",
         label: "Interview Type",
-        options: interviewTypes,
+        options: InterviewTypeOptions,
         placeholder: "Select interview type (optional)",
         colsSpan: 2,
         disabled: mode === "view",
@@ -198,7 +215,7 @@ const ScheduleInterviewSheet = ({
         InputField: SelectMultiInputComponent,
         name: "panel",
         label: "Panel Members",
-        options: panelMembers,
+        options: Employees,
         required: true,
         placeholder: "Select panel members",
         colsSpan: 2,
@@ -243,6 +260,8 @@ const ScheduleInterviewSheet = ({
     columns: 2,
     renderUpdatedFormValues: setFormValues,
     formFields,
+    disableSubmit: isLoading || isSubmittingForm,
+    loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
   }
 
   return (

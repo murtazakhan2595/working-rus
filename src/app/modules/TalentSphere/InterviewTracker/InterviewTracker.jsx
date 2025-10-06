@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
 import { HasAccess } from "utils/PermissionUtils";
-import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
 import {
     AllApplicants,
     CareerLevels,
@@ -13,7 +12,7 @@ import {
 import Error from "app/modules/Error";
 
 export default function InterviewTracker() {
-    const isViewInProgressPermitted = HasAccess("VIEW_TS_BENEFITS");
+    const isViewInProgressPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isViewScreenedPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isViewResumedPermitted = HasAccess("VIEW_TS_JOB_TYPE");
@@ -23,14 +22,14 @@ export default function InterviewTracker() {
 
     const TabListArray = React.useMemo(() => [
         ...(isViewInProgressPermitted ? ["In Progress"] : []),
-        ...(isViewRejectedPermitted ? ["Rejected Applications"] : []),
-        ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
-        ...(isViewScreenedPermitted ? ["Screened Application"] : []),
-        // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
+        // ...(isViewRejectedPermitted ? ["Rejected Applications"] : []),
+        // ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
+        // ...(isViewScreenedPermitted ? ["Screened Application"] : []),
+        // // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewInProgressPermitted, isViewCareerLevelsPermitted, isViewScreenedPermitted, isViewResumedPermitted, isViewRejectedPermitted]);
+    ], [isViewInProgressPermitted]);
 
-    if (!isViewInProgressPermitted && !isViewCareerLevelsPermitted && !isViewScreenedPermitted && !isViewResumedPermitted && !isViewRejectedPermitted)
+    if (!isViewInProgressPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -53,19 +52,7 @@ export default function InterviewTracker() {
 
                 <Card>
                     <TabsContent value={'In Progress'}>
-                        <InProgressInterviews reload={reloadData['benefits']} />
-                    </TabsContent>
-                    <TabsContent value={'Career Level'}>
-                        <CareerLevels reload={reloadData['career-level']} />
-                    </TabsContent>
-                    <TabsContent value={'Screened Application'}>
-                        <Applicants />
-                    </TabsContent>
-                    <TabsContent value={'Resume Bank Application'}>
-                        <ResumeBankApplicants reload={reloadData['resume']} />
-                    </TabsContent>
-                    <TabsContent value={'Rejected Applications'}>
-                        <AllApplicants reload={reloadData['rejected']} variant='rejected' />
+                        <AllApplicants variant={"in_progress"} />
                     </TabsContent>
                 </Card>
             </Tabs>

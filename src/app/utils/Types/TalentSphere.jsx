@@ -41,7 +41,6 @@ export const EmailTemplate = {
     template_type: null,
     is_active: true,
     created_on: null,
-    created_by: null,
     updated_on: null,
 }
 export const OfferLetterTemplate = {
@@ -167,6 +166,7 @@ export const Requisition = {
     job_title: null,
     job_description: null,
     required_skillset: null,
+    required_skillset_name: null,
     work_mode: 'onsite',
     number_of_positions: null,
     gender_preference: null,
@@ -224,7 +224,7 @@ export const PublishVacancy = {
     updated_by: null,
     requisition: null,
     organization: 1,
-    posted_portals: 1,
+    posted_portals: null,
 }
 
 export const Applicants = {
@@ -249,6 +249,13 @@ export const Applicants = {
     recruitment_rejected: null,
     screened_by: null,
     screened_date: null,
+    vacancy_department: null,
+    resume: null,
+    ai_match_score: null,
+    ai_matched_skills: null,
+    ai_missing_skills: null,
+    ai_suggested: null,
+
 }
 
 export const RejectedApplication = {
@@ -272,6 +279,7 @@ export const ResumeBankApplication = {
     recommended_designation: null,
     added_on: null,
     added_by: null,
+    application_source:null,
 }
 
 export const Interview = {
@@ -363,7 +371,6 @@ export const OfferLetter = {
     last_updated_by: null,
     request: null,
     id: null,
-    generated_on: null,
     approved_on: null,
     rejected_on: null,
     rejection_remarks: null,

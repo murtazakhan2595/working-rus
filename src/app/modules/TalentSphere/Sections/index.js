@@ -21,15 +21,38 @@ import {
     OfferLetterRequestColumns,
     OfferTrackingColumns,
     SkillsColumns,
+    ApplicantsColumns,
 } from './TableColumns';
-import { RequisitionViewFields, ApplicantDetails, InterviewDetails } from './ViewFields';
+import {
+    RequisitionViewFields,
+    ApplicantDetails,
+    InterviewDetails,
+    ApplicantInformation,
+    ShortlistingInfomation,
+    ScreeningInfomation,
+    BlacklistedInformation,
+    VacancyDetails,
+    AllInterviewDetails,
+    AllFeedbackDetails,
+    RejectedInformation,
+} from './ViewFields';
 import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
-import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG,OFFER_TAB_CONFIG } from './TabsList';
+import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG, OFFER_TAB_CONFIG,APPLICANT_PROFILE_TAB_CONFIG } from './TabsList';
 
 export {
     SETTING_TAB_CONFIG,
     OFFER_TAB_CONFIG,
+    ScreeningInfomation,
+    BlacklistedInformation,
     SkillsColumns,
+    RejectedInformation,
+    AllFeedbackDetails,
+    AllInterviewDetails,
+    ShortlistingInfomation,
+    ApplicantInformation,
+    APPLICANT_PROFILE_TAB_CONFIG,
+    VacancyDetails,
+    ApplicantsColumns,
     OfferTrackingColumns,
     OfferLetterRequestColumns,
     ManpowerPlanningColumns,

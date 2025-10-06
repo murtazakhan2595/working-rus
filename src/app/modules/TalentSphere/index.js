@@ -78,7 +78,6 @@ import {
     AllApplicants,
     ApplicationActions,
     ViewApplicationDetail,
-    ResumeBankApplicants,
     UpdateApplicantStatus,
 } from './ApplicantManagement';
 
@@ -102,7 +101,19 @@ import {
     ViewFinalOffer,
     ApplicantOffer,
 } from './OfferTracking';
+import { TalentSphereDashboard } from './Dashboard';
+import { ResumeBankApplicants } from './ResumeBankApplicants';
+import {
+    ApplicantProfiles, ApplicantProfileActions,
+    ApplicantProfileDetails, ExportProfile
+} from './ApplicantProfiles';
+import { ScheduleInterviewSheet } from './ScreenedApplicants';
 export {
+    TalentSphereDashboard,
+    ScheduleInterviewSheet,
+    ApplicantProfileActions,
+    ApplicantProfiles,
+    ExportProfile,
     ApplicantOffer,
     OfferRequests,
     ViewFinalOffer,
@@ -112,6 +123,7 @@ export {
     AllApplicants,
     GenerateOffer,
     Skills,
+    ApplicantProfileDetails,
     AddUpdateSkillForm,
     SkillActions,
     UpdateApplicantStatus,

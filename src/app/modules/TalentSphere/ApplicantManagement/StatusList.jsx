@@ -14,11 +14,15 @@ export const ApplicantStatusList = {
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
         { status: 'generate-offer', label: 'Generate Offer Letter', variant: 'default' },
     ],
-    'in progress': [
-        { status: 'hold', label: 'Hold', variant: 'outline' },
+    'in progress': [ // status when applicant and interview status is in progress 
+        { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
+        { status: 'reschedule-interview', label: 'Reschedule Interview', variant: 'default' },
+        { status: 'hold', label: 'Hold', variant: 'continue' },
         { status: 'shortlisted', label: 'Shortlisted Application', variant: 'success' },
         { status: 'rejected', label: 'Reject Application', variant: 'destructive' },
         { status: 'blacklisted', label: 'Blacklist Application', variant: 'default' },
+    ],
+    feedack: [ // status when applicant and interview status is in progress 
+        { status: 'add-feedback', label: 'Add Feedback', variant: 'outline' },
     ]
-
 }

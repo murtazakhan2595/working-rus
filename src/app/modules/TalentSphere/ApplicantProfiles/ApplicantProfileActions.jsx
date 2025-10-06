@@ -1,63 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { ViewInterviewDetails, ViewApplicationDetail, AddUpdateVacancyForm } from "app/modules/TalentSphere";
+import { ApplicantProfileDetails, AddUpdateRequisitionRequestForm, AddUpdateVacancyForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplicants";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
-    const isSchedulePermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
-    const isAddFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
-    const isViewFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
-    const isUpdateStatusPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
-
-
+const ApplicantProfileActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
     const [view, setView] = useState(null);
     const [edit, setEdit] = useState(null);
     const [interview, setInterview] = useState(null);
-
+    const navigate = useNavigate();
     const handleView = () => {
-        setView(true)
+        navigate(`/talent-sphere/applicant/${data.id}`)
     };
     const handleEdit = () => {
         setEdit(true)
     };
-
     const handleDelete = () => {
         setInterview(true)
     }
-    const handleScheduleInterview = () => {
-        setInterview(true)
-    }
-    const handleAddFeedback = () => {
-        setInterview(true)
-    }
-    const handleViewFeedback = () => {
-        setInterview(true)
-    }
-    const handleUpdateStatus = () => {
-        setInterview(true)
-    }
+
+
+
+
     return (
         <>
             <DropdownActionMenu
-                 onView={handleView}
+                onView={handleView}
                 // onEdit={handleEdit}
                 // onDelete={data.status === 'screened' ? handleDelete : null}
-                viewText="View Details"
+                viewText="View Applicant"
                 editText="Edit Application"
                 deleteText="Schedule Interview"
-                menuTooltip="Application Actions"
-                additionalOptionsConfig={[
-                    ...(data.is_draft === 'approved' && isSchedulePermitted ? [{ text: 'Schedule Another Interview', action: handleScheduleInterview }] : []),
-                    ...(data.is_draft === 'approved' && isAddFeedbackPermitted ? [{ text: 'Add Feedback', action: handleAddFeedback }] : []),
-                    ...(data.is_draft === 'approved' && isViewFeedbackPermitted ? [{ text: 'View Feedback', action: handleViewFeedback }] : []),
-                    ...(data.is_draft === 'approved' && isUpdateStatusPermitted ? [{ text: 'Update Status', action: handleUpdateStatus }] : []),
-                ]}
+                menuTooltip="Profile Actions"
             />
 
             {view && (
-                <ViewApplicationDetail
+                <ApplicantProfileDetails
                     isOpen={view}
                     reloadData={() => {
                         reloadData(true);
@@ -90,6 +70,7 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
                     id={data.id}
                     mode="add"
                     reloadData={reloadData}
+
                 />
 
             )}
@@ -97,4 +78,4 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
         </>
     );
 };
-export default InterviewActions;
+export default ApplicantProfileActions;

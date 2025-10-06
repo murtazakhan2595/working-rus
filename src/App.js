@@ -99,7 +99,7 @@ function App() {
       setLoading(true);
       getProfile();
     }
-    dispatch(fetchInterviewOptions());
+    // dispatch(fetchInterviewOptions());
   }, [dispatch]);
 
   if (loading) {

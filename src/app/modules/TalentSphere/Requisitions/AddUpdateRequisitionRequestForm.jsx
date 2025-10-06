@@ -18,6 +18,7 @@ import { NumberInput } from "components/FormControl";
 import { TextInput, TextAreaInput, RadioGroupInput, SelectInputComponent, SwitchInput, SelectMultiInputComponent } from "components/FormControl";
 import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
+import {validateRequisitionRequestFormSchema} from 'app/utils/FormSchema/TalentSphereFormSchema';
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -159,7 +160,7 @@ const AddUpdateRequisitionRequestForm = ({
                 initialValues: FormData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: () => { },
+                validateFormSchema:validateRequisitionRequestFormSchema,
                 renderUpdatedFormValues: (values) => {
                     setFormValues(values);
                 },

@@ -19,3 +19,19 @@ export const validateHeadCoutnRequestFormSchema = (values, DataList = [],) => {
 
     return errors;
 };
+export const validateRequisitionRequestFormSchema = (values, ) => {
+    const errors = {};
+
+    // Basic required field validations
+    if (values.min_age && parseFloat(values.max_age))
+        if (parseFloat(values.min_age) > parseFloat(values.max_age))
+            errors.max_age = "Maximum age cannot be greater than minimum age";
+    if (values.experience_min && parseFloat(values.experience_max))
+        if (parseFloat(values.experience_min) > parseFloat(values.experience_max))
+            errors.experience_max = "Maximum experiance cannot be greater than minimum experiance";
+    if (values.salary_min && parseFloat(values.salary_max))
+        if (parseFloat(values.salary_min) > parseFloat(values.salary_max))
+            errors.salary_max = "Maximum salary cannot be greater than minimum salary";
+
+    return errors;
+};

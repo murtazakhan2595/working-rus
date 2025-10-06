@@ -10,6 +10,8 @@ const pathNames = () => {
     "manpower-planning": "Manpower Planning",
     "team-profile-management": "Team Managment",
     "self-service": "Self Service",
+    "talent-sphere/applicant": "Applicant Profile",
+    "talent-sphere/resume-bank-applicants": "Resume Bank Applicants",
     "talent-sphere/applicant-management": "Applicants Management",
     "talent-sphere-setting": "Talent Sphere Setting",
     "talent-sphere": "Talent Sphere",
@@ -128,7 +130,7 @@ const Header = ({
       path.includes(key)
     );
     setPathName(PATHNAMELIST[matchedPathKey] || "Dashboard");
-  }, [location]);
+  }, [location, PATHNAMELIST]);
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">

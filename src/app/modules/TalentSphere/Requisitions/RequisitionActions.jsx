@@ -26,7 +26,7 @@ const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTea
                 viewText="View Requisition"
                 editText="Edit Requisition"
                 menuTooltip="Requisition Actions"
-                additionalOptionsConfig={[...(data.is_draft === 'approved' && isPublishPermitted ? [{ text: 'Publish Vacancy', action: handlePublish }] : []),]}
+                additionalOptionsConfig={[...(data.status === 'approved' && isPublishPermitted ? [{ text: 'Publish Vacancy', action: handlePublish }] : []),]}
             />
 
             {view && (

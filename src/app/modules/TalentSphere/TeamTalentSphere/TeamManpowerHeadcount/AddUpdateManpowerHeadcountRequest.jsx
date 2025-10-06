@@ -90,6 +90,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
     };
 
     const getExistingHeadCount = async (branch, department, handleChange) => {
+        setIsLoading(true)
         try {
             if (branch && department) {
                 const filterData = {
@@ -113,6 +114,8 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
         } catch (error) {
             // Show error message
             console.error(error)
+        } finally {
+            setIsLoading(false)
         }
     };
 
@@ -187,7 +190,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                                 label: "Branch",
                                 options: Branches,
                                 onFieldUpdate: async (_, value, __, handleChange) => {
-                                    await getExistingHeadCount(value, FormValues?.department, handleChange);
+                                    getExistingHeadCount(value, FormValues?.department, handleChange);
                                 },
                             },
                             {
@@ -197,7 +200,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                                 label: "Department",
                                 options: Departments,
                                 onFieldUpdate: async (_, value, __, handleChange) => {
-                                    await getExistingHeadCount(FormValues?.branch, value, handleChange);
+                                    getExistingHeadCount(FormValues?.branch, value, handleChange);
                                 },
                             },
                             {
@@ -237,7 +240,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                                 name: `attachment`,
                                 label: "Attachment",
                                 colsSpan: 2,
-                                acceptType:'.pdf,.doc,.docx'
+                                acceptType: '.pdf,.doc,.docx'
                             },
                         ],
                     },

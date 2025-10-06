@@ -5,28 +5,20 @@ import {
     TextInput,
     SelectInputComponent,
     NumberInput,
+    TextAreaInput,
 } from "components/FormControl";
-import { BudgetStatusOptions } from "data/Data";
 import React, { useEffect, useState } from "react";
 import { SheetUI } from "components";
 import { GetDispatchStateList } from "utils/Lists";
-import { yearsDropdownList } from 'utils/Lists';
-import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
-import { calculateTotal, calculatePercentage } from 'utils/renderValues';
-import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 import { DateInput } from 'components/FormControl';
 import { getApplicantsList } from 'app/hooks/talentSphere';
-import { getDropdownList } from 'utils/Lists';
+import { getDropdownListWithExtraKeys } from 'utils/Lists';
 
-const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData={}}) => {
-    const Designations = GetDispatchStateList('designations', 'common');
-    const Countries = GetDispatchStateList('countries', 'common');
-    const Employees = GetDispatchStateList('employees', 'emp');
-    const [FormValues, setFormValues] = useState({ ...OfferLetter, ...initialData});
+const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData = {} }) => {
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-    const [formData, setFormData] = useState({ ...OfferLetter, ...initialData});
+    const [formData, setFormData] = useState({ ...OfferLetter, ...initialData });
     const [Applicants, setApplicants] = useState(false);
     const [TemplateList, setTemplateList] = useState([]);
 
@@ -44,7 +36,6 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                 const response = await getOfferLetterData(id);
                 if (isMounted) {
                     setFormData({ ...response });
-                    setFormValues({ ...response });
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -67,7 +58,15 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                 const applicants = await getApplicantsList({ filterData: { status: 'shortlisted' } });
                 if (isMounted) {
                     setTemplateList(response.results || []);
-                    const applicant_dropdown = getDropdownList(applicants.results, 'serial_id', 'id', 'candidate_name', '-');
+                    const applicant_dropdown = getDropdownListWithExtraKeys(
+                        applicants.results,
+                        'serial_id',
+                        'id',
+                        ['recruitment_shortlist', 'job_title', 'location'],
+                        null,
+                        'candidate_name',
+                        '-'
+                    );
                     setApplicants(applicant_dropdown);
                 }
             } catch (error) {
@@ -93,7 +92,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         try {
             const payload = {
                 ...values,
-                status: isDraft === 'draft' ? 'draft' : 'pending',
+                status: isDraft === 'draft' ? 'draft' : 'pending_approval',
             };
             const response = await saveUpdateOfferLetter(payload, id);
             if (response) {
@@ -129,7 +128,6 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                 additionalButtonConfig: [
                     { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, 'draft'), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
                 ],
-                renderUpdatedFormValues: setFormValues,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
@@ -145,6 +143,13 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                                 required: true,
                                 options: Applicants,
                                 disabled: initialData.applicant,
+                                onFieldUpdate: async (_, value, __, handleChange) => {
+                                    const applicant = Applicants.find(obj => obj.value === value);
+                                    handleChange('expected_joining_date', applicant.recruitment_shortlist.expected_joining_date);
+                                    handleChange('designation', applicant.job_title);
+                                    handleChange('work_location', applicant.location);
+
+                                },
                             },
                         ],
                     },
@@ -157,35 +162,28 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                                 InputField: NumberInput,
                                 name: `offered_salary`,
                                 label: "Offered Salary",
-                                required: true,
                             },
                             {
                                 InputField: DateInput,
                                 name: `expected_joining_date`,
                                 label: "Expected Joining Date",
-                                required: true,
                             },
                             {
-                                InputField: SelectInputComponent,
+                                InputField: TextInput,
                                 name: "designation",
-                                required: true,
                                 label: "Designation",
-                                options: Designations,
                             },
                             {
-                                InputField: SelectInputComponent,
-                                name: "reporting_manager",
-                                required: true,
-                                label: "Reporting Manager",
-                                options: Employees,
-                            },
-                            {
-                                InputField: SelectInputComponent,
+                                InputField: TextInput,
                                 name: "work_location",
-                                required: true,
                                 label: "Work Location",
-                                options: Countries,
                             },
+                            // {
+                            //     InputField: TextAreaInput,
+                            //     name: "remarks",
+                            //     label: "Remarks",
+                            //     colsSpan: 2,
+                            // },
                         ],
                     },
                     {
@@ -193,7 +191,6 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                         sheetCardTitle: "Template Details",
                         // sheetCardName: "manpower_planning",
                         InputFields: [
-
                             {
                                 InputField: SelectInputComponent,
                                 name: "template",

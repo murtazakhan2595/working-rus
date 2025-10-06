@@ -25,7 +25,8 @@ import {
     PublishVacancyActions,
     ApplicationActions,
     InterviewActions,
-    OfferRequestActions
+    OfferRequestActions,
+    ApplicantProfileActions
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
@@ -34,137 +35,6 @@ import { MultiStatusLabel } from "components";
 import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 import { DesignationName } from "utils/getValuesFromTables";
 
-
-/**
- * ApplicationColumns
- *
- * Returns an array of column definitions for the ApplicationColumns table.
- *
- * @returns {array} An array of column definitions.
- */
-export const ApplicationColumns = (reloadData, variant) => [
-    {
-        dataField: "id",
-        text: "Application ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
-    },
-    {
-        dataField: "candidate_id",
-        text: "Candidate",
-        formatter: (cell, row) => (
-            <div>
-                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
-                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
-                <div><span className="font-bold">Email: </span>{row.email}</div>
-                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
-            </div>
-        ),
-        minWidth: '250px',
-    },
-    {
-        dataField: "application_source",
-        text: "Application",
-        formatter: (cell, row) => {
-            const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
-            return (<div>
-                <div><span className="font-bold">Source: </span>{source}</div>
-                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
-                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
-                <div><span className="font-bold">Department: </span>{row.contact_number}</div>
-                <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
-            </div>
-            );
-        },
-        minWidth: '200px',
-    },
-    ...(variant === 'blacklisted' ? [
-        {
-            dataField: "blacklist",
-            text: "Blacklist Reasons",
-            formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
-        },
-        {
-            dataField: "blacklist",
-            text: "Blacklist Remarks",
-            formatter: (cell) => cell?.remarks,
-        },
-        {
-            dataField: "blacklist",
-            text: "Blacklisted By",
-            formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
-        },
-        {
-            dataField: "blacklist",
-            text: "Blacklist On",
-            formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
-        },
-    ] : []),
-    ...(variant === 'shortlisted' ? [
-        {
-            dataField: "recruitment_shortlist",
-            text: "Shortlisting Info",
-            minWidth: '300px',
-            formatter: (cell) => {
-                // const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
-                return (<div>
-                    <div><span className="font-bold">Desired Salary: </span>{cell.desired_salary}</div>
-                    <div><span className="font-bold">Expected Joining Date: </span>{renderDate(cell.expected_joining_date, '--', 'date')}</div>
-                    <div><span className="font-bold">Shortlisted By: </span><EmployeeName value={cell?.shortlisted_by} /></div>
-                    <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--")}</div>
-                </div>
-                );
-            },
-        },
-    ] : []),
-    ...(variant !== 'all' ? [
-        {
-            dataField: "feed_back",
-            text: "Feedback Summary",
-        },
-    ] : []),
-    {
-        dataField: "status",
-        text: "Status",
-        formatter: (cell, row) => (
-            <div className="flex items-center gap-2.5">
-                <StatusLabel status={cell}>
-                    {cell?.toLowerCase()}
-                </StatusLabel>
-
-                {row.ai_suggested && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-full px-2.5 py-1 border border-blue-200 shadow-sm">
-                        <svg
-                            className="w-2.5 h-2.5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" />
-                        </svg>
-                        AI-Moved
-                    </span>
-                )}
-            </div>
-        ),
-    }
-    , {
-        dataField: "screened_date",
-        text: "Screened Date",
-        formatter: (cell) => renderDate(cell),
-    }, {
-        dataField: "screened_by",
-        text: "Screened By",
-        formatter: (cell, row) => <EmployeeName value={cell} />
-    },
-
-    {
-        dataField: "",
-        text: "",
-        formatter: (_, row, data_list) => (
-            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
-        ),
-        width: '50px'
-    },
-];
 
 /**
  * ManpowerPlanningColumns
@@ -1191,28 +1061,21 @@ export const ApplicantsColumns = (reloadData) => [
     },
     {
         dataField: "candidate_id",
-        text: "Candidate ID",
-        dataSort: true,
+        text: "Candidate",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
+                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+            </div>
+        ),
+        minWidth: '250px',
     },
     {
-        dataField: "candidate_name",
-        text: "Candidate Name",
-        dataSort: true,
-    },
-    {
-        dataField: "email",
-        text: "Email",
-        formatter: (cell) => <TextUI text={cell} maxLength={50} />,
-    },
-    {
-        dataField: "contact_number",
-        text: "Contact Number",
-        dataSort: true,
-    },
-    {
-        dataField: "department",
+        dataField: "vacancy_department",
         text: "Department",
-        formatter: (cell) => <DepartmentName value={cell} />,
+        // formatter: (cell) => <DepartmentName value={cell} />,
     },
     {
         dataField: "application_source",
@@ -1235,44 +1098,40 @@ export const ApplicantsColumns = (reloadData) => [
         text: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
-    {
-        dataField: "created_by",
-        text: "Created By",
-        formatter: (cell) => <EmployeeName value={cell} />,
-    },
-    {
-        dataField: "created_at",
-        text: "Created On",
-        formatter: (cell) => renderDate(cell),
-        dataSort: true,
-    },
+    // {
+    //     dataField: "created_by",
+    //     text: "Created By",
+    //     formatter: (cell) => <EmployeeName value={cell} />,
+    // },
+    // {
+    //     dataField: "created_at",
+    //     text: "Created On",
+    //     formatter: (cell) => renderDate(cell),
+    //     dataSort: true,
+    // },
     {
         dataField: "",
         text: "",
-
-
         formatter: (_, row, data_list) => (
-            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
+            <ApplicantProfileActions data={row} reloadData={reloadData} DataList={data_list} />
         ),
 
         width: "50px",
     },
 ];
 
-
-
 /**
- * ResumeBankColumns
+ * ApplicationColumns
  *
- * Returns an array of column definitions for the ResumeBankColumns table.
+ * Returns an array of column definitions for the ApplicationColumns table.
  *
  * @returns {array} An array of column definitions.
  */
-export const ResumeBankColumns = (reloadData) => [
+export const ApplicationColumns = (reloadData, variant) => [
     {
         dataField: "id",
-        text: "Resume ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"RBA-"} />,
+        text: "Application ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
     },
     {
         dataField: "candidate_id",
@@ -1288,6 +1147,144 @@ export const ResumeBankColumns = (reloadData) => [
         minWidth: '250px',
     },
     {
+        dataField: "application_source",
+        text: "Application",
+        formatter: (cell, row) => {
+            const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+            return (<div>
+                <div><span className="font-bold">Source: </span>{source}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row.vacancy_department}</div>
+                <div><span className="font-bold">Emiratization Flag: </span>{row.emiratization_flag ? 'Yes' : 'No'}</div>
+            </div>
+            );
+        },
+        minWidth: '200px',
+    },
+    ...(variant === 'blacklisted' ? [
+        {
+            dataField: "blacklist",
+            text: "Blacklist Reasons",
+            formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
+        },
+        {
+            dataField: "blacklist",
+            text: "Blacklist Remarks",
+            formatter: (cell) => cell?.remarks,
+        },
+        {
+            dataField: "blacklist",
+            text: "Blacklisted By",
+            formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
+        },
+        {
+            dataField: "blacklist",
+            text: "Blacklist On",
+            formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+        },
+    ] : []),
+    ...(variant === 'shortlisted' ? [
+        {
+            dataField: "recruitment_shortlist",
+            text: "Shortlisting Info",
+            minWidth: '300px',
+            formatter: (cell) => {
+                // const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+                return (<div>
+                    <div><span className="font-bold">Desired Salary: </span>{cell.desired_salary}</div>
+                    <div><span className="font-bold">Expected Joining Date: </span>{renderDate(cell.expected_joining_date, '--', 'date')}</div>
+                    <div><span className="font-bold">Shortlisted By: </span><EmployeeName value={cell?.shortlisted_by} /></div>
+                    <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--")}</div>
+                </div>
+                );
+            },
+        },
+    ] : []),
+    ...(variant === 'in_progress' ? [
+        {
+            dataField: "interviews",
+            text: "Interview Info",
+            minWidth: '300px',
+            formatter: (cell) => {
+                const interview = (cell?.[cell.length - 1]||{});
+                console.log(interview)
+                return (<div>
+                    <div><span className="font-bold">Interview Type: </span>{interview.interview_type_name}</div>
+                    <div><span className="font-bold">Date & Time: </span>{renderDate(interview.scheduled_datetime, '--', 'date-time')}</div>
+                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={interview?.panel_name} variant="info"  /></div>
+                </div>
+                );
+            },
+        },
+    ] : []),
+    ...(variant !== 'all' ? [
+        {
+            dataField: "feed_back",
+            text: "Feedback Summary",
+        },
+        {
+            dataField: "ai_match_score",
+            text: "AI Match Score",
+        },
+    ] : []),
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    },
+
+    {
+        dataField: "",
+        text: "",
+        formatter: (_, row, data_list) => (
+            <ApplicationActions data={row} reloadData={reloadData} DataList={data_list} />
+        ),
+        width: '50px'
+    },
+];
+
+/**
+ * ResumeBankColumns
+ *
+ * Returns an array of column definitions for the ResumeBankColumns table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const ResumeBankColumns = (reloadData) => [
+    {
+        dataField: "id",
+        text: "Resume ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"RBA-"} />,
+    },
+    {
+        dataField: "candidate_name",
+        text: "Candidate",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+            </div>
+        ),
+        minWidth: '250px',
+    },
+    {
+        dataField: "application_source",
+        text: "Application",
+        formatter: (cell, row) => {
+            const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+            return (<div>
+                <div><span className="font-bold">Source: </span>{source}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Job Title: </span>{row.job_title_applied_for}</div>
+                <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
+            </div>
+            );
+        },
+        minWidth: '250px',
+    },
+    {
         dataField: "recommended_department",
         text: "Recommended Department",
         formatter: (cell) => <DepartmentName value={cell} />
@@ -1298,29 +1295,8 @@ export const ResumeBankColumns = (reloadData) => [
         formatter: (cell) => <DesignationName value={cell} />
     },
     {
-        dataField: "job_title_applied_for",
-        text: "Job Title",
-    },
-    {
-        dataField: "application_source",
-        text: "Application Source",
-        formatter: (cell) => {
-            return (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
-        },
-    },
-    {
-        dataField: "emiratization_flag",
-        text: "Emiratization Flag",
-        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
-    },
-    {
-        dataField: "application_date",
-        text: "Application Date",
-        formatter: (cell) => renderDate(cell, '--', 'date'),
-    },
-    {
         dataField: "added_on",
-        text: "Added to Resume Bank On",
+        text: "Added On",
         formatter: (cell) => renderDate(cell, '--', 'date'),
     },
     {
@@ -1396,7 +1372,7 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
         text: "Applicant Name",
     },
     {
-        dataField: "job_title",
+        dataField: "designation",
         text: "Job Title",
     },
     {
@@ -1517,7 +1493,7 @@ export const OfferTrackingColumns = (reloadData, isRecord = false) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <OfferRequestActions data={row} reloadData={reloadData} DataList={data_list} isOfferSent={true}/>
+            <OfferRequestActions data={row} reloadData={reloadData} DataList={data_list} isOfferSent={true} />
         ),
         width: '50px'
     },

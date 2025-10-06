@@ -6,7 +6,7 @@ import {
 } from "components";
 import { FormatID, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel, StatusButtons } from "components";
-import { getHeadcountRequestData, saveUpdateHeadcountRequest } from "app/hooks/talentSphere";
+import { getHeadcountRequestData, saveUpdateHeadcountRequest, getManpowerPlanningList, saveManpowerPanning } from "app/hooks/talentSphere";
 
 const ViewHeadCountRequests = ({
     isOpen,
@@ -21,6 +21,25 @@ const ViewHeadCountRequests = ({
     const handleSubmit = async (id, { comment }) => {
         try {
             await saveUpdateHeadcountRequest({ rejection_reason: comment }, id);
+        } catch (error) {
+            // Handle errors and rollback form data
+            console.error(error);
+        }
+    };
+    const handleApprove = async ({ branch, department, requested_on, consumed_headcount, requested_headcount, reason }) => {
+        try {
+            const fiscal_year = new Date(requested_on).getFullYear();
+            const response = await getManpowerPlanningList({ filterData: { branch, department, fiscal_year } });
+            const ManpowerPlanData = response?.results?.[0];
+            const payload = {
+                fiscal_year: fiscal_year,
+                branch,
+                department,
+                planned_headcount: parseInt(consumed_headcount) + parseInt(requested_headcount),
+                total_allocated_budget: ManpowerPlanData?.total_allocated_budget || 1,
+                justification: ManpowerPlanData?.justifications || reason,
+            }
+            await saveManpowerPanning(payload, ManpowerPlanData?.id);
         } catch (error) {
             // Handle errors and rollback form data
             console.error(error);
@@ -126,9 +145,15 @@ const ViewHeadCountRequests = ({
                         final_approver={data.final_approvers || []}
                         request_id={data.request}
                         RejectionConfig={{ label: 'Rejection Reason', required: true, }}
-                        setResponse={async (response, _, approval_data) => {
+                        setResponse={async (response, status, approval_data) => {
                             if (response) {
-                                await handleSubmit(data.id, approval_data);
+                                if (status?.toLowerCase() === 'approved') {
+                                    const { status: final_status } = await fetchData(data.id, true);
+                                    if (final_status?.toLowerCase() === 'approved')
+                                        await handleApprove(data);
+                                }
+                                else
+                                    await handleSubmit(data.id, approval_data);
                                 setForceLoad(!forceLoad);
                             }
                         }}

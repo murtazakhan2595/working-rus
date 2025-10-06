@@ -20,7 +20,7 @@ const AddInterviewFeedback = ({
     isOpen = true,
     setIsOpen = () => { },
     reloadData = () => { },
-    cycle_id = null,
+    feedbackForm = null,
 }) => {
     const { id: user_id, role: user_role } = useSelector((state) => state.user.userProfile);
     const [FormValues, setFormValues] = useState(InterviewFeedback);
@@ -39,8 +39,8 @@ const AddInterviewFeedback = ({
         const fetchData = async (isMounted, interview_id) => {
             try {
                 setIsLoading(true);
-                const response = await getInterviewById(interview_id);
-                const FormResponse = await getFeedBackFormData(2);
+                // const response = await getInterviewById(interview_id);
+                const FormResponse = await getFeedBackFormData(feedbackForm || 2);
                 if (isMounted) {
                     const FormData = { ...InterviewFeedback, sections: FormResponse.sections }
                     setFormData(FormData);
@@ -57,7 +57,7 @@ const AddInterviewFeedback = ({
         return () => {
             isMounted = false;
         };
-    }, [id, cycle_id]);
+    }, [id, feedbackForm]);
 
     const handleClose = () => {
         setIsOpen(false);
@@ -67,18 +67,20 @@ const AddInterviewFeedback = ({
     const handleSubmit = async (values, saveStatus) => {
         setIsSubmittingForm(true);
         try {
+            debugger
+            const responses = (values.sections || []).flatMap(section =>
+                (section.fields || []).map(field => ({
+                    field: field.id,
+                    response_numeric: field.response_numeric,
+                    response_text: field.response_text
+                })));
             const submission = await saveUpdateInterviewFeedback({
                 ...values,
                 panel_member: user_id,
                 interview: id,
+                feedback_form:feedbackForm || 2,
                 is_submitted: saveStatus !== 'draft',
-                responses: (values.sections || []).flatMap(section =>
-                    (section.fields || []).map(field => ({
-                        field: field.id,
-                        response_numeric: field.response_numeric,
-                        response_text: field.response_text
-                    }))
-                )
+                responses: responses
             }, values.feedback_id);
 
             if (submission) {
@@ -146,12 +148,11 @@ const AddInterviewFeedback = ({
                                 label: `Recommendation`,
                                 required: true,
                                 options: [
-                                    { label: 'Proceed', value: 'Proceed' },
-                                    { label: 'Hold', value: 'Hold' },
-                                    { label: 'Reject', value: 'Reject' },
+                                    { label: 'Proceed', value: 'proceed' },
+                                    { label: 'Hold', value: 'hold' },
+                                    { label: 'Reject', value: 'reject' },
                                 ]
                             },
-
                         ],
                     },
                     // Conditionally render levels from FormValues.level
