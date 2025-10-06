@@ -125,7 +125,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                         updatedFilters[filterName] = "pending";
                     } else if (activeTab === "Records") {
                         updatedFilters[filterName] =
-                            "approved,rejected";
+                            ["approved","rejected"];
                     }
                 } else delete updatedFilters[filterName];
             } else {
@@ -149,7 +149,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
         } else if (tab === "Records") {
             setFilterData((prev) => ({
                 ...prev,
-                status: "approved,rejected",
+                status: ["approved","rejected"],
             }));
         }
     };

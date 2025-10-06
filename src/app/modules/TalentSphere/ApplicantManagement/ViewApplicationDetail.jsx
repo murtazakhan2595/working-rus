@@ -110,7 +110,7 @@ const ViewApplicationDetail = ({
             const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
             if (!latest_interview || latest_interview.status !== 'scheduled') return null;
             const isInterViewDone = moment(latest_interview.scheduled_datetime).startOf('day').isSameOrBefore(moment().startOf('day'));
-            if (!isInterViewDone) return null;
+            // if (!isInterViewDone) return null;
             const panelist_included = (latest_interview.panel || []).includes(user_id);
             const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';

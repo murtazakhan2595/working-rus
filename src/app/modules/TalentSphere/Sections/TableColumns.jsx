@@ -791,7 +791,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
     {
         dataField: "status",
         text: "Status",
-        formatter: (cell) => <StatusLabel>{cell?.toLowerCase()}</StatusLabel>
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     },
     {
         dataField: "",
@@ -1207,12 +1207,12 @@ export const ApplicationColumns = (reloadData, variant) => [
             text: "Interview Info",
             minWidth: '300px',
             formatter: (cell) => {
-                const interview = (cell?.[cell.length - 1]||{});
+                const interview = (cell?.[cell.length - 1] || {});
                 console.log(interview)
                 return (<div>
                     <div><span className="font-bold">Interview Type: </span>{interview.interview_type_name}</div>
                     <div><span className="font-bold">Date & Time: </span>{renderDate(interview.scheduled_datetime, '--', 'date-time')}</div>
-                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={interview?.panel_name} variant="info"  /></div>
+                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={interview?.panel_name} variant="info" /></div>
                 </div>
                 );
             },

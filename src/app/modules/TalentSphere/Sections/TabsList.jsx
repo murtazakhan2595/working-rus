@@ -149,11 +149,6 @@ export const APPLICANT_TAB_CONFIG = [
         component: () => <AllApplicants />,
     },
     {
-        label: "Screened",
-        permission: "VIEW_TS_EDUCATION",
-        component: () => <AllApplicants variant="screened" />,
-    },
-    {
         label: "Shortlisted",
         permission: "VIEW_TS_CAREER_LEVEL",
         component: () => <AllApplicants variant="shortlisted" />,

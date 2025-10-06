@@ -524,7 +524,7 @@ export function mapRequisitionRequestPayloadData(data, id) {
                 if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
                 else if (key === 'attachment') {
                     if (data[key] instanceof File) formData.append(key, data[key])
-                } else if (['remote_work_checklist', 'benefits',].includes(key)) {
+                } else if (['remote_work_checklist', 'benefits','required_skillset'].includes(key)) {
                     if (Array.isArray(data[key]) && data[key].length > 0) {
                         for (const value of data[key]) {
                             formData.append(key, value)

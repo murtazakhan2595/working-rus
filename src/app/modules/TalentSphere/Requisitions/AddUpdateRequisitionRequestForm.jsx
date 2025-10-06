@@ -215,7 +215,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 validateDuplicate: true,
                             },
                             {
-                                InputField: SelectInputComponent,
+                                InputField: SelectMultiInputComponent,
                                 name: "required_skillset",
                                 required: true,
                                 label: "Skills Required",
