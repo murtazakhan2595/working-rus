@@ -17,7 +17,6 @@ const ApplicantProfileActions = ({ data, DataList = [], reloadData = () => { }, 
     const handleEdit = () => {
         setEdit(true)
     };
-
     const handleDelete = () => {
         setInterview(true)
     }

@@ -2321,9 +2321,9 @@ export const saveUpdateBlacklistReason = async (payload, id) => {
   }
 };
 
-export const getTalentSphereSummary = async (id) => {
+export const getTalentSphereSummary = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/top-summary/${id}`, {
+    const response = await axios.get(`${baseUrl}/top-summary/`, {
       headers: headers(),
     });
     if (response.status === 200) {

@@ -103,15 +103,17 @@ import {
 } from './OfferTracking';
 import { TalentSphereDashboard } from './Dashboard';
 import { ResumeBankApplicants } from './ResumeBankApplicants';
-import { ApplicantProfiles ,ApplicantProfileActions,
-    ApplicantProfileDetails
+import {
+    ApplicantProfiles, ApplicantProfileActions,
+    ApplicantProfileDetails, ExportProfile
 } from './ApplicantProfiles';
-import {ScheduleInterviewSheet} from './ScreenedApplicants';
+import { ScheduleInterviewSheet } from './ScreenedApplicants';
 export {
     TalentSphereDashboard,
     ScheduleInterviewSheet,
     ApplicantProfileActions,
     ApplicantProfiles,
+    ExportProfile,
     ApplicantOffer,
     OfferRequests,
     ViewFinalOffer,

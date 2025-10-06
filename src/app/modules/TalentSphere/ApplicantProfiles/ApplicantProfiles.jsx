@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader, Header } from "components";
 import { getApplicantsList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { ApplicantsColumns } from "app/modules/TalentSphere/Sections";
+import { ExportProfile } from "app/modules/TalentSphere";
 import { FilterInput } from "components/FormControl";
 import { CardContent, Card, CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
@@ -84,7 +85,7 @@ const ApplicantProfiles = ({ reload, variant = 'all' }) => {
 
     return (
         <div>
-            <Header />
+            <Header content={<ExportProfile filterData={filterData} />} />
             <Card>
                 <CardHeader>
                     <CardTitle >Applicants</CardTitle>

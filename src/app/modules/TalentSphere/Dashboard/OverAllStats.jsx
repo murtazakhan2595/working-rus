@@ -46,26 +46,26 @@ export default function OverAllStats({ permittedViewFilterData }) {
 
     const statsData = [
         {
-            title: "Total Employees",
-            value: cardStats?.totalEmployees || 0,
+            title: "Total Requisitions",
+            value: cardStats?.total_requisitions || 0,
             status: "",
             description: "Here is the list of all the active employees",
         },
         {
-            title: "Present",
-            value: cardStats?.present || 0,
+            title: "Published Requisition",
+            value: cardStats?.published_vacancies || 0,
             status: "present",
             description: "Here is the list of all employees who are present today",
         },
         {
-            title: "Late",
-            value: cardStats?.late || 0,
+            title: "Total Applicants",
+            value: cardStats?.total_applicants || 0,
             status: "late",
             description: "Here is the list of all employees who are late today",
         },
         {
-            title: "Absent",
-            value: cardStats?.absent || 0,
+            title: "Rejected Applicants",
+            value: cardStats?.rejected_applicants || 0,
             status: "absent",
             description: "Here is the list of the all employees who are absent today",
         },
@@ -90,22 +90,9 @@ export default function OverAllStats({ permittedViewFilterData }) {
         const attendanceStats = async (isMounted) => {
             setLoading(true);
             try {
-                const filters = {
-                    branch_id: permittedViewFilterData.branch,
-                    department: permittedViewFilterData.department,
-                    reporting_employees: permittedViewFilterData.reporting_employees
-                }
-                const response = await getTalentSphereSummary({
-                    filterData: filters,
-                });
+                const response = await getTalentSphereSummary();
                 if (response && isMounted) {
-                    setCardStats({
-                        present: parseInt(response?.daily_stats?.Present),
-                        absent: response?.daily_stats?.Absent,
-                        late: response?.daily_stats?.Late,
-                        leave: response?.daily_stats?.on_leave,
-                        totalEmployees: response?.valid_employee_count,
-                    });
+                    setCardStats(response);
                 }
             } catch (error) {
                 console.error(error);
@@ -113,11 +100,11 @@ export default function OverAllStats({ permittedViewFilterData }) {
                 setLoading(false);
             }
         };
-        if (permittedViewFilterData) attendanceStats(isMounted);
+        attendanceStats(isMounted);
         return () => {
             isMounted = false;
         };
-    }, [permittedViewFilterData]);
+    }, []);
 
     // Filter employee based on search
     const FilteredEmployees = React.useMemo(() => {

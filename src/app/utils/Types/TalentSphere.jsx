@@ -251,6 +251,11 @@ export const Applicants = {
     screened_date: null,
     vacancy_department: null,
     resume: null,
+    ai_match_score: null,
+    ai_matched_skills: null,
+    ai_missing_skills: null,
+    ai_suggested: null,
+
 }
 
 export const RejectedApplication = {
