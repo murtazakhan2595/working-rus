@@ -42,7 +42,7 @@ const ViewRequisitionRequest = ({
         setOpenModal(true);
     };
     const handleRejectClick = async (comment, id) => {
-        await saveUpdateRequisitionRequest({ rejectio_reason: comment }, id);
+        await saveUpdateRequisitionRequest({ rejection_reason: comment }, id);
     };
 
     const handleSubmit = async ({ handleApprove = () => { }, department, branch, number_of_positions, salary_max, salary_min, id }) => {

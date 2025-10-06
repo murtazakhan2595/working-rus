@@ -1241,9 +1241,18 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       if (applicant_details_only) return ResponseData;
       const VacancyData = await getVacancyData(Response.published_vacancy);
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
+      const OfferLetterData = await getOfferLetterByApplicantId(Response.id);
+      const OfferTrackerData = await getOfferTrackerByApplicantId(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
       const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
-      return { interview_feedbacks: Feedbacks.results || [], resume_bank: ResumeBankData, vacancy_details: VacancyData, ...ResponseData, };
+      return {
+        interview_feedbacks: Feedbacks.results || [],
+        offer_letter: OfferLetterData,
+        offer_tracker: OfferTrackerData,
+        resume_bank: ResumeBankData,
+        vacancy_details: VacancyData,
+        ...ResponseData,
+      };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1936,6 +1945,24 @@ export const getOfferTrackingList = async (payload) => {
   }
 };
 
+export const getOfferTrackerByApplicantId = async (applicant) => {
+  try {
+    const response = await getOfferTrackingList({ filterData: { applicant: applicant } });
+    if (response) {
+      const ResponseList = response.results;
+      if (ResponseList.length > 0) {
+        const ResponseData = ResponseList.find(obj => obj.applicant === applicant);
+        return ResponseData;
+      }
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return null;
+  }
+};
+
 export const getOfferTrackingData = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/offer-tracking/${id}`, {
@@ -1955,6 +1982,7 @@ export const getOfferTrackingData = async (id) => {
     return [];
   }
 };
+
 
 export const saveUpdateOfferTracking = async (payload, id) => {
   try {
@@ -2094,7 +2122,7 @@ export const getOfferLetterList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "id";
+  const ordering = payload?.ordering ?? "-id";
   const URL = `/recruitment-offer-letters/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -2116,7 +2144,23 @@ export const getOfferLetterList = async (payload) => {
     return {};
   }
 };
-
+export const getOfferLetterByApplicantId = async (applicant) => {
+  try {
+    const response = await getOfferLetterList({ filterData: { applicant: applicant } });
+    if (response) {
+      const ResponseList = response.results;
+      if (ResponseList.length > 0) {
+        const ResponseData = ResponseList.filter(obj => obj.applicant === applicant);
+        return ResponseData;
+      }
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching applicants list:", error);
+    if (error?.response?.status === 401) HandleLogout();
+    return null;
+  }
+};
 export const getOfferLetterData = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/recruitment-offer-letters/${id}`, {

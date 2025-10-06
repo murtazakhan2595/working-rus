@@ -64,16 +64,16 @@ const ViewOfferGenerated = ({
                     formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
                 },
                 {
-                    key: "branch",
+                    key: "candidate_name",
                     label: "Applicant Name",
                 },
                 {
-                    key: "department_name",
+                    key: "candidate_email",
                     label: "Email",
                 },
 
                 {
-                    key: "attachment_url",
+                    key: "candidate_contact",
                     label: "Contact Number",
                 },
                 {
