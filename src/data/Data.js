@@ -98,7 +98,7 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Requisition Request", value: "REQUISTION_REQUEST" }]
     : []),
   ...(Config.TALENT_SPHERE
-    ? [{ label: "Offer Letter Request", value: "MANAGE_OFFER_LETTERS" }]
+    ? [{ label: "Offer Letter Request", value: "OFFER_LETTER" }]
     : []),
 ];
 
