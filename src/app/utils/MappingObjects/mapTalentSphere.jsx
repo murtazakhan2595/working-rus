@@ -1001,7 +1001,9 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             RecordDetails[key] = await mapApproverDetails({ ...data, });
         } else {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
-                RecordDetails[key] = data[key];
+                if(key==='status' && data[key]==='pending_approval')
+                RecordDetails[key] = 'pending';
+                else RecordDetails[key] = data[key];
             }
         }
     }

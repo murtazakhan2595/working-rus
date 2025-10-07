@@ -7,7 +7,7 @@ import {
 import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, StatusButtons } from "components";
-import { getOfferLetterData, saveUpdateHeadcountRequest } from "app/hooks/talentSphere";
+import { getOfferLetterData, saveUpdateOfferLetter } from "app/hooks/talentSphere";
 import { SentOfferForm } from "app/modules/TalentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -27,7 +27,7 @@ const ViewOfferGenerated = ({
     const [OpenSentOfferForm, setOpenSentOfferForm] = useState(false);
     const handleSubmit = async (id, { comment }) => {
         try {
-            await saveUpdateHeadcountRequest({ rejection_reason: comment }, id);
+            await saveUpdateOfferLetter({ rejection_remarks: comment }, id);
         } catch (error) {
             // Handle errors and rollback form data
             console.error(error);
@@ -110,8 +110,9 @@ const ViewOfferGenerated = ({
                     label: "Work Location",
                 },
                 {
-                    key: "remarks",
-                    label: "Remarks",
+                    key: "rejection_remarks",
+                    label: "Rejection Reason",
+                    renderCondition: (cell) => Boolean(cell),
                 },
             ],
         },
@@ -158,9 +159,11 @@ const ViewOfferGenerated = ({
                         final_approver={data.final_approvers || []}
                         request_id={data.request}
                         RejectionConfig={{ label: 'Rejection Reason', required: true, }}
-                        setResponse={async (response, _, approval_data) => {
+                        setResponse={async (response, status, approval_data) => {
                             if (response) {
-                                await handleSubmit(data.id, approval_data);
+                                if (status?.toLowerCase() === 'rejected') {
+                                    await handleSubmit(data.id, approval_data);
+                                }
                                 setForceLoad(!forceLoad);
                             }
                         }}
