@@ -1239,7 +1239,6 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const Response = response.data;
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
-      const VacancyData = await getVacancyData(Response.published_vacancy);
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
       const OfferLetterData = await getOfferLetterByApplicantId(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
@@ -1248,7 +1247,6 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
         interview_feedbacks: Feedbacks.results || [],
         offer_letter: OfferLetterData,
         resume_bank: ResumeBankData,
-        vacancy_details: VacancyData,
         ...ResponseData,
       };
     }

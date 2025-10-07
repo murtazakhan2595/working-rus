@@ -148,6 +148,11 @@ export const APPLICANT_TAB_CONFIG = [
         permission: "VIEW_TS_BENEFITS",
         component: () => <AllApplicants />,
     },
+     {
+        label: "Screened",
+        permission: "VIEW_TS_EDUCATION",
+        component: () => <AllApplicants variant="screened" />,
+    },
     {
         label: "Shortlisted",
         permission: "VIEW_TS_CAREER_LEVEL",
@@ -197,7 +202,7 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
     {
         label: "Vacancy Details",
         infoFields: VacancyDetails,
-        dataKey: 'vacancy_details',
+        dataKey: 'publish_vacancy',
     },
     {
         label: "Applicant Info",

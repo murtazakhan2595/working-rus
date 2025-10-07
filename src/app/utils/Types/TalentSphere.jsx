@@ -255,6 +255,7 @@ export const Applicants = {
     vacancy_department: null,
     resume: null,
     offers_tracking: null,
+    publish_vacancy: null,
     ai_match_score: null,
     ai_matched_skills: null,
     ai_missing_skills: null,

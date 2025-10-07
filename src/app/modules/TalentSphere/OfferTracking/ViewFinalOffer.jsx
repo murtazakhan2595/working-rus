@@ -138,9 +138,9 @@ const ViewFinalOffer = ({
                         <div key={index} className="mb-1">
                             <div className="text-sm text-neutral-1100 capitalize">
                                 {log?.old_status || 'draft'} → {log?.new_status}{" "}
-                                <span className="text-gray-1100">
+                                {log?.changed_by && <span className="text-gray-1100">
                                     by <EmployeeName value={log?.changed_by} />
-                                </span>
+                                </span>}
                             </div>
                             <div className="text-xs text-gray-900">
                                 {renderDate(log?.changed_on)}
@@ -168,7 +168,7 @@ const ViewFinalOffer = ({
                                     Withdraw
                                 </Button>
                             }
-                            {joining_date_passed && status === 'approved' &&
+                            {joining_date_passed && status === 'accepted' &&
                                 <>
                                     <Button
                                         variant="default"

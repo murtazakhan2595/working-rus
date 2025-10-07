@@ -477,7 +477,7 @@ export function mapHeadcountRequestPayloadData(data, id) {
 
 //-------------RequisitionRequests ---------------
 
-export async function mapRequisitionRequestData(data, fetchApprovalDetails) {
+export async function mapRequisitionRequestData(data, fetchApprovalDetails = true) {
     const RecordDetails = {};
     for (const key of Object.keys(Requisition)) {
         if (key === "approval_details" && fetchApprovalDetails) {
@@ -605,62 +605,64 @@ export function mapVacancyPayloadData(data, id) {
 
 //-------------Applicants ---------------
 
-export function mapApplicantsData(data) {
-    const RecordDetails = Object.keys(Applicants).reduce((acc, key) => {
-        if (data.hasOwnProperty(key)) {
-            if (key === 'id') {
-                acc['applicant_id'] = data[key];
-                acc['serial_id'] = FormatID({ value: data[key], prefix: 'APP' });
-            }
-            if (key === "candidate_id" || key === 'candidate_name') acc[key] = data[key].trim()
-            else if (key === "status") {
-                const status = data[key];
-                if (status === 'resume_bank')
-                    acc[key] = 'Resume Bank';
-                else if (status === 'in_progress')
-                    acc[key] = 'In Progress';
-                else acc[key] = data[key];
-            }
-            else if (key === 'blacklist') {
-                acc[key] = data[key] ? mapBlacklistApplicantData(data[key]) : null;
-            }
-            else if (key === 'recruitment_shortlist') {
-                acc[key] = data[key] ? mapShortlistedApplicantData(data[key]) : null;
-            }
-            else if (key === 'offers_tracking') {
-                acc[key] = data[key]?.[0] ? mapOfferTrackingData(data[key]?.[0]) : null;
-            }
-            else acc[key] = data[key];
+export async function mapApplicantsData(data) {
+    if (!data) return {};
+
+    const RecordDetails = {};
+
+    for (const key of Object.keys(Applicants)) {
+        if (!data.hasOwnProperty(key)) continue;
+        const value = data[key];
+        switch (key) {
+            case "id":
+                RecordDetails.applicant_id = value;
+                RecordDetails.serial_id = FormatID({ value, prefix: "APP" });
+                RecordDetails.key = value;
+                break;
+            case "candidate_id":
+            case "candidate_name":
+                RecordDetails[key] = value?.trim?.() || "";
+                break;
+            case "status":
+                RecordDetails.status = value === "resume_bank" ? "Resume Bank" : value === "in_progress" ? "In Progress" : value;
+                break;
+
+            case "blacklist":
+                RecordDetails.blacklist = value ? mapBlacklistApplicantData(value) : null;
+                break;
+
+            case "recruitment_shortlist":
+                RecordDetails.recruitment_shortlist = value ? mapShortlistedApplicantData(value) : null;
+                break;
+
+            case "offers_tracking":
+                RecordDetails.offers_tracking = value?.[0] ? mapOfferTrackingData(value[0]) : null;
+                break;
+
+            case "publish_vacancy":
+                RecordDetails.publish_vacancy = value ? await mapRequisitionRequestData(value) : null;
+                break;
+            default:
+                RecordDetails[key] = value;
+                break;
         }
-        return acc;
-    }, {});
-
-    if (data.hasOwnProperty('ai_suggested')) {
-        RecordDetails.ai_suggested = data.ai_suggested;
     }
-
-    if (data.hasOwnProperty("ai_matched_skills")) {
-        RecordDetails.ai_matched_skills = data.ai_matched_skills;
-    }
-
-    if (data.hasOwnProperty("ai_missing_skills")) {
-        RecordDetails.ai_missing_skills = data.ai_missing_skills;
-    }
-
-    if (data.hasOwnProperty("ai_match_score")) {
-        RecordDetails.ai_match_score = data.ai_match_score;
-    }
-
     return RecordDetails;
 }
 
 export async function mapApplicantsList(data) {
-    const DataList = await data?.map((Record) => {
-        const Details = mapApplicantsData(Record);
-        return { ...Details, };
-    });
-
-    return DataList;
+    if (!Array.isArray(data) || data.length === 0) return [];
+    try {
+        const DataList = await Promise.all(
+            data.map(async (dataObj) => {
+                return await mapApplicantsData(dataObj, false);
+            })
+        );
+        return DataList;
+    } catch (error) {
+        console.error("Error in mapLeaveListData:", error);
+        return [];
+    }
 }
 export function mapApplicationPayloadData(data) {
     // Initialize an empty payload object
