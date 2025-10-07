@@ -8,13 +8,16 @@ import { APPLICANT_PROFILE_TAB_CONFIG } from "app/modules/TalentSphere/Sections"
 import { useParams } from "react-router-dom";
 import { getApplicantsData } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
+import EmployeeForm from "app/modules/Employees/Screens/EmployeeForm";
 
 export default function ApplicantProfileDetails() {
     const { hasAccess } = usePermissions();
     const { id } = useParams();
     const [activeTab, setActiveTab] = useState(null);
     const [isLoading, setIsLoading] = useState({});
+    const [OpenEmployeeorm, setOpenEmployeeorm] = useState(false);
     const [ApplicantData, setApplicantData] = useState({});
+    const SalarySetupAllowed = hasAccess("EDIT_EMPLOYEE_SALARY_SETUP");
     const viewPermitted = hasAccess("TS_VIEW_APPLICANT_PROFILE");
 
     useEffect(() => {
@@ -45,13 +48,19 @@ export default function ApplicantProfileDetails() {
     if (!viewPermitted) return <Error errorType={401} />;
 
     const currentTab = activeTab || APPLICANT_PROFILE_TAB_CONFIG[0].label;
-
+    const handleCreateEmployee = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setOpenEmployeeorm(true);
+    }
     return (
         <div className="flex flex-col gap-4">
             <Header
                 showBackButton={true}
                 navigationLink={'/talent-sphere/applicant-management-profile'}
-                content={ApplicantData.status === 'hired' && <Button>Create Employee</Button>}
+                content={ApplicantData.status === 'hired' && (
+                    <Button onClick={handleCreateEmployee}>Create Employee</Button>
+                )}
             />
             <Card>
                 <CardContent className="flex items-center justify-between pt-6 ">
@@ -84,6 +93,14 @@ export default function ApplicantProfileDetails() {
                     </TabsContent>
                 ))}
             </Tabs>
+            {OpenEmployeeorm &&
+                <EmployeeForm
+                    setIsOpen={() => { setOpenEmployeeorm(false) }}
+                    SalarySetupAllowed={SalarySetupAllowed}
+                    formVariant="sheet"
+                    applicant_id={id}
+                />
+            }
         </div>
     );
 }

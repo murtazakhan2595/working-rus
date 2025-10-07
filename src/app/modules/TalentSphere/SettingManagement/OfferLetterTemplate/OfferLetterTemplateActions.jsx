@@ -13,8 +13,6 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
     const [openEditForm, setOpenEditForm] = useState(null);
     const [deleteForm, setDeleteForm] = useState(null);
 
-   
-
     const handleEdit = (e) => {
         setOpenEditForm(true)
     };

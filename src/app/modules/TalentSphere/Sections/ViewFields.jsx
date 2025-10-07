@@ -130,7 +130,7 @@ export const RequisitionViewFields = [
       {
         key: "salary_min",
         label: "Salary Range",
-        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency})),
+        formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency}))} (${row?.payment_frequency})`,
       },
       {
         key: "justification",

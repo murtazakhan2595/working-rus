@@ -386,7 +386,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 InputField: SelectInputComponent,
                                 name: "payment_frequency",
                                 label: "Payment Frequency",
-                                options: [{ label: 'Monthly', value: 'Monthly' }, { label: 'Bi-Weekly', value: 'Bi-Weekly' }, { label: 'Weekly', value: 'Weekly' }, { label: 'Annually', value: 'Annually' },],
+                                options: [{ label: 'Monthly', value: 'monthly' }, { label: 'Bi-Weekly', value: 'bi-weekly' }, { label: 'Weekly', value: 'weekly' }, { label: 'Annually', value: 'annually' },],
                                 required: Boolean(FormValues.salary_max || FormValues.salary_min)
                             },
                             {
