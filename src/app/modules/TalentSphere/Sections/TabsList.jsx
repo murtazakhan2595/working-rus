@@ -41,6 +41,7 @@ import {
     AllOfferDetails,
     BlacklistedInformation,
     RejectedInformation,
+    ResumeDetails
 } from 'app/modules/TalentSphere/Sections';
 
 // 🔹 Central config for all tabs
@@ -190,9 +191,13 @@ export const OFFER_TAB_CONFIG = [
 
 export const APPLICANT_PROFILE_TAB_CONFIG = [
     {
-        label: "Vacancy Details",
+        label: "Requisition Info",
         infoFields: VacancyDetails,
         dataKey: 'vacancy_details',
+    },
+    {
+        label: "Resume Download",
+        infoFields: ResumeDetails,
     },
     {
         label: "Applicant Info",

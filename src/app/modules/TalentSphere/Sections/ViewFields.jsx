@@ -289,6 +289,11 @@ export const VacancyDetails = [
     title: `Vacancy Details`,
     field: [
       {
+        key: "requisition_id",
+        label: "Requisition ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"RR-"} />,
+      },
+      {
         key: "job_title",
         label: "Job Title",
         // formatter: (cell) => renderDate(cell),
@@ -318,6 +323,26 @@ export const VacancyDetails = [
         key: "job_description",
         label: "Job Description",
         // formatter: (cell) => renderDate(cell),
+      },
+    ],
+  },
+]
+export const ResumeDetails = [
+  {
+    title: `Resume Details`,
+    field: [
+      {
+        key: "resume",
+        formatter: (cell, data) =>
+          cell ? (
+            <AttachmentUI
+              attachment={cell}
+              name={`${data.candidate_name} Resume`}
+              viewOnly={true}
+            />
+          ) : (
+            <div className="text-neutral-1000 text-sm">No letter attached</div>
+          ),
       },
     ],
   },
