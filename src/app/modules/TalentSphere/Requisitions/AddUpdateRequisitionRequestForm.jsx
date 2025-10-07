@@ -18,7 +18,7 @@ import { NumberInput } from "components/FormControl";
 import { TextInput, TextAreaInput, RadioGroupInput, SelectInputComponent, SwitchInput, SelectMultiInputComponent } from "components/FormControl";
 import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
-import {validateRequisitionRequestFormSchema} from 'app/utils/FormSchema/TalentSphereFormSchema';
+import { validateRequisitionRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -30,6 +30,7 @@ const AddUpdateRequisitionRequestForm = ({
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
     const Countries = GetDispatchStateList('countries', 'common');
+    const Currencies = GetDispatchStateList('currencies', 'common');
     const { id: employee_id } = GetDispatchStateList('userProfile', 'user');
     const [isLoading, setIsLoading] = useState(false);
     const [FormData, setFormData] = useState({ ...Requisition, approval_required: approvalRequired });
@@ -160,7 +161,7 @@ const AddUpdateRequisitionRequestForm = ({
                 initialValues: FormData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema:validateRequisitionRequestFormSchema,
+                validateFormSchema: validateRequisitionRequestFormSchema,
                 renderUpdatedFormValues: (values) => {
                     setFormValues(values);
                 },
@@ -259,10 +260,11 @@ const AddUpdateRequisitionRequestForm = ({
                             ] : [
                                 {
                                     InputField: SelectInputComponent,
-                                    name: "country",
+                                    name: "countries",
                                     required: true,
                                     label: "Country",
                                     options: Countries,
+                                    disabled: FormValues.is_emiratization_role,
                                     onFieldUpdate: async (_, value, __, handleChange) => {
                                         getCitiesDropdown(value);
                                         handleChange('city', null);
@@ -270,7 +272,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 },
                                 {
                                     InputField: SelectInputComponent,
-                                    name: "city",
+                                    name: "cities",
                                     required: true,
                                     label: "City",
                                     options: Cities,
@@ -279,6 +281,10 @@ const AddUpdateRequisitionRequestForm = ({
                                     InputField: CheckBoxInput,
                                     name: "is_emiratization_role",
                                     label: "Emiratization Role",
+                                    onFieldUpdate: async (_, value, __, handleChange) => {
+                                        if (value) getCitiesDropdown("United Arab Emirates");
+                                        handleChange("countries", value ? "United Arab Emirates" : "");
+                                    },
                                 },
                             ]),
                         ],
@@ -368,6 +374,20 @@ const AddUpdateRequisitionRequestForm = ({
                                 name: "salary_max",
                                 required: true,
                                 label: "Maximum Salary",
+                            },
+                            {
+                                InputField: SelectInputComponent,
+                                name: "currency",
+                                label: "Currency",
+                                options: Currencies,
+                                required: Boolean(FormValues.salary_max || FormValues.salary_min)
+                            },
+                            {
+                                InputField: SelectInputComponent,
+                                name: "payment_frequency",
+                                label: "Payment Frequency",
+                                options: [{ label: 'Monthly', value: 'Monthly' }, { label: 'Bi-Weekly', value: 'Bi-Weekly' }, { label: 'Weekly', value: 'Weekly' }, { label: 'Annually', value: 'Annually' },],
+                                required: Boolean(FormValues.salary_max || FormValues.salary_min)
                             },
                             {
                                 InputField: SelectInputComponent,

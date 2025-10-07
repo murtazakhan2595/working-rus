@@ -127,6 +127,11 @@ export function DocCategoryName({ value, fallBackText = "N/A" }) {
   );
   return doc_category ? doc_category.label : value ?? fallBackText;
 }
+export function Currency({ value, fallBackText = "N/A" }) {
+  const currencies = useSelector((state) => state.common.currencies);
+  const currency = currencies.find((option) => option.value === parseInt(value));
+  return currency ? currency.code : value ?? fallBackText;
+}
 
 export function BranchName({ value, fallBackText = "N/A" }) {
   const branches = useSelector((state) => state.common.branches);

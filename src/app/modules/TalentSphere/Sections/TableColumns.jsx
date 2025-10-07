@@ -842,7 +842,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     {
         dataField: "salary_min",
         text: "Budget/Salary Range",
-        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined'),
+        formatter: (cell, row) => renderRange(cell, row?.salary_max, 'Not Defined'),
     },
 
     {
@@ -979,7 +979,7 @@ export const ManpowerHeadcountOverviewColumns = [
     {
         dataField: "planned_headcount",
         text: "Remaining Headcount",
-        formatter: (cell, row) => ((cell || 0) - (row.existing_headcount || 0)),
+        formatter: (cell, row) => ((cell || 0) - (row?.existing_headcount || 0)),
         dataSort: true,
     },
 ];
@@ -999,9 +999,9 @@ export const PublishedVacancyColumns = (reloadData) => [
         formatter: (cell, row) => (
             <div>
                 <div><span className="font-bold">ID: </span><FormatID value={cell} prefix={"RR-"} /></div>
-                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
-                <div><span className="font-bold">Department: </span>{row.department}</div>
-                <div><span className="font-bold">Branch: </span>{row.branch}</div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row?.department}</div>
+                <div><span className="font-bold">Branch: </span>{row?.branch}</div>
             </div>
         ),
     },
@@ -1064,10 +1064,10 @@ export const ApplicantsColumns = (reloadData) => [
         text: "Candidate",
         formatter: (cell, row) => (
             <div>
-                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
-                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
-                <div><span className="font-bold">Email: </span>{row.email}</div>
-                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+                <div><span className="font-bold">ID: </span>{row?.candidate_id}</div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row?.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row?.contact_number}</div>
             </div>
         ),
         minWidth: '250px',
@@ -1129,19 +1129,14 @@ export const ApplicantsColumns = (reloadData) => [
  */
 export const ApplicationColumns = (reloadData, variant) => [
     {
-        dataField: "id",
-        text: "Application ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
-    },
-    {
         dataField: "candidate_id",
         text: "Candidate",
         formatter: (cell, row) => (
             <div>
-                <div><span className="font-bold">ID: </span>{row.candidate_id}</div>
-                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
-                <div><span className="font-bold">Email: </span>{row.email}</div>
-                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+                <div><span className="font-bold">ID: </span>{row?.candidate_id}</div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row?.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row?.contact_number}</div>
             </div>
         ),
         minWidth: '250px',
@@ -1152,15 +1147,16 @@ export const ApplicationColumns = (reloadData, variant) => [
         formatter: (cell, row) => {
             const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
             return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.id} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Source: </span>{source}</div>
-                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
-                <div><span className="font-bold">Job Title: </span>{row.job_title}</div>
-                <div><span className="font-bold">Department: </span>{row.vacancy_department}</div>
-                <div><span className="font-bold">Emiratization Flag: </span>{row.emiratization_flag ? 'Yes' : 'No'}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row?.vacancy_department}</div>
+                <div><span className="font-bold">Emiratization Flag: </span>{row?.emiratization_flag ? 'Yes' : 'No'}</div>
             </div>
             );
         },
-        minWidth: '200px',
+        minWidth: '250px',
     },
     ...(variant === 'blacklisted' ? [
         {
@@ -1235,13 +1231,16 @@ export const ApplicationColumns = (reloadData, variant) => [
         },
     ] : []),
     ...(variant !== 'all' ? [
-        {
+         {
             dataField: "ai_feedback_summary",
-            text: "Feedback Summary",
-        },
-        {
-            dataField: "ai_match_score",
-            text: "AI Match Score",
+            text: "AI Feedback",
+            formatter: (cell,row) => {
+                return (<div>
+                    <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>
+                    <div><span className="font-bold">Match Score: </span>{cell?.ai_match_score}</div>
+                </div>
+                );
+            },
         },
     ] : []),
     {
@@ -1278,9 +1277,9 @@ export const ResumeBankColumns = (reloadData) => [
         text: "Candidate",
         formatter: (_, row) => (
             <div>
-                <div><span className="font-bold">Name: </span>{row.candidate_name}</div>
-                <div><span className="font-bold">Email: </span>{row.email}</div>
-                <div><span className="font-bold">Contact No.: </span>{row.contact_number}</div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+                <div><span className="font-bold">Email: </span>{row?.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row?.contact_number}</div>
             </div>
         ),
         minWidth: '250px',
@@ -1292,8 +1291,8 @@ export const ResumeBankColumns = (reloadData) => [
             const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
             return (<div>
                 <div><span className="font-bold">Source: </span>{source}</div>
-                <div><span className="font-bold">Date: </span>{renderDate(row.application_date, '--', 'date')}</div>
-                <div><span className="font-bold">Job Title: </span>{row.job_title_applied_for}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title_applied_for}</div>
                 <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
             </div>
             );
@@ -1406,14 +1405,14 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
             text: "Decision Info",
             formatter: (cell, row) => cell === 'approved' ? (
                 <div>
-                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row.approved_by} /></div>
-                    <div><span className="font-bold">Approved On: </span>{renderDate(row.approved_on)}</div>
+                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on)}</div>
                 </div>
             ) : (
                 <div>
-                    <div><span className="font-bold">Rejected By: </span><EmployeeName value={row.rejected_by} /></div>
-                    <div><span className="font-bold">Rejected On: </span>{renderDate(row.rejected_on)}</div>
-                    <div><span className="font-bold">Reason: </span>{row.rejection_remarks}</div>
+                    <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
+                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on)}</div>
+                    <div><span className="font-bold">Reason: </span>{row?.rejection_remarks}</div>
                 </div>
             ),
         },

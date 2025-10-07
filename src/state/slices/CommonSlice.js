@@ -8,6 +8,7 @@ import {
   getBranchList,
   getCountriesList,
 } from "app/hooks/general";
+import { getCurrencyList } from "app/hooks/officeSetting";
 
 import { getHolidaysListData } from "app/hooks/leaveTracker";
 
@@ -15,6 +16,7 @@ import { getHolidaysListData } from "app/hooks/leaveTracker";
 const initialState = {
   departments: [],
   countries: [],
+  currencies: [],
   projects: [],
   designations: [],
   branches: [],
@@ -69,6 +71,18 @@ export const fetchCountries = createAsyncThunk(
   async () => {
     try {
       const response = await getCountriesList();
+      return response?.results || [];
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+// Define the thunk to fetch currencies
+export const fetchCurrencies = createAsyncThunk(
+  "common/fetchCurrencies",
+  async () => {
+    try {
+      const response = await getCurrencyList();
       return response?.results || [];
     } catch (error) {
       throw error;
@@ -165,6 +179,18 @@ const commonSlice = createSlice({
         state.countries = action.payload;
       })
       .addCase(fetchCountries.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
+       // Currencies
+      .addCase(fetchCurrencies.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      .addCase(fetchCurrencies.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.currencies = action.payload;
+      })
+      .addCase(fetchCurrencies.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
       })

@@ -1,7 +1,7 @@
 import React from "react";
-import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName } from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName ,Currency} from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
+import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI} from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
@@ -60,7 +60,7 @@ export const RequisitionViewFields = [
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
       },
       {
-        key: "country",
+        key: "countries",
         label: "Country",
         renderCondition: (_, data) => {
           if (data.work_mode === 'hybrid' || data.work_mode === 'onsite') return true;
@@ -69,7 +69,7 @@ export const RequisitionViewFields = [
 
       },
       {
-        key: "city",
+        key: "cities",
         label: "City",
         renderCondition: (_, data) => {
           if (data.work_mode === 'hybrid' || data.work_mode === 'onsite') return true;
@@ -116,7 +116,7 @@ export const RequisitionViewFields = [
       },
       {
         key: "education_name",
-        label: "Education Requirement",
+        label: "Education",
       },
       {
         key: "career_level_name",
@@ -130,11 +130,10 @@ export const RequisitionViewFields = [
       {
         key: "salary_min",
         label: "Salary Range",
-        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined'),
+        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency})),
       },
       {
         key: "justification",
-        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />,
         label: "Justification",
       },
     ],

@@ -14,6 +14,9 @@ export const ApplicantStatusList = {
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
         { status: 'generate-offer', label: 'Generate Offer Letter', variant: 'default' },
     ],
+    hired: [
+        { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
+    ],
     'in progress': [ // status when applicant and interview status is in progress 
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
         { status: 'reschedule-interview', label: 'Reschedule Interview', variant: 'default' },

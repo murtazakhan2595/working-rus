@@ -617,7 +617,7 @@ export async function mapApplicantsData(data) {
             case "id":
                 RecordDetails.applicant_id = value;
                 RecordDetails.serial_id = FormatID({ value, prefix: "APP" });
-                RecordDetails.key = value;
+                RecordDetails.id = value;
                 break;
             case "candidate_id":
             case "candidate_name":

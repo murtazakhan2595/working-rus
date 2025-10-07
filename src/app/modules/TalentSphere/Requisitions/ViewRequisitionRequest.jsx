@@ -42,6 +42,8 @@ const ViewRequisitionRequest = ({
         setOpenModal(true);
     };
     const handleRejectClick = async (comment, id) => {
+                            debugger;
+      
         await saveUpdateRequisitionRequest({ rejection_reason: comment }, id);
     };
 
@@ -141,6 +143,7 @@ const ViewRequisitionRequest = ({
                         RejectionConfig={{ label: 'Rejection Reason', required: true }}
                         onApprove={(handleApprove) => handleApprovalClick(handleApprove, data)}
                         setResponse={async (response, status, approval_Data) => {
+                            debugger;
                             if (response) {
                                 if (status?.toLowerCase() === 'rejected')
                                     await handleRejectClick(approval_Data.comment, data.id);

@@ -162,6 +162,7 @@ export const HeadcountRequest = {
 
 export const Requisition = {
     id: null,
+    rejection_reason: null,
     branch_name: null,
     approval_details: null,
     created_at: null,
@@ -191,8 +192,8 @@ export const Requisition = {
     requested_by: null,
     department: null,
     branch: null,
-    country: null,
-    city: null,
+    countries: null,
+    cities: null,
     job_type: null,
     education: null,
     career_level: null,
@@ -205,6 +206,8 @@ export const Requisition = {
     job_type_name: null,
     career_level_name: null,
     education_name: null,
+    currency: null,
+    payment_frequency: 'Monthly',
 }
 
 export const PublishVacancy = {
