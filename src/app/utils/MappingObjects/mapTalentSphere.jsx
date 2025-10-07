@@ -627,6 +627,9 @@ export function mapApplicantsData(data) {
             else if (key === 'recruitment_shortlist') {
                 acc[key] = data[key] ? mapShortlistedApplicantData(data[key]) : null;
             }
+            else if (key === 'offers_tracking') {
+                acc[key] = data[key]?.[0] ? mapOfferTrackingData(data[key]?.[0]) : null;
+            }
             else acc[key] = data[key];
         }
         return acc;

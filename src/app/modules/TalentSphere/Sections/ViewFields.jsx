@@ -486,17 +486,17 @@ export const OfferDetails = [
 
 export const FinalOfferLetterDetails = [
   {
-    title: "Offer Information",
+    title: "Final Offer Information",
     field: [
       {
         key: "validity_date",
         label: "Validity Date",
-        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+        formatter: (cell) => renderDate(cell, "--", 'date'),
       },
       {
         key: "joining_date",
         label: "Joining Date",
-        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+        formatter: (cell) => renderDate(cell, "--", 'date'),
       },
       {
         key: "sent_by",
@@ -689,7 +689,7 @@ export const ApplicantDetails = [
     },
   },
   {
-    title: "Rejection Information",
+    customContent: true,
     renderSectionCondition: (data) => {
       if (data.recruitment_rejected) return true;
       return false;
@@ -699,6 +699,21 @@ export const ApplicantDetails = [
         <DetailContent
           fields={RejectedInformation}
           currentItem={data?.recruitment_rejected || {}}
+        />
+      );
+    },
+  },
+  {
+    customContent: true,
+    renderSectionCondition: (data) => {
+      if (data.offers_tracking) return true;
+      return false;
+    },
+    renderContent: (data) => {
+      return (
+        <DetailContent
+          fields={FinalOfferLetterDetails}
+          currentItem={data?.offers_tracking || {}}
         />
       );
     },
@@ -757,13 +772,13 @@ export const AllOfferDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
-      if (data.offer_tracker) return true;
+      if (data?.offers_tracking) return true;
       return false;
     },
-    renderContent: ({ offer_tracker }) => (
+    renderContent: ({ offers_tracking }) => (
       <DetailContent
         fields={FinalOfferLetterDetails}
-        currentItem={offer_tracker || {}}
+        currentItem={offers_tracking || {}}
       />
     ),
   },

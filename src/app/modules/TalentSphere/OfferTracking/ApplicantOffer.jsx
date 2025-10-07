@@ -6,8 +6,8 @@ import {
 } from "components";
 import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
-import { StatusLabel, StatusButtons } from "components";
-import { getApplicantOfferDetails, saveUpdateHeadcountRequest } from "app/hooks/talentSphere";
+import { PageLoader, StatusButtons } from "components";
+import { getApplicantOfferDetails, saveApplicantOfferResponse } from "app/hooks/talentSphere";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -22,7 +22,12 @@ const ApplicantOffer = () => {
     const [OpenAlterMessage, setOpenAlterMessage] = useState(false);
     const handleSubmit = async () => {
         try {
-            await saveUpdateHeadcountRequest();
+            const response = await saveApplicantOfferResponse(id, FormData.status === 'accepted');
+            if (response) {
+                fetchData(true, id);
+                setOpenAlterMessage(false);
+                setFormData({});
+            }
         } catch (error) {
             // Handle errors and rollback form data
             console.error(error);
@@ -151,6 +156,7 @@ const ApplicantOffer = () => {
         {
             customContent: true,
             renderContent: (data) => {
+                if (data?.stats?.toLowerCase() !== 'pending') return null;
                 return (
                     <div className="flex flex-wrap justify-end gap-2 my-5">
                         <Button
@@ -170,20 +176,21 @@ const ApplicantOffer = () => {
             },
         },
     ];
-    useEffect(() => {
-        const fetchData = async (isMounted, id) => {
-            try {
-                setIsLoading(true);
-                const response = await getApplicantOfferDetails(id);
-                if (isMounted) {
-                    setCurrentItem({ ...response });
-                }
-            } catch (error) {
-                console.error("Error fetching roles:", error);
-            } finally {
-                setIsLoading(false);
+    const fetchData = async (isMounted, id) => {
+        try {
+            setIsLoading(true);
+            const response = await getApplicantOfferDetails(id);
+            if (isMounted) {
+                setCurrentItem({ ...response });
             }
-        };
+        } catch (error) {
+            console.error("Error fetching roles:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
+
         let isMounted = true;
         if (id) fetchData(isMounted, id);
         return () => {
@@ -191,7 +198,7 @@ const ApplicantOffer = () => {
         };
     }, [id]);
 
-    return (
+    return IsLoading ? <PageLoader /> : (
         <div className="max-w-[678px] w-full m-auto">
             <div className={`font-bold ${CurrentItem?.status?.toLowerCase() === 'accepted' ? "text-emerald-600" :
                 CurrentItem?.status?.toLowerCase() === 'rejected' ? "text-red-700" : "text-neutral-1200"} text-2xl ml-4 mt-8 capitalize`}>Job Offered - {CurrentItem.status}</div>
@@ -202,7 +209,7 @@ const ApplicantOffer = () => {
                         title={FormData.title}
                         description={FormData.description}
                         isOpen={OpenAlterMessage}
-                        setIsOpen={(isOpen) =>
+                        setIsOpen={() =>
                             setOpenAlterMessage(false)
                         }
                         buttonType={FormData.buttonType}

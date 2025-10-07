@@ -163,6 +163,11 @@ export const APPLICANT_TAB_CONFIG = [
         permission: "VIEW_REJECTED_APPLICATION",
         component: () => <AllApplicants variant="blacklisted" />,
     },
+    {
+        label: "Hired",
+        permission: "VIEW_REJECTED_APPLICATION",
+        component: () => <AllApplicants variant="hired" />,
+    },
 ];
 
 

@@ -2402,3 +2402,26 @@ export const getApplicantOfferDetails = async (uuid) => {
   }
 };
 
+export const saveApplicantOfferResponse = async (uuid, accepted) => {
+  try {
+    debugger
+    const url = `${baseUrl}/offers/${uuid}/${accepted ? "accept" : "reject"}/`;
+    const method = "POST"; // Determine method based on existence of id
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+

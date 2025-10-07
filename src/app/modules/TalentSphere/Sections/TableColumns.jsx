@@ -1201,6 +1201,22 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
+    ...(variant === 'hired' ? [
+        {
+            dataField: "offers_tracking",
+            text: "Final Offer",
+            minWidth: '300px',
+            formatter: (cell) => {
+                // const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
+                return (<div>
+                    <div><span className="font-bold">Joining Date: </span>{renderDate(cell.joining_date, '--', 'date')}</div>
+                    <div><span className="font-bold">Sent By: </span><EmployeeName value={cell?.sent_by} /></div>
+                    <div><span className="font-bold">Sent Date: </span>{renderDate(cell?.sent_on, "--")}</div>
+                </div>
+                );
+            },
+        },
+    ] : []),
     ...(variant === 'in_progress' ? [
         {
             dataField: "interviews",

@@ -5,7 +5,7 @@ import {
 } from "components";
 import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
 import { StatusLabel, StatusButtons } from "components";
-import { getOfferTrackingData, UpdateOfferTrackingStatus } from "app/hooks/talentSphere";
+import { getOfferTrackingData, UpdateOfferTrackingStatus, saveUpdateApplicant } from "app/hooks/talentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
@@ -28,6 +28,9 @@ const ViewFinalOffer = ({
         try {
             const response = await UpdateOfferTrackingStatus({ ...data, status: status }, data.id);
             if (response) {
+                if (status === 'hired')
+                    await saveUpdateApplicant({ status: status }, data.applicant);
+
                 setForceLoad(!forceLoad)
             }
         } catch (error) {
@@ -134,7 +137,7 @@ const ViewFinalOffer = ({
                     formatter: (cell) => (cell || []).map((log, index) => (
                         <div key={index} className="mb-1">
                             <div className="text-sm text-neutral-1100 capitalize">
-                                {log?.old_status} → {log?.new_status}{" "}
+                                {log?.old_status || 'draft'} → {log?.new_status}{" "}
                                 <span className="text-gray-1100">
                                     by <EmployeeName value={log?.changed_by} />
                                 </span>
@@ -153,10 +156,11 @@ const ViewFinalOffer = ({
                 if (!data || !data.status) return null;
                 const joining_date_passed = moment(data.joining_date).startOf('day').isSameOrBefore(moment().startOf('day'))
                 const validity_date_passed = moment(data.validity_date).startOf('day').isSameOrBefore(moment().startOf('day'))
-                if (data?.status?.toLowerCase() === 'pending' && UpdatePermitted)
+                const status = data?.status?.toLowerCase();
+                if (UpdatePermitted)
                     return (
                         <div className="flex flex-wrap justify-end gap-2 my-5">
-                            {validity_date_passed &&
+                            {validity_date_passed && status === 'pending' &&
                                 <Button
                                     variant="continue"
                                     onClick={(event) => handleSubmit(event, "withdrawn", data)}
@@ -164,7 +168,7 @@ const ViewFinalOffer = ({
                                     Withdraw
                                 </Button>
                             }
-                            {joining_date_passed &&
+                            {joining_date_passed && status === 'approved' &&
                                 <>
                                     <Button
                                         variant="default"

@@ -39,6 +39,7 @@ const AllApplicants = ({ reload, variant = 'all' }) => {
                 ...(variant === 'blacklisted' ? { status: 'blacklisted' } : {}),
                 ...(variant === 'screened' ? { status: 'screened' } : {}),
                 ...(variant === 'in_progress' ? { status: 'in_progress' } : {}),
+                ...(variant === 'hired' ? { status: 'hired' } : {}),
             }
             const response = await getApplicantsList({
                 filterData: filters,
