@@ -1242,13 +1242,11 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const VacancyData = await getVacancyData(Response.published_vacancy);
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
       const OfferLetterData = await getOfferLetterByApplicantId(Response.id);
-      const OfferTrackerData = await getOfferTrackerByApplicantId(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
       const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
       return {
         interview_feedbacks: Feedbacks.results || [],
         offer_letter: OfferLetterData,
-        offer_tracker: OfferTrackerData,
         resume_bank: ResumeBankData,
         vacancy_details: VacancyData,
         ...ResponseData,
@@ -2404,7 +2402,6 @@ export const getApplicantOfferDetails = async (uuid) => {
 
 export const saveApplicantOfferResponse = async (uuid, accepted) => {
   try {
-    debugger
     const url = `${baseUrl}/offers/${uuid}/${accepted ? "accept" : "reject"}/`;
     const method = "POST"; // Determine method based on existence of id
     const response = await axios({

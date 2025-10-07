@@ -58,6 +58,30 @@ const ApplicantOffer = () => {
     // Define the fields to display
     const fields = [
         {
+            title: "",
+            field: [{
+                key: 'status',
+                formatter: (cell) => {
+                    const status = cell?.toLowerCase();
+                    if (!status) return null;
+                    return status === 'accepted' ? (
+                        <div className="flex flex-wrap justify-end gap-2 items-center">
+                            We are delighted to know that you have accepted our offer and officially welcome you to our organization. 🎉
+                            As the first step of your onboarding process, our team will be sharing your login credentials along with initial setup guidelines. Please keep an eye on your inbox for further instructions.
+                            We look forward to having you on board and wish you a successful journey with us.
+                            <br /> Best regards,
+                            <br /> HR Team
+                        </div>
+                    ) : (
+                        <div className="flex flex-wrap justify-end gap-2 items-center">
+                            Thank you for informing us of your decision regarding our offer. While we are of course a bit disappointed that you will not be joining Tecbrix, we respect your choice and wish you success in your future endeavors.
+                            We truly appreciate the time and effort you invested during our selection process, and we would be happy to reconnect for any suitable opportunities in the future.
+                        </div>
+                    );
+                },
+            }]
+        },
+        {
             title: "Applicant Information",
 
             field: [
