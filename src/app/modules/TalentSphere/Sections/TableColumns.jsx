@@ -292,7 +292,7 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
         dataSort: true,
     },
     {
-        dataField: "attachment_url",
+        dataField: "letterhead",
         text: "Letter Head",
         formatter: (cell) => (
             <>
@@ -323,11 +323,11 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
         formatter: (cell) => renderDate(cell),
     },
     {
-        dataField: "status",
+        dataField: "is_active",
         text: "Status",
         formatter: (cell, row) => {
             return (
-                <OfferLetterTemplateStatusTogle data={row} status={cell} reloadData={reloadData} />
+                <OfferLetterTemplateStatusTogle data={row} is_active={cell} reloadData={reloadData} />
             );
         },
     },

@@ -43,6 +43,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 if (isMounted) {
                     setFormData({ ...response });
                     setFormValues({ ...response });
+                    renderConsumedBudgetStatus(response.consumed_budget, response.total_allocated_budget)
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
@@ -90,8 +91,8 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 const response = await getEmployeeList({ filterData });
                 if (response) {
                     handleChange("existing_headcount", response.count);
-                    const consumed_budget = calculateTotal(response.results, 'basic_salary')
-                    handleChange("consumed_budget", consumed_budget);
+                    const consumed_budget = calculateTotal(response.results || [], 'basic_salary')
+                    handleChange("consumed_budget", consumed_budget || 0);
                 }
             } else {
                 handleChange("existing_headcount", 0);
@@ -103,11 +104,12 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
         }
     };
 
-    const renderConsumedBudgetStatus = async (consumed_budget, total_budget, handleChange) => {
+    const renderConsumedBudgetStatus = async (consumed_budget, total_budget) => {
         try {
-            if (consumed_budget && total_budget) {
+            if ((consumed_budget !== null || consumed_budget !== undefined) && (total_budget !== null || total_budget !== undefined)) {
+                debugger
                 const percentage = calculatePercentage(consumed_budget, total_budget);
-                const consumed_budget_status = getConsumedBudgetStatus(percentage)
+                const consumed_budget_status = getConsumedBudgetStatus(percentage || 0)
                 setBudgetStatus(consumed_budget_status);
             } else {
                 setBudgetStatus(null);

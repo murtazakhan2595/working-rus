@@ -51,6 +51,9 @@ export const OfferLetterTemplate = {
     created_by: null,
     created_on: null,
     updated_on: null,
+    letterhead: null,
+    name: null,
+    subject: null,
 }
 
 export const RemoteWorkChecklist = {

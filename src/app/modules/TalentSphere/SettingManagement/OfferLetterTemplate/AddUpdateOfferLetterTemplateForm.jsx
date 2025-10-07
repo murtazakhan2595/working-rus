@@ -1,6 +1,7 @@
 import { saveUpdateOfferLetterTemplate, getOfferLetterTemplateList, getOfferLetterTemplateData } from "app/hooks/talentSphere";
 import { OfferLetterTemplate } from "app/utils/Types/TalentSphere";
 import { SheetUI } from "components";
+import { CoverFileUpload } from "components/FormControl";
 import { TextInput, TextEditorInputField, RadioGroupInput } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -135,6 +136,18 @@ const AddUpdateOfferLetterTemplateForm = ({
                 label: "Name",
                 validateDuplicate: true,
               },
+              {
+                InputField: TextInput,
+                name: "subject",
+                label: "Title",
+                validateDuplicate: true,
+                description: <div>
+                  Use the following placeholders to insert dynamic data:
+                  <ul className="[list-style:disc] ml-4">
+                    <li>Applicant Name → <code>{'{{ applicant_name }}'}</code></li>
+                  </ul>
+                </div>
+              },
 
               {
                 InputField: TextEditorInputField,
@@ -151,6 +164,12 @@ const AddUpdateOfferLetterTemplateForm = ({
                     <li>Work Location → <code>{'{{ work_location }}'}</code></li>
                   </ul>
                 </div>
+              },
+              {
+                InputField: CoverFileUpload,
+                name: "letterhead",
+                required: true,
+                label: "Letter Header",
               },
             ],
           },

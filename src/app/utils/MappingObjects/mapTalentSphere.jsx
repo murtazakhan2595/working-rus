@@ -524,7 +524,7 @@ export function mapRequisitionRequestPayloadData(data, id) {
                 if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
                 else if (key === 'attachment') {
                     if (data[key] instanceof File) formData.append(key, data[key])
-                } else if (['remote_work_checklist', 'benefits','required_skillset'].includes(key)) {
+                } else if (['remote_work_checklist', 'benefits', 'required_skillset'].includes(key)) {
                     if (Array.isArray(data[key]) && data[key].length > 0) {
                         for (const value of data[key]) {
                             formData.append(key, value)
@@ -636,15 +636,15 @@ export function mapApplicantsData(data) {
         RecordDetails.ai_suggested = data.ai_suggested;
     }
 
-    if (data.hasOwnProperty("ai_matched_skills")){
-         RecordDetails.ai_matched_skills = data.ai_matched_skills;
-    }
-    
-    if (data.hasOwnProperty("ai_missing_skills")){
-         RecordDetails.ai_missing_skills = data.ai_missing_skills;
+    if (data.hasOwnProperty("ai_matched_skills")) {
+        RecordDetails.ai_matched_skills = data.ai_matched_skills;
     }
 
-    if (data.hasOwnProperty("ai_match_score")){
+    if (data.hasOwnProperty("ai_missing_skills")) {
+        RecordDetails.ai_missing_skills = data.ai_missing_skills;
+    }
+
+    if (data.hasOwnProperty("ai_match_score")) {
         RecordDetails.ai_match_score = data.ai_match_score;
     }
 
@@ -908,7 +908,6 @@ export function mapOfferLetterTemplateData(data) {
     const RecordDetails = Object.keys(OfferLetterTemplate).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key].trim()
-            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
         return acc;
@@ -930,6 +929,26 @@ export async function mapOfferLetterTemplateList(data) {
 }
 
 export function mapOfferLetterTemplatePayloadData(data, id) {
+    // Initialize an empty payload object
+    const formData = new FormData();
+    // Iterate over the keys in the HeadcountRequest object
+    for (const key in OfferLetterTemplate) {
+        // Check if the key exists in the data object
+        if (
+            data.hasOwnProperty(key) &&
+            data[key] !== null &&
+            data[key] !== undefined
+        ) {
+            if (key === "name" || key === 'description') formData.append(key, data[key].trim());
+            else if (key === 'letterhead') {
+                if (data[key] instanceof File) formData.append(key, data[key])
+            }
+            else formData.append(key, data[key])
+        }
+    }
+
+    // Return the constructed payload
+    return formData;
     // Initialize an empty payload object
     const payload = {};
     // Iterate over the keys in the OfferLetterTemplate object
@@ -1001,8 +1020,8 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             RecordDetails[key] = await mapApproverDetails({ ...data, });
         } else {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
-                if(key==='status' && data[key]==='pending_approval')
-                RecordDetails[key] = 'pending';
+                if (key === 'status' && data[key] === 'pending_approval')
+                    RecordDetails[key] = 'pending';
                 else RecordDetails[key] = data[key];
             }
         }

@@ -2100,7 +2100,7 @@ export const saveUpdateOfferLetterTemplate = async (payload, id) => {
       method,
       url,
       data: finalPayload,
-      headers: headers(),
+      headers: formDataHeader(),
     });
 
     if (response.status === expectedStatus) {

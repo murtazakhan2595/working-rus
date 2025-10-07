@@ -6,8 +6,8 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
-    const isEditPermitted = HasAccess("EDIT_TS_OfferLetterTemplateS");
-    const isDeletePermitted = HasAccess("DELETE_TS_OfferLetterTemplateS");
+    const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
+    const isDeletePermitted = HasAccess("DELETE_TS_BENEFITS");
     // const isViewPermitted = HasAccess("VIEW_MANPOWER");
     // const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
