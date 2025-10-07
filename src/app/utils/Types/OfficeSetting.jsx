@@ -26,6 +26,11 @@ export const GraceTime = {
   created_at: null,
   branches: null,
 };
+export const Currency = {
+  name: null,
+  code: null,
+  id: null,
+};
 
 
 export const ClearanceChecklist = {

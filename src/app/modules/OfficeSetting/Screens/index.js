@@ -9,6 +9,12 @@ import EvaluationType from "./EvaluationType";
 import AddEvaluationType from "./EvaluationType/AddEvaluationType";
 import AddRatingScaleSetup from "./RatingScaleSetup/AddRatingScaleSetup";
 import RatingScaleSetup from "./RatingScaleSetup";
+import {
+  Currencies,
+  AddUpdateCurrencyForm,
+  CurrencyActions,
+  AddCurrency,
+} from './Currencies';
 
 export {
   Departments,
@@ -22,4 +28,8 @@ export {
   AddEvaluationType,
   RatingScaleSetup,
   AddRatingScaleSetup,
+  Currencies,
+  AddUpdateCurrencyForm,
+  CurrencyActions,
+  AddCurrency,
 };

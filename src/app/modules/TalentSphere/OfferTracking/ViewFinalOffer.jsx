@@ -101,7 +101,6 @@ const ViewFinalOffer = ({
                 {
                     key: "designation",
                     label: "Designation",
-                    // formatter: (cell) => <EmployeeName value={cell} />
                 },
                 {
                     key: "work_location",
@@ -127,17 +126,27 @@ const ViewFinalOffer = ({
                 },
             ],
         },
-        // {
-        //     title: "Approval Details",
-        //     field: [
-        //         {
-        //             key: "approval_details",
-        //             formatter: (cell) => (
-        //                 <StatusList status_list={cell} className="my-3" />
-        //             ),
-        //         },
-        //     ],
-        // },
+        {
+            title: "Audit Logs",
+            field: [
+                {
+                    key: "audit_logs",
+                    formatter: (cell) => (cell || []).map((log, index) => (
+                        <div key={index} className="mb-1">
+                            <div className="text-sm text-neutral-1100 capitalize">
+                                {log?.old_status} → {log?.new_status}{" "}
+                                <span className="text-gray-1100">
+                                    by <EmployeeName value={log?.changed_by} />
+                                </span>
+                            </div>
+                            <div className="text-xs text-gray-900">
+                                {renderDate(log?.changed_on)}
+                            </div>
+                        </div>
+                    )),
+                },
+            ],
+        },
         {
             customContent: true,
             renderContent: (data) => {

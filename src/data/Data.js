@@ -52,6 +52,7 @@ export const CurrencyList = countries.all.map((country) => {
     value: country.currencies[0] ?? "USD",
     label: `${country.currencies[0] ?? "USD"} - ${country.name}`,
     currency: country.currencies[0] ?? "USD",
+    country: country.name,
   };
 });
 

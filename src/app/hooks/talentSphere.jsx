@@ -1971,7 +1971,7 @@ export const getOfferTrackingData = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapOfferTrackingData(Response);
-      const OfferLetterData = await getOfferLetterData(Response.offer_letter);
+      const OfferLetterData = await getOfferLetterData(Response.offer_letter, false);
       return { ...(OfferLetterData || {}), ...ResponseData };
     }
   } catch (error) {
@@ -2161,15 +2161,15 @@ export const getOfferLetterByApplicantId = async (applicant) => {
     return null;
   }
 };
-export const getOfferLetterData = async (id) => {
+export const getOfferLetterData = async (id, approvalDetails = true) => {
   try {
     const response = await axios.get(`${baseUrl}/recruitment-offer-letters/${id}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const Response = response.data;
-      const currentapprover = await getCurrentRequestApprover(Response.request);
-      const ResponseData = await mapOfferLetterData({ ...Response, ...currentapprover, }, true);
+      const currentapprover = approvalDetails && Response.request ? await getCurrentRequestApprover(Response.request) : {};
+      const ResponseData = await mapOfferLetterData({ ...Response, ...currentapprover, }, approvalDetails);
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {

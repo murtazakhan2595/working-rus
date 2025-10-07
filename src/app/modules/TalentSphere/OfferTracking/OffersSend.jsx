@@ -13,15 +13,9 @@ import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const OffersSend = ({ isTeamView = false, activeView = "Requests" }) => {
-    const {
-        id: user_id,
-        branch_id: user_branch,
-        department_name: user_department,
-    } = GetDispatchStateList("user_details", "emp") || {};
-
+const OffersSend = ({ isTeamView = false, activeView = "Pending" }) => {
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({status:'pending'});
+    const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
     const [OfferLetterList, setOfferLetterList] = useState();
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -86,7 +80,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Requests" }) => {
         if (tab === "Not Joined") {
             setFilterData((prev) => ({
                 ...prev,
-                // status: "pending",
+                status: "not_joined",
             }));
         } else {
             setFilterData((prev) => ({

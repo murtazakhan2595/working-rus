@@ -10,18 +10,11 @@ import { PageLoader, TableCustom } from "components";
 import { getOfferLetterList } from "app/hooks/talentSphere";
 import { OfferLetterRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
-import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
-    const {
-        id: user_id,
-        branch_id: user_branch,
-        department_name: user_department,
-    } = GetDispatchStateList("user_details", "emp") || {};
-
+const OfferRequests = ({ activeView = "Requests" }) => {
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState();
+    const [filterData, setFilterData] = useState({status:["pending_approval","draft"]});
     const [isLoading, setIsLoading] = useState(true);
     const [OfferLetterList, setOfferLetterList] = useState();
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -93,7 +86,7 @@ const OfferRequests = ({ isTeamView = false, activeView = "Requests" }) => {
         if (tab === "Requests") {
             setFilterData((prev) => ({
                 ...prev,
-                // status: "pending",
+                 status: ["pending_approval","draft"],
             }));
         } else if (tab === "Records") {
             setFilterData((prev) => ({
