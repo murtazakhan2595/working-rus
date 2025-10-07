@@ -7,7 +7,7 @@ import {
 import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, StatusButtons } from "components";
-import { getOfferLetterData, saveUpdateHeadcountRequest } from "app/hooks/talentSphere";
+import { getApplicantOfferDetails, saveUpdateHeadcountRequest } from "app/hooks/talentSphere";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -57,21 +57,21 @@ const ApplicantOffer = () => {
 
             field: [
                 {
-                    key: "applicant",
+                    key: "applicant_id",
                     label: "Applicant Id",
                     formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
                 },
                 {
-                    key: "branch",
+                    key: "applicant_name",
                     label: "Applicant Name",
                 },
                 {
-                    key: "department_name",
+                    key: "applicant_email",
                     label: "Email",
                 },
 
                 {
-                    key: "attachment_url",
+                    key: "applicant_contact_number",
                     label: "Contact Number",
                 },
 
@@ -79,42 +79,33 @@ const ApplicantOffer = () => {
         },
         {
             title: "Job Information",
-
             field: [
                 {
-                    key: "branch",
+                    key: "job_title",
                     label: "Job Position",
                 },
                 {
-                    key: "department_name",
+                    key: "job_description",
                     label: "Job Description",
                 },
                 {
-                    key: "attachment_url",
+                    key: "department",
                     label: "Department",
                 },
                 {
-                    key: "attachment_url",
+                    key: "branch",
                     label: "Branch",
                 },
                 {
-                    key: "attachment_url",
-                    label: "Designation",
-                },
-                {
-                    key: "reporting_manager",
-                    label: "Reporting Manager",
-                },
-                {
-                    key: "attachment_url",
+                    key: "work_location",
                     label: "Work Location",
                 },
                 {
-                    key: "attachment_url",
+                    key: "job_type",
                     label: "Job Type",
                 },
                 {
-                    key: "attachment_url",
+                    key: "work_mode",
                     label: "Work Mode",
                 },
             ],
@@ -123,16 +114,16 @@ const ApplicantOffer = () => {
             title: "Offer Details",
             field: [
                 {
-                    key: "offered_salary",
+                    key: "offer_salary",
                     label: "Offered Salary",
                 },
                 {
-                    key: "expected_joining_date",
+                    key: "joining_date",
                     label: "Joining Date",
                     formatter: (cell) => renderDate(cell),
                 },
                 {
-                    key: "expected_joining_date",
+                    key: "validity_date",
                     label: "Offer Validity",
                     formatter: (cell) => renderDate(cell),
                 },
@@ -143,7 +134,7 @@ const ApplicantOffer = () => {
             title: `Offer Letter`,
             field: [
                 {
-                    key: 'final_letter_pdf',
+                    key: 'offer_letter_pdf',
                     formatter: (cell, data) =>
                         cell ? (
                             <AttachmentUI
@@ -183,7 +174,7 @@ const ApplicantOffer = () => {
         const fetchData = async (isMounted, id) => {
             try {
                 setIsLoading(true);
-                const response = await getOfferLetterData(id);
+                const response = await getApplicantOfferDetails(id);
                 if (isMounted) {
                     setCurrentItem({ ...response });
                 }

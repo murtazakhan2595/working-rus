@@ -64,17 +64,13 @@ const ViewFinalOffer = ({
                     label: "Applicant Name",
                 },
                 {
-                    key: "department_name",
+                    key: "applicant_email",
                     label: "Email",
                 },
 
                 {
-                    key: "attachment_url",
+                    key: "applicant_contact_number",
                     label: "Contact Number",
-                },
-                {
-                    key: "requested_by_name",
-                    label: "Job Title",
                 },
             ],
         },
@@ -108,17 +104,8 @@ const ViewFinalOffer = ({
                     // formatter: (cell) => <EmployeeName value={cell} />
                 },
                 {
-                    key: "reporting_manager",
-                    label: "Reporting Manager",
-                    formatter: (cell) => <EmployeeName value={cell} />
-                },
-                {
                     key: "work_location",
                     label: "Work Location",
-                },
-                {
-                    key: "remarks",
-                    label: "Remarks",
                 },
             ],
         },

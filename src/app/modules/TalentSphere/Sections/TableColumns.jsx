@@ -1450,7 +1450,7 @@ export const OfferTrackingColumns = (reloadData, isRecord = false) => [
         text: "Job Title",
     },
     {
-        dataField: "offered_salary",
+        dataField: "department",
         text: "Department",
     },
     {

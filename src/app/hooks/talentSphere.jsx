@@ -2383,3 +2383,22 @@ export const getTalentSphereSummary = async () => {
     return [];
   }
 };
+
+export const getApplicantOfferDetails = async (uuid) => {
+  try {
+    const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      return Response;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
