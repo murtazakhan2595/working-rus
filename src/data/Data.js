@@ -392,18 +392,22 @@ export const BudgetStatusOptions = [
   {
     value: "Within Budget",
     label: (<StatusLabel status={'success'}>Within Budget</StatusLabel>),
+    percentage: "0,50",
   },
   {
     value: "Approaching Limit",
     label: (<StatusLabel status={'warning'}>Approaching Limit</StatusLabel>),
+    percentage: "50.001,70",
   },
   {
     value: "Near Threshold",
     label: (<StatusLabel status={'alarming'}>Near Threshold</StatusLabel>),
+    percentage: "70.001,80",
   },
   {
     value: "Over Budget",
     label: (<StatusLabel status={'error'}>Over Budget</StatusLabel>),
+    percentage: "90.001,1000",
   },
 ];
 

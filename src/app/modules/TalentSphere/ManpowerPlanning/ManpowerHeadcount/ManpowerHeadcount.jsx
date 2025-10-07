@@ -5,6 +5,8 @@ import { getManpowerPlanningList } from "app/hooks/talentSphere";
 import { FilterInput } from "components/FormControl";
 import { ManpowerPlanningColumns } from "app/modules/TalentSphere/Sections";
 import { yearsDropdownList } from 'utils/Lists';
+import { BudgetStatusOptions } from "data/Data";
+import { getDropdownList } from "utils/Lists";
 
 export default function ManpowerHeadcount({ reload }) {
     const [ManpowerPlanningList, setManpowerPlanningList] = useState({
@@ -72,12 +74,15 @@ export default function ManpowerHeadcount({ reload }) {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+                if (filterName === 'consumed_percentage')
+                    updatedFilters[filterName] = filterValue?.split(",");
+                else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
     };
     const YearsDropdown = React.useMemo(() => yearsDropdownList(2020, 2030), []);
+    const BudgetStatusDropdown = React.useMemo(() => getDropdownList(BudgetStatusOptions, 'label', 'percentage'), [BudgetStatusOptions]);
 
     return (
         <>
@@ -105,6 +110,12 @@ export default function ManpowerHeadcount({ reload }) {
                             options: "branches",
                             name: "branch",
                             placeholder: "Branch",
+                        },
+                        {
+                            type: "select",
+                            options: BudgetStatusDropdown,
+                            name: "consumed_percentage",
+                            placeholder: "Consumed Budget",
                         },
                     ]}
                     onChange={handleFilterChange}
