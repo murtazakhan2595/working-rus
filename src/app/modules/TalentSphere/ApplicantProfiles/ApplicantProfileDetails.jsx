@@ -50,7 +50,7 @@ export default function ApplicantProfileDetails() {
         <div className="flex flex-col gap-4">
             <Header
                 showBackButton={true}
-                navigationLink={'/talent-sphere/applicants-profile'}
+                navigationLink={'/talent-sphere/applicant-management-profile'}
                 content={ApplicantData.status === 'hired' && <Button>Create Employee</Button>}
             />
             <Card>
