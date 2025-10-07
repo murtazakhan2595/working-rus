@@ -797,7 +797,7 @@ export const getRequisitionRequestList = async (payload) => {
 
 export const getRequisitionStats = async (payload) => {
   try {
-    const response = await getRequisitionRequestList();
+    const response = await getRequisitionRequestList(payload);
     if (response) {
       const ResponseData = response.results;
       const StatData = mapRequisitionStatsData(ResponseData);

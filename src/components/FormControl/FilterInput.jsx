@@ -181,6 +181,19 @@ const FilterInput = ({
                   resetField={resetFields}
                 />
               );
+            case "numeric-range":
+              return (
+                <RenderNumericRangeField
+                  className={FilterClassName}
+                  width={width ?? DefaultWidth}
+                  name={name}
+                  placeholder={placeholder}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                  value={filterValues[name] || null}
+                  resetField={resetFields}
+                />
+              );
             case "select":
               return (
                 <RenderSelectInputField
@@ -269,6 +282,69 @@ const FilterInput = ({
   );
 };
 
+const RenderNumericRangeField = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    placeholder,
+    height = "",
+    handleInputChange = () => { },
+    value,
+    resetField,
+  }) => {
+    const [inputValue, setInputValue] = useState(value);
+    useEffect(() => {
+      let isMounted = true;
+      if (isMounted) {
+        setInputValue(null);
+      }
+      return () => {
+        isMounted = false;
+      };
+    }, [resetField]);
+    const handleChange = (_, value) => {
+      let newValue = value;
+      // Always ensure one "-"
+      if (!newValue.includes("-")) {
+        // If user deletes the "-", reinsert it smartly
+        const lastValue = inputValue;
+        if (!lastValue) {
+          newValue = newValue + "-";
+        } else {
+          const cursorWasBeforeDash = lastValue.indexOf("-") >= 0 && value.length < lastValue.length && lastValue.indexOf("-") >= value.length;
+          if (cursorWasBeforeDash) newValue = "-" + newValue;
+          else newValue = newValue + "-";
+        }
+      }
+
+      // Allow only digits and a single '-'
+      newValue = newValue.replace(/[^0-9-]/g, "");
+
+      // Prevent multiple '-'
+      const parts = newValue.split("-");
+      if (parts.length > 2) newValue = parts[0] + "-" + parts[1];
+
+      // Ensure at least one '-'
+      if (newValue === "") newValue = "-";
+
+      setInputValue(newValue);
+      handleInputChange?.(name, parts);
+    };
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+        <TextInput
+          type={"text"}
+          placeholder={placeholder}
+          className={`rounded-sm text-neutral-1000`}
+          name={name}
+          value={inputValue || ""}
+          onChange={handleChange}
+        />
+      </div>
+    );
+  }
+);
 const RenderInputField = React.memo(
   ({
     className = "",

@@ -861,7 +861,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         formatter: (cell) => <StatusLabel variant={cell ? 'info-secondary' : 'info'}>{cell ? 'Required' : 'Not Required'}</StatusLabel>
     },
     ...(!isTeamView ? [{
-        dataField: "approval_requied",
+        dataField: "approval_required",
         text: "Approval Requied",
         formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
     },] : []),

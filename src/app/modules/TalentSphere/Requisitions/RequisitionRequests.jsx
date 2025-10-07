@@ -67,7 +67,8 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     const fetchData = async (isMounted) => {
         try {
             setIsLoading(true);
-            const HeadCountRequestList = await getRequisitionRequestList({ filterData, options, ordering, });
+            const filters={...filterData,approval_required:true}
+            const HeadCountRequestList = await getRequisitionRequestList({ filterData:filters, options, ordering, });
             if (HeadCountRequestList && isMounted) {
                 setHeadCountRequestList(HeadCountRequestList);
             }

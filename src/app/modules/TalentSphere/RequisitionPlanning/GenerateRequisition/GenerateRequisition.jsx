@@ -53,8 +53,9 @@ const GenerateRequisition = ({ reload }) => {
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
+            const filters={...filterData,approval_required:false}
             const response = await getRequisitionRequestList({
-                filterData,
+                filterData:filters,
                 options,
                 ordering,
             });
@@ -110,6 +111,11 @@ const GenerateRequisition = ({ reload }) => {
                     <FilterInput
                         filters={[
                             {
+                                type: "search",
+                                name: "job_title",
+                                    placeholder: "Job Title",
+                            },
+                            {
                                 type: "select",
                                 options: "Departments",
                                 name: "department",
@@ -143,7 +149,11 @@ const GenerateRequisition = ({ reload }) => {
                                 name: "work_mode",
                                 placeholder: "Work Mode",
                             },
-
+                            {
+                                type: "numeric-range",
+                                name: "salary_range",
+                                placeholder: "Salary Range",
+                            },
                             {
                                 type: "select",
                                 options: [...GlobalStatusOptions(false),],
