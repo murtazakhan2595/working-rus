@@ -1,53 +1,152 @@
-// src/app/modules/PerformanceEdge/PerformanceDashboard/PerformanceDashboard.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
-    Card,
-    CardContent,
-    CardTitle,
-    CardDescription,
-    CardHeader,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "components/ui/card";
 import { Button } from "components/ui/button";
-import {
-    getDashboardMetrics,
-    getBulkDashboardData,
-} from "app/hooks/performanceEdge";
-import { PageLoader, TableCustom } from "components";
+import { FilterInput } from "components/FormControl";
 import { useSelector } from "react-redux";
-import { HasAccess } from "utils/PermissionUtils";
-import {
-    Tabs,
-    TabsList,
-    TabsTrigger,
-    TabsContent,
-} from "src/@/components/ui/tabs";
-import { OverAllStats } from 'app/modules/TalentSphere/Dashboard';
+import { PageLoader } from "components";
+
+// Import section components
+import KPICards from "./KPICards";
+import RecruitmentFunnel from "./RecruitmentFunnel";
+import AIInsightsWidget from "./AIInsightsWidget";
+import UpcomingInterviews from "./UpcomingInterviews";
+import OfferTrackerWidget from "./OfferTrackerWidget";
+import ApplicantSources from "./ApplicantSources";
+import EmiratizationWidget from "./EmiratizationWidget";
+import { useTalentSphereDashboard } from "./useTalentSphereDashboard";
 
 const TalentSphereDashboard = () => {
-    // const isAdminView = HasAccess("VIEW_PERFORMANCE_DASHBOARD");
-    // const isBranchView = HasAccess("VIEW_BRN_PERFORMANCE_DASHBOARD");
-    // const isDepartmentView = HasAccess("VIEW_DPT_PERFORMANCE_DASHBOARD");
-    // const isManagerView = HasAccess("VIEW_MANAGER_PERFORMANCE_DASHBOARD");
-    const isAdminView = true;
-    const isBranchView = true;
-    const isDepartmentView = true;
-    const isManagerView = true;
+  const Departments = useSelector((state) => state.common.departments);
+  const [filterData, setFilterData] = useState({});
 
-    const Departments = useSelector((state) => state.common.departments);
-    const Branches = useSelector((state) => state.common.branches);
-    const Designations = useSelector((state) => state.common.designations);
-    const {
-        branch_id: user_branch,
-        department_name: user_department,
-        id: user_id,
-    } = useSelector((state) => state.emp.user_details);
+  // Use our custom hook
+  const {
+    loading,
+    summaryData,
+    funnelData,
+    interviewData,
+    offerData,
+    sourceData,
+    emiratizationData,
+    budgetWarnings,
+    hiringPredictions,
+    aiFlaggedData,
+    aiSuggestedCandidates,
+    fetchAISuggestedCandidates,
+    refetch,
+  } = useTalentSphereDashboard(filterData);
 
+  // Handle filter changes
+  const handleFilterChange = useCallback((filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (
+        filterValue === "" ||
+        filterValue === null ||
+        filterValue === undefined ||
+        (Array.isArray(filterValue) && filterValue.length === 0)
+      ) {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  }, []);
 
-    return (
-        <div className={`flex flex-col gap-4 mb-10 ${window.location.pathname.substring(1)}`}    >
-            <OverAllStats />
-        </div>
-    );
+  // Clear all filters
+  const handleClearFilters = useCallback(() => {
+    setFilterData({});
+  }, []);
+
+  // Dashboard filters
+  const dashboardFilters = [
+    {
+      type: "date-range",
+      name: "date_range",
+      placeholder: "Select Date Range",
+      values: filterData.date_range,
+    },
+    {
+      type: "select-one",
+      option: Departments,
+      name: "department",
+      placeholder: "Department",
+      values: filterData.department,
+    },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4 mb-10">
+      {/* Header */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl font-bold text-plum-1100">
+                Talent Sphere Dashboard
+              </CardTitle>
+              <CardDescription className="mt-2">
+                Comprehensive recruitment analytics and insights
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <FilterInput
+            filters={dashboardFilters}
+            filterValues={filterData}
+            onChange={handleFilterChange}
+            className="justify-end"
+          />
+        </CardContent>
+      </Card>
+
+      {loading && !summaryData ? (
+        <PageLoader />
+      ) : (
+        <>
+          {/* KPI Cards */}
+          <KPICards data={summaryData} loading={loading} />
+
+          {/* Charts Row 1: Funnel + AI Insights */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <RecruitmentFunnel data={funnelData} loading={loading} />
+            </div>
+            <div className="lg:col-span-1">
+              <AIInsightsWidget
+                budgetWarnings={budgetWarnings}
+                hiringPredictions={hiringPredictions}
+                aiFlaggedData={aiFlaggedData}
+                aiSuggestedCandidates={aiSuggestedCandidates}
+                fetchAISuggestedCandidates={fetchAISuggestedCandidates}
+                loading={loading}
+              />
+            </div>
+          </div>
+
+          {/* Charts Row 2: Interviews + Offers */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <UpcomingInterviews data={interviewData} loading={loading} />
+            <OfferTrackerWidget data={offerData} loading={loading} />
+          </div>
+
+          {/* Charts Row 3: Sources + Emiratization */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ApplicantSources data={sourceData} loading={loading} />
+            <EmiratizationWidget data={emiratizationData} loading={loading} />
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default TalentSphereDashboard;

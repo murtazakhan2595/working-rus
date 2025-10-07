@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "components/ui/card";
 import { useSelector } from "react-redux";
+import { clearanceStatusOptions } from "data/Data";
 
 export default function ClearanceRecords({
   options,
@@ -23,6 +24,7 @@ export default function ClearanceRecords({
   clearanceTypes,
 }) {
   const Departments = useSelector((state) => state.common.departments);
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -45,15 +47,19 @@ export default function ClearanceRecords({
     });
   };
 
+  // Filter to show only REJECTED and COMPLETED statuses for clearance records
+  const recordStatusOptions = clearanceStatusOptions.filter(
+    (option) => option.value === "REJECTED" || option.value === "COMPLETED"
+  );
+
   return (
     <div className="flex flex-col">
       <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
         <div>
-          <CardTitle className="text-primary">
-            Clearance Records
-          </CardTitle>
+          <CardTitle className="text-primary">Clearance Records</CardTitle>
           <CardDescription className="text-neutral-1100">
-            View historical records of all completed clearance processes. This tab serves as an audit log for compliance and reference.
+            View historical records of all completed clearance processes. This
+            tab serves as an audit log for compliance and reference.
           </CardDescription>
         </div>
       </CardHeader>
@@ -64,6 +70,12 @@ export default function ClearanceRecords({
               type: "search",
               name: "search",
               placeholder: "Search by employee name or ID",
+            },
+            {
+              type: "select",
+              options: recordStatusOptions, // Use filtered status options (only REJECTED and COMPLETED)
+              name: "status",
+              placeholder: "Clearance Status",
             },
             {
               type: "select-multi",
