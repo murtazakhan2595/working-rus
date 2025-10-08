@@ -28,6 +28,7 @@ const ViewApplicationDetail = ({
   const [OpenOfferForm, setOpenOfferForm] = useState(false);
   const [OpenInterviewForm, setOpenInterviewForm] = useState(false);
   const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
+  const [hasTriggeredAction, setHasTriggeredAction] = useState(false);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
@@ -96,16 +97,24 @@ const ViewApplicationDetail = ({
     return null; // Always return something
   };
 
-  // Auto-trigger actions if requested via deep-link
-  const afterLoadFields = React.useCallback((data) => {
-    if (!data || !autoAction) return null;
+  // Auto-trigger actions if requested via deep-link (only once)
+  const triggerAutoAction = React.useCallback((data) => {
+    if (!data || !autoAction || hasTriggeredAction) return;
+    
+    setHasTriggeredAction(true);
     if (autoAction === 'reschedule') {
       handleClick(null, 'reschedule-interview', data);
     } else if (autoAction === 'add-feedback') {
       handleClick(null, 'add-feedback', data);
     }
-    return null;
-  }, [autoAction, handleClick]);
+  }, [autoAction, handleClick, hasTriggeredAction]);
+
+  // Reset triggered action state when component opens/closes
+  React.useEffect(() => {
+    if (isOpen) {
+      setHasTriggeredAction(false);
+    }
+  }, [isOpen]);
 
   const fields = React.useMemo(
     () => [
@@ -115,8 +124,8 @@ const ViewApplicationDetail = ({
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
           if (!data || !data.status || !data.status.toLowerCase()) return null;
-          // Inject auto action trigger once data is present
-          afterLoadFields(data);
+          // Trigger auto action once when data is available
+          triggerAutoAction(data);
           const status = data.status.toLowerCase();
           let statusKey = status;
           if (status === 'in progress') {
@@ -144,7 +153,7 @@ const ViewApplicationDetail = ({
           })
         },
       },
-    ], [handleClick, afterLoadFields]
+    ], [handleClick, triggerAutoAction]
   );
 
   return (
