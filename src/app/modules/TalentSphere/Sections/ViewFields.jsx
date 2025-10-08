@@ -327,26 +327,6 @@ export const VacancyDetails = [
     ],
   },
 ]
-export const ResumeDetails = [
-  {
-    title: `Resume Details`,
-    field: [
-      {
-        key: "resume",
-        formatter: (cell, data) =>
-          cell ? (
-            <AttachmentUI
-              attachment={cell}
-              name={`${data.candidate_name} Resume`}
-              viewOnly={true}
-            />
-          ) : (
-            <div className="text-neutral-1000 text-sm">Resume not uploaded</div>
-          ),
-      },
-    ],
-  },
-]
 export const BlacklistedInformation = [
   {
     title: "Blacklisted Info",
