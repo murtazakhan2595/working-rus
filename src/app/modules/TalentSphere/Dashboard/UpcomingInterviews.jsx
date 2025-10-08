@@ -126,15 +126,23 @@ const UpcomingInterviews = ({ data, loading }) => {
                         </Badge>
                       )}
                     </div>
-
                     {interview.panel_members &&
                       interview.panel_members.length > 0 && (
-                        <div className="text-right">
-                          <div className="flex items-center gap-1 text-xs text-neutral-1000">
-                            <Users className="h-3 w-3" />
-                            <span>{interview.panel_members.length}</span>
+                        <div className="mt-2">
+                          <p className="text-[10px] text-neutral-900 mb-1">
+                            Panel Members:
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {interview.panel_members.map((name, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="secondary"
+                                className="text-[10px] px-2 py-0.5"
+                              >
+                                {name}
+                              </Badge>
+                            ))}
                           </div>
-                          <p className="text-[10px] text-neutral-900">Panel</p>
                         </div>
                       )}
                   </div>
