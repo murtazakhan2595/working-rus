@@ -6,6 +6,7 @@ import { PublishedVacancyColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
+import { ViewPublishedVacancies } from "app/modules/TalentSphere";
 
 const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => {
     const [RequisitionList, setRequisitionList] = useState({});
@@ -15,16 +16,32 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
     const [isLoading, setIsLoading] = useState(false);
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+    
+    // State for auto-opening detail sheet
+    const [viewSheetOpen, setViewSheetOpen] = useState(false);
+    const [selectedVacancyId, setSelectedVacancyId] = useState(null);
 
     // Handle deep link filtering
     useEffect(() => {
         if (deepLinkRequisition) {
             setFilterData(prev => ({
                 ...prev,
-                requisition_id: deepLinkRequisition
+                requisition: deepLinkRequisition  // Note: Published vacancies filter by 'requisition' field
             }));
         }
     }, [deepLinkRequisition]);
+    
+    // Auto-open sheet when data is loaded with deep link
+    useEffect(() => {
+        if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading) {
+            // Find the vacancy related to this requisition
+            const vacancy = RequisitionList.results[0]; // Usually should be only one per requisition
+            if (vacancy) {
+                setSelectedVacancyId(vacancy.id);
+                setViewSheetOpen(true);
+            }
+        }
+    }, [deepLinkRequisition, RequisitionList, isLoading]);
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -204,6 +221,23 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
                     />
                 )}
             </CardContent>
+            
+            {/* Auto-opened detail sheet when navigating from dashboard */}
+            {viewSheetOpen && selectedVacancyId && (
+                <ViewPublishedVacancies
+                    isOpen={viewSheetOpen}
+                    reloadData={() => {
+                        fetchData(true);
+                        setViewSheetOpen(false);
+                    }}
+                    setIsOpen={() => {
+                        setViewSheetOpen(false);
+                        setSelectedVacancyId(null);
+                    }}
+                    currentId={selectedVacancyId}
+                    DataList={RequisitionList?.results || []}
+                />
+            )}
         </>
     );
 };

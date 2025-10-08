@@ -55,21 +55,38 @@ const OpenRequisitions = ({ data, loading }) => {
   };
 
   const handlePublishVacancy = (row) => {
-    // Navigate to Generate Requisition tab with this specific requisition
+    // Navigate to Published Vacancies tab to view/edit published vacancy
+    // OR to Generate Requisition if not published yet
+    const targetTab = row.is_publish ? 'published-vacancies' : 'generate-requisition';
+    
     navigate(`/talent-sphere/requisition-planning`, {
       state: { 
         filterRequisition: row.id,
-        tab: 'generate-requisition',
-        action: 'publish',
+        tab: targetTab,
+        action: row.is_publish ? 'view' : 'publish',
         requisitionData: row
       }
     });
   };
 
   const handleViewApplicants = (row) => {
-    // Navigate to Applicant Management filtered by requisition
-    // Use consistent field name that backend expects
-    navigate(`/talent-sphere/applicant-management?requisition=${row.id}`);
+    // Backend expects 'published_vacancy_id' NOT 'requisition'
+    // For now, navigate to Published Vacancies tab, from there user can view applicants
+    // Alternative: Ask backend to add 'requisition__id' filter support
+    
+    // Option 1: Navigate to published vacancies filtered by this requisition
+    navigate(`/talent-sphere/requisition-planning`, {
+      state: { 
+        filterRequisition: row.id,
+        tab: 'published-vacancies',
+        action: 'view-applicants',
+        requisitionData: row
+      }
+    });
+    
+    /* Option 2: If backend adds support, uncomment this:
+    navigate(`/talent-sphere/applicant-management?published_vacancy__requisition=${row.id}`);
+    */
   };
 
   const columns = [
@@ -157,14 +174,24 @@ const OpenRequisitions = ({ data, loading }) => {
             </Button>
           )}
           {row.is_publish && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleViewApplicants(row)}
-              className="text-xs px-2 py-1"
-            >
-              View Applicants
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePublishVacancy(row)}
+                className="text-xs px-2 py-1"
+              >
+                View Vacancy
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleViewApplicants(row)}
+                className="text-xs px-2 py-1"
+              >
+                View Applicants
+              </Button>
+            </>
           )}
         </div>
       ),
