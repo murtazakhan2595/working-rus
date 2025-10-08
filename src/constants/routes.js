@@ -764,7 +764,7 @@ const GeneralRoutes = [
     name: "Applicant Offer",
   },
   {
-    path: "/demographics-form/:id",
+    path: "/demographics-form/:uuid",
     component: <DemographicsForm />,
     name: "Demographics Form",
   },

@@ -2420,3 +2420,41 @@ export const saveApplicantOfferResponse = async (uuid, accepted) => {
   }
 };
 
+// Get demographics form by UUID
+export const getDemographicFormByUUID = async (uuid) => {
+  try {
+    const response = await axios.get(`${baseUrl}/demographics/${uuid}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic form:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+// Submit demographic response
+export const submitDemographicResponse = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/demographic-responses/`,
+      formData,
+      { headers: formDataHeader() } // Use formDataHeader for file uploads
+    );
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error submitting demographic response:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
