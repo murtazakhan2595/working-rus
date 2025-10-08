@@ -196,7 +196,7 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: 'vacancy_details',
     },
     {
-        label: "Resume Download",
+        label: "Download Resume",
         infoFields: ResumeDetails,
     },
     {

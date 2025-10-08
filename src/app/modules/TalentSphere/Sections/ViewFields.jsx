@@ -227,7 +227,7 @@ export const ApplicantInformation = [
               viewOnly={true}
             />
           ) : (
-            <div className="text-neutral-1000 text-sm">No letter attached</div>
+            <div className="text-neutral-1000 text-sm">Resume not uploaded</div>
           ),
       },
     ],
@@ -341,7 +341,7 @@ export const ResumeDetails = [
               viewOnly={true}
             />
           ) : (
-            <div className="text-neutral-1000 text-sm">No letter attached</div>
+            <div className="text-neutral-1000 text-sm">Resume not uploaded</div>
           ),
       },
     ],
