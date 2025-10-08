@@ -82,6 +82,8 @@ const HeadCountRequests = ({ isTeamView = false, activeView = "Requests" }) => {
             } else {
                 if (filterName === "status")
                     updatedFilters[filterName] = filterValue.toLowerCase();
+                else if (filterName === 'requested_on')
+                    updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
 
@@ -137,11 +139,6 @@ const HeadCountRequests = ({ isTeamView = false, activeView = "Requests" }) => {
                 <FilterInput
                     filters={[
                         {
-                            type: "date-range",
-                            name: "requested_on",
-                            placeholder: "Requested Date",
-                        },
-                        {
                             type: "select-multiple",
                             options: "Departments",
                             name: "department",
@@ -153,11 +150,15 @@ const HeadCountRequests = ({ isTeamView = false, activeView = "Requests" }) => {
                             name: "branch",
                             placeholder: "Branch",
                         },
-                        {
-                            type: "select",
-                            options: 'Employees',
-                            name: "requested_by",
+                          {
+                            type: "search",
+                            name: "requested_by_name",
                             placeholder: "Requested By",
+                        },
+                        {
+                            type: "date-range",
+                            name: "requested_on",
+                            placeholder: "Requested Date",
                         },
                         ...(activeTab === "Records"
                             ? [

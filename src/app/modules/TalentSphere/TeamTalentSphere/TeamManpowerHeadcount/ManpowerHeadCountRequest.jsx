@@ -10,17 +10,10 @@ import { PageLoader, TableCustom } from "components";
 import { getHeadcountRequestList } from "app/hooks/talentSphere";
 import { HeadcountRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
-import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" }) => {
-    const {
-        id: user_id,
-        branch_id: user_branch,
-        department_name: user_department,
-    } = GetDispatchStateList("user_details", "emp") || {};
-
-    const [activeTab, setActiveTab] = useState(activeView);
+const ManpowerHeadCountRequest = ({ reload, activeView = "Requests" }) => {
+   const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: "pending" });
     const [isLoading, setIsLoading] = useState(true);
     const [HeadCountRequestList, setHeadCountRequestList] = useState({});
@@ -64,6 +57,16 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
             isMounted = false;
         };
     }, [filterData, options, ordering]);
+
+    useEffect(() => {
+            let isMounted = true;
+            onPageChange("page", 1);
+            setOrdering("-id");
+            fetchData(isMounted);
+            return () => {
+                isMounted = false;
+            };
+        }, [reload]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
@@ -153,7 +156,6 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                         },
                         {
                             type: "search",
-                            // options: 'Employees',
                             name: "requested_by_name",
                             placeholder: "Requested By",
                         },

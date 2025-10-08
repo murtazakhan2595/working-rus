@@ -748,7 +748,7 @@ export const saveUpdateHeadcountRequest = async (payload, id) => {
       method,
       url,
       data: finalPayload,
-      headers: headers(),
+      headers: formDataHeader(),
     });
 
     if (response.status === expectedStatus) {

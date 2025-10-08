@@ -38,9 +38,6 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
         description: null,
         footer: null,
     };
-
-    const YearsDropdown = React.useMemo(() => yearsDropdownList(2020, 2030), []);
-
     useEffect(() => {
         const fetchData = async (isMounted, id) => {
             try {
@@ -70,6 +67,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
 
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
+        debugger
         try {
             const payload = { ...values, };
             const response = await saveUpdateHeadcountRequest(payload, id);
