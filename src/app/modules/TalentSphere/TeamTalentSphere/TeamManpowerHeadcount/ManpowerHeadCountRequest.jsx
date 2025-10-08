@@ -76,12 +76,14 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                         updatedFilters[filterName] = "pending";
                     } else if (activeTab === "Records") {
                         updatedFilters[filterName] =
-                            ["approved","rejected"];
+                            ["approved", "rejected"];
                     }
                 } else delete updatedFilters[filterName];
             } else {
                 if (filterName === "status")
                     updatedFilters[filterName] = filterValue.toLowerCase();
+                else if (filterName === 'requested_on')
+                    updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
 
@@ -98,7 +100,7 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
         } else if (tab === "Records") {
             setFilterData((prev) => ({
                 ...prev,
-                status: ["approved","rejected"],
+                status: ["approved", "rejected"],
             }));
         }
     };
@@ -150,9 +152,9 @@ const ManpowerHeadCountRequest = ({ isTeamView = false, activeView = "Requests" 
                             placeholder: "Branch",
                         },
                         {
-                            type: "select",
-                            options: 'Employees',
-                            name: "requested_by",
+                            type: "search",
+                            // options: 'Employees',
+                            name: "requested_by_name",
                             placeholder: "Requested By",
                         },
                         {
