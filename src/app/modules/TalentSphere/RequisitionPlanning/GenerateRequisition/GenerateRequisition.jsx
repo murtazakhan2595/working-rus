@@ -53,9 +53,9 @@ const GenerateRequisition = ({ reload }) => {
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
-            const filters={...filterData,approval_required:false}
+            const filters = { ...filterData, approval_required: false }
             const response = await getRequisitionRequestList({
-                filterData:filters,
+                filterData: filters,
                 options,
                 ordering,
             });
@@ -94,7 +94,9 @@ const GenerateRequisition = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+                if (filterName === 'is_emiratization_role')
+                    updatedFilters[filterName] = filterValue === 'required' ? true : false;
+                else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -113,7 +115,7 @@ const GenerateRequisition = ({ reload }) => {
                             {
                                 type: "search",
                                 name: "job_title",
-                                    placeholder: "Job Title",
+                                placeholder: "Job Title",
                             },
                             {
                                 type: "select",
@@ -153,6 +155,15 @@ const GenerateRequisition = ({ reload }) => {
                                 type: "numeric-range",
                                 name: "salary_range",
                                 placeholder: "Salary Range",
+                            },
+                            {
+                                type: "select",
+                                options: [
+                                    { value: 'required', label: 'Required' },
+                                    { value: 'not_required', label: "Not Reqiured" },
+                                ],
+                                name: "is_emiratization_role",
+                                placeholder: "Emiratization Role",
                             },
                             {
                                 type: "select",
