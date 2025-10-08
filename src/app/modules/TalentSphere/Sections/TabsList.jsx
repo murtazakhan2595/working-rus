@@ -200,7 +200,7 @@ export const OFFER_TAB_CONFIG = [
 
 export const APPLICANT_PROFILE_TAB_CONFIG = [
   {
-    label: "Vacancy Details",
+    label: "Requisition Info",
     infoFields: VacancyDetails,
     dataKey: "publish_vacancy",
   },
