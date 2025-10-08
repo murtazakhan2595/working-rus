@@ -18,6 +18,7 @@ const ViewApplicationDetail = ({
   isOpen,
   setIsOpen = () => { },
   statusUpdated = () => { },
+  autoAction = null,
 }) => {
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
@@ -30,8 +31,8 @@ const ViewApplicationDetail = ({
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
-      event.preventDefault();
-      event.stopPropagation();
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
       if (status === 'view-feedback') {
         const interview_ids = (data.interviews || []).map(interview => interview.id);
         setFormData({ id: interview_ids });
@@ -50,8 +51,8 @@ const ViewApplicationDetail = ({
       if (status === 'add-feedback') {
         const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
         setFormData({
-          form: latest_interview.feedback_form,
-          id: latest_interview.id,
+          form: latest_interview?.feedback_form,
+          id: latest_interview?.id,
         });
         setOpenFeedbackForm(true);
         return null;
@@ -95,6 +96,17 @@ const ViewApplicationDetail = ({
     return null; // Always return something
   };
 
+  // Auto-trigger actions if requested via deep-link
+  const afterLoadFields = React.useCallback((data) => {
+    if (!data || !autoAction) return null;
+    if (autoAction === 'reschedule') {
+      handleClick(null, 'reschedule-interview', data);
+    } else if (autoAction === 'add-feedback') {
+      handleClick(null, 'add-feedback', data);
+    }
+    return null;
+  }, [autoAction, handleClick]);
+
   const fields = React.useMemo(
     () => [
       ...(ApplicantDetails || []),
@@ -102,8 +114,9 @@ const ViewApplicationDetail = ({
         customContent: true,
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
-          console.log(data, 'APPLICATION DATA')
           if (!data || !data.status || !data.status.toLowerCase()) return null;
+          // Inject auto action trigger once data is present
+          afterLoadFields(data);
           const status = data.status.toLowerCase();
           let statusKey = status;
           if (status === 'in progress') {
@@ -131,7 +144,7 @@ const ViewApplicationDetail = ({
           })
         },
       },
-    ], [handleClick,]
+    ], [handleClick, afterLoadFields]
   );
 
   return (
