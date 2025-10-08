@@ -255,7 +255,6 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                                     options: [
                                         { value: 'required', label: 'Required' },
                                         { value: 'not_required', label: "Not Reqiured" },
-                                        { value: 'remote', label: "Remote" },
                                     ],
                                     name: "is_emiratization_role",
                                     placeholder: "Emiratization Role",

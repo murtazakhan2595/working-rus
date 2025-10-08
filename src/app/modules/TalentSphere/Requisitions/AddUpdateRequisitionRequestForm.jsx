@@ -19,6 +19,7 @@ import { TextInput, TextAreaInput, RadioGroupInput, SelectInputComponent, Switch
 import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 import { validateRequisitionRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
+import { DateInput } from "components/FormControl";
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -396,6 +397,13 @@ const AddUpdateRequisitionRequestForm = ({
                                 label: "Gender Preference",
                                 options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'None', value: 'none' },],
                             },
+
+                            {
+                                InputField: DateInput,
+                                name: "recommended_posting_date",
+                                // required: true,
+                                label: "Recommended Posting Date",
+                            },
                             {
                                 InputField: TextAreaInput,
                                 name: "justification",
@@ -403,6 +411,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 maxRows: 3,
                                 colsSpan: 2,
                             },
+
                             {
                                 InputField: CoverFileUpload,
                                 name: "attachment",
