@@ -7,7 +7,7 @@ import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
 
-const PublishedVacancies = ({ reload }) => {
+const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => {
     const [RequisitionList, setRequisitionList] = useState({});
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
@@ -15,6 +15,16 @@ const PublishedVacancies = ({ reload }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+
+    // Handle deep link filtering
+    useEffect(() => {
+        if (deepLinkRequisition) {
+            setFilterData(prev => ({
+                ...prev,
+                requisition_id: deepLinkRequisition
+            }));
+        }
+    }, [deepLinkRequisition]);
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };

@@ -18,7 +18,16 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
     const source = searchParams.get("source");
-    return source ? { application_source: source } : {};
+    const requisitionId = searchParams.get("requisition_id") || searchParams.get("requisition");
+    const applicantId = searchParams.get("applicant");
+    const action = searchParams.get("action");
+    const filters = {};
+    
+    if (source) filters.application_source = source;
+    if (requisitionId) filters.requisition = requisitionId;
+    if (applicantId) filters.id = applicantId;
+    
+    return filters;
   }, []); // Empty deps - calculate only once
 
   const [RequisitionList, setRequisitionList] = useState({});
@@ -29,15 +38,20 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   const [JobTypeList, setJobTypeList] = useState([]);
   const [CareerLevelList, setCareerLevelList] = useState([]);
 
-  console.log(initialFilters, "initialFilters");
-  console.log(searchParams, "searchParams");
-  console.log(filterData, "filterData");
-  console.log(RecruitmentApplicationSource, "RecruitmentApplicationSource");
-
-  // Clear URL parameter after applying (only once)
+  // Clear URL parameters after applying (only once)
   useEffect(() => {
-    if (searchParams.get("source")) {
-      searchParams.delete("source");
+    const hasParams = 
+      searchParams.has("source") ||
+      searchParams.has("requisition_id") || 
+      searchParams.has("requisition") ||
+      searchParams.has("applicant") ||
+      searchParams.has("action");
+    
+    if (hasParams) {
+      // Clean up all query parameters
+      ["source", "requisition_id", "requisition", "applicant", "action"].forEach(param => {
+        if (searchParams.has(param)) searchParams.delete(param);
+      });
       setSearchParams(searchParams, { replace: true });
     }
   }, []); // Empty dependency - run only once

@@ -6,8 +6,9 @@ import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
+import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 
-const GenerateRequisition = ({ reload }) => {
+const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) => {
     const [RequisitionList, setRequisitionList] = useState({});
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
@@ -15,6 +16,43 @@ const GenerateRequisition = ({ reload }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+    
+    // State for auto-opening detail sheet
+    const [viewSheetOpen, setViewSheetOpen] = useState(false);
+    const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
+
+    // Handle deep link filtering and actions
+    useEffect(() => {
+        if (deepLinkRequisition) {
+            setFilterData(prev => ({
+                ...prev,
+                id: deepLinkRequisition
+            }));
+        }
+    }, [deepLinkRequisition]);
+    
+    // Auto-open sheet when data is loaded with deep link
+    useEffect(() => {
+        if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading) {
+            // Find the requisition in the loaded data
+            const requisition = RequisitionList.results.find(
+                req => req.id === parseInt(deepLinkRequisition)
+            );
+            if (requisition) {
+                setSelectedRequisitionId(parseInt(deepLinkRequisition));
+                setViewSheetOpen(true);
+            }
+        }
+    }, [deepLinkRequisition, RequisitionList, isLoading]);
+
+    // Handle deep link actions (like publish)
+    useEffect(() => {
+        if (deepLinkAction === 'publish' && deepLinkRequisition) {
+            // This would trigger the publish action for the specific requisition
+            // The action would be handled by the table's action buttons
+            console.log('Publish action requested for requisition:', deepLinkRequisition);
+        }
+    }, [deepLinkAction, deepLinkRequisition]);
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -180,6 +218,24 @@ const GenerateRequisition = ({ reload }) => {
                     />
                 )}
             </CardContent>
+            
+            {/* Auto-opened detail sheet when navigating from dashboard */}
+            {viewSheetOpen && selectedRequisitionId && (
+                <ViewRequisitionRequest
+                    isOpen={viewSheetOpen}
+                    reloadData={() => {
+                        fetchData(true);
+                        setViewSheetOpen(false);
+                    }}
+                    setIsOpen={() => {
+                        setViewSheetOpen(false);
+                        setSelectedRequisitionId(null);
+                    }}
+                    currentId={selectedRequisitionId}
+                    DataList={RequisitionList?.results || []}
+                    isTeamView={false}
+                />
+            )}
         </>
     );
 };

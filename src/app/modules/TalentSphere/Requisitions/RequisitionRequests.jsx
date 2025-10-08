@@ -13,8 +13,9 @@ import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
+import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 
-const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests" }) => {
+const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition, deepLinkAction }) => {
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({status:'pending'});
     const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +25,34 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     const [statsData, setStatsData] = useState({});
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+    
+    // State for auto-opening detail sheet
+    const [viewSheetOpen, setViewSheetOpen] = useState(false);
+    const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
+
+    // Handle deep link filtering and auto-open sheet
+    useEffect(() => {
+        if (deepLinkRequisition) {
+            setFilterData(prev => ({
+                ...prev,
+                id: deepLinkRequisition
+            }));
+        }
+    }, [deepLinkRequisition]);
+    
+    // Auto-open sheet when data is loaded with deep link
+    useEffect(() => {
+        if (deepLinkRequisition && HeadCountRequestList?.results?.length > 0 && !isLoading) {
+            // Find the requisition in the loaded data
+            const requisition = HeadCountRequestList.results.find(
+                req => req.id === parseInt(deepLinkRequisition)
+            );
+            if (requisition) {
+                setSelectedRequisitionId(parseInt(deepLinkRequisition));
+                setViewSheetOpen(true);
+            }
+        }
+    }, [deepLinkRequisition, HeadCountRequestList, isLoading]);
     const OuterTabList = useMemo(() => {
         return ["Requests", "Records"];
     }, []);
@@ -288,6 +317,24 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                     </CardContent>
                 </Tabs>
             </Card>
+            
+            {/* Auto-opened detail sheet when navigating from dashboard */}
+            {viewSheetOpen && selectedRequisitionId && (
+                <ViewRequisitionRequest
+                    isOpen={viewSheetOpen}
+                    reloadData={() => {
+                        fetchData(true);
+                        setViewSheetOpen(false);
+                    }}
+                    setIsOpen={() => {
+                        setViewSheetOpen(false);
+                        setSelectedRequisitionId(null);
+                    }}
+                    currentId={selectedRequisitionId}
+                    DataList={HeadCountRequestList?.results || []}
+                    isTeamView={isTeamView}
+                />
+            )}
         </>
     );
 };
