@@ -60,12 +60,10 @@ const FilterInput = ({
   );
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
-    // Add "All" option to the options array if it exists
     const allOptions = filter.option
       ? [{ value: "", label: "All" }, ...filter.option]
       : [];
 
-    // Only find selectedOption if there's a value
     const selectedOption = filter.values
       ? allOptions.find((option) => option.value === filter.values)
       : null;
@@ -89,7 +87,6 @@ const FilterInput = ({
             >
               {selectedOption ? selectedOption.label : filter.placeholder}
             </span>
-
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
@@ -242,7 +239,6 @@ const FilterInput = ({
                   resetField={resetFields}
                 />
               );
-
             case "select-one":
               return renderPopoverSelect(
                 filter,
@@ -323,26 +319,21 @@ const RenderNumericRangeField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    // Sync inputValue with value prop when it changes
+    const prevResetField = React.useRef(resetField);
+    useEffect(() => {
+      if (prevResetField.current !== resetField && resetField !== false) {
+        setInputValue(null);
+      }
+      prevResetField.current = resetField;
+    }, [resetField]);
+
     useEffect(() => {
       setInputValue(value);
     }, [value]);
 
-    useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
-        setInputValue(null);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }, [resetField]);
-
     const handleChange = (_, value) => {
       let newValue = value;
-      // Always ensure one "-"
       if (!newValue.includes("-")) {
-        // If user deletes the "-", reinsert it smartly
         const lastValue = inputValue;
         if (!lastValue) {
           newValue = newValue + "-";
@@ -355,17 +346,10 @@ const RenderNumericRangeField = React.memo(
           else newValue = newValue + "-";
         }
       }
-
-      // Allow only digits and a single '-'
       newValue = newValue.replace(/[^0-9-]/g, "");
-
-      // Prevent multiple '-'
       const parts = newValue.split("-");
       if (parts.length > 2) newValue = parts[0] + "-" + parts[1];
-
-      // Ensure at least one '-'
       if (newValue === "") newValue = "-";
-
       setInputValue(newValue);
       handleInputChange?.(name, parts);
     };
@@ -398,20 +382,17 @@ const RenderInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    // Sync inputValue with value prop when it changes
+    const prevResetField = React.useRef(resetField);
+    useEffect(() => {
+      if (prevResetField.current !== resetField && resetField !== false) {
+        setInputValue(null);
+      }
+      prevResetField.current = resetField;
+    }, [resetField]);
+
     useEffect(() => {
       setInputValue(value);
     }, [value]);
-
-    useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
-        setInputValue(null);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }, [resetField]);
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
@@ -448,26 +429,22 @@ const RenderMultiSelectInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    // Add "All" option to the options array if it exists
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
 
-    // Sync inputValue with value prop when it changes
+    const prevResetField = React.useRef(resetField);
+    useEffect(() => {
+      if (prevResetField.current !== resetField && resetField !== false) {
+        setInputValue(null);
+      }
+      prevResetField.current = resetField;
+    }, [resetField]);
+
     useEffect(() => {
       setInputValue(value);
     }, [value]);
-
-    useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
-        setInputValue(null);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }, [resetField]);
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
@@ -507,26 +484,22 @@ const RenderSelectInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    // Add "All" option to the options array if it exists
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
 
-    // Sync inputValue with value prop when it changes
+    const prevResetField = React.useRef(resetField);
+    useEffect(() => {
+      if (prevResetField.current !== resetField && resetField !== false) {
+        setInputValue(null);
+      }
+      prevResetField.current = resetField;
+    }, [resetField]);
+
     useEffect(() => {
       setInputValue(value);
     }, [value]);
-
-    useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
-        setInputValue(null);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }, [resetField]);
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
@@ -563,20 +536,17 @@ const RenderDateRangeInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    // Sync inputValue with value prop when it changes
+    const prevResetField = React.useRef(resetField);
+    useEffect(() => {
+      if (prevResetField.current !== resetField && resetField !== false) {
+        setInputValue(null);
+      }
+      prevResetField.current = resetField;
+    }, [resetField]);
+
     useEffect(() => {
       setInputValue(value);
     }, [value]);
-
-    useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
-        setInputValue(null);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }, [resetField]);
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
