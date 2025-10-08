@@ -15,10 +15,25 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 
 const ApplicantSources = ({ data, loading }) => {
+  const navigate = useNavigate();
+  
   // Colors for different sources
   const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"];
+
+  // Map API source names to filter values
+  const mapSourceToFilterValue = (source) => {
+    const sourceMap = {
+      "LinkedIn": "linkedin",
+      "Indeed": "indeed",
+      "Cohrus Careers Portal": "cohrus",
+      "Employee Referrals": "other",
+      "Other Social Platforms": "other",
+    };
+    return sourceMap[source] || source.toLowerCase();
+  };
 
   // Prepare chart data
   const chartData = React.useMemo(() => {
@@ -107,7 +122,15 @@ const ApplicantSources = ({ data, loading }) => {
               />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+              <Bar 
+                dataKey="count" 
+                radius={[8, 8, 0, 0]}
+                onClick={(data) => {
+                  const filterValue = mapSourceToFilterValue(data.source);
+                  navigate(`/talent-sphere/applicant-management?source=${filterValue}`);
+                }}
+                cursor="pointer"
+              >
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
