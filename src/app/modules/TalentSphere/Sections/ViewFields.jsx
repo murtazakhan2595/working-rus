@@ -1,7 +1,7 @@
 import React from "react";
-import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName } from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName ,Currency} from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
+import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI} from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
@@ -60,7 +60,7 @@ export const RequisitionViewFields = [
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
       },
       {
-        key: "country",
+        key: "countries",
         label: "Country",
         renderCondition: (_, data) => {
           if (data.work_mode === 'hybrid' || data.work_mode === 'onsite') return true;
@@ -69,7 +69,7 @@ export const RequisitionViewFields = [
 
       },
       {
-        key: "city",
+        key: "cities",
         label: "City",
         renderCondition: (_, data) => {
           if (data.work_mode === 'hybrid' || data.work_mode === 'onsite') return true;
@@ -116,7 +116,7 @@ export const RequisitionViewFields = [
       },
       {
         key: "education_name",
-        label: "Education Requirement",
+        label: "Education",
       },
       {
         key: "career_level_name",
@@ -130,11 +130,15 @@ export const RequisitionViewFields = [
       {
         key: "salary_min",
         label: "Salary Range",
-        formatter: (cell, row) => renderRange(cell, row.salary_max, 'Not Defined'),
+        formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency}))} (${row?.payment_frequency})`,
+      },
+       {
+        key: "recommended_posting_date",
+        label: "Recommended Posting Date",
+        formatter: (cell) => renderDate(cell),
       },
       {
         key: "justification",
-        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />,
         label: "Justification",
       },
     ],
@@ -375,10 +379,6 @@ export const RejectedInformation = [
         key: "rejection_reason",
         label: "Reason",
       },
-      {
-        key: "remarks",
-        label: "Remarks",
-      },
     ],
   },
 ]
@@ -463,6 +463,11 @@ export const OfferDetails = [
         formatter: (cell) => <EmployeeName value={cell} />
       },
       {
+        key: "offered_salary",
+        label: "Offered Salary",
+        formatter: (cell) => `${cell || '0'}`
+      },
+      {
         key: "status",
         label: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
@@ -491,17 +496,17 @@ export const OfferDetails = [
 
 export const FinalOfferLetterDetails = [
   {
-    title: "Offer Information",
+    title: "Final Offer Information",
     field: [
       {
         key: "validity_date",
         label: "Validity Date",
-        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+        formatter: (cell) => renderDate(cell, "--", 'date'),
       },
       {
         key: "joining_date",
         label: "Joining Date",
-        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+        formatter: (cell) => renderDate(cell, "--", 'date'),
       },
       {
         key: "sent_by",
@@ -627,7 +632,7 @@ export const ApplicantDetails = [
       return (
         <DetailContent
           fields={VacancyDetails}
-          currentItem={data?.vacancy_details || {}}
+          currentItem={data?.publish_vacancy || {}}
         />
       );
     },
@@ -681,6 +686,21 @@ export const ApplicantDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
+      if (data.offer_letter && Array.isArray(data.offer_letter) && data.offer_letter.length > 0) return true;
+      return false;
+    },
+    renderContent: ({ offer_letter }) => (offer_letter || []).map((letter, index) => {
+      return <>
+        <DetailContent
+          fields={OfferDetails}
+          currentItem={{ ...letter, index } || {}}
+        />
+      </>
+    }),
+  },
+  {
+    customContent: true,
+    renderSectionCondition: (data) => {
       if (data.blacklist) return true;
       return false;
     },
@@ -694,7 +714,7 @@ export const ApplicantDetails = [
     },
   },
   {
-    title: "Rejection Information",
+    customContent: true,
     renderSectionCondition: (data) => {
       if (data.recruitment_rejected) return true;
       return false;
@@ -704,6 +724,21 @@ export const ApplicantDetails = [
         <DetailContent
           fields={RejectedInformation}
           currentItem={data?.recruitment_rejected || {}}
+        />
+      );
+    },
+  },
+  {
+    customContent: true,
+    renderSectionCondition: (data) => {
+      if (data.offers_tracking) return true;
+      return false;
+    },
+    renderContent: (data) => {
+      return (
+        <DetailContent
+          fields={FinalOfferLetterDetails}
+          currentItem={data?.offers_tracking || {}}
         />
       );
     },
@@ -762,13 +797,13 @@ export const AllOfferDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
-      if (data.offer_tracker) return true;
+      if (data?.offers_tracking) return true;
       return false;
     },
-    renderContent: ({ offer_tracker }) => (
+    renderContent: ({ offers_tracking }) => (
       <DetailContent
         fields={FinalOfferLetterDetails}
-        currentItem={offer_tracker || {}}
+        currentItem={offers_tracking || {}}
       />
     ),
   },

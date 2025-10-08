@@ -31,7 +31,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
         <>
             <DropdownActionMenu
                 onView={handleView}
-                onEdit={handleEdit}
+                // onEdit={handleEdit}
                 onDelete={data.status === 'screened' ? handleDelete : null}
                 viewText="View Application"
                 editText="Edit Application"

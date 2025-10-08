@@ -17,6 +17,8 @@ import {
   AddEvaluationType,
   RatingScaleSetup,
   AddRatingScaleSetup,
+  Currencies,
+  AddCurrency,
 } from "app/modules/OfficeSetting/Screens";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
@@ -245,6 +247,11 @@ const OfficeSetting = () => {
       label: "Rating Scale Setup",
       permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
     },
+    {
+      value: "currency",
+      label: "Currencies",
+      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    },
   ];
 
   // Filter tabs based on permissions
@@ -404,6 +411,21 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
+              ) : activeTab === "currency" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE}
+                >
+                  <AddCurrency
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          'currency': !prev["currency"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
               ) : null
             }
           />
@@ -536,6 +558,9 @@ const OfficeSetting = () => {
               </TabsContent>
               <TabsContent value="rating-scale-setup">
                 <RatingScaleSetup reload={reloadSettingData["rating-scale-setup"]} />
+              </TabsContent>
+              <TabsContent value="currency">
+                <Currencies reload={reloadSettingData["currency"]} />
               </TabsContent>
               <TabsContent value="onboarding">
                 <OnboardingChecklist reload={reloadSettingData["onboarding"]} />

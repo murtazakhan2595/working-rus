@@ -7,7 +7,7 @@ export const validateManpowerPlanningFormSchema = (values) => {
         if (planned_headcount < parseFloat(values.existing_headcount || 0))
             errors.planned_headcount = "Planned headcount cannot be less than existing headcount";
     }
-    if (values.total_allocated_budget && parseFloat(values.total_allocated_budget) <= 0) errors.planned_headcount = "Allocated Budget cannot be negative or zero";
+    if (values.total_allocated_budget && parseFloat(values.total_allocated_budget) <= 0) errors.total_allocated_budget = "Allocated Budget cannot be negative or zero";
 
     return errors;
 };

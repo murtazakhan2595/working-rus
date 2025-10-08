@@ -35,10 +35,10 @@ export const OFFICE_SETTING_PERMISSIONS = {
 
   // Grace Time Module (Note: No specific grace time permissions in API, using shifts as fallback)
   GRACE_TIME: {
-    VIEW: 'VIEW_SHIFTS',
-    CREATE: 'ADD_SHIFTS',
-    UPDATE: 'EDIT_SHIFTS',
-    DELETE: 'DELETE_SHIFTS'
+    VIEW: 'VIEW_GRACE_TIME',
+    CREATE: 'ADD_GRACE_TIME',
+    UPDATE: 'EDIT_GRACE_TIME',
+    DELETE: 'DELETE_GRACE_TIME'
   },
 
   // Working Hours Module
@@ -81,6 +81,12 @@ export const OFFICE_SETTING_PERMISSIONS = {
     DELETE: 'DELETE_ONBOARDING_CHECKLIST'
   },
   RATING_SCALE_SETUP: {
+    VIEW: 'VIEW_RATING_SCALE_SETUP',
+    CREATE: 'ADD_RATING_SCALE',
+    UPDATE: 'EDIT_RATING_SCALE',
+    DELETE: 'DELETE_RATING_SCALE'
+  },
+  Currency: {
     VIEW: 'VIEW_RATING_SCALE_SETUP',
     CREATE: 'ADD_RATING_SCALE',
     UPDATE: 'EDIT_RATING_SCALE',

@@ -115,16 +115,20 @@ const ViewApplicationDetail = ({
             const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';
           }
+          const isOfferGenerated = data?.offer_tracking || (data?.offer_letter?.[data?.offer_letter?.length - 1] || {}).status !== 'rejected';
           const Options = ApplicantStatusList[statusKey];
-          return (Options || []).map((option, index) => (
-            <Button
-              variant={option.variant}
-              key={`applicant-${option.status}-${index}`}
-              onClick={(event) => handleClick(event, option.status, data)}
-            >
-              {option.label}
-            </Button>
-          ))
+          return (Options || []).map((option, index) => {
+            if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
+            return (
+              <Button
+                variant={option.variant}
+                key={`applicant-${option.status}-${index}`}
+                onClick={(event) => handleClick(event, option.status, data)}
+              >
+                {option.label}
+              </Button>
+            )
+          })
         },
       },
     ], [handleClick,]

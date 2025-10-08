@@ -1,4 +1,3 @@
-
 import { Header } from "components";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -62,7 +61,17 @@ export default function ClearanceAndHandover() {
           ...payload,
           filterData: {
             ...payload.filterData,
-            status: ["PENDING", "IN_PROCESS", "REJECTED", "ONHOLD"],
+            // Only apply default status filter if user hasn't selected a specific status
+            ...(payload.filterData.status
+              ? {
+                  // Ensure user-selected status is always an array for consistency
+                  status: Array.isArray(payload.filterData.status)
+                    ? payload.filterData.status
+                    : [payload.filterData.status],
+                }
+              : {
+                  status: ["PENDING", "IN_PROCESS", "REJECTED", "ONHOLD"],
+                }),
           },
         };
         const response = await getClearanceRequestsList(requestsPayload);
@@ -76,7 +85,17 @@ export default function ClearanceAndHandover() {
           ...payload,
           filterData: {
             ...payload.filterData,
-            status: ["COMPLETED"],
+            // Only apply default status filter if user hasn't selected a specific status
+            ...(payload.filterData.status
+              ? {
+                  // Ensure user-selected status is always an array for consistency
+                  status: Array.isArray(payload.filterData.status)
+                    ? payload.filterData.status
+                    : [payload.filterData.status],
+                }
+              : {
+                  status: ["COMPLETED", "REJECTED"],
+                }),
           },
         };
         const response = await getClearanceRequestsList(recordsPayload);

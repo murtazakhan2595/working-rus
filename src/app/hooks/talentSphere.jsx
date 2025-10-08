@@ -748,7 +748,7 @@ export const saveUpdateHeadcountRequest = async (payload, id) => {
       method,
       url,
       data: finalPayload,
-      headers: headers(),
+      headers: formDataHeader(),
     });
 
     if (response.status === expectedStatus) {
@@ -946,6 +946,9 @@ export const getDemographicSectionsList = async (payload = {}) => {
     }
   } catch (error) {
     console.error("Error fetching demographic sections:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     if (error?.response?.status === 401) HandleLogout();
     return false;
   }
@@ -958,6 +961,9 @@ export const getDemographicSectionById = async (id) => {
       return response.data;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching demographic section by ID:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -978,6 +984,9 @@ export const saveUpdateDemographicSection = async (payload, id) => {
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("API error in saveUpdateDemographicSection:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -996,6 +1005,9 @@ export const deleteDemographicSection = async (id) => {
     console.warn("Unexpected status on delete section:", response.status);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error deleting demographic section:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -1224,6 +1236,9 @@ export const getApplicantsList = async (payload = {}) => {
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1239,18 +1254,14 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const Response = response.data;
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
-      const VacancyData = await getVacancyData(Response.published_vacancy);
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
       const OfferLetterData = await getOfferLetterByApplicantId(Response.id);
-      const OfferTrackerData = await getOfferTrackerByApplicantId(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
       const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
       return {
         interview_feedbacks: Feedbacks.results || [],
         offer_letter: OfferLetterData,
-        offer_tracker: OfferTrackerData,
         resume_bank: ResumeBankData,
-        vacancy_details: VacancyData,
         ...ResponseData,
       };
     }
@@ -1272,6 +1283,9 @@ export const getApplicantById = async (id) => {
     });
     if (response.status === 200) return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicant by ID:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1292,6 +1306,9 @@ export const saveUpdateApplicant = async (payload, id) => {
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("API error in saveUpdateApplicant:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -1308,6 +1325,9 @@ export const deleteApplicant = async (id) => {
     console.warn("Unexpected status deleting applicant:", response.status);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error deleting applicant:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -1336,6 +1356,9 @@ export const getRejectedApplicantList = async (payload = {}) => {
       return ResponseData;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1354,6 +1377,9 @@ export const getRejectedApplicantById = async (applicant) => {
       return {};
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return {};
@@ -1446,6 +1472,9 @@ export const getShortlistedApplicantList = async (payload = {}) => {
       return ResponseData;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1464,6 +1493,9 @@ export const getShortlistedApplicantById = async (applicant) => {
       return {};
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return {};
@@ -1525,6 +1557,9 @@ export const getResumeBankApplicantList = async (payload = {}) => {
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1543,6 +1578,9 @@ export const getResumeBankApplicantById = async (applicant) => {
       return null;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return null;
@@ -1571,6 +1609,7 @@ export const saveUpdateResumeBankApplication = async (payload, id) => {
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
+
     console.error("API error in saveUpdate:", error);
     if (error?.response?.status === 401) {
       HandleLogout(); // Assuming this logs out the user properly
@@ -1604,6 +1643,9 @@ export const getInterviewsList = async (payload = {}) => {
 
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching interviews list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1622,6 +1664,9 @@ export const getInterviewById = async (id) => {
       return { interview_feedbacks: Feedbacks.results || [], ...ResponseData };
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching interview by ID:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1642,6 +1687,9 @@ export const saveUpdateInterview = async (payload, id) => {
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("API error in saveUpdateInterview:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -1658,6 +1706,9 @@ export const deleteInterview = async (id) => {
     console.warn("Unexpected status deleting interview:", response.status);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error deleting interview:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -1724,6 +1775,9 @@ export const getInterviewTypesList = async (payload = {}) => {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
     if (response.status === 200) return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching interview types list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1737,6 +1791,9 @@ export const getInterviewTypeById = async (id) => {
     });
     if (response.status === 200) return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching interview type by ID:", error);
     if (error?.response?.status === 401) HandleLogout();
     return false;
@@ -1752,6 +1809,9 @@ export const deleteInterviewType = async (id) => {
     console.warn("Unexpected status deleting interview type:", response.status);
     return false;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error deleting interview type:", error);
     if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
@@ -1778,6 +1838,7 @@ export const getFeedBackFormList = async (payload) => {
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
+    
     console.error("Error getting regions list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
@@ -1957,6 +2018,9 @@ export const getOfferTrackerByApplicantId = async (applicant) => {
       return null;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return null;
@@ -1971,7 +2035,7 @@ export const getOfferTrackingData = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapOfferTrackingData(Response);
-      const OfferLetterData = await getOfferLetterData(Response.offer_letter);
+      const OfferLetterData = await getOfferLetterData(Response.offer_letter, false);
       return { ...(OfferLetterData || {}), ...ResponseData };
     }
   } catch (error) {
@@ -2156,20 +2220,23 @@ export const getOfferLetterByApplicantId = async (applicant) => {
       return null;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching applicants list:", error);
     if (error?.response?.status === 401) HandleLogout();
     return null;
   }
 };
-export const getOfferLetterData = async (id) => {
+export const getOfferLetterData = async (id, approvalDetails = true) => {
   try {
     const response = await axios.get(`${baseUrl}/recruitment-offer-letters/${id}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const Response = response.data;
-      const currentapprover = await getCurrentRequestApprover(Response.request);
-      const ResponseData = await mapOfferLetterData({ ...Response, ...currentapprover, }, true);
+      const currentapprover = approvalDetails && Response.request ? await getCurrentRequestApprover(Response.request) : {};
+      const ResponseData = await mapOfferLetterData({ ...Response, ...currentapprover, }, approvalDetails);
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -2402,3 +2469,82 @@ export const getApplicantOfferDetails = async (uuid) => {
   }
 };
 
+export const saveApplicantOfferResponse = async (uuid, accepted) => {
+  try {
+    const url = `${baseUrl}/offers/${uuid}/${accepted ? "accept" : "reject"}/`;
+    const method = "POST"; // Determine method based on existence of id
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// Get demographics form by UUID
+export const getDemographicFormByUUID = async (uuid) => {
+  try {
+    const response = await axios.get(`${baseUrl}/demographics/${uuid}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic form:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+// Submit demographic response
+export const submitDemographicResponse = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/demographic-responses/`,
+      formData,
+      { headers: formDataHeader() } // Use formDataHeader for file uploads
+    );
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error submitting demographic response:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+// Get demographic responses by applicant ID
+export const getDemographicResponsesByApplicant = async (applicantId) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/demographic-responses/?search=${encodeURIComponent(JSON.stringify({ applicant: applicantId }))}`,
+      { headers: headers() }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic responses:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};

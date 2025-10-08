@@ -3,6 +3,7 @@ import GraceTimeAction from "../Screens/GraceTime/GraceTimeAction";
 import EvaluationTypeAction from "../Screens/EvaluationType/EvaluationTypeAction";
 import RatingScaleSetupAction from "../Screens/RatingScaleSetup/RatingScaleSetupAction";
 import { ShiftActions } from "app/modules/OfficeSetting";
+import { CurrencyActions } from "app/modules/OfficeSetting/Screens";
 import DepartmentAction from "../Screens/Departments/DepartmentAction";
 import DesignationAction from "../Screens/Designations/DesignationAction";
 import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions";
@@ -40,6 +41,32 @@ export const BranchColumn = (reload) => [
     text: "Action",
     formatter: (_, row, data_list) => (
       <BranchAction reloadData={reload} data={row} BranchList={data_list} />
+    ),
+    width: "200px",
+  },
+];
+
+export const CurrencysColumns = (reload) => [
+  {
+    dataField: "id",
+    text: "ID",
+    dataSort: true,
+    formatter: (cell, row) => <FormatID value={cell} prefix={"CUR-"} />,
+  },
+  {
+    dataField: "name",
+    dataSort: true,
+    text: "Name",
+  },
+  {
+    dataField: "code",
+    dataSort: true,
+    text: "Code",
+  },
+  {
+    text: "Action",
+    formatter: (_, row, data_list) => (
+      <CurrencyActions reloadData={reload} data={row} DataList={data_list} />
     ),
     width: "200px",
   },

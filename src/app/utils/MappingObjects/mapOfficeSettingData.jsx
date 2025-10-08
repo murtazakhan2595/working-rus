@@ -1,4 +1,4 @@
-import { Branch, GraceTime, EvaluationType, RatingScaleSetup, RatingScaleValue } from "app/utils/Types/OfficeSetting";
+import { Branch, GraceTime, EvaluationType, RatingScaleSetup, RatingScaleValue, Currency } from "app/utils/Types/OfficeSetting";
 
 export async function mapBranchList(data) {
   const branchList = await data?.map((branch) => {
@@ -206,3 +206,47 @@ export function mapRatingScaleValuePayloadData(data, id) {
   return payload;
 }
 
+
+//-------------Currencies ---------------
+
+export function mapCurrencyData(data) {
+  const RecordDetails = Object.keys(Currency).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return RecordDetails;
+}
+export async function mapCurrencyList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = mapCurrencyData(Record);
+    return {
+      value: Details.id,
+      label: `${Details.code} - ${Details.name}`,
+      ...Details,
+    };
+  });
+
+  return DataList;
+}
+
+export function mapCurrencyPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Currency object
+  for (const key in Currency) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+       payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}

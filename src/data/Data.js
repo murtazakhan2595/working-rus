@@ -7,7 +7,8 @@ import {
   fetchProjects,
   fetchBranches,
   fetchCalendarHoliday,
-  fetchCountries
+  fetchCountries,
+  fetchCurrencies,
 } from "state/slices/CommonSlice";
 import {
   fetchModules,
@@ -52,6 +53,7 @@ export const CurrencyList = countries.all.map((country) => {
     value: country.currencies[0] ?? "USD",
     label: `${country.currencies[0] ?? "USD"} - ${country.name}`,
     currency: country.currencies[0] ?? "USD",
+    country: country.name,
   };
 });
 
@@ -390,18 +392,22 @@ export const BudgetStatusOptions = [
   {
     value: "Within Budget",
     label: (<StatusLabel status={'success'}>Within Budget</StatusLabel>),
+    percentage: "0,50",
   },
   {
     value: "Approaching Limit",
     label: (<StatusLabel status={'warning'}>Approaching Limit</StatusLabel>),
+    percentage: "50.001,70",
   },
   {
     value: "Near Threshold",
     label: (<StatusLabel status={'alarming'}>Near Threshold</StatusLabel>),
+    percentage: "70.001,80",
   },
   {
     value: "Over Budget",
     label: (<StatusLabel status={'error'}>Over Budget</StatusLabel>),
+    percentage: "90.001,99999999999.99",
   },
 ];
 
@@ -811,6 +817,7 @@ export const handleUpdateProfile = async (dispatch, data) => {
   await dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
   dispatch(fetchCountries());
+  dispatch(fetchCurrencies());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
   dispatch(fetchCalendarHoliday(userprofile.id));

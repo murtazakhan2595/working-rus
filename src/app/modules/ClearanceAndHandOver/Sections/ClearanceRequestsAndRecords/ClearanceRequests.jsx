@@ -13,8 +13,6 @@ import { useSelector } from "react-redux";
 import { getClearanceTypeList } from "app/hooks/officeSetting";
 import { clearanceStatusOptions } from "data/Data";
 
-
-
 export default function ClearanceRequests({
   options,
   onPageChange,
@@ -38,10 +36,12 @@ export default function ClearanceRequests({
         const response = await getClearanceTypeList();
         console.log("Clearance types response:", response);
         if (isMounted && response?.results) {
-          setClearanceTypes(response.results?.map((type) => ({
-            label: type.name,
-            value: type.id,
-          })) || []);
+          setClearanceTypes(
+            response.results?.map((type) => ({
+              label: type.name,
+              value: type.id,
+            })) || []
+          );
         }
         setTypeLoading(false);
       } catch (error) {
@@ -54,6 +54,7 @@ export default function ClearanceRequests({
       isMounted = false;
     };
   }, []);
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -76,6 +77,11 @@ export default function ClearanceRequests({
     });
   };
 
+  // Filter out COMPLETED status for clearance requests
+  const requestStatusOptions = clearanceStatusOptions.filter(
+    (option) => option.value !== "COMPLETED"
+  );
+
   return (
     <div className="flex flex-col">
       <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
@@ -97,13 +103,13 @@ export default function ClearanceRequests({
             },
             {
               type: "select",
-              options: clearanceStatusOptions,
+              options: requestStatusOptions, // Use filtered status options
               name: "status",
               placeholder: "Clearance Status",
             },
             {
               type: "select",
-              options: clearanceTypes.filter(ct => ct.value !== "COMPLETED"), // Exclude 'Other' type
+              options: clearanceTypes,
               name: "clearance_type",
               placeholder: "Clearance Type",
             },

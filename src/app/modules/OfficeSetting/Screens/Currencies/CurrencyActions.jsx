@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import {AddUpdateOfferLetterTemplateForm} from "app/modules/TalentSphere";
+import {AddUpdateCurrencyForm} from "app/modules/OfficeSetting/Screens";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
-const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
+const CurrencyActions = ({ data, DataList = [], reloadData = () => { } }) => {
     const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
     const isDeletePermitted = HasAccess("DELETE_TS_BENEFITS");
     // const isViewPermitted = HasAccess("VIEW_MANPOWER");
     // const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
     const [deleteForm, setDeleteForm] = useState(null);
+
+   console.log(data,)
 
     const handleEdit = (e) => {
         setOpenEditForm(true)
@@ -23,7 +25,7 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
 
     const confirmDelete = async () => {
         try {
-            await deleteRecord(`/recruitment-offer-letter-templates/${data.id}`, `${data.name}`);
+            await deleteRecord(`/currencies/${data.id}`, `${data.name}`);
             setDeleteForm(null);
             reloadData(true);
         } catch (error) {
@@ -37,10 +39,10 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
                 // onView={isViewPermitted ? handleView : null}
                 onEdit={isEditPermitted ? handleEdit : null}
                 onDelete={isDeletePermitted ? handleDelete : null}
-                viewText="View Template"
-                editText="Edit Template"
-                deleteText="Delete Template"
-                menuTooltip="Template Actions"
+                viewText="View Currency"
+                editText="Edit Currency"
+                deleteText="Delete Currency"
+                menuTooltip="Currency Actions"
             />
 
             {deleteForm && (
@@ -56,7 +58,7 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
             )}
 
             {openEditForm && (
-                <AddUpdateOfferLetterTemplateForm
+                <AddUpdateCurrencyForm
                     isOpen={openEditForm}
                     reloadData={() => {
                         reloadData(true);
@@ -71,4 +73,4 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
         </>
     );
 };
-export default OfferLetterTemplateActions;
+export default CurrencyActions;
