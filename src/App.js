@@ -73,7 +73,7 @@ function App() {
       ) {
         // // Token expired or invalid
         const protectedRoutes = [
-          "/apply",
+          "/demographics-form",
           "/applicant-offer",
           "/forgot-password",
           "/confirm-password",
