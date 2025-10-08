@@ -131,10 +131,6 @@ const ScheduleInterviewSheet = ({
       toast.error("Please select a scheduled date and time")
       return false
     }
-    if (new Date(values.scheduled_datetime) < new Date()) {
-      toast.error("Scheduled date and time must be in the future")
-      return false
-    }
     if (!values.panel || values.panel.length === 0) {
       toast.error("Please select at least one panel member")
       return false
@@ -194,6 +190,7 @@ const ScheduleInterviewSheet = ({
         required: true,
         colsSpan: 2,
         disabled: mode === "view",
+        minDate:new Date(),
       },
       {
         InputField: RadioGroupInput,

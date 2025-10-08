@@ -816,6 +816,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         dataField: "id",
         text: "ID",
         formatter: (cell) => <FormatID value={cell} prefix={"RR-"} />,
+        dataSort:true,
     },
     {
         dataField: "department",
@@ -830,40 +831,48 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     {
         dataField: "job_title",
         text: "Designation",
+        dataSort:true,
     },
     {
         dataField: "job_type_name",
         text: "Employment Type",
+        dataSort:true,
     },
     {
         dataField: "number_of_positions",
         text: "Vacancy Count",
+        dataSort:true,
     },
     {
         dataField: "salary_min",
         text: "Budget/Salary Range",
         formatter: (cell, row) => renderRange(cell, row?.salary_max, 'Not Defined'),
+        dataSort:true,
     },
 
     {
         dataField: "created_at",
         text: "Created Date",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        dataSort:true,
     },
     {
         dataField: "status",
         text: "Status",
-        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+        dataSort:true,
     },
     {
         dataField: "is_emiratization_role",
         text: "Emiratization Role",
-        formatter: (cell) => <StatusLabel variant={cell ? 'info-secondary' : 'info'}>{cell ? 'Required' : 'Not Required'}</StatusLabel>
+        formatter: (cell) => <StatusLabel variant={cell ? 'info-secondary' : 'info'}>{cell ? 'Required' : 'Not Required'}</StatusLabel>,
+        dataSort:true,
     },
     ...(!isTeamView ? [{
         dataField: "approval_required",
         text: "Approval Requied",
-        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>
+        formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>,
+        dataSort:true,
     },] : []),
     {
         dataField: "",
