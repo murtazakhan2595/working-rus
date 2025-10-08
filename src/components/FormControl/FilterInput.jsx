@@ -16,7 +16,13 @@ import {
   CommandItem,
   CommandList,
 } from "src/@/components/ui/command";
-import { SelectInputComponent, SelectMultiInputComponent, DateRangeInput, DateRangeFilter, TextInput } from "components/FormControl";
+import {
+  SelectInputComponent,
+  SelectMultiInputComponent,
+  DateRangeInput,
+  DateRangeFilter,
+  TextInput,
+} from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
@@ -35,9 +41,8 @@ const FilterInput = ({
 }) => {
   const Departments = GetDispatchStateList("departments", "common") || [];
   const Designations = GetDispatchStateList("designations", "common") || [];
-  // const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
-  const Branches = GetDispatchStateList("branches", "common") || []
-  const Employees = GetDispatchStateList("employees", "emp") || []
+  const Branches = GetDispatchStateList("branches", "common") || [];
+  const Employees = GetDispatchStateList("employees", "emp") || [];
   const classNamesStyle = "";
   const DefaultWidth = "min-w-56";
   const DefaultHeight = "min-h-[38px]";
@@ -72,12 +77,14 @@ const FilterInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={`${filter.width ? filter.width : "w-[200px]"
-              } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
+            className={`${
+              filter.width ? filter.width : "w-[200px]"
+            } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
           >
             <span
-              className={`${selectedOption ? "text-neutral-1000" : "text-muted-foreground"
-                } truncate max-w-full`}
+              className={`${
+                selectedOption ? "text-neutral-1000" : "text-muted-foreground"
+              } truncate max-w-full`}
               style={{ display: "block" }}
             >
               {selectedOption ? selectedOption.label : filter.placeholder}
@@ -102,10 +109,11 @@ const FilterInput = ({
                     }}
                   >
                     <Check
-                      className={`mr-2 h-4 w-4 ${filter.values === option.value
-                        ? "opacity-100"
-                        : "opacity-0"
-                        }`}
+                      className={`mr-2 h-4 w-4 ${
+                        filter.values === option.value
+                          ? "opacity-100"
+                          : "opacity-0"
+                      }`}
                     />
                     {option.label}
                   </CommandItem>
@@ -125,8 +133,9 @@ const FilterInput = ({
         <DatePicker
           name={filter.name}
           id={filter.name}
-          className={`${filter.className ?? classNamesStyle} ${filter.width ?? DefaultWidth
-            } ${filter.height ?? DefaultHeight}`}
+          className={`${filter.className ?? classNamesStyle} ${
+            filter.width ?? DefaultWidth
+          } ${filter.height ?? DefaultHeight}`}
           dropdownMode="select"
           placeholderText={filter.placeholder}
           selected={date}
@@ -157,20 +166,28 @@ const FilterInput = ({
             name,
             options = [],
           } = filter;
-          const SearchOptions =
-            !options ? [] :
-              Array.isArray(options) ? options :
-                typeof options === 'string' ?
-                  options.toLowerCase() === 'departments' ? Departments || [] :
-                    options.toLowerCase() === 'branches' ? Branches || [] :
-                      options.toLowerCase() === 'designations' ? Designations || [] :
-                        options.toLowerCase() === 'nationalities' ? countriesList || [] :
-                          options.toLowerCase() === 'employees' ? Employees || [] :
-                            [] : [];
+          const SearchOptions = !options
+            ? []
+            : Array.isArray(options)
+            ? options
+            : typeof options === "string"
+            ? options.toLowerCase() === "departments"
+              ? Departments || []
+              : options.toLowerCase() === "branches"
+              ? Branches || []
+              : options.toLowerCase() === "designations"
+              ? Designations || []
+              : options.toLowerCase() === "nationalities"
+              ? countriesList || []
+              : options.toLowerCase() === "employees"
+              ? Employees || []
+              : []
+            : [];
           switch (filter.type) {
             case "search":
               return (
                 <RenderInputField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -184,6 +201,7 @@ const FilterInput = ({
             case "numeric-range":
               return (
                 <RenderNumericRangeField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -197,6 +215,7 @@ const FilterInput = ({
             case "select":
               return (
                 <RenderSelectInputField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -211,6 +230,7 @@ const FilterInput = ({
             case "select-multiple":
               return (
                 <RenderMultiSelectInputField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -251,8 +271,9 @@ const FilterInput = ({
             case "date-range":
               return (
                 <RenderDateRangeInputField
+                  key={index}
                   className={FilterClassName}
-                  width={width ?? 'w-[235px]'}
+                  width={width ?? "w-[235px]"}
                   name={name}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
@@ -264,6 +285,7 @@ const FilterInput = ({
             case "date-range-filter":
               return (
                 <RenderDateRangeFilterField
+                  key={index}
                   className={FilterClassName}
                   name={name}
                   placeholder={`Search ${placeholder}`}
@@ -277,7 +299,13 @@ const FilterInput = ({
               return <div key={index}></div>;
           }
         })}
-      <RenderResetFilter handleInputChange={handleInputChange} filtersList={filters} resetAllFields={() => { setResetFields(!resetFields) }} />
+      <RenderResetFilter
+        handleInputChange={handleInputChange}
+        filtersList={filters}
+        resetAllFields={() => {
+          setResetFields(!resetFields);
+        }}
+      />
     </div>
   );
 };
@@ -289,11 +317,17 @@ const RenderNumericRangeField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => { },
+    handleInputChange = () => {},
     value,
     resetField,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
+    // Sync inputValue with value prop when it changes
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -303,6 +337,7 @@ const RenderNumericRangeField = React.memo(
         isMounted = false;
       };
     }, [resetField]);
+
     const handleChange = (_, value) => {
       let newValue = value;
       // Always ensure one "-"
@@ -312,7 +347,10 @@ const RenderNumericRangeField = React.memo(
         if (!lastValue) {
           newValue = newValue + "-";
         } else {
-          const cursorWasBeforeDash = lastValue.indexOf("-") >= 0 && value.length < lastValue.length && lastValue.indexOf("-") >= value.length;
+          const cursorWasBeforeDash =
+            lastValue.indexOf("-") >= 0 &&
+            value.length < lastValue.length &&
+            lastValue.indexOf("-") >= value.length;
           if (cursorWasBeforeDash) newValue = "-" + newValue;
           else newValue = newValue + "-";
         }
@@ -331,6 +369,7 @@ const RenderNumericRangeField = React.memo(
       setInputValue(newValue);
       handleInputChange?.(name, parts);
     };
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <TextInput
@@ -345,6 +384,7 @@ const RenderNumericRangeField = React.memo(
     );
   }
 );
+
 const RenderInputField = React.memo(
   ({
     className = "",
@@ -352,11 +392,17 @@ const RenderInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => { },
+    handleInputChange = () => {},
     value,
     resetField,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
+    // Sync inputValue with value prop when it changes
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -366,6 +412,7 @@ const RenderInputField = React.memo(
         isMounted = false;
       };
     }, [resetField]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <TextInput
@@ -394,17 +441,24 @@ const RenderMultiSelectInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => { },
+    handleInputChange = () => {},
     options = [],
     resetField,
     value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
     // Add "All" option to the options array if it exists
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
+
+    // Sync inputValue with value prop when it changes
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -414,6 +468,7 @@ const RenderMultiSelectInputField = React.memo(
         isMounted = false;
       };
     }, [resetField]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <SelectMultiInputComponent
@@ -423,7 +478,7 @@ const RenderMultiSelectInputField = React.memo(
           name={name}
           value={inputValue || ""}
           onChange={(field, value) => {
-            if (value && value.includes('All')) {
+            if (value && value.includes("All")) {
               setInputValue("");
               handleInputChange(field, "");
             } else {
@@ -445,17 +500,24 @@ const RenderSelectInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => { },
+    handleInputChange = () => {},
     options = [],
     resetField,
     value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
     // Add "All" option to the options array if it exists
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
+
+    // Sync inputValue with value prop when it changes
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -465,6 +527,7 @@ const RenderSelectInputField = React.memo(
         isMounted = false;
       };
     }, [resetField]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <SelectInputComponent
@@ -495,10 +558,16 @@ const RenderDateRangeInputField = React.memo(
     placeholder,
     height = "",
     resetField,
-    handleInputChange = () => { },
-    value
+    handleInputChange = () => {},
+    value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
+    // Sync inputValue with value prop when it changes
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -508,6 +577,7 @@ const RenderDateRangeInputField = React.memo(
         isMounted = false;
       };
     }, [resetField]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <DateRangeInput
@@ -531,9 +601,10 @@ const RenderDateRangeFilterField = React.memo(
     name,
     height = "",
     resetField,
-    handleInputChange = () => { },
+    handleInputChange = () => {},
   }) => {
     const [activeTab, setActiveTab] = useState("Day");
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -545,6 +616,7 @@ const RenderDateRangeFilterField = React.memo(
         isMounted = false;
       };
     }, [resetField, name]);
+
     return (
       <div className={`${className} ${height} h-full w-fit relative`}>
         <DateRangeFilter
@@ -557,13 +629,9 @@ const RenderDateRangeFilterField = React.memo(
             } else {
               const date_range = GetDateRange(dateRange)?.split(",") || [];
               const end_date =
-                date_range[1] && date_range[1] !== "null"
-                  ? date_range[1]
-                  : "";
+                date_range[1] && date_range[1] !== "null" ? date_range[1] : "";
               const start_date =
-                date_range[0] && date_range[0] !== "null"
-                  ? date_range[0]
-                  : "";
+                date_range[0] && date_range[0] !== "null" ? date_range[0] : "";
               handleInputChange(name, `${start_date},${end_date}`);
             }
             setActiveTab(dateRange);
@@ -582,10 +650,9 @@ const RenderResetFilter = React.memo(
     name,
     filtersList = [],
     height = "",
-    handleInputChange = () => { },
-    resetAllFields = () => { },
+    handleInputChange = () => {},
+    resetAllFields = () => {},
   }) => {
-    console.log(filtersList)
     const resetFilters = (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -594,21 +661,22 @@ const RenderResetFilter = React.memo(
       }
       resetAllFields();
     };
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
-
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant='outline' size='sm' onClick={resetFilters}><RefreshCcw size={16} /> </Button>
+              <Button variant="outline" size="sm" onClick={resetFilters}>
+                <RefreshCcw size={16} />
+              </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Reset the filters</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-      </div >
+      </div>
     );
   }
 );
