@@ -2458,3 +2458,22 @@ export const submitDemographicResponse = async (formData) => {
     return false;
   }
 };
+
+// Get demographic responses by applicant ID
+export const getDemographicResponsesByApplicant = async (applicantId) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/demographic-responses/?search=${encodeURIComponent(JSON.stringify({ applicant: applicantId }))}`,
+      { headers: headers() }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching demographic responses:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
