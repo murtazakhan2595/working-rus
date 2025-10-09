@@ -118,6 +118,7 @@ import { EmployeeCreationAndHiringReports } from "app/modules/Reports";
 import { HRDocumentsReports } from "app/modules/Reports";
 import { TransferAndRotationReports } from "app/modules/Reports";
 import { AttendanceAndShiftReports } from "app/modules/Reports";
+import DemographicsForm from "app/modules/TalentSphere/OfferTracking/DemographicsForm";
 
 export const SidebarRoutes = [
   {
@@ -761,6 +762,11 @@ const GeneralRoutes = [
     path: "/applicant-offer/:id",
     component: <ApplicantOffer />,
     name: "Applicant Offer",
+  },
+  {
+    path: "/demographics-form/:uuid",
+    component: <DemographicsForm />,
+    name: "Demographics Form",
   },
 ].filter(Boolean); // Filter out undefined routes
 

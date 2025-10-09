@@ -358,9 +358,10 @@ const AIInsightsWidget = ({
                             key={index}
                             className="p-2 bg-red-50 border-red-200 cursor-pointer hover:shadow-md transition-shadow"
                             onClick={() =>
-                              navigate(`/talent-sphere/interview-tracker`)
+                              navigate(`/talent-sphere/applicant/${item.applicant_id}`)
                             }
                           >
+                            {console.log(item, "item")}
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <p className="font-semibold text-xs text-neutral-1200">

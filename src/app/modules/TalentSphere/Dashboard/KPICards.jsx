@@ -46,7 +46,7 @@ const KPICards = ({ data, loading }) => {
       value: data?.screened_candidates || 0,
       description: "Shortlisted for interviews",
       color: "text-cyan-600",
-      route: "/talent-sphere/applicant-managementmanagement",
+      route: "/talent-sphere/applicant-management",
     },
     {
       title: "Interviews Scheduled",

@@ -17,17 +17,54 @@ import {
 } from "recharts";
 
 const RecruitmentFunnel = ({ data, loading }) => {
-  // Colors for funnel stages (gradient)
-  const colors = [
-    "#3B82F6", // Blue
-    "#60A5FA", // Light Blue
-    "#8B5CF6", // Purple
-    "#A78BFA", // Light Purple
-    "#EC4899", // Pink
-    "#F472B6", // Light Pink
-    "#10B981", // Green
-    "#34D399", // Light Green
+  // 🎨 Consistent color mapping by stage name
+  const STAGE_COLORS = {
+    "Requisitions Raised": "#3B82F6", // Blue - Start of funnel
+    RequisitionsRaised: "#3B82F6",
+    "Vacancies Published": "#F59E0B", // Orange - Job postings
+    VacanciesPublished: "#F59E0B",
+    "Total Applicants": "#8B5CF6", // Purple - Candidate pool
+    TotalApplicants: "#8B5CF6",
+    "Screened Candidates": "#EF4444", // Red - Screening stage
+    ScreenedCandidates: "#EF4444",
+    "Interviews Scheduled": "#06B6D4", // Cyan - Interview stage
+    InterviewsScheduled: "#06B6D4",
+    "Offers Generated": "#EC4899", // Pink - Offer stage
+    OffersGenerated: "#EC4899",
+    "Offers Accepted": "#10B981", // Green - Accepted
+    OffersAccepted: "#10B981",
+    "Final Hires": "#059669", // Dark Green - Final success
+    FinalHires: "#059669",
+  };
+
+  // Fallback colors if stage name doesn't match
+  const fallbackColors = [
+    "#3B82F6",
+    "#F59E0B",
+    "#8B5CF6",
+    "#EF4444",
+    "#06B6D4",
+    "#EC4899",
+    "#10B981",
+    "#059669",
   ];
+
+  // Get color by stage name (consistent across renders)
+  const getStageColor = (stageName, index) => {
+    // Try exact match first
+    if (STAGE_COLORS[stageName]) {
+      return STAGE_COLORS[stageName];
+    }
+
+    // Try normalized name (remove spaces)
+    const normalizedName = stageName?.replace(/\s+/g, "");
+    if (STAGE_COLORS[normalizedName]) {
+      return STAGE_COLORS[normalizedName];
+    }
+
+    // Fallback to index-based color
+    return fallbackColors[index % fallbackColors.length];
+  };
 
   // Prepare data for visualization
   const chartData = React.useMemo(() => {
@@ -36,7 +73,7 @@ const RecruitmentFunnel = ({ data, loading }) => {
     return data.map((item, index) => ({
       ...item,
       displayName: item.stage?.replace(/([A-Z])/g, " $1").trim() || "Unknown",
-      color: colors[index % colors.length],
+      color: getStageColor(item.stage, index),
     }));
   }, [data]);
 
@@ -178,7 +215,7 @@ const RecruitmentFunnel = ({ data, loading }) => {
           </ResponsiveContainer>
         </div>
 
-        {/* Conversion Stats Section - FIXED LAYOUT */}
+        {/* Conversion Stats Section */}
         {keyStages.length > 0 && (
           <div className="mt-6 pt-4 border-t border-neutral-200">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

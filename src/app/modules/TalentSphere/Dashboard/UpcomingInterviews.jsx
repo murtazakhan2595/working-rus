@@ -84,10 +84,32 @@ const UpcomingInterviews = ({ data, loading }) => {
         ) : (
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {sortedInterviews.map((interview, index) => {
-              const isToday = moment(
+              const interviewMoment = moment(
                 interview.date_time,
                 "DD-MMM-YYYY, hh:mm A"
-              ).isSame(moment(), "day");
+              );
+              const isToday = interviewMoment.isSame(moment(), "day");
+              const isCompleted = interviewMoment.isBefore(moment());
+              console.log(interview, "interview")
+              const goProfile = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/talent-sphere/applicant/${interview.candidate_id}`);
+              };
+              const openReschedule = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(
+                  `/talent-sphere/applicant-management?applicant=${interview.candidate_id}&action=reschedule`
+                );
+              };
+              const openAddFeedback = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(
+                  `/talent-sphere/applicant-management?applicant=${interview.candidate_id}&action=add-feedback`
+                );
+              };
 
               return (
                 <Card
@@ -95,7 +117,7 @@ const UpcomingInterviews = ({ data, loading }) => {
                   className={`p-3 cursor-pointer hover:shadow-md transition-shadow ${
                     isToday ? "border-l-4 border-l-blue-500 bg-blue-50" : ""
                   }`}
-                  onClick={() => navigate(`/talent-sphere/interview-tracker`)}
+                  onClick={() => navigate(`/talent-sphere/applicant/${interview.candidate_id}`)}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -125,18 +147,50 @@ const UpcomingInterviews = ({ data, loading }) => {
                           {interview.interview_type}
                         </Badge>
                       )}
-                    </div>
 
-                    {interview.panel_members &&
-                      interview.panel_members.length > 0 && (
-                        <div className="text-right">
-                          <div className="flex items-center gap-1 text-xs text-neutral-1000">
-                            <Users className="h-3 w-3" />
-                            <span>{interview.panel_members.length}</span>
+                      {/* Panel Members (restored) */}
+                      {interview.panel_members && interview.panel_members.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-[10px] text-neutral-900 mb-1">Panel Members:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {interview.panel_members.map((name, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="secondary"
+                                className="text-[10px] px-2 py-0.5"
+                              >
+                                {name}
+                              </Badge>
+                            ))}
                           </div>
-                          <p className="text-[10px] text-neutral-900">Panel</p>
                         </div>
                       )}
+
+                      {/* Quick Actions */}
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="outline" onClick={goProfile}>
+                          View Profile
+                        </Button>
+                        <Button variant="outline" onClick={openReschedule}>
+                          Reschedule
+                        </Button>
+                        {isCompleted && (
+                          <Button variant="outline" onClick={openAddFeedback}>
+                            Add Feedback
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {interview.panel_members && interview.panel_members.length > 0 && (
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 text-xs text-neutral-1000">
+                          <Users className="h-3 w-3" />
+                          <span>{interview.panel_members.length}</span>
+                        </div>
+                        <p className="text-[10px] text-neutral-900">Panel</p>
+                      </div>
+                    )}
                   </div>
                 </Card>
               );

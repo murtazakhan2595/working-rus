@@ -146,32 +146,32 @@ export const APPLICANT_TAB_CONFIG = [
     {
         label: "All Applicants",
         permission: "VIEW_TS_BENEFITS",
-        component: () => <AllApplicants />,
+        component: (reload) => <AllApplicants reload={reload} />,
     },
      {
         label: "Screened",
         permission: "VIEW_TS_EDUCATION",
-        component: () => <AllApplicants variant="screened" />,
+        component: (reload) => <AllApplicants variant="screened" reload={reload} />,
     },
     {
         label: "Shortlisted",
         permission: "VIEW_TS_CAREER_LEVEL",
-        component: () => <AllApplicants variant="shortlisted" />,
+        component: (reload) => <AllApplicants variant="shortlisted" reload={reload} />,
     },
     {
         label: "Rejected",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: () => <AllApplicants variant="rejected" />,
+        component: (reload) => <AllApplicants variant="rejected" reload={reload} />,
     },
     {
         label: "Blacklisted",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: () => <AllApplicants variant="blacklisted" />,
+        component: (reload) => <AllApplicants variant="blacklisted" reload={reload} />,
     },
     {
         label: "Hired",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: () => <AllApplicants variant="hired" />,
+        component: (reload) => <AllApplicants variant="hired" reload={reload} />,
     },
 ];
 
@@ -199,66 +199,71 @@ export const OFFER_TAB_CONFIG = [
 
 
 export const APPLICANT_PROFILE_TAB_CONFIG = [
-    {
-        label: "Vacancy Details",
-        infoFields: VacancyDetails,
-        dataKey: 'publish_vacancy',
-    },
-    {
-        label: "Applicant Info",
-        infoFields: ApplicantInformation,
-    },
-    {
-        label: "Screening Info",
-        infoFields: ScreeningInfomation,
-    },
-    {
-        label: "Interview Details",
-        infoFields: AllInterviewDetails,
-        // dataKey: 'interviews',
-    },
-    {
-        label: "Offer Details",
-        infoFields: AllOfferDetails,
-    },
-    {
-        label: "Shortlising Info",
-        infoFields: ShortlistingInfomation,
-        dataKey: 'recruitment_shortlist',
-    },
-    {
-        label: "Rejection Details",
-        infoFields: RejectedInformation,
-        dataKey: 'recruitment_rejected',
-    },
-    {
-        label: "Backlisting Info",
-        infoFields: BlacklistedInformation,
-        dataKey: 'blacklist',
-    },
-    // {
-    //     label: "Rejected",
-    //     permission: "VIEW_REJECTED_APPLICATION",
-    //     component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
-    // },
-    // {
-    //     label: "Resume Bank",
-    //     permission: "VIEW_RESUME_BANK_APPLICATION",
-    //     component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
-    // },
-    // {
-    //     label: "Screened",
-    //     permission: "VIEW_TS_EDUCATION",
-    //     component: () => <Applicants />,
-    // },
-    // {
-    //     label: "Shortlisted",
-    //     permission: "VIEW_TS_CAREER_LEVEL",
-    //     component: () => <AllApplicants variant="shortlisted" />,
-    // },
-    // {
-    //     label: "Blacklisted",
-    //     permission: "VIEW_REJECTED_APPLICATION",
-    //     component: () => <AllApplicants variant="blacklisted" />,
-    // },
+  {
+    label: "Vacancy Details",
+    infoFields: VacancyDetails,
+    dataKey: "publish_vacancy",
+  },
+  {
+    label: "Applicant Info",
+    infoFields: ApplicantInformation,
+  },
+  {
+    label: "Screening Info",
+    infoFields: ScreeningInfomation,
+  },
+  {
+    label: "Interview Details",
+    infoFields: AllInterviewDetails,
+    // dataKey: 'interviews',
+  },
+  {
+    label: "Offer Details",
+    infoFields: AllOfferDetails,
+  },
+  {
+    label: "Shortlising Info",
+    infoFields: ShortlistingInfomation,
+    dataKey: "recruitment_shortlist",
+  },
+  {
+    label: "Rejection Details",
+    infoFields: RejectedInformation,
+    dataKey: "recruitment_rejected",
+  },
+  {
+    label: "Backlisting Info",
+    infoFields: BlacklistedInformation,
+    dataKey: "blacklist",
+  },
+  {
+    label: "Demographics",
+    dataKey: null,
+    customComponent: true, // Flag to indicate this uses a custom component
+  },
+  // {
+  //     label: "Rejected",
+  //     permission: "VIEW_REJECTED_APPLICATION",
+  //     component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
+  // },
+  // {
+  //     label: "Resume Bank",
+  //     permission: "VIEW_RESUME_BANK_APPLICATION",
+  //     component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
+  // },
+  // {
+  //     label: "Screened",
+  //     permission: "VIEW_TS_EDUCATION",
+  //     component: () => <Applicants />,
+  // },
+  // {
+  //     label: "Shortlisted",
+  //     permission: "VIEW_TS_CAREER_LEVEL",
+  //     component: () => <AllApplicants variant="shortlisted" />,
+  // },
+  // {
+  //     label: "Blacklisted",
+  //     permission: "VIEW_REJECTED_APPLICATION",
+  //     component: () => <AllApplicants variant="blacklisted" />,
+  // },
 ];
