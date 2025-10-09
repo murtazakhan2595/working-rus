@@ -90,7 +90,7 @@ const UpcomingInterviews = ({ data, loading }) => {
               );
               const isToday = interviewMoment.isSame(moment(), "day");
               const isCompleted = interviewMoment.isBefore(moment());
-              console.log(interview, "interview")
+              
               const goProfile = (e) => {
                 e.preventDefault();
                 e.stopPropagation();

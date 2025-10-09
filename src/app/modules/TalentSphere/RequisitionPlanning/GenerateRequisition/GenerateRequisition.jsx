@@ -6,8 +6,9 @@ import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
+import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 
-const GenerateRequisition = ({ reload }) => {
+const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) => {
     const [RequisitionList, setRequisitionList] = useState({});
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
@@ -15,6 +16,36 @@ const GenerateRequisition = ({ reload }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+    
+    // State for auto-opening detail sheet
+    const [viewSheetOpen, setViewSheetOpen] = useState(false);
+    const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
+    const [hasAutoOpened, setHasAutoOpened] = useState(false);
+
+    // Handle deep link filtering
+    useEffect(() => {
+        if (deepLinkRequisition) {
+            setFilterData(prev => ({
+                ...prev,
+                id: deepLinkRequisition
+            }));
+        }
+    }, [deepLinkRequisition]);
+    
+    // Auto-open sheet when data is loaded with deep link (only once)
+    useEffect(() => {
+        if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading && !hasAutoOpened) {
+            const requisition = RequisitionList.results.find(
+                req => req.id === parseInt(deepLinkRequisition)
+            );
+            if (requisition) {
+                setSelectedRequisitionId(parseInt(deepLinkRequisition));
+                setViewSheetOpen(true);
+                setHasAutoOpened(true); // Mark as opened to prevent re-opening
+            }
+        }
+    }, [deepLinkRequisition, RequisitionList, isLoading, hasAutoOpened]);
+    
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -191,6 +222,24 @@ const GenerateRequisition = ({ reload }) => {
                     />
                 )}
             </CardContent>
+            
+            {/* Auto-opened detail sheet when navigating from dashboard */}
+            {viewSheetOpen && selectedRequisitionId && (
+                <ViewRequisitionRequest
+                    isOpen={viewSheetOpen}
+                    reloadData={() => {
+                        fetchData(true);
+                        setViewSheetOpen(false);
+                    }}
+                    setIsOpen={() => {
+                        setViewSheetOpen(false);
+                        setSelectedRequisitionId(null);
+                    }}
+                    currentId={selectedRequisitionId}
+                    DataList={RequisitionList?.results || []}
+                    isTeamView={false}
+                />
+            )}
         </>
     );
 };

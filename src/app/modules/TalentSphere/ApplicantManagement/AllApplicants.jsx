@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import {
-  getApplicantsList,
-  getJobTypeList,
-  getCareerLevelList,
-} from "app/hooks/talentSphere";
+import { getApplicantsList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
 import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
@@ -18,8 +14,15 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
     const source = searchParams.get("source");
-    return source ? { application_source: source } : {};
-  }, []); // Empty deps - calculate only once
+    const recruitmentRequisition = searchParams.get("recruitment_requisition");
+    const filters = {};
+    
+    if (source) filters.application_source = source;
+    if (recruitmentRequisition) filters.recruitment_requisition = recruitmentRequisition;
+    
+    return filters;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - calculate only once on mount
 
   const [RequisitionList, setRequisitionList] = useState({});
   const [filterData, setFilterData] = useState(initialFilters);
@@ -27,13 +30,17 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Clear URL parameter after applying (only once)
+  // Clear URL parameters after applying (only once)
   useEffect(() => {
-    if (searchParams.get("source")) {
-      searchParams.delete("source");
+    const hasParams = searchParams.has("source") || searchParams.has("recruitment_requisition");
+    
+    if (hasParams) {
+      if (searchParams.has("source")) searchParams.delete("source");
+      if (searchParams.has("recruitment_requisition")) searchParams.delete("recruitment_requisition");
       setSearchParams(searchParams, { replace: true });
     }
-  }, []); // Empty dependency - run only once
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency - run only once on mount
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -82,6 +89,7 @@ const AllApplicants = ({ reload, variant = "all" }) => {
     return () => {
       isMounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData, ordering, options, variant]);
 
   useEffect(() => {
@@ -92,6 +100,7 @@ const AllApplicants = ({ reload, variant = "all" }) => {
     return () => {
       isMounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {

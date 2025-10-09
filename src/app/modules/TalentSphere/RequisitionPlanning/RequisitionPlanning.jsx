@@ -1,5 +1,5 @@
 import { Header } from "components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
@@ -11,6 +11,7 @@ import {
     RequisitionRequests,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
+import { useLocation } from "react-router-dom";
 
 export default function RequisitionPlanning() {
     const isViewRequisitionPermitted = HasAccess("VIEW_GENERATED_REQUISITION");
@@ -20,12 +21,40 @@ export default function RequisitionPlanning() {
     const [activeTab, setActiveTab] = useState(null);
     const [OpenRequisitionForm, setOpenRequisitionForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
+    
+    // Location state handling for deep linking from dashboard
+    const location = useLocation();
+    const [deepLinkRequisition, setDeepLinkRequisition] = useState(null);
+    const [deepLinkAction, setDeepLinkAction] = useState(null);
 
     const TabListArray = React.useMemo(() => [
         ...(isViewRequisitionPermitted ? ["Generate Requisition"] : []),
         ...(isViewRequisitionRequestPermitted ? ["Requisition Requests"] : []),
         ...(isViewPublishedVacanciesPermitted ? ["Published Vacancies"] : []),
     ], [isViewRequisitionPermitted, isViewPublishedVacanciesPermitted, isViewRequisitionRequestPermitted]);
+
+    // Handle location state for deep linking from dashboard
+    useEffect(() => {
+        if (location.state?.filterRequisition) {
+            const { filterRequisition, tab, action } = location.state;
+            
+            setDeepLinkRequisition(filterRequisition);
+            if (action) setDeepLinkAction(action);
+            
+            // Set the correct tab based on state
+            if (tab) {
+                const tabName = tab === 'requisition-requests' ? 'Requisition Requests' : 
+                               tab === 'generate-requisition' ? 'Generate Requisition' :
+                               tab === 'published-vacancies' ? 'Published Vacancies' : null;
+                if (tabName && TabListArray.includes(tabName)) {
+                    setActiveTab(tabName);
+                }
+            }
+            
+            // Clear location state after reading
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state, TabListArray]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {
@@ -66,14 +95,26 @@ export default function RequisitionPlanning() {
                     </TabsList>
                 </div>
                 <TabsContent value={'Requisition Requests'}>
-                    <RequisitionRequests reload={reloadData['requisition-requests']} />
+                    <RequisitionRequests 
+                        reload={reloadData['requisition-requests']} 
+                        deepLinkRequisition={deepLinkRequisition}
+                        deepLinkAction={deepLinkAction}
+                    />
                 </TabsContent>
                 <Card>
                     <TabsContent value={'Generate Requisition'}>
-                        <GenerateRequisition reload={reloadData['generate-requisition']} />
+                        <GenerateRequisition 
+                            reload={reloadData['generate-requisition']} 
+                            deepLinkRequisition={deepLinkRequisition}
+                            deepLinkAction={deepLinkAction}
+                        />
                     </TabsContent>
                     <TabsContent value={'Published Vacancies'}>
-                        <PublishedVacancies reload={reloadData['published-vacancies']} />
+                        <PublishedVacancies 
+                            reload={reloadData['published-vacancies']} 
+                            deepLinkRequisition={deepLinkRequisition}
+                            deepLinkAction={deepLinkAction}
+                        />
                     </TabsContent>
 
                 </Card>
