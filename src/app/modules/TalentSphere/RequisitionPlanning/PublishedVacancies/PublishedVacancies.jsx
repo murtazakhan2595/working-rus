@@ -96,6 +96,8 @@ const PublishedVacancies = ({ reload }) => {
                 if (filterName === 'requisition') {
                     const value = filterValue.replace(/\D/g, '');
                     if (value) updatedFilters[filterName] = parseInt(value);
+                } else if (['due_date_range','publish_date_range'].includes(filterName)) {
+                    updatedFilters[filterName] = filterValue?.split(',');
                 } else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
@@ -142,7 +144,7 @@ const PublishedVacancies = ({ reload }) => {
                                     { value: 'remote', label: "Remote" },
                                 ],
                                 name: "work_mode",
-                                placeholder: "Job Mode",
+                                placeholder: "Work Mode",
                             },
                             {
                                 type: "select",
@@ -156,12 +158,12 @@ const PublishedVacancies = ({ reload }) => {
                             },
                             {
                                 type: "date-range",
-                                name: "publish_date",
+                                name: "publish_date_range",
                                 placeholder: "Pulish date",
                             },
                             {
                                 type: "date-range",
-                                name: "due_date",
+                                name: "due_date_range",
                                 placeholder: "Due date",
                             },
                             {

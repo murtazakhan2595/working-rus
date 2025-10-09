@@ -2,18 +2,13 @@ import {
     saveUpdateVacancy,
     getVacancyData,
     getRequisitionRequestData,
-    getCareerLevelList,
-    getEducationList,
-    getRemoteWorkChecklistList,
-    getJobTypeList,
 } from "app/hooks/talentSphere";
 import { PublishVacancy } from "app/utils/Types/TalentSphere";
 import { SheetUI, EmployeeDetailUI } from "components";
 import { CheckBoxInput } from "components/FormControl";
 import { DateInput } from "components/FormControl";
-import { CoverFileUpload } from "components/FormControl";
-import { NumberInput } from "components/FormControl";
-import { TextInput, TextAreaInput, RadioGroupInput, SelectInputComponent, SwitchInput, SelectMultiInputComponent } from "components/FormControl";
+import { validatePublishVacancyFormSchema } from "app/utils/FormSchema/TalentSphereFormSchema";
+import { TextInput, RadioGroupInput, SelectInputComponent } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 
@@ -26,14 +21,8 @@ const AddUpdateVacancyForm = ({
 }) => {
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
-    const { id: employee_id } = GetDispatchStateList('userProfile', 'user');
     const [isLoading, setIsLoading] = useState(false);
     const [FormData, setFormData] = useState({ ...PublishVacancy });
-    const [BenefitList, setBenefitList] = useState([]);
-    const [JobTypeList, setJobTypeList] = useState([]);
-    const [EducationList, setEducationList] = useState([]);
-    const [CareerLevelList, setCareerLevelList] = useState([]);
-    const [RemoteWorkCheckList, setRemoteWorkCheckList] = useState([]);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const isEditMode = Boolean(id);
     const [FormValues, setFormValues] = useState({ ...PublishVacancy });
@@ -105,7 +94,7 @@ const AddUpdateVacancyForm = ({
     const handleSubmit = async (values) => {
         try {
             setIsSubmittingForm(true);
-            const response = await saveUpdateVacancy({ ...values,organization:1 }, id);
+            const response = await saveUpdateVacancy({ ...values, organization: 1 }, id);
             if (response) {
                 return {
                     status: true,
@@ -132,11 +121,10 @@ const AddUpdateVacancyForm = ({
                 initialValues: FormData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: () => { },
+                validateFormSchema: validatePublishVacancyFormSchema,
                 renderUpdatedFormValues: (values) => {
                     setFormValues(values);
                 },
-                DataList: BenefitList,
                 submitButtonText: "Publish",
                 cancelButtonText: "Cancel",
                 columns: 2,
@@ -155,18 +143,21 @@ const AddUpdateVacancyForm = ({
                                 name: "publish_date",
                                 required: true,
                                 label: "Publish Date",
+                                minDate: new Date(),
                             },
                             {
                                 InputField: DateInput,
                                 name: "due_date",
                                 required: true,
                                 label: "Due Date",
-                                description: 'Last date for vacancy visibility.'
+                                description: 'Last date for vacancy visibility.',
+                                minDate: FormValues.publish_date || new Date(),
                             },
                             {
                                 InputField: RadioGroupInput,
                                 name: "requisition_type",
                                 label: "Requisition Type",
+                                required: true,
                                 options: [
                                     { value: 'internal', label: 'Internal' },
                                     { value: 'external', label: "External" },

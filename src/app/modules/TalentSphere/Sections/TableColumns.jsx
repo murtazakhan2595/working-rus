@@ -830,12 +830,12 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
     },
     {
         dataField: "job_title",
-        text: "Designation",
+        text: "Job Title",
         dataSort:true,
     },
     {
         dataField: "job_type_name",
-        text: "Employment Type",
+        text: "Job Type",
         dataSort:true,
     },
     {
@@ -1031,7 +1031,7 @@ export const PublishedVacancyColumns = (reloadData) => [
     },
     {
         dataField: "posted_portals",
-        text: "Posted On",
+        text: "Platform",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
     },
 
