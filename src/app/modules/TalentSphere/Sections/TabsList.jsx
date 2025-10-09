@@ -182,7 +182,7 @@ export const OFFER_TAB_CONFIG = [
         label: "Offer Letter Requests",
         viewPerm: "VIEW_TS_BENEFITS",
         addPerm: "ADD_TS_BENEFITS",
-        list: (reload) => <OfferRequests reload={reload} />,
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OfferRequests reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
         form: GenerateOffer,
         addLabel: 'Generate Offer'
     },
@@ -191,7 +191,7 @@ export const OFFER_TAB_CONFIG = [
         label: "Offer Send",
         viewPerm: "VIEW_TS_BENEFITS",
         // addPerm: "ADD_TS_BENEFITS",
-        list: (reload) => <OffersSend reload={reload} />,
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OffersSend reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
         // form: GenerateOffer,
         // addLabel:'Generate Offer'
     },
