@@ -12,7 +12,7 @@ import { OfferLetterRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GlobalStatusOptions } from "data/Data";
 
-const OfferRequests = ({ activeView = "Requests" }) => {
+const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSubTab }) => {
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({status:["pending_approval","draft"]});
     const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +23,22 @@ const OfferRequests = ({ activeView = "Requests" }) => {
     const OuterTabList = useMemo(() => {
         return ["Requests", "Records"];
     }, []);
+
+    // Handle deep link filter data and sub-tab when navigating from dashboard
+    useEffect(() => {
+        if (deepLinkFilterData) {
+            const convertedFilters = { ...deepLinkFilterData };
+            
+            setFilterData(convertedFilters);
+            // Reset page to 1 when applying deep link filters
+            onPageChange("page", 1);
+        }
+        
+        // Set the active sub-tab if provided
+        if (deepLinkSubTab && OuterTabList.includes(deepLinkSubTab)) {
+            setActiveTab(deepLinkSubTab);
+        }
+    }, [deepLinkFilterData, deepLinkSubTab, OuterTabList]);
 
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));

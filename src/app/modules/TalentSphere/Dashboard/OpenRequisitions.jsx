@@ -168,16 +168,6 @@ const OpenRequisitions = ({ data, loading }) => {
               Publish Vacancy
             </Button>
           )}
-          {row.is_publish && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleViewVacancy(row)}
-              className="text-xs px-2 py-1"
-            >
-              View Vacancy
-            </Button>
-          )}
           {row.is_publish && row.total_applicants > 0 && (
             <Button
               variant="outline"

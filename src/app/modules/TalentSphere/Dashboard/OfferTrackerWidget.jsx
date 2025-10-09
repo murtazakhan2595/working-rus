@@ -70,6 +70,59 @@ const OfferTrackerWidget = ({ data, loading }) => {
     navigate("/talent-sphere/offer-tracking");
   };
 
+  /**
+   * Handle click on status (pie slice or card)
+   * Routes to appropriate tab based on status:
+   * - Draft, Pending Approval → Offer Letter Requests tab
+   * - Other statuses → Offer Send tab with correct sub-tab
+   */
+  const handleStatusClick = (status) => {
+    // Map widget status to tab, sub-tab, and filter
+    const statusMapping = {
+      "Draft": {
+        tab: "Offer Letter Requests",
+        subTab: "Requests",
+        filterData: { status: "draft" }
+      },
+      "Pending Approval": {
+        tab: "Offer Letter Requests",
+        subTab: "Requests",
+        filterData: { status: "pending_approval" }
+      },
+      "Sent to Applicant": {
+        tab: "Offer Send",
+        subTab: "Pending",
+        filterData: { status: "pending" }
+      },
+      "Accepted": {
+        tab: "Offer Send",
+        subTab: "Accepted",
+        filterData: { status: "accepted" }
+      },
+      "Rejected": {
+        tab: "Offer Send",
+        subTab: "Rejected",
+        filterData: { status: "rejected" }
+      },
+      "Withdrawn": {
+        tab: "Offer Send",
+        subTab: "Withdrawn",
+        filterData: { status: "withdrawn" }
+      }
+    };
+
+    const mapping = statusMapping[status];
+    if (mapping) {
+      navigate("/talent-sphere/offer-tracking", {
+        state: {
+          tab: mapping.tab,
+          subTab: mapping.subTab,
+          filterData: mapping.filterData
+        }
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Card className="flex flex-col shadow-lg border rounded-xl bg-white">
@@ -125,9 +178,15 @@ const OfferTrackerWidget = ({ data, loading }) => {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
+                  onClick={(data) => handleStatusClick(data.name)}
+                  cursor="pointer"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color}
+                      className="hover:opacity-80 transition-opacity"
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -139,7 +198,8 @@ const OfferTrackerWidget = ({ data, loading }) => {
               {data?.map((status, index) => (
                 <div
                   key={index}
-                  className="p-2 bg-neutral-100 rounded text-center"
+                  className="p-2 bg-neutral-100 rounded text-center cursor-pointer hover:bg-neutral-200 hover:shadow-md transition-all"
+                  onClick={() => handleStatusClick(status.status)}
                 >
                   <p className="text-xs text-neutral-1000 truncate">
                     {status.status}

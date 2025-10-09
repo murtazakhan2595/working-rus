@@ -8,9 +8,24 @@ import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
 import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 
-const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) => {
+const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deepLinkFilterData }) => {
     const [RequisitionList, setRequisitionList] = useState({});
-    const [filterData, setFilterData] = useState({});
+    
+    // Initialize filterData with deep link data if it exists (lazy initializer)
+    const [filterData, setFilterData] = useState(() => {
+        if (deepLinkFilterData) {
+            const convertedFilters = { ...deepLinkFilterData };
+            
+            // Convert is_emiratization_role: true/false to "required"/"not_required" for dropdown
+            if (typeof convertedFilters.is_emiratization_role === 'boolean') {
+                convertedFilters.is_emiratization_role = convertedFilters.is_emiratization_role ? 'required' : 'not_required';
+            }
+            
+            return convertedFilters;
+        }
+        return {};
+    });
+    
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +37,23 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
     const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
     const [hasAutoOpened, setHasAutoOpened] = useState(false);
 
-    // Handle deep link filtering
+    // Handle deep link filter data when navigating from dashboard
+    useEffect(() => {
+        if (deepLinkFilterData) {
+            const convertedFilters = { ...deepLinkFilterData };
+            
+            // Convert is_emiratization_role: true/false to "required"/"not_required" for dropdown
+            if (typeof convertedFilters.is_emiratization_role === 'boolean') {
+                convertedFilters.is_emiratization_role = convertedFilters.is_emiratization_role ? 'required' : 'not_required';
+            }
+            
+            setFilterData(convertedFilters);
+            // Reset page to 1 when applying deep link filters
+            onPageChange("page", 1);
+        }
+    }, [deepLinkFilterData]);
+
+    // Handle deep link filtering by requisition ID
     useEffect(() => {
         if (deepLinkRequisition) {
             setFilterData(prev => ({
@@ -84,7 +115,14 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
-            const filters = { ...filterData, approval_required: false }
+            // Convert UI filter values to API format
+            const filters = { ...filterData, approval_required: false };
+            
+            // Convert is_emiratization_role from "required"/"not_required" string to boolean for API
+            if (filters.is_emiratization_role) {
+                filters.is_emiratization_role = filters.is_emiratization_role === 'required' ? true : false;
+            }
+            
             const response = await getRequisitionRequestList({
                 filterData: filters,
                 options,
@@ -122,12 +160,12 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
         onPageChange("page", 1);
         setFilterData((prevFilters) => {
             const updatedFilters = { ...prevFilters };
-            if (filterValue === "") {
+            if (filterValue === "" || filterValue === "All") {
                 delete updatedFilters[filterName];
             } else {
-                if (filterName === 'is_emiratization_role')
-                    updatedFilters[filterName] = filterValue === 'required' ? true : false;
-                else updatedFilters[filterName] = filterValue;
+                // Store UI values as-is (strings for dropdowns)
+                // Conversion to API format happens in fetchData
+                updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -147,30 +185,35 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
                                 type: "search",
                                 name: "job_title",
                                 placeholder: "Job Title",
+                                values: filterData.job_title,
                             },
                             {
                                 type: "select",
                                 options: "Departments",
                                 name: "department",
                                 placeholder: "Department",
+                                values: filterData.department,
                             },
                             {
                                 type: "select",
                                 options: "Branches",
                                 name: "branch",
                                 placeholder: "Branch",
+                                values: filterData.branch,
                             },
                             {
                                 type: "select",
                                 options: JobTypeList,
                                 name: "job_type",
                                 placeholder: "Job Type",
+                                values: filterData.job_type,
                             },
                             {
                                 type: "select",
                                 options: CareerLevelList,
                                 name: "career_level",
                                 placeholder: "Career Level",
+                                values: filterData.career_level,
                             },
                             {
                                 type: "select",
@@ -181,11 +224,13 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
                                 ],
                                 name: "work_mode",
                                 placeholder: "Work Mode",
+                                values: filterData.work_mode,
                             },
                             {
                                 type: "numeric-range",
                                 name: "salary_range",
                                 placeholder: "Salary Range",
+                                values: filterData.salary_range,
                             },
                             {
                                 type: "select",
@@ -195,17 +240,20 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
                                 ],
                                 name: "is_emiratization_role",
                                 placeholder: "Emiratization Role",
+                                values: filterData.is_emiratization_role,
                             },
                             {
                                 type: "select",
                                 options: [...GlobalStatusOptions(false),],
                                 name: "status",
                                 placeholder: "Status",
+                                values: filterData.status,
                             },
 
                         ]}
                         className="justify-end"
                         onChange={handleFilterChange}
+                        filterValues={filterData}
                     />
                 </div>
             </CardHeader>

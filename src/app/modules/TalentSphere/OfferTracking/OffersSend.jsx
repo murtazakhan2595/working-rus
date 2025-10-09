@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const OffersSend = ({ isTeamView = false, activeView = "Pending" }) => {
+const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilterData, deepLinkSubTab }) => {
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +24,22 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending" }) => {
     const OuterTabList = useMemo(() => {
         return ["Pending", "Accepted", "Rejected", "Withdrawn", "Hired", "Not Joined"];
     }, []);
+
+    // Handle deep link filter data and sub-tab when navigating from dashboard
+    useEffect(() => {
+        if (deepLinkFilterData) {
+            const convertedFilters = { ...deepLinkFilterData };
+            
+            setFilterData(convertedFilters);
+            // Reset page to 1 when applying deep link filters
+            onPageChange("page", 1);
+        }
+        
+        // Set the active sub-tab if provided
+        if (deepLinkSubTab && OuterTabList.includes(deepLinkSubTab)) {
+            setActiveTab(deepLinkSubTab);
+        }
+    }, [deepLinkFilterData, deepLinkSubTab, OuterTabList]);
 
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
