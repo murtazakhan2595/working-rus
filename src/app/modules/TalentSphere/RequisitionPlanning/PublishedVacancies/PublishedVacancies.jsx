@@ -17,6 +17,7 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
     // State for auto-opening detail sheet
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
     const [selectedVacancyId, setSelectedVacancyId] = useState(null);
+    const [hasAutoOpened, setHasAutoOpened] = useState(false);
 
     // Handle deep link filtering
     useEffect(() => {
@@ -28,16 +29,17 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
         }
     }, [deepLinkRequisition]);
     
-    // Auto-open sheet when data is loaded with deep link
+    // Auto-open sheet when data is loaded with deep link (only once)
     useEffect(() => {
-        if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading) {
+        if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading && !hasAutoOpened) {
             const vacancy = RequisitionList.results[0];
             if (vacancy) {
                 setSelectedVacancyId(vacancy.id);
                 setViewSheetOpen(true);
+                setHasAutoOpened(true); // Mark as opened to prevent re-opening
             }
         }
-    }, [deepLinkRequisition, RequisitionList, isLoading]);
+    }, [deepLinkRequisition, RequisitionList, isLoading, hasAutoOpened]);
     
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));

@@ -57,17 +57,24 @@ const OpenRequisitions = ({ data, loading }) => {
   };
 
   const handlePublishVacancy = (row) => {
-    // Navigate to Published Vacancies tab to view/edit published vacancy
-    // OR to Generate Requisition if not published yet
-    const targetTab = row.is_publish
-      ? "published-vacancies"
-      : "generate-requisition";
-
+    // Navigate to Generate Requisition tab to publish a new vacancy
     navigate(`/talent-sphere/requisition-planning`, {
       state: {
         filterRequisition: row.id,
-        tab: targetTab,
-        action: row.is_publish ? "view" : "publish",
+        tab: "generate-requisition",
+        action: "publish",
+        requisitionData: row,
+      },
+    });
+  };
+
+  const handleViewVacancy = (row) => {
+    // Navigate to Published Vacancies tab to view published vacancy
+    navigate(`/talent-sphere/requisition-planning`, {
+      state: {
+        filterRequisition: row.id,
+        tab: "published-vacancies",
+        action: "view",
         requisitionData: row,
       },
     });
@@ -162,24 +169,24 @@ const OpenRequisitions = ({ data, loading }) => {
             </Button>
           )}
           {row.is_publish && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePublishVacancy(row)}
-                className="text-xs px-2 py-1"
-              >
-                View Vacancy
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleViewApplicants(row)}
-                className="text-xs px-2 py-1"
-              >
-                View Applicants ({row.total_applicants || 0})
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleViewVacancy(row)}
+              className="text-xs px-2 py-1"
+            >
+              View Vacancy
+            </Button>
+          )}
+          {row.is_publish && row.total_applicants > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleViewApplicants(row)}
+              className="text-xs px-2 py-1"
+            >
+              View Applicants ({row.total_applicants})
+            </Button>
           )}
         </div>
       ),
