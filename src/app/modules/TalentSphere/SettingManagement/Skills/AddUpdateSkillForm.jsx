@@ -120,15 +120,6 @@ const AddUpdateSkillForm = ({
             sheetCardTitle: `Skill Details`,
             InputFields: [
               {
-                InputField: RadioGroupInput,
-                name: "status",
-                label: "Status",
-                options: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: "Inactive" },
-                ],
-              },
-              {
                 InputField: TextInput,
                 name: "name",
                 required: true,

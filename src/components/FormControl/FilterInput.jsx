@@ -75,14 +75,12 @@ const FilterInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={`${
-              filter.width ? filter.width : "w-[200px]"
-            } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
+            className={`${filter.width ? filter.width : "w-[200px]"
+              } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
           >
             <span
-              className={`${
-                selectedOption ? "text-neutral-1000" : "text-muted-foreground"
-              } truncate max-w-full`}
+              className={`${selectedOption ? "text-neutral-1000" : "text-muted-foreground"
+                } truncate max-w-full`}
               style={{ display: "block" }}
             >
               {selectedOption ? selectedOption.label : filter.placeholder}
@@ -106,11 +104,10 @@ const FilterInput = ({
                     }}
                   >
                     <Check
-                      className={`mr-2 h-4 w-4 ${
-                        filter.values === option.value
-                          ? "opacity-100"
-                          : "opacity-0"
-                      }`}
+                      className={`mr-2 h-4 w-4 ${filter.values === option.value
+                        ? "opacity-100"
+                        : "opacity-0"
+                        }`}
                     />
                     {option.label}
                   </CommandItem>
@@ -130,9 +127,8 @@ const FilterInput = ({
         <DatePicker
           name={filter.name}
           id={filter.name}
-          className={`${filter.className ?? classNamesStyle} ${
-            filter.width ?? DefaultWidth
-          } ${filter.height ?? DefaultHeight}`}
+          className={`${filter.className ?? classNamesStyle} ${filter.width ?? DefaultWidth
+            } ${filter.height ?? DefaultHeight}`}
           dropdownMode="select"
           placeholderText={filter.placeholder}
           selected={date}
@@ -166,20 +162,20 @@ const FilterInput = ({
           const SearchOptions = !options
             ? []
             : Array.isArray(options)
-            ? options
-            : typeof options === "string"
-            ? options.toLowerCase() === "departments"
-              ? Departments || []
-              : options.toLowerCase() === "branches"
-              ? Branches || []
-              : options.toLowerCase() === "designations"
-              ? Designations || []
-              : options.toLowerCase() === "nationalities"
-              ? countriesList || []
-              : options.toLowerCase() === "employees"
-              ? Employees || []
-              : []
-            : [];
+              ? options
+              : typeof options === "string"
+                ? options.toLowerCase() === "departments"
+                  ? Departments || []
+                  : options.toLowerCase() === "branches"
+                    ? Branches || []
+                    : options.toLowerCase() === "designations"
+                      ? Designations || []
+                      : options.toLowerCase() === "nationalities"
+                        ? countriesList || []
+                        : options.toLowerCase() === "employees"
+                          ? Employees || []
+                          : []
+                : [];
           switch (filter.type) {
             case "search":
               return (
@@ -313,7 +309,7 @@ const RenderNumericRangeField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
     value,
     resetField,
   }) => {
@@ -376,7 +372,7 @@ const RenderInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
     value,
     resetField,
   }) => {
@@ -422,7 +418,7 @@ const RenderMultiSelectInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
     options = [],
     resetField,
     value,
@@ -477,7 +473,7 @@ const RenderSelectInputField = React.memo(
     name,
     placeholder,
     height = "",
-    handleInputChange = () => {},
+    handleInputChange = () => { },
     options = [],
     resetField,
     value,
@@ -508,12 +504,12 @@ const RenderSelectInputField = React.memo(
           placeholder={placeholder}
           className={`rounded-sm text-neutral-1000`}
           name={name}
-          value={inputValue || ""}
+          value={inputValue !== null || inputValue !== undefined ? inputValue : ""}
           onChange={(field, value) => {
-            setInputValue(value ? (value === "All" ? "" : value) : "");
+            setInputValue(value !== null || value !== undefined ? (value === "All" ? "" : value) : "");
             handleInputChange(
               field,
-              value ? (value === "All" ? "" : value) : ""
+              value !== null || value !== undefined ? (value === "All" ? "" : value) : ""
             );
           }}
           options={allOptions}
@@ -531,7 +527,7 @@ const RenderDateRangeInputField = React.memo(
     placeholder,
     height = "",
     resetField,
-    handleInputChange = () => {},
+    handleInputChange = () => { },
     value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
@@ -571,7 +567,7 @@ const RenderDateRangeFilterField = React.memo(
     name,
     height = "",
     resetField,
-    handleInputChange = () => {},
+    handleInputChange = () => { },
   }) => {
     const [activeTab, setActiveTab] = useState("Day");
 
@@ -620,8 +616,8 @@ const RenderResetFilter = React.memo(
     name,
     filtersList = [],
     height = "",
-    handleInputChange = () => {},
-    resetAllFields = () => {},
+    handleInputChange = () => { },
+    resetAllFields = () => { },
   }) => {
     const resetFilters = (event) => {
       event.preventDefault();

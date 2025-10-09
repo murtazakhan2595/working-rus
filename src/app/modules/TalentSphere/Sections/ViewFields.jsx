@@ -231,7 +231,7 @@ export const ApplicantInformation = [
               viewOnly={true}
             />
           ) : (
-            <div className="text-neutral-1000 text-sm">No letter attached</div>
+            <div className="text-neutral-1000 text-sm">Resume not uploaded</div>
           ),
       },
     ],
@@ -292,6 +292,11 @@ export const VacancyDetails = [
   {
     title: `Vacancy Details`,
     field: [
+      {
+        key: "requisition_id",
+        label: "Requisition ID",
+        formatter: (cell, row) => <FormatID value={cell} prefix={"RR-"} />,
+      },
       {
         key: "job_title",
         label: "Job Title",

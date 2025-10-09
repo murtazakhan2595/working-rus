@@ -70,6 +70,9 @@ const Educations = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
+                if (['created_at'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
+                else
                 updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
@@ -90,12 +93,6 @@ const Educations = ({ reload }) => {
                                 type: "search",
                                 placeholder: "Search by name",
                                 name: "name",
-                            },
-                            {
-                                type: "select",
-                                placeholder: "Status",
-                                name: "status",
-                                options:[{value:'Active',label:'Active'},{value:'Inactive',label:'Inactive'},]
                             },
                             {
                                 type: "date-range",
