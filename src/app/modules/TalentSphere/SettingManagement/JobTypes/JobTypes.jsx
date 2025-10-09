@@ -70,7 +70,9 @@ const JobTypes = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+               if (['created_at'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
+                else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -79,7 +81,7 @@ const JobTypes = ({ reload }) => {
     return (
         <>
             <CardHeader>
-                <CardTitle >JobTypes</CardTitle>
+                <CardTitle >Job Types</CardTitle>
                 <CardDescription>
                     Here you can add, update, and delete different types of job contracts in the organization.
                 </CardDescription>

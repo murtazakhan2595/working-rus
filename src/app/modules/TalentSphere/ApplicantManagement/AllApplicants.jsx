@@ -26,13 +26,6 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [isLoading, setIsLoading] = useState(false);
-  const [JobTypeList, setJobTypeList] = useState([]);
-  const [CareerLevelList, setCareerLevelList] = useState([]);
-
-  console.log(initialFilters, "initialFilters");
-  console.log(searchParams, "searchParams");
-  console.log(filterData, "filterData");
-  console.log(RecruitmentApplicationSource, "RecruitmentApplicationSource");
 
   // Clear URL parameter after applying (only once)
   useEffect(() => {
@@ -111,6 +104,8 @@ const AllApplicants = ({ reload, variant = "all" }) => {
         if (filterName === "emiratization_flag")
           updatedFilters[filterName] =
             filterValue === "required" ? true : false;
+        else if (['application_date_range'].includes(filterName))
+          updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
@@ -132,86 +127,87 @@ const AllApplicants = ({ reload, variant = "all" }) => {
                 type: "search",
                 name: "job_title",
                 placeholder: "Job Title",
-                values: filterData.job_title,
+                //  values: filterData.job_title,
               },
               {
                 type: "search",
-                name: "candidate_name_or_id",
+                name: "candidate",
                 placeholder: "Candidate Name/Id",
-                values: filterData.candidate_name_or_id,
+                //  values: filterData.candidate,
               },
               {
                 type: "select",
                 options: "Departments",
                 name: "department",
                 placeholder: "Department",
-                values: filterData.department,
+                //  values: filterData.department,
               },
               {
                 type: "select",
                 options: RecruitmentApplicationSource,
                 name: "application_source",
                 placeholder: "Application Source",
-                values: filterData.application_source,
+                //  values: filterData.application_source,
               },
               {
                 type: "select",
                 options: [
                   { value: "required", label: "Required" },
                   { value: "not_required", label: "Not Reqiured" },
-                  { value: "remote", label: "Remote" },
                 ],
                 name: "emiratization_flag",
                 placeholder: "Emiratization Role",
-                values: filterData.emiratization_flag,
+                //  values: filterData.emiratization_flag,
               },
               {
                 type: "date-range",
-                name: "application_date",
-                placeholder: "Application Date",
-                values: filterData.application_date,
+                name: "application_date_range",
+                placeholder: "Application date",
               },
               ...(variant === "rejected"
                 ? [
-                    {
-                      type: "date-range",
-                      name: "rejection_date",
-                      placeholder: "Rejection Date",
-                      values: filterData.rejection_date,
-                    },
-                  ]
+                  {
+                    type: "date-range",
+                    name: "rejection_date",
+                    placeholder: "Rejection Date",
+                    //  values: filterData.rejection_date,
+                  },
+                ]
                 : []),
               ...(variant === "shortlisted"
                 ? [
-                    {
-                      type: "date-range",
-                      name: "expected_joining_date",
-                      placeholder: "Joining Date",
-                      values: filterData.expected_joining_date,
-                    },
-                  ]
+                  {
+                    type: "date-range",
+                    name: "expected_joining_date",
+                    placeholder: "Joining Date",
+                    //  values: filterData.expected_joining_date,
+                  },
+                ]
                 : []),
               ...(variant === "blacklisted"
                 ? [
-                    {
-                      type: "date-range",
-                      name: "blacklisted_on",
-                      placeholder: "Blacklisted Date",
-                      values: filterData.blacklisted_on,
-                    },
-                    {
-                      type: "select",
-                      name: "blacklisted_by",
-                      placeholder: "Blacklisted By",
-                      option: "employees",
-                      values: filterData.blacklisted_by,
-                    },
-                  ]
+                  {
+                    type: "date-range",
+                    name: "blacklisted_on",
+                    placeholder: "Blacklisted Date",
+                    //  values: filterData.blacklisted_on,
+                  },
+                  {
+                    type: "select",
+                    name: "blacklisted_by",
+                    placeholder: "Blacklisted By",
+                    option: "employees",
+                    //  values: filterData.blacklisted_by,
+                  },
+                ]
                 : []),
             ]}
             className="justify-end"
             onChange={handleFilterChange}
-            filterValues={filterData}
+            filterValues={{
+              ...filterData,
+              ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {})
+            }}
           />
         </div>
       </CardHeader>

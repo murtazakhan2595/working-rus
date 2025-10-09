@@ -36,7 +36,7 @@ export function mapManpowerPayloadData(data) {
         // Check if the key exists in the data object
         if (data.hasOwnProperty(key) && data[key] !== null && data[key] !== undefined) {
             // Add the key and its value to the payload
-            if (key === 'justification') payload[key] = data[key].trim();
+            if (key === 'justification') payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -91,7 +91,7 @@ export async function mapManpowerList(data) {
 export function mapBenefitData(data) {
     const RecordDetails = Object.keys(Benefit).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -124,7 +124,7 @@ export function mapBenefitPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -138,7 +138,7 @@ export function mapBenefitPayloadData(data, id) {
 export function mapSkillData(data) {
     const RecordDetails = Object.keys(Skill).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
         return acc;
@@ -170,7 +170,7 @@ export function mapSkillPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -184,7 +184,7 @@ export function mapSkillPayloadData(data, id) {
 export function mapRemoteWorkChecklistData(data) {
     const RecordDetails = Object.keys(RemoteWorkChecklist).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "item_name") acc[key] = data[key].trim()
+            if (key === "item_name") acc[key] = data[key]?.trim()
             else if (key === "status") acc[key] = data[key] ? 'available' : 'unavailable';
             else acc[key] = data[key];
         }
@@ -217,7 +217,7 @@ export function mapRemoteWorkChecklistPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "item_name") payload[key] = data[key].trim();
+            if (key === "item_name") payload[key] = data[key]?.trim();
             if (key === "status") payload[key] = Boolean(data[key] === 'available');
             else payload[key] = data[key];
         }
@@ -235,7 +235,7 @@ export function mapInterviewTypeData(data) {
             if (key === "is_active") {
                 acc['status'] = data[key] ? 'active' : 'inactive';
             }
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
         return acc;
@@ -268,7 +268,7 @@ export function mapInterviewTypePayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -282,7 +282,7 @@ export function mapInterviewTypePayloadData(data, id) {
 export function mapJobTypeData(data) {
     const RecordDetails = Object.keys(JobType).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -315,7 +315,7 @@ export function mapJobTypePayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -331,7 +331,7 @@ export function mapJobTypePayloadData(data, id) {
 export function mapEducationData(data) {
     const RecordDetails = Object.keys(Education).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "level" || key === 'description') acc[key] = data[key].trim()
+            if (key === "level" || key === 'description') acc[key] = data[key]?.trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -364,7 +364,7 @@ export function mapEducationPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "level" || key === 'description') payload[key] = data[key].trim();
+            if (key === "level" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -379,7 +379,7 @@ export function mapEducationPayloadData(data, id) {
 export function mapCareerLevelData(data) {
     const RecordDetails = Object.keys(CareerLevel).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -412,7 +412,7 @@ export function mapCareerLevelPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -486,7 +486,9 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails = tru
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 if (key === 'id') RecordDetails['requisition_id'] = data[key];
                 if (key === 'status') {
-                    RecordDetails[key] = data[key].toLowerCase() === 'pending' && data['is_draft'] ? 'draft' : data[key].toLowerCase();
+                    if (data['is_publish'] === true)
+                        RecordDetails[key] = 'Published';
+                    else RecordDetails[key] = data[key]?.toLowerCase() === 'pending' && data['is_draft'] ? 'draft' : data[key]?.toLowerCase();
                 } else RecordDetails[key] = data[key];
             }
         }
@@ -521,11 +523,11 @@ export function mapRequisitionRequestPayloadData(data, id) {
                 data[key] !== null &&
                 data[key] !== undefined
             ) {
-                if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key].trim());
+                if (key === "job_title" || key === 'job_description' || key === 'justification') formData.append(key, data[key]?.trim());
                 else if (key === 'attachment') {
                     if (data[key] instanceof File) formData.append(key, data[key])
                 } else if (['remote_work_checklist', 'benefits', 'required_skillset'].includes(key)) {
-                    if (Array.isArray(data[key]) && data[key].length > 0) {
+                    if (Array.isArray(data[key]) && data[key]?.length > 0) {
                         for (const value of data[key]) {
                             formData.append(key, value)
                         }
@@ -694,7 +696,7 @@ export function mapRejectedApplicationPayloadData(data) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "rejection_reason") payload[key] = data[key].trim();
+            if (key === "rejection_reason") payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -714,7 +716,7 @@ export function mapShortlistedApplicantPayloadData(data) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "rejection_reason") payload[key] = data[key].trim();
+            if (key === "rejection_reason") payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -726,7 +728,7 @@ export function mapShortlistedApplicantPayloadData(data) {
 export function mapShortlistedApplicantData(data) {
     const RecordDetails = Object.keys(ShortlistedApplicant).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === 'remarks') acc[key] = data[key].trim()
+            if (key === 'remarks') acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
         return acc;
@@ -747,7 +749,7 @@ export function mapBlacklistApplicantPayloadData(data) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "remarks") payload[key] = data[key].trim();
+            if (key === "remarks") payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -758,7 +760,7 @@ export function mapBlacklistApplicantPayloadData(data) {
 export function mapBlacklistApplicantData(data) {
     const RecordDetails = Object.keys(BlacklistApplicant).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === 'remarks') acc[key] = data[key].trim()
+            if (key === 'remarks') acc[key] = data[key]?.trim()
             else if (key === "reasons") {
                 acc[key] = ((data[key] || []).map(reason => reason.name) || [])
             }
@@ -815,7 +817,7 @@ export async function mapResumeBankApplicantsList(data) {
 export function mapFeedBackFormData(data) {
     const RecordDetails = Object.keys(FeedBackForm).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name") acc[key] = data[key].trim()
+            if (key === "name") acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
         return acc;
@@ -851,7 +853,7 @@ export function mapFeedBackFormPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name") payload[key] = data[key].trim();
+            if (key === "name") payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -865,7 +867,7 @@ export function mapFeedBackFormPayloadData(data, id) {
 export function mapEmailTemplateData(data) {
     const RecordDetails = Object.keys(EmailTemplate).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -898,7 +900,7 @@ export function mapEmailTemplatePayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -912,7 +914,7 @@ export function mapEmailTemplatePayloadData(data, id) {
 export function mapOfferLetterTemplateData(data) {
     const RecordDetails = Object.keys(OfferLetterTemplate).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
         return acc;
@@ -944,7 +946,7 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') formData.append(key, data[key].trim());
+            if (key === "name" || key === 'description') formData.append(key, data[key]?.trim());
             else if (key === 'letterhead') {
                 if (data[key] instanceof File) formData.append(key, data[key])
             }
@@ -964,7 +966,7 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -1103,7 +1105,7 @@ export function mapInterviewPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
@@ -1119,7 +1121,7 @@ export function mapInterviewPayloadData(data, id) {
 export function mapInterviewFeedbackData(data) {
     const RecordDetails = Object.keys(InterviewFeedback).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
@@ -1152,7 +1154,7 @@ export function mapInterviewFeedbackPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === 'comments') payload[key] = data[key].trim();
+            if (key === 'comments') payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }
@@ -1167,7 +1169,7 @@ export function mapInterviewFeedbackPayloadData(data, id) {
 export function mapBlacklistReasonData(data) {
     const RecordDetails = Object.keys(BlacklistReason).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key].trim()
+            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
         return acc;
@@ -1199,7 +1201,7 @@ export function mapBlacklistReasonPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key].trim();
+            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
             else payload[key] = data[key];
         }
     }

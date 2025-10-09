@@ -70,8 +70,8 @@ const InterviewTypes = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                if (filterName === 'is_active')
-                    updatedFilters[filterName] = filterValue === 'active' ? true : false;
+                if (['created_at'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
@@ -97,7 +97,7 @@ const InterviewTypes = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "is_active",
-                                options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },]
+                                options: [{ value: true, label: 'Active' }, { value: false, label: 'Inactive' },]
                             },
                             {
                                 type: "select",
