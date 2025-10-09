@@ -8,8 +8,10 @@ import {
 } from "components/ui/card";
 import { Badge } from "components/ui/badge";
 import { TrendingUp, Users, UserCheck, Briefcase } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const EmiratizationWidget = ({ data, loading }) => {
+  const navigate = useNavigate();
   // Map API data to metrics
   const metrics = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
@@ -48,6 +50,64 @@ const EmiratizationWidget = ({ data, loading }) => {
 
     return applicants > 0 ? ((hired / applicants) * 100).toFixed(1) : 0;
   }, [data]);
+
+  /**
+   * Navigation handler for emiratization metric cards
+   * Routes based on metric type:
+   * 1. Requisition metrics → Requisition Planning (state-based navigation)
+   * 2. Applicant metrics → Applicant Management (state-based navigation)
+   * 
+   * Technical decisions:
+   * - All navigation uses location.state for consistency
+   * - Each metric navigates to appropriate tab with pre-applied emiratization filter
+   * - Filter: emiratization_flag=true for API, converted to "required" for UI dropdown
+   */
+  const handleCardClick = (metricTitle) => {
+    switch (metricTitle) {
+      case "Total Emiratization Roles":
+        // Navigate to Generate Requisition tab with is_emiratization_role filter
+        navigate("/talent-sphere/requisition-planning", {
+          state: {
+            tab: "generate-requisition",
+            filterData: { is_emiratization_role: true },
+          },
+        });
+        break;
+
+      case "Applicants for Emiratization Roles":
+        // Navigate to "All Applicants" tab with emiratization filter
+        navigate("/talent-sphere/applicant-management", {
+          state: {
+            tab: "All Applicants",
+            filterData: { emiratization_flag: true },
+          },
+        });
+        break;
+
+      case "Shortlisted Emirati Applicants":
+        // Navigate to "Screened" tab with emiratization filter
+        navigate("/talent-sphere/applicant-management", {
+          state: {
+            tab: "Screened",
+            filterData: { emiratization_flag: true },
+          },
+        });
+        break;
+
+      case "Hired Emirati Applicants":
+        // Navigate to "Hired" tab with emiratization filter
+        navigate("/talent-sphere/applicant-management", {
+          state: {
+            tab: "Hired",
+            filterData: { emiratization_flag: true },
+          },
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
 
   if (loading) {
     return (
@@ -96,7 +156,11 @@ const EmiratizationWidget = ({ data, loading }) => {
         ) : (
           <div className="space-y-3">
             {metrics.map((metric, index) => (
-              <Card key={index} className="p-4 bg-neutral-50">
+              <Card
+                key={index}
+                className="p-4 bg-neutral-50 cursor-pointer hover:shadow-md hover:bg-neutral-100 transition-all"
+                onClick={() => handleCardClick(metric.title)}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`${metric.color}`}>{metric.icon}</div>
