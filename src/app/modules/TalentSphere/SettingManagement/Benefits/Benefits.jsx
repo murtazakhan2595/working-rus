@@ -70,7 +70,9 @@ const Benefits = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+                if (['created_at'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
+                else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -95,7 +97,7 @@ const Benefits = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options:[{value:'Active',label:'Active'},{value:'Inactive',label:'Inactive'},]
+                                options: [{ value: true, label: 'Active' }, { value: false, label: 'Inactive' },]
                             },
                             {
                                 type: "date-range",

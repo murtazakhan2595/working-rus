@@ -18,6 +18,7 @@ const ViewApplicationDetail = ({
   isOpen,
   setIsOpen = () => { },
   statusUpdated = () => { },
+  autoAction = null,
 }) => {
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
@@ -27,11 +28,12 @@ const ViewApplicationDetail = ({
   const [OpenOfferForm, setOpenOfferForm] = useState(false);
   const [OpenInterviewForm, setOpenInterviewForm] = useState(false);
   const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
+  const [hasTriggeredAction, setHasTriggeredAction] = useState(false);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
-      event.preventDefault();
-      event.stopPropagation();
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
       if (status === 'view-feedback') {
         const interview_ids = (data.interviews || []).map(interview => interview.id);
         setFormData({ id: interview_ids });
@@ -50,8 +52,8 @@ const ViewApplicationDetail = ({
       if (status === 'add-feedback') {
         const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
         setFormData({
-          form: latest_interview.feedback_form,
-          id: latest_interview.id,
+          form: latest_interview?.feedback_form,
+          id: latest_interview?.id,
         });
         setOpenFeedbackForm(true);
         return null;
@@ -95,6 +97,25 @@ const ViewApplicationDetail = ({
     return null; // Always return something
   };
 
+  // Auto-trigger actions if requested via deep-link (only once)
+  const triggerAutoAction = React.useCallback((data) => {
+    if (!data || !autoAction || hasTriggeredAction) return;
+    
+    setHasTriggeredAction(true);
+    if (autoAction === 'reschedule') {
+      handleClick(null, 'reschedule-interview', data);
+    } else if (autoAction === 'add-feedback') {
+      handleClick(null, 'add-feedback', data);
+    }
+  }, [autoAction, handleClick, hasTriggeredAction]);
+
+  // Reset triggered action state when component opens/closes
+  React.useEffect(() => {
+    if (isOpen) {
+      setHasTriggeredAction(false);
+    }
+  }, [isOpen]);
+
   const fields = React.useMemo(
     () => [
       ...(ApplicantDetails || []),
@@ -102,8 +123,9 @@ const ViewApplicationDetail = ({
         customContent: true,
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
-          console.log(data, 'APPLICATION DATA')
           if (!data || !data.status || !data.status.toLowerCase()) return null;
+          // Trigger auto action once when data is available
+          triggerAutoAction(data);
           const status = data.status.toLowerCase();
           let statusKey = status;
           if (status === 'in progress') {
@@ -131,7 +153,7 @@ const ViewApplicationDetail = ({
           })
         },
       },
-    ], [handleClick,]
+    ], [handleClick, triggerAutoAction]
   );
 
   return (

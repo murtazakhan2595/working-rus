@@ -19,6 +19,7 @@ import UpcomingInterviews from "./UpcomingInterviews";
 import OfferTrackerWidget from "./OfferTrackerWidget";
 import ApplicantSources from "./ApplicantSources";
 import EmiratizationWidget from "./EmiratizationWidget";
+import OpenRequisitions from "./OpenRequisitions";
 import { useTalentSphereDashboard } from "./useTalentSphereDashboard";
 
 const TalentSphereDashboard = () => {
@@ -38,6 +39,7 @@ const TalentSphereDashboard = () => {
     hiringPredictions,
     aiFlaggedData,
     aiSuggestedCandidates,
+    requisitionsData,
     fetchAISuggestedCandidates,
     refetch,
   } = useTalentSphereDashboard(filterData);
@@ -138,7 +140,10 @@ const TalentSphereDashboard = () => {
             <OfferTrackerWidget data={offerData} loading={loading} />
           </div>
 
-          {/* Charts Row 3: Sources + Emiratization */}
+          {/* Charts Row 3: Open Requisitions */}
+          <OpenRequisitions data={requisitionsData} loading={loading} />
+
+          {/* Charts Row 4: Sources + Emiratization */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ApplicantSources data={sourceData} loading={loading} />
             <EmiratizationWidget data={emiratizationData} loading={loading} />

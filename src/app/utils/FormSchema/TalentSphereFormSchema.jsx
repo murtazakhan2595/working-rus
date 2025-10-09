@@ -1,3 +1,5 @@
+import { validateStartAndEndDateField } from "app/utils/FormSchema/generalFormSchema";
+
 export const validateManpowerPlanningFormSchema = (values) => {
     const errors = {};
     // Basic required field validations
@@ -13,13 +15,28 @@ export const validateManpowerPlanningFormSchema = (values) => {
 };
 export const validateHeadCoutnRequestFormSchema = (values, DataList = [],) => {
     const errors = {};
-
     // Basic required field validations
     if (values.requested_headcount && parseFloat(values.requested_headcount) <= 0) errors.requested_headcount = "Requested headcount cannot be negative or zero";
 
     return errors;
 };
-export const validateRequisitionRequestFormSchema = (values, ) => {
+export const validatePublishVacancyFormSchema = (values,) => {
+    const errors = {};
+    const { post_on_cohrus, post_on_linkedin, post_on_indeed, post_on_other, publish_date, due_date } = values;
+    // Basic required field validations
+    if (publish_date && due_date) {
+        const { start_date, end_date } = validateStartAndEndDateField(publish_date, due_date);
+        if (start_date)
+            errors.publish_date = 'Publish date cannot be after due date.';
+        if (end_date)
+            errors.due_date = 'Due date cannot be before after date';
+    }
+    if (!post_on_cohrus && !post_on_linkedin && !post_on_indeed && !post_on_other)
+        errors.post_on_other = 'At least 1 platform must be selected.'
+
+    return errors;
+};
+export const validateRequisitionRequestFormSchema = (values,) => {
     const errors = {};
 
     // Basic required field validations

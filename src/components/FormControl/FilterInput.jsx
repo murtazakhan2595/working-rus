@@ -16,7 +16,13 @@ import {
   CommandItem,
   CommandList,
 } from "src/@/components/ui/command";
-import { SelectInputComponent, SelectMultiInputComponent, DateRangeInput, DateRangeFilter, TextInput } from "components/FormControl";
+import {
+  SelectInputComponent,
+  SelectMultiInputComponent,
+  DateRangeInput,
+  DateRangeFilter,
+  TextInput,
+} from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
@@ -35,9 +41,8 @@ const FilterInput = ({
 }) => {
   const Departments = GetDispatchStateList("departments", "common") || [];
   const Designations = GetDispatchStateList("designations", "common") || [];
-  // const Managers = useMemo(() => GetDispatchStateList("reportingManagers", "emp") || [], []);
-  const Branches = GetDispatchStateList("branches", "common") || []
-  const Employees = GetDispatchStateList("employees", "emp") || []
+  const Branches = GetDispatchStateList("branches", "common") || [];
+  const Employees = GetDispatchStateList("employees", "emp") || [];
   const classNamesStyle = "";
   const DefaultWidth = "min-w-56";
   const DefaultHeight = "min-h-[38px]";
@@ -55,12 +60,10 @@ const FilterInput = ({
   );
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
-    // Add "All" option to the options array if it exists
     const allOptions = filter.option
       ? [{ value: "", label: "All" }, ...filter.option]
       : [];
 
-    // Only find selectedOption if there's a value
     const selectedOption = filter.values
       ? allOptions.find((option) => option.value === filter.values)
       : null;
@@ -82,7 +85,6 @@ const FilterInput = ({
             >
               {selectedOption ? selectedOption.label : filter.placeholder}
             </span>
-
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
@@ -157,20 +159,28 @@ const FilterInput = ({
             name,
             options = [],
           } = filter;
-          const SearchOptions =
-            !options ? [] :
-              Array.isArray(options) ? options :
-                typeof options === 'string' ?
-                  options.toLowerCase() === 'departments' ? Departments || [] :
-                    options.toLowerCase() === 'branches' ? Branches || [] :
-                      options.toLowerCase() === 'designations' ? Designations || [] :
-                        options.toLowerCase() === 'nationalities' ? countriesList || [] :
-                          options.toLowerCase() === 'employees' ? Employees || [] :
-                            [] : [];
+          const SearchOptions = !options
+            ? []
+            : Array.isArray(options)
+              ? options
+              : typeof options === "string"
+                ? options.toLowerCase() === "departments"
+                  ? Departments || []
+                  : options.toLowerCase() === "branches"
+                    ? Branches || []
+                    : options.toLowerCase() === "designations"
+                      ? Designations || []
+                      : options.toLowerCase() === "nationalities"
+                        ? countriesList || []
+                        : options.toLowerCase() === "employees"
+                          ? Employees || []
+                          : []
+                : [];
           switch (filter.type) {
             case "search":
               return (
                 <RenderInputField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -184,6 +194,7 @@ const FilterInput = ({
             case "numeric-range":
               return (
                 <RenderNumericRangeField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -197,6 +208,7 @@ const FilterInput = ({
             case "select":
               return (
                 <RenderSelectInputField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -211,6 +223,7 @@ const FilterInput = ({
             case "select-multiple":
               return (
                 <RenderMultiSelectInputField
+                  key={index}
                   className={FilterClassName}
                   width={width ?? DefaultWidth}
                   name={name}
@@ -222,7 +235,6 @@ const FilterInput = ({
                   resetField={resetFields}
                 />
               );
-
             case "select-one":
               return renderPopoverSelect(
                 filter,
@@ -251,8 +263,9 @@ const FilterInput = ({
             case "date-range":
               return (
                 <RenderDateRangeInputField
+                  key={index}
                   className={FilterClassName}
-                  width={width ?? 'w-[235px]'}
+                  width={width ?? "w-[235px]"}
                   name={name}
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
@@ -264,6 +277,7 @@ const FilterInput = ({
             case "date-range-filter":
               return (
                 <RenderDateRangeFilterField
+                  key={index}
                   className={FilterClassName}
                   name={name}
                   placeholder={`Search ${placeholder}`}
@@ -277,7 +291,13 @@ const FilterInput = ({
               return <div key={index}></div>;
           }
         })}
-      <RenderResetFilter handleInputChange={handleInputChange} filtersList={filters} resetAllFields={() => { setResetFields(!resetFields) }} />
+      <RenderResetFilter
+        handleInputChange={handleInputChange}
+        filtersList={filters}
+        resetAllFields={() => {
+          setResetFields(!resetFields);
+        }}
+      />
     </div>
   );
 };
@@ -294,43 +314,42 @@ const RenderNumericRangeField = React.memo(
     resetField,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
+    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
+      if (prevResetField.current !== resetField && resetField !== false) {
         setInputValue(null);
       }
-      return () => {
-        isMounted = false;
-      };
+      prevResetField.current = resetField;
     }, [resetField]);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     const handleChange = (_, value) => {
       let newValue = value;
-      // Always ensure one "-"
       if (!newValue.includes("-")) {
-        // If user deletes the "-", reinsert it smartly
         const lastValue = inputValue;
         if (!lastValue) {
           newValue = newValue + "-";
         } else {
-          const cursorWasBeforeDash = lastValue.indexOf("-") >= 0 && value.length < lastValue.length && lastValue.indexOf("-") >= value.length;
+          const cursorWasBeforeDash =
+            lastValue.indexOf("-") >= 0 &&
+            value.length < lastValue.length &&
+            lastValue.indexOf("-") >= value.length;
           if (cursorWasBeforeDash) newValue = "-" + newValue;
           else newValue = newValue + "-";
         }
       }
-
-      // Allow only digits and a single '-'
       newValue = newValue.replace(/[^0-9-]/g, "");
-
-      // Prevent multiple '-'
       const parts = newValue.split("-");
       if (parts.length > 2) newValue = parts[0] + "-" + parts[1];
-
-      // Ensure at least one '-'
       if (newValue === "") newValue = "-";
-
       setInputValue(newValue);
       handleInputChange?.(name, parts);
     };
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <TextInput
@@ -345,6 +364,7 @@ const RenderNumericRangeField = React.memo(
     );
   }
 );
+
 const RenderInputField = React.memo(
   ({
     className = "",
@@ -357,15 +377,19 @@ const RenderInputField = React.memo(
     resetField,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
+    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
+      if (prevResetField.current !== resetField && resetField !== false) {
         setInputValue(null);
       }
-      return () => {
-        isMounted = false;
-      };
+      prevResetField.current = resetField;
     }, [resetField]);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <TextInput
@@ -400,20 +424,24 @@ const RenderMultiSelectInputField = React.memo(
     value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
-    // Add "All" option to the options array if it exists
+
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
+
+    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
+      if (prevResetField.current !== resetField && resetField !== false) {
         setInputValue(null);
       }
-      return () => {
-        isMounted = false;
-      };
+      prevResetField.current = resetField;
     }, [resetField]);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <SelectMultiInputComponent
@@ -423,7 +451,7 @@ const RenderMultiSelectInputField = React.memo(
           name={name}
           value={inputValue || ""}
           onChange={(field, value) => {
-            if (value && value.includes('All')) {
+            if (value && value.includes("All")) {
               setInputValue("");
               handleInputChange(field, "");
             } else {
@@ -451,20 +479,24 @@ const RenderSelectInputField = React.memo(
     value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
-    // Add "All" option to the options array if it exists
+
     const allOptions = React.useMemo(
       () => (options ? [{ value: "All", label: "All" }, ...options] : []),
       [options]
     );
+
+    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
+      if (prevResetField.current !== resetField && resetField !== false) {
         setInputValue(null);
       }
-      return () => {
-        isMounted = false;
-      };
+      prevResetField.current = resetField;
     }, [resetField]);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <SelectInputComponent
@@ -472,12 +504,12 @@ const RenderSelectInputField = React.memo(
           placeholder={placeholder}
           className={`rounded-sm text-neutral-1000`}
           name={name}
-          value={inputValue || ""}
+          value={inputValue !== null || inputValue !== undefined ? inputValue : ""}
           onChange={(field, value) => {
-            setInputValue(value ? (value === "All" ? "" : value) : "");
+            setInputValue(value !== null || value !== undefined ? (value === "All" ? "" : value) : "");
             handleInputChange(
               field,
-              value ? (value === "All" ? "" : value) : ""
+              value !== null || value !== undefined ? (value === "All" ? "" : value) : ""
             );
           }}
           options={allOptions}
@@ -496,18 +528,22 @@ const RenderDateRangeInputField = React.memo(
     height = "",
     resetField,
     handleInputChange = () => { },
-    value
+    value,
   }) => {
     const [inputValue, setInputValue] = useState(value);
+
+    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
+      if (prevResetField.current !== resetField && resetField !== false) {
         setInputValue(null);
       }
-      return () => {
-        isMounted = false;
-      };
+      prevResetField.current = resetField;
     }, [resetField]);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
         <DateRangeInput
@@ -534,6 +570,7 @@ const RenderDateRangeFilterField = React.memo(
     handleInputChange = () => { },
   }) => {
     const [activeTab, setActiveTab] = useState("Day");
+
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
@@ -545,6 +582,7 @@ const RenderDateRangeFilterField = React.memo(
         isMounted = false;
       };
     }, [resetField, name]);
+
     return (
       <div className={`${className} ${height} h-full w-fit relative`}>
         <DateRangeFilter
@@ -557,13 +595,9 @@ const RenderDateRangeFilterField = React.memo(
             } else {
               const date_range = GetDateRange(dateRange)?.split(",") || [];
               const end_date =
-                date_range[1] && date_range[1] !== "null"
-                  ? date_range[1]
-                  : "";
+                date_range[1] && date_range[1] !== "null" ? date_range[1] : "";
               const start_date =
-                date_range[0] && date_range[0] !== "null"
-                  ? date_range[0]
-                  : "";
+                date_range[0] && date_range[0] !== "null" ? date_range[0] : "";
               handleInputChange(name, `${start_date},${end_date}`);
             }
             setActiveTab(dateRange);
@@ -585,7 +619,6 @@ const RenderResetFilter = React.memo(
     handleInputChange = () => { },
     resetAllFields = () => { },
   }) => {
-    console.log(filtersList)
     const resetFilters = (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -594,21 +627,22 @@ const RenderResetFilter = React.memo(
       }
       resetAllFields();
     };
+
     return (
       <div className={`${className} ${width} ${height} relative`}>
-
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant='outline' size='sm' onClick={resetFilters}><RefreshCcw size={16} /> </Button>
+              <Button variant="outline" size="sm" onClick={resetFilters}>
+                <RefreshCcw size={16} />
+              </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Reset the filters</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-      </div >
+      </div>
     );
   }
 );

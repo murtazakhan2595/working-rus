@@ -146,32 +146,32 @@ export const APPLICANT_TAB_CONFIG = [
     {
         label: "All Applicants",
         permission: "VIEW_TS_BENEFITS",
-        component: () => <AllApplicants />,
+        component: (reload) => <AllApplicants reload={reload} />,
     },
      {
         label: "Screened",
         permission: "VIEW_TS_EDUCATION",
-        component: () => <AllApplicants variant="screened" />,
+        component: (reload) => <AllApplicants variant="screened" reload={reload} />,
     },
     {
         label: "Shortlisted",
         permission: "VIEW_TS_CAREER_LEVEL",
-        component: () => <AllApplicants variant="shortlisted" />,
+        component: (reload) => <AllApplicants variant="shortlisted" reload={reload} />,
     },
     {
         label: "Rejected",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: () => <AllApplicants variant="rejected" />,
+        component: (reload) => <AllApplicants variant="rejected" reload={reload} />,
     },
     {
         label: "Blacklisted",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: () => <AllApplicants variant="blacklisted" />,
+        component: (reload) => <AllApplicants variant="blacklisted" reload={reload} />,
     },
     {
         label: "Hired",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: () => <AllApplicants variant="hired" />,
+        component: (reload) => <AllApplicants variant="hired" reload={reload} />,
     },
 ];
 

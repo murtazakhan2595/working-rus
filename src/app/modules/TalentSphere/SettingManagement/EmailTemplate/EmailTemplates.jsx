@@ -71,7 +71,9 @@ const EmailTemplates = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+              if (['created_on'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
+                else  updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -107,7 +109,7 @@ const EmailTemplates = ({ reload }) => {
                             {
                                 type: "select",
                                 placeholder: "Status",
-                                name: "status",
+                                name: "is_active",
                                 options: [{ value: true, label: 'Active' }, { value: false, label: 'Inactive' },]
                             },
                             {
