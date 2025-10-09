@@ -93,7 +93,7 @@ const RemoteWorkChecklist = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options: [{ value: true, label: 'Available' }, { value: false, label: 'Unvailable' },]
+                                options: [{ value: 'Available', label: 'Available' }, { value: 'Unvailable', label: 'Unvailable' },]
                             },
                             {
                                 type: "date-range",
