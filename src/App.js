@@ -19,6 +19,7 @@ import { getNodeExistInTree } from "utils/renderValues";
 import Error from "app/modules/Error";
 // import useAccessCheck from "app/hooks/useAccessCheck";
 import {fetchInterviewOptions} from "./state/slices/ScreenedInterview";
+import ChatbrixWidget from "./components/ChatbrixWidget";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -157,6 +158,7 @@ function App() {
 
         <Route path="*" element={<Err404 />} />
       </Routes>
+      <ChatbrixWidget />
     </>
   );
 }

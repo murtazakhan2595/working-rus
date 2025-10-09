@@ -132,6 +132,11 @@ export const RequisitionViewFields = [
         label: "Salary Range",
         formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency}))} (${row?.payment_frequency})`,
       },
+       {
+        key: "recommended_posting_date",
+        label: "Recommended Posting Date",
+        formatter: (cell) => renderDate(cell),
+      },
       {
         key: "justification",
         label: "Justification",

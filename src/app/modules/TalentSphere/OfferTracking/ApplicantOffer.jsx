@@ -59,6 +59,7 @@ const ApplicantOffer = () => {
     const fields = [
         {
             title: "",
+            renderSectionCondition: (row) => row.status !== 'pending',
             field: [{
                 key: 'status',
                 formatter: (cell) => {
@@ -180,7 +181,7 @@ const ApplicantOffer = () => {
         {
             customContent: true,
             renderContent: (data) => {
-                if (data?.stats?.toLowerCase() !== 'pending') return null;
+                if (data?.status?.toLowerCase() !== 'pending') return null;
                 return (
                     <div className="flex flex-wrap justify-end gap-2 my-5">
                         <Button

@@ -207,7 +207,7 @@ export const Requisition = {
     career_level_name: null,
     education_name: null,
     currency: null,
-    payment_frequency: 'Monthly',
+    payment_frequency: 'monthly',
 }
 
 export const PublishVacancy = {

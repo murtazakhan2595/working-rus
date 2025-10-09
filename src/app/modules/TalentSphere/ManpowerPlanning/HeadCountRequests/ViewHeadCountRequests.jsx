@@ -7,6 +7,7 @@ import {
 import { FormatID, BranchName } from "utils/getValuesFromTables";
 import { StatusLabel, StatusButtons } from "components";
 import { getHeadcountRequestData, saveUpdateHeadcountRequest, getManpowerPlanningList, saveManpowerPanning } from "app/hooks/talentSphere";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 const ViewHeadCountRequests = ({
     isOpen,
@@ -78,11 +79,6 @@ const ViewHeadCountRequests = ({
                     key: "department_name",
                     label: "Department",
                 },
-
-                {
-                    key: "attachment_url",
-                    label: "Attachment",
-                },
                 {
                     key: "requested_by_name",
                     label: "Requested By",
@@ -101,6 +97,24 @@ const ViewHeadCountRequests = ({
                 },
             ],
         },
+        {
+            title: `Attachment`,
+            field: [
+              {
+                key: 'attachment_url',
+                formatter: (cell, data) =>
+                  cell ? (
+                    <AttachmentUI
+                      attachment={cell}
+                      name={`Headcount Request Document`}
+                      viewOnly={true}
+                    />
+                  ) : (
+                    <div className="text-neutral-1000 text-sm">No document attached</div>
+                  ),
+              },
+            ],
+          },
         {
             title: "Headcount Details",
             field: [
