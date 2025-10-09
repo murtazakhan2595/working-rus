@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import {
-  getApplicantsList,
-  getJobTypeList,
-  getCareerLevelList,
-} from "app/hooks/talentSphere";
+import { getApplicantsList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
 import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
@@ -18,43 +14,33 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
     const source = searchParams.get("source");
-    const requisitionId = searchParams.get("requisition_id") || searchParams.get("requisition");
-    const applicantId = searchParams.get("applicant");
-    const action = searchParams.get("action");
+    const recruitmentRequisition = searchParams.get("recruitment_requisition");
     const filters = {};
     
     if (source) filters.application_source = source;
-    if (requisitionId) filters.requisition = requisitionId;
-    if (applicantId) filters.id = applicantId;
+    if (recruitmentRequisition) filters.recruitment_requisition = recruitmentRequisition;
     
     return filters;
-  }, []); // Empty deps - calculate only once
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - calculate only once on mount
 
   const [RequisitionList, setRequisitionList] = useState({});
   const [filterData, setFilterData] = useState(initialFilters);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [isLoading, setIsLoading] = useState(false);
-  const [JobTypeList, setJobTypeList] = useState([]);
-  const [CareerLevelList, setCareerLevelList] = useState([]);
 
   // Clear URL parameters after applying (only once)
   useEffect(() => {
-    const hasParams = 
-      searchParams.has("source") ||
-      searchParams.has("requisition_id") || 
-      searchParams.has("requisition") ||
-      searchParams.has("applicant") ||
-      searchParams.has("action");
+    const hasParams = searchParams.has("source") || searchParams.has("recruitment_requisition");
     
     if (hasParams) {
-      // Clean up all query parameters
-      ["source", "requisition_id", "requisition", "applicant", "action"].forEach(param => {
-        if (searchParams.has(param)) searchParams.delete(param);
-      });
+      if (searchParams.has("source")) searchParams.delete("source");
+      if (searchParams.has("recruitment_requisition")) searchParams.delete("recruitment_requisition");
       setSearchParams(searchParams, { replace: true });
     }
-  }, []); // Empty dependency - run only once
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency - run only once on mount
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -103,6 +89,7 @@ const AllApplicants = ({ reload, variant = "all" }) => {
     return () => {
       isMounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData, ordering, options, variant]);
 
   useEffect(() => {
@@ -113,6 +100,7 @@ const AllApplicants = ({ reload, variant = "all" }) => {
     return () => {
       isMounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {

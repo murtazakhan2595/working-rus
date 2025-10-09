@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, PageLoader } from "components";
-import { getVacancyList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
+import { getVacancyList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
 import { PublishedVacancyColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
-import { GlobalStatusOptions } from "data/Data";
 import { ViewPublishedVacancies } from "app/modules/TalentSphere";
 
 const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => {
@@ -14,8 +13,6 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [isLoading, setIsLoading] = useState(false);
-    const [JobTypeList, setJobTypeList] = useState([]);
-    const [CareerLevelList, setCareerLevelList] = useState([]);
     
     // State for auto-opening detail sheet
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
@@ -26,7 +23,7 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
         if (deepLinkRequisition) {
             setFilterData(prev => ({
                 ...prev,
-                requisition: deepLinkRequisition  // Note: Published vacancies filter by 'requisition' field
+                requisition: deepLinkRequisition
             }));
         }
     }, [deepLinkRequisition]);
@@ -34,14 +31,14 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
     // Auto-open sheet when data is loaded with deep link
     useEffect(() => {
         if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading) {
-            // Find the vacancy related to this requisition
-            const vacancy = RequisitionList.results[0]; // Usually should be only one per requisition
+            const vacancy = RequisitionList.results[0];
             if (vacancy) {
                 setSelectedVacancyId(vacancy.id);
                 setViewSheetOpen(true);
             }
         }
     }, [deepLinkRequisition, RequisitionList, isLoading]);
+    
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -54,29 +51,7 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
             setOrdering(sortName);
         },
     };
-    useEffect(() => {
-        const fetchBenefitData = async (isMounted) => {
-            try {
-                setIsLoading(true);
-                // Add organizationId to filter if available
-                const career_level = await getCareerLevelList();
-                const job_type = await getJobTypeList();
-                if (isMounted) {
-                    setJobTypeList(job_type.results);
-                    setCareerLevelList(career_level.results);
-                }
-            } catch (error) {
-                console.error("Error fetching roles:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        let isMounted = true;
-        fetchBenefitData(isMounted);
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+    
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
@@ -101,6 +76,7 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
         return () => {
             isMounted = false;
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterData, ordering, options]);
 
     useEffect(() => {
@@ -111,6 +87,7 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
         return () => {
             isMounted = false;
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reload]);
 
     const handleFilterChange = (filterName, filterValue) => {
@@ -123,6 +100,8 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
                 if (filterName === 'requisition') {
                     const value = filterValue.replace(/\D/g, '');
                     if (value) updatedFilters[filterName] = parseInt(value);
+                } else if (['due_date_range','publish_date_range'].includes(filterName)) {
+                    updatedFilters[filterName] = filterValue?.split(',');
                 } else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
@@ -169,7 +148,7 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
                                     { value: 'remote', label: "Remote" },
                                 ],
                                 name: "work_mode",
-                                placeholder: "Job Mode",
+                                placeholder: "Work Mode",
                             },
                             {
                                 type: "select",
@@ -183,12 +162,12 @@ const PublishedVacancies = ({ reload, deepLinkRequisition, deepLinkAction }) => 
                             },
                             {
                                 type: "date-range",
-                                name: "publish_date",
+                                name: "publish_date_range",
                                 placeholder: "Pulish date",
                             },
                             {
                                 type: "date-range",
-                                name: "due_date",
+                                name: "due_date_range",
                                 placeholder: "Due date",
                             },
                             {

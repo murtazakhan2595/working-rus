@@ -11,7 +11,7 @@ import {
     RequisitionRequests,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function RequisitionPlanning() {
     const isViewRequisitionPermitted = HasAccess("VIEW_GENERATED_REQUISITION");
@@ -22,12 +22,10 @@ export default function RequisitionPlanning() {
     const [OpenRequisitionForm, setOpenRequisitionForm] = useState(false);
     const [reloadData, setReloadData] = useState({});
     
-    // URL parameter and location state handling
-    const [searchParams, setSearchParams] = useSearchParams();
+    // Location state handling for deep linking from dashboard
     const location = useLocation();
     const [deepLinkRequisition, setDeepLinkRequisition] = useState(null);
     const [deepLinkAction, setDeepLinkAction] = useState(null);
-    const [requisitionData, setRequisitionData] = useState(null);
 
     const TabListArray = React.useMemo(() => [
         ...(isViewRequisitionPermitted ? ["Generate Requisition"] : []),
@@ -35,15 +33,13 @@ export default function RequisitionPlanning() {
         ...(isViewPublishedVacanciesPermitted ? ["Published Vacancies"] : []),
     ], [isViewRequisitionPermitted, isViewPublishedVacanciesPermitted, isViewRequisitionRequestPermitted]);
 
-    // Handle both URL parameters and location state for deep linking
+    // Handle location state for deep linking from dashboard
     useEffect(() => {
-        // Priority 1: Check location state (from dashboard navigation)
         if (location.state?.filterRequisition) {
-            const { filterRequisition, tab, action, requisitionData: reqData } = location.state;
+            const { filterRequisition, tab, action } = location.state;
             
             setDeepLinkRequisition(filterRequisition);
             if (action) setDeepLinkAction(action);
-            if (reqData) setRequisitionData(reqData);
             
             // Set the correct tab based on state
             if (tab) {
@@ -57,33 +53,8 @@ export default function RequisitionPlanning() {
             
             // Clear location state after reading
             window.history.replaceState({}, document.title);
-            return;
         }
-        
-        // Priority 2: Check URL parameters (legacy support)
-        const tab = searchParams.get("tab");
-        const requisition = searchParams.get("requisition");
-        const action = searchParams.get("action");
-        
-        // Set active tab from URL
-        if (tab && TabListArray.includes(tab)) {
-            setActiveTab(tab);
-        }
-        
-        // Handle requisition-specific actions
-        if (requisition) {
-            setDeepLinkRequisition(requisition);
-            if (action) setDeepLinkAction(action);
-            
-            // Clean URL after reading (with slight delay to ensure child components receive the data)
-            setTimeout(() => {
-                searchParams.delete("tab");
-                searchParams.delete("requisition");
-                searchParams.delete("action");
-                setSearchParams(searchParams, { replace: true });
-            }, 100);
-        }
-    }, [location.state, searchParams, TabListArray]);
+    }, [location.state, TabListArray]);
 
     const HeaderButton = () => {
         const handleRequestClick = (event) => {

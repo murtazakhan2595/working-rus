@@ -21,7 +21,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
     const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
 
-    // Handle deep link filtering and actions
+    // Handle deep link filtering
     useEffect(() => {
         if (deepLinkRequisition) {
             setFilterData(prev => ({
@@ -34,7 +34,6 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
     // Auto-open sheet when data is loaded with deep link
     useEffect(() => {
         if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading) {
-            // Find the requisition in the loaded data
             const requisition = RequisitionList.results.find(
                 req => req.id === parseInt(deepLinkRequisition)
             );
@@ -44,15 +43,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
             }
         }
     }, [deepLinkRequisition, RequisitionList, isLoading]);
-
-    // Handle deep link actions (like publish)
-    useEffect(() => {
-        if (deepLinkAction === 'publish' && deepLinkRequisition) {
-            // This would trigger the publish action for the specific requisition
-            // The action would be handled by the table's action buttons
-            console.log('Publish action requested for requisition:', deepLinkRequisition);
-        }
-    }, [deepLinkAction, deepLinkRequisition]);
+    
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -91,9 +82,9 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
     const fetchData = async (isMounted) => {
         setIsLoading(true);
         try {
-            const filters={...filterData,approval_required:false}
+            const filters = { ...filterData, approval_required: false }
             const response = await getRequisitionRequestList({
-                filterData:filters,
+                filterData: filters,
                 options,
                 ordering,
             });
@@ -132,7 +123,9 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                updatedFilters[filterName] = filterValue;
+                if (filterName === 'is_emiratization_role')
+                    updatedFilters[filterName] = filterValue === 'required' ? true : false;
+                else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -151,7 +144,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
                             {
                                 type: "search",
                                 name: "job_title",
-                                    placeholder: "Job Title",
+                                placeholder: "Job Title",
                             },
                             {
                                 type: "select",
@@ -191,6 +184,15 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction }) =>
                                 type: "numeric-range",
                                 name: "salary_range",
                                 placeholder: "Salary Range",
+                            },
+                            {
+                                type: "select",
+                                options: [
+                                    { value: 'required', label: 'Required' },
+                                    { value: 'not_required', label: "Not Reqiured" },
+                                ],
+                                name: "is_emiratization_role",
+                                placeholder: "Emiratization Role",
                             },
                             {
                                 type: "select",

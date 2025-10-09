@@ -19,9 +19,9 @@ const OpenRequisitions = ({ data, loading }) => {
   // Helper function to get approved date from approval logs
   const getApprovedDate = (approval_logs) => {
     const approvalLog = approval_logs?.find(
-      log => log.action_type === "APPROVED"
+      (log) => log.action_type === "APPROVED"
     );
-    return approvalLog?.timestamp 
+    return approvalLog?.timestamp
       ? moment(approvalLog.timestamp).format("DD-MMM-YYYY")
       : "N/A";
   };
@@ -32,68 +32,59 @@ const OpenRequisitions = ({ data, loading }) => {
   // - Approved: Ready to publish in "Generate Requisition" tab
   const openRequisitions = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
-    
-    return data.filter(req => 
-      req.status === 'approved' || req.status === 'pending'
-    )
+
+    return data.filter(
+      (req) => req.status === "approved" || req.status === "pending"
+    );
   }, [data]);
 
   const handleViewDetails = (row) => {
-    // Navigate directly to Requisition Planning and let it handle the filter
     // Navigate based on STATUS, not approval_required:
     // - Pending requisitions → Requisition Requests tab (for approval)
     // - Approved requisitions → Generate Requisition tab (to view/publish)
-    const targetTab = row.status === 'pending' ? 'requisition-requests' : 'generate-requisition';
-    
+    const targetTab =
+      row.status === "pending"
+        ? "requisition-requests"
+        : "generate-requisition";
+
     navigate(`/talent-sphere/requisition-planning`, {
-      state: { 
+      state: {
         filterRequisition: row.id,
         tab: targetTab,
-        requisitionData: row
-      }
+        requisitionData: row,
+      },
     });
   };
 
   const handlePublishVacancy = (row) => {
     // Navigate to Published Vacancies tab to view/edit published vacancy
     // OR to Generate Requisition if not published yet
-    const targetTab = row.is_publish ? 'published-vacancies' : 'generate-requisition';
-    
+    const targetTab = row.is_publish
+      ? "published-vacancies"
+      : "generate-requisition";
+
     navigate(`/talent-sphere/requisition-planning`, {
-      state: { 
+      state: {
         filterRequisition: row.id,
         tab: targetTab,
-        action: row.is_publish ? 'view' : 'publish',
-        requisitionData: row
-      }
+        action: row.is_publish ? "view" : "publish",
+        requisitionData: row,
+      },
     });
   };
 
   const handleViewApplicants = (row) => {
-    // Backend expects 'published_vacancy_id' NOT 'requisition'
-    // For now, navigate to Published Vacancies tab, from there user can view applicants
-    // Alternative: Ask backend to add 'requisition__id' filter support
-    
-    // Option 1: Navigate to published vacancies filtered by this requisition
-    navigate(`/talent-sphere/requisition-planning`, {
-      state: { 
-        filterRequisition: row.id,
-        tab: 'published-vacancies',
-        action: 'view-applicants',
-        requisitionData: row
-      }
-    });
-    
-    /* Option 2: If backend adds support, uncomment this:
-    navigate(`/talent-sphere/applicant-management?published_vacancy__requisition=${row.id}`);
-    */
+    // Backend now supports 'recruitment_requisition' filter! ✅
+    navigate(
+      `/talent-sphere/applicant-management?recruitment_requisition=${row.id}`
+    );
   };
 
   const columns = [
     {
       dataField: "id",
       text: "Requisition ID",
-      formatter: (cell) => `REQ-${cell.toString().padStart(3, '0')}`,
+      formatter: (cell) => `REQ-${cell.toString().padStart(3, "0")}`,
       style: { width: "100px" },
     },
     {
@@ -122,11 +113,8 @@ const OpenRequisitions = ({ data, loading }) => {
       dataField: "is_publish",
       text: "Published",
       formatter: (cell) => (
-        <Badge 
-          variant={cell ? 'default' : 'secondary'}
-          className="text-xs"
-        >
-          {cell ? 'Yes' : 'No'}
+        <Badge variant={cell ? "default" : "secondary"} className="text-xs">
+          {cell ? "Yes" : "No"}
         </Badge>
       ),
       style: { width: "80px" },
@@ -134,15 +122,15 @@ const OpenRequisitions = ({ data, loading }) => {
     {
       dataField: "total_applicants",
       text: "Total Applicants",
-      formatter: (cell) => cell || "N/A",
+      formatter: (cell) => cell || 0,
       style: { width: "120px" },
     },
     {
       dataField: "status",
       text: "Status",
       formatter: (cell) => (
-        <Badge 
-          variant={cell === 'approved' ? 'default' : 'secondary'}
+        <Badge
+          variant={cell === "approved" ? "default" : "secondary"}
           className="text-xs"
         >
           {cell.charAt(0).toUpperCase() + cell.slice(1)}
@@ -163,7 +151,7 @@ const OpenRequisitions = ({ data, loading }) => {
           >
             View Details
           </Button>
-          {row.status === 'approved' && !row.is_publish && (
+          {row.status === "approved" && !row.is_publish && (
             <Button
               variant="outline"
               size="sm"
@@ -189,13 +177,13 @@ const OpenRequisitions = ({ data, loading }) => {
                 onClick={() => handleViewApplicants(row)}
                 className="text-xs px-2 py-1"
               >
-                View Applicants
+                View Applicants ({row.total_applicants || 0})
               </Button>
             </>
           )}
         </div>
       ),
-      style: { width: "200px" },
+      style: { width: "250px" },
     },
   ];
 
@@ -231,9 +219,9 @@ const OpenRequisitions = ({ data, loading }) => {
               {openRequisitions.length} requisitions awaiting action
             </CardDescription>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => navigate("/talent-sphere/requisition-planning")}
           >
             View All
