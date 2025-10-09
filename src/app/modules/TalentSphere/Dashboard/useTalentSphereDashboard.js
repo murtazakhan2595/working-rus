@@ -15,6 +15,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
   const [hiringPredictions, setHiringPredictions] = useState([]);
   const [aiFlaggedData, setAiFlaggedData] = useState(null);
   const [aiSuggestedCandidates, setAiSuggestedCandidates] = useState(null);
+  const [requisitionsData, setRequisitionsData] = useState([]);
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -30,6 +31,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
         budget,
         predictions,
         flagged,
+        requisitions,
       ] = await Promise.all([
         getTalentSphereSummary(),
         axios.get(`${baseUrl}/recruitment-funnel/`, { headers: headers() }),
@@ -42,6 +44,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
         }),
         axios.get(`${baseUrl}/Ai-Hiring-Pridiction/`, { headers: headers() }),
         axios.get(`${baseUrl}/ai-flaged`, { headers: headers() }),
+        axios.get(`${baseUrl}/requisition-requests/`, { headers: headers() }),
       ]);
 
       setSummaryData(summary);
@@ -53,6 +56,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       setBudgetWarnings(budget.data?.results || []);
       setHiringPredictions(predictions.data?.results || []);
       setAiFlaggedData(flagged.data || null);
+      setRequisitionsData(requisitions.data?.results || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -99,6 +103,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
     hiringPredictions,
     aiFlaggedData,
     aiSuggestedCandidates,
+    requisitionsData,
     fetchAISuggestedCandidates,
     refetch: fetchAllData,
   };
