@@ -263,9 +263,9 @@ const getManagersList = async () => {
 
 const getEmployeeList = async (payload) => {
   try {
-    const pageNo = payload?.options?.page ?? "1";
+    const pageNo = payload?.options?.page ?? "";
     const ordering = payload?.ordering ?? "first_name";
-    const pageSize = payload?.options?.sizePerPage ?? "20";
+    const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData
       ? {
         ...payload?.filterData,
