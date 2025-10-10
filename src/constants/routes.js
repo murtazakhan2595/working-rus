@@ -14,6 +14,7 @@ import {
   ApplicantProfiles,
   ResumeBankApplicants,
   ApplicantProfileDetails,
+  ApplicantByRequisition,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -368,6 +369,11 @@ export const SidebarRoutes = [
       Config.APPLICANTS && {
         path: "/talent-sphere/applicant-management",
         component: <ApplicantManagement />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/requisition-applicants",
+        component: <ApplicantByRequisition />,
         name: "APPLICANTS",
       },
       Config.REQUISITION_PLANNING && {

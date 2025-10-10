@@ -108,6 +108,7 @@ import {
     ApplicantProfileDetails, ExportProfile
 } from './ApplicantProfiles';
 import { ScheduleInterviewSheet } from './ScreenedApplicants';
+import ApplicantByRequisition from './ApplicantManagement/ApplicantByRequisition';
 export {
     TalentSphereDashboard,
     ScheduleInterviewSheet,
@@ -121,6 +122,7 @@ export {
     SentOfferForm,
     ViewOfferGenerated,
     AllApplicants,
+    ApplicantByRequisition,
     GenerateOffer,
     Skills,
     ApplicantProfileDetails,

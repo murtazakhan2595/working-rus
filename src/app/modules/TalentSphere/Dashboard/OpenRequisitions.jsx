@@ -83,7 +83,7 @@ const OpenRequisitions = ({ data, loading }) => {
   const handleViewApplicants = (row) => {
     // Backend now supports 'recruitment_requisition' filter! ✅
     navigate(
-      `/talent-sphere/applicant-management?recruitment_requisition=${row.id}`
+      `/talent-sphere/requisition-applicants?recruitment_requisition=${row.id}`
     );
   };
 

@@ -90,6 +90,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
         ...(variant === "screened" ? { status: "screened" } : {}),
         ...(variant === "in_progress" ? { status: "in_progress" } : {}),
         ...(variant === "hired" ? { status: "hired" } : {}),
+        // by_requisition variant: no default status filter applied
       };
       
       // Convert emiratization_flag from "required"/"not_required" string to boolean for API
