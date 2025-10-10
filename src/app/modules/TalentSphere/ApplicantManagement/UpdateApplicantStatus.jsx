@@ -38,11 +38,6 @@ const StatusConfig = {
                 required: true,
                 label: "Reason",
             },
-            {
-                InputField: TextAreaInput,
-                name: "remarks",
-                label: "Remarks",
-            },
         ],
     },
     shortlisted: {
@@ -66,7 +61,6 @@ const StatusConfig = {
             {
                 InputField: TextAreaInput,
                 name: "remarks",
-                required: true,
                 label: "Remarks",
             },
         ],
