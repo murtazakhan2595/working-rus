@@ -6,6 +6,9 @@ export const ApplicantStatusList = {
         { status: 'screened', label: 'Screen Application', variant: 'success', permission: 'update-status' },
         { status: 'rejected', label: 'Reject Application', variant: 'destructive', permission: 'update-status' },
     ],
+    hold: [
+        { status: 'revert_hold', label: 'Revert Hold', variant: 'default', permission: 'update-status' },
+    ],
     screened: [
         { status: 'schedule-interview', label: 'Schedule Interview', variant: 'default',permission: 'schedule-interview'  },
     ],

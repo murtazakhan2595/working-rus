@@ -101,6 +101,10 @@ const ViewApplicationDetail = ({
       }
       if (status === 'hold')
         FormData.status_variant = 'default';
+      if (status === 'revert_hold') {
+        FormData.status_variant = 'revert_hold';
+        FormData.status = 'in_progress';
+      }
       if (status === 'remove_blacklist') {
         FormData.status = 'rejected';
         FormData.initialData = data?.blacklist ?? {};

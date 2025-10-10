@@ -133,6 +133,11 @@ const StatusConfig = {
         saveStatusAuditLogs: saveUpdateApplication,
         isDefault: true,
     },
+    revert_hold: {
+        successMessage: "Application Removed from Hold Successfully!",
+        saveStatusAuditLogs: saveUpdateApplication,
+        isDefault: true,
+    },
 };
 
 const UpdateApplicantStatus = ({
@@ -180,67 +185,67 @@ const UpdateApplicantStatus = ({
             handleSubmit({ ...initialData, remove: true })
         } else if (status_variant === 'screened') {
             handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
-        } else if (status_variant === 'default') {
-            handleSubmit({ id: applicant, status: status })
-        }
-    }, [status_variant]);
+        } else if (status_variant === 'default' || status_variant === 'revert_hold') {
+        handleSubmit({ id: applicant, status: status })
+    }
+}, [status_variant]);
 
-    const handleSubmit = async (values) => {
-        try {
-            debugger
-            const response = await saveStatusAuditLogs({ ...values, applicant }, values.id);
-            if (response) {
-                if (!isDefault) {
-                    await saveUpdateApplication({ status }, applicant);
-                }
-                statusUpdated(true);
-                reloadData(true);
-                setIsOpen(false);
-                toast.success(`${successMessage}`, {
-                    position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 1000,
-                });
-                return {
-                    status: true,
-                    messageType: "SUCCESS",
-                    title: successMessage,
-                    description: "Applicant status updated successfully.",
-                };
+const handleSubmit = async (values) => {
+    try {
+        debugger
+        const response = await saveStatusAuditLogs({ ...values, applicant }, values.id);
+        if (response) {
+            if (!isDefault) {
+                await saveUpdateApplication({ status }, applicant);
             }
-        } catch (error) {
-            console.error("Error updating applicant status:", error);
+            statusUpdated(true);
+            reloadData(true);
+            setIsOpen(false);
+            toast.success(`${successMessage}`, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 1000,
+            });
+            return {
+                status: true,
+                messageType: "SUCCESS",
+                title: successMessage,
+                description: "Applicant status updated successfully.",
+            };
         }
-    };
+    } catch (error) {
+        console.error("Error updating applicant status:", error);
+    }
+};
 
-    if (!isOpen) return null;
+if (!isOpen) return null;
 
-    return (
-        <SheetUI
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            variant="sheet"
-            sheetConfig={sheet}
-            formConfig={{
-                initialValues: { ...initialForm, ...initialData },
-                enableReinitialize: true,
-                handleSubmit,
-                validateFormSchema: () => ({}),
-                submitButtonText: "Confirm",
-                cancelButtonText: "Cancel",
-                disableSubmit: isLoading,
-                loadingMessage: isLoading ? "Loading Options..." : "",
-                columns: 1,
-                formFields: [
-                    {
-                        sheetCardExtension: false,
-                        InputFields: fields
-                            ? fields(BlacklistReasons, Departments, Designations).filter(Boolean)
-                            : [],
-                    },
-                ],
-            }}
-        />
-    );
+return (
+    <SheetUI
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        variant="sheet"
+        sheetConfig={sheet}
+        formConfig={{
+            initialValues: { ...initialForm, ...initialData },
+            enableReinitialize: true,
+            handleSubmit,
+            validateFormSchema: () => ({}),
+            submitButtonText: "Confirm",
+            cancelButtonText: "Cancel",
+            disableSubmit: isLoading,
+            loadingMessage: isLoading ? "Loading Options..." : "",
+            columns: 1,
+            formFields: [
+                {
+                    sheetCardExtension: false,
+                    InputFields: fields
+                        ? fields(BlacklistReasons, Departments, Designations).filter(Boolean)
+                        : [],
+                },
+            ],
+        }}
+    />
+);
 };
 
 export default UpdateApplicantStatus;
