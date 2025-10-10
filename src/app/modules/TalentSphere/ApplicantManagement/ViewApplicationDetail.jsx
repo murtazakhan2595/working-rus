@@ -10,6 +10,7 @@ import { UpdateApplicantStatus, ViewInterviewFeedback, GenerateOffer, ScheduleIn
 import { ApplicantStatusList } from './StatusList'
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { usePermissions } from "utils/PermissionUtils";
 
 const ViewApplicationDetail = ({
   currentId,
@@ -20,6 +21,12 @@ const ViewApplicationDetail = ({
   statusUpdated = () => { },
   autoAction = null,
 }) => {
+  const { hasAccess } = usePermissions();
+  const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
+  const viewFeedBackPermitted = hasAccess("VIEW_INTERVIEW_FEEDBACK");
+  const updateStatusPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const generateOfferPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const scheduleInterviewPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
@@ -29,6 +36,16 @@ const ViewApplicationDetail = ({
   const [OpenInterviewForm, setOpenInterviewForm] = useState(false);
   const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
   const [hasTriggeredAction, setHasTriggeredAction] = useState(false);
+
+  const Permissions = React.useMemo(() => {
+    return {
+      'add-feedback': addFeedBackPermitted,
+      'view-feedback': viewFeedBackPermitted,
+      'update-status': updateStatusPermitted,
+      'generate-offer': generateOfferPermitted,
+      'schedule-interview': scheduleInterviewPermitted,
+    };
+  }, [addFeedBackPermitted, viewFeedBackPermitted, scheduleInterviewPermitted, generateOfferPermitted]);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
@@ -148,6 +165,9 @@ const ViewApplicationDetail = ({
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
+            console.log(Permissions, option.permission, 'bfhbsjhbfjhbsj')
+
+            if (!Permissions[option.permission]) return <></>
             return (
               <Button
                 variant={option.variant}

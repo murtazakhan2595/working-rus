@@ -8,7 +8,7 @@ import { Currency } from "utils/getValuesFromTables";
 
 export default function ExportProfile({ filterData }) {
     const { hasAccess } = usePermissions();
-    const exportPermitted = hasAccess("TS_VIEW_APPLICANT_PROFILE");
+    const exportPermitted = hasAccess("EXPORT_APPLICANT_DETAILS");
     const [isExporting, setIsExporting] = useState(null);
 
     if (!exportPermitted) return null;

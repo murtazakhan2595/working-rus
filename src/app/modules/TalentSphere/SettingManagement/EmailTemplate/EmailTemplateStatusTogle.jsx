@@ -5,7 +5,7 @@ import { saveUpdateEmailTemplate } from "app/hooks/talentSphere";
 import { HasAccess } from "utils/PermissionUtils";
 
 const EmailTemplateStatusTogle = ({ is_active, data, reloadData }) => {
-  const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
+  const isEditPermitted = HasAccess("EDIT_TS_EMAIL_TEMPLATES");
 
   const onCheckedChange = useCallback(
     async (value, data) => {
