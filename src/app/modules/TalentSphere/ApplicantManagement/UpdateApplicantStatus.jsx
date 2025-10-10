@@ -134,8 +134,7 @@ const StatusConfig = {
     },
     remove_resume_bank: {
         successMessage: "Application Removed from Resume Bank Successfully!",
-        saveStatusAuditLogs: saveUpdateApplication,
-        isDefault: true,
+        saveStatusAuditLogs: saveUpdateRejectedApplication,
     },
 };
 
@@ -184,8 +183,10 @@ const UpdateApplicantStatus = ({
             handleSubmit({ ...initialData, remove: true })
         } else if (status_variant === 'screened') {
             handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
-        } else if (status_variant === 'default' || status_variant === 'revert_hold' || status_variant === 'remove_resume_bank') {
+        } else if (status_variant === 'default' || status_variant === 'revert_hold') {
             handleSubmit({ id: applicant, status: status })
+        }else if (status_variant === 'remove_resume_bank') {
+            handleSubmit({ rejection_reason:'Removed from resume bank.' })
         }
     }, [status_variant]);
 
