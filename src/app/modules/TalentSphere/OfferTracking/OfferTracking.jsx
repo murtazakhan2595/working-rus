@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { usePermissions } from "utils/PermissionUtils";
 import { Header } from "components";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "src/@/components/ui/tabs";
@@ -6,16 +6,38 @@ import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import Error from "app/modules/Error";
 import { OFFER_TAB_CONFIG } from "app/modules/TalentSphere/Sections";
+import { useLocation } from "react-router-dom";
 
 export default function OfferTracking() {
     const { hasAccess } = usePermissions();
+    const location = useLocation();
 
     const [activeTab, setActiveTab] = useState(null);
     const [reloadData, setReloadData] = useState({});
     const [openForms, setOpenForms] = useState({});
+    const [deepLinkFilterData, setDeepLinkFilterData] = useState(null);
+    const [deepLinkSubTab, setDeepLinkSubTab] = useState(null);
 
     // 🔹 Filter only permitted tabs
     const permittedTabs = OFFER_TAB_CONFIG.filter((tab) => !tab.viewPerm || hasAccess(tab.viewPerm) || hasAccess(tab.addPerm));
+
+    // Handle location state for deep linking from dashboard
+    useEffect(() => {
+        if (location.state?.filterData || location.state?.tab || location.state?.subTab) {
+            const { tab, subTab, filterData } = location.state;
+            
+            if (filterData) setDeepLinkFilterData(filterData);
+            if (subTab) setDeepLinkSubTab(subTab);
+            
+            // Set the correct tab based on state
+            if (tab && permittedTabs.some(t => t.label === tab)) {
+                setActiveTab(tab);
+            }
+            
+            // Clear location state after reading
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state, permittedTabs]);
 
     if (permittedTabs.length === 0) {
         return <Error errorType={401} />;
@@ -58,7 +80,7 @@ export default function OfferTracking() {
                 <Card>
                     {permittedTabs.map((tab) => (
                         <TabsContent key={tab.key} value={tab.label}>
-                            {tab.list(reloadData[tab.key])}
+                            {tab.list(reloadData[tab.key], deepLinkFilterData, deepLinkSubTab)}
                         </TabsContent>
                     ))}
                 </Card>

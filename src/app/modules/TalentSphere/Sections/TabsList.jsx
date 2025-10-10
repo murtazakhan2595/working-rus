@@ -146,32 +146,32 @@ export const APPLICANT_TAB_CONFIG = [
     {
         label: "All Applicants",
         permission: "VIEW_TS_BENEFITS",
-        component: (reload) => <AllApplicants reload={reload} />,
+        component: (reload, deepLinkFilterData) => <AllApplicants reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
      {
         label: "Screened",
         permission: "VIEW_TS_EDUCATION",
-        component: (reload) => <AllApplicants variant="screened" reload={reload} />,
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="screened" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
     {
         label: "Shortlisted",
         permission: "VIEW_TS_CAREER_LEVEL",
-        component: (reload) => <AllApplicants variant="shortlisted" reload={reload} />,
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="shortlisted" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
     {
         label: "Rejected",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: (reload) => <AllApplicants variant="rejected" reload={reload} />,
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="rejected" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
     {
         label: "Blacklisted",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: (reload) => <AllApplicants variant="blacklisted" reload={reload} />,
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="blacklisted" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
     {
         label: "Hired",
         permission: "VIEW_REJECTED_APPLICATION",
-        component: (reload) => <AllApplicants variant="hired" reload={reload} />,
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="hired" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
 ];
 
@@ -182,7 +182,7 @@ export const OFFER_TAB_CONFIG = [
         label: "Offer Letter Requests",
         viewPerm: "VIEW_TS_BENEFITS",
         addPerm: "ADD_TS_BENEFITS",
-        list: (reload) => <OfferRequests reload={reload} />,
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OfferRequests reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
         form: GenerateOffer,
         addLabel: 'Generate Offer'
     },
@@ -191,7 +191,7 @@ export const OFFER_TAB_CONFIG = [
         label: "Offer Send",
         viewPerm: "VIEW_TS_BENEFITS",
         // addPerm: "ADD_TS_BENEFITS",
-        list: (reload) => <OffersSend reload={reload} />,
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OffersSend reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
         // form: GenerateOffer,
         // addLabel:'Generate Offer'
     },

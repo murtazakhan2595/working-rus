@@ -26,6 +26,7 @@ export default function RequisitionPlanning() {
     const location = useLocation();
     const [deepLinkRequisition, setDeepLinkRequisition] = useState(null);
     const [deepLinkAction, setDeepLinkAction] = useState(null);
+    const [deepLinkFilterData, setDeepLinkFilterData] = useState(null);
 
     const TabListArray = React.useMemo(() => [
         ...(isViewRequisitionPermitted ? ["Generate Requisition"] : []),
@@ -35,11 +36,12 @@ export default function RequisitionPlanning() {
 
     // Handle location state for deep linking from dashboard
     useEffect(() => {
-        if (location.state?.filterRequisition) {
-            const { filterRequisition, tab, action } = location.state;
+        if (location.state?.filterRequisition || location.state?.filterData) {
+            const { filterRequisition, tab, action, filterData } = location.state;
             
-            setDeepLinkRequisition(filterRequisition);
+            if (filterRequisition) setDeepLinkRequisition(filterRequisition);
             if (action) setDeepLinkAction(action);
+            if (filterData) setDeepLinkFilterData(filterData);
             
             // Set the correct tab based on state
             if (tab) {
@@ -107,6 +109,7 @@ export default function RequisitionPlanning() {
                             reload={reloadData['generate-requisition']} 
                             deepLinkRequisition={deepLinkRequisition}
                             deepLinkAction={deepLinkAction}
+                            deepLinkFilterData={deepLinkFilterData}
                         />
                     </TabsContent>
                     <TabsContent value={'Published Vacancies'}>

@@ -8,31 +8,49 @@ import {
 } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { Badge } from "components/ui/badge";
-import { Calendar, Users } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
 const UpcomingInterviews = ({ data, loading }) => {
   const navigate = useNavigate();
 
-  // Sort interviews by date (today's first, then future)
+  // Sort interviews by date AND time, ONLY show today + this week
   const sortedInterviews = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
+    const now = moment();
     const today = moment().startOf("day");
-    const todayInterviews = [];
-    const futureInterviews = [];
+    const startOfWeek = moment().startOf("week"); // Sunday
+    const endOfWeek = moment().endOf("week"); // Saturday
 
-    data.forEach((interview) => {
-      const interviewDate = moment(interview.date_time, "DD-MMM-YYYY, hh:mm A");
-      if (interviewDate.isSame(today, "day")) {
-        todayInterviews.push(interview);
-      } else if (interviewDate.isAfter(today)) {
-        futureInterviews.push(interview);
-      }
-    });
+    // Parse and categorize interviews
+    const parsedInterviews = data
+      .map((interview) => {
+        const interviewMoment = moment(
+          interview.date_time,
+          "DD-MMM-YYYY, hh:mm A"
+        );
 
-    return [...todayInterviews, ...futureInterviews].slice(0, 8);
+        return {
+          ...interview,
+          momentDate: interviewMoment,
+          isToday: interviewMoment.isSame(today, "day"),
+          isThisWeek: interviewMoment.isBetween(
+            startOfWeek,
+            endOfWeek,
+            "day",
+            "[]"
+          ),
+          isCompleted: interviewMoment.isBefore(now),
+        };
+      })
+      // FILTER: Only show interviews from today OR this week
+      .filter((interview) => interview.isToday || interview.isThisWeek)
+      // Sort by date AND time (ascending - earliest first)
+      .sort((a, b) => a.momentDate.diff(b.momentDate));
+
+    return parsedInterviews;
   }, [data]);
 
   const handleViewAll = () => {
@@ -68,7 +86,7 @@ const UpcomingInterviews = ({ data, loading }) => {
               Upcoming Interviews
             </CardTitle>
             <CardDescription>
-              {sortedInterviews.length} interviews scheduled
+              {sortedInterviews.length} interviews scheduled this week
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={handleViewAll}>
@@ -79,18 +97,11 @@ const UpcomingInterviews = ({ data, loading }) => {
       <CardContent>
         {!sortedInterviews || sortedInterviews.length === 0 ? (
           <div className="text-center py-8 text-neutral-900">
-            No upcoming interviews scheduled
+            No interviews scheduled for today or this week
           </div>
         ) : (
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {sortedInterviews.map((interview, index) => {
-              const interviewMoment = moment(
-                interview.date_time,
-                "DD-MMM-YYYY, hh:mm A"
-              );
-              const isToday = interviewMoment.isSame(moment(), "day");
-              const isCompleted = interviewMoment.isBefore(moment());
-              
               const goProfile = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -115,19 +126,32 @@ const UpcomingInterviews = ({ data, loading }) => {
                 <Card
                   key={index}
                   className={`p-3 cursor-pointer hover:shadow-md transition-shadow ${
-                    isToday ? "border-l-4 border-l-blue-500 bg-blue-50" : ""
+                    interview.isToday
+                      ? "border-l-4 border-l-blue-500 bg-blue-50"
+                      : interview.isThisWeek
+                      ? "border-l-4 border-l-purple-500 bg-purple-50"
+                      : ""
                   }`}
-                  onClick={() => navigate(`/talent-sphere/applicant/${interview.candidate_id}`)}
+                  onClick={() =>
+                    navigate(
+                      `/talent-sphere/applicant/${interview.candidate_id}`
+                    )
+                  }
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-semibold text-sm text-neutral-1200">
                           {interview.candidate_name}
                         </p>
-                        {isToday && (
+                        {interview.isToday && (
                           <Badge variant="default" className="text-[10px]">
                             Today
+                          </Badge>
+                        )}
+                        {interview.isThisWeek && !interview.isToday && (
+                          <Badge variant="secondary" className="text-[10px]">
+                            This Week
                           </Badge>
                         )}
                       </div>
@@ -148,49 +172,57 @@ const UpcomingInterviews = ({ data, loading }) => {
                         </Badge>
                       )}
 
-                      {/* Panel Members (restored) */}
-                      {interview.panel_members && interview.panel_members.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-[10px] text-neutral-900 mb-1">Panel Members:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {interview.panel_members.map((name, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="secondary"
-                                className="text-[10px] px-2 py-0.5"
-                              >
-                                {name}
-                              </Badge>
-                            ))}
+                      {/* Panel Members */}
+                      {interview.panel_members &&
+                        interview.panel_members.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-[10px] text-neutral-900 mb-1">
+                              Panel Members:
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {interview.panel_members.map((name, idx) => (
+                                <Badge
+                                  key={idx}
+                                  variant="secondary"
+                                  className="text-[10px] px-2 py-0.5"
+                                >
+                                  {name}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       {/* Quick Actions */}
                       <div className="flex gap-2 mt-3">
-                        <Button variant="outline" onClick={goProfile}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={goProfile}
+                          className="text-xs"
+                        >
                           View Profile
                         </Button>
-                        <Button variant="outline" onClick={openReschedule}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={openReschedule}
+                          className="text-xs"
+                        >
                           Reschedule
                         </Button>
-                        {isCompleted && (
-                          <Button variant="outline" onClick={openAddFeedback}>
+                        {interview.isCompleted && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={openAddFeedback}
+                            className="text-xs"
+                          >
                             Add Feedback
                           </Button>
                         )}
                       </div>
                     </div>
-
-                    {interview.panel_members && interview.panel_members.length > 0 && (
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 text-xs text-neutral-1000">
-                          <Users className="h-3 w-3" />
-                          <span>{interview.panel_members.length}</span>
-                        </div>
-                        <p className="text-[10px] text-neutral-900">Panel</p>
-                      </div>
-                    )}
                   </div>
                 </Card>
               );
