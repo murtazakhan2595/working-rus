@@ -38,6 +38,7 @@ const FilterInput = ({
   onChange,
   className = "",
   filterValues = {},
+  defaultDateRangeTab = "Day", // new optional prop to control initial tab
 }) => {
   const Departments = GetDispatchStateList("departments", "common") || [];
   const Designations = GetDispatchStateList("designations", "common") || [];
@@ -284,6 +285,7 @@ const FilterInput = ({
                   height={height ?? DefaultHeight}
                   resetField={resetFields}
                   value={filterValues[name] || null}
+                  defaultDateRangeTab={defaultDateRangeTab}
                   handleInputChange={handleInputChange}
                 />
               );
@@ -568,20 +570,30 @@ const RenderDateRangeFilterField = React.memo(
     height = "",
     resetField,
     handleInputChange = () => { },
+    defaultDateRangeTab = "Day",
   }) => {
-    const [activeTab, setActiveTab] = useState("Day");
+    const [activeTab, setActiveTab] = useState(defaultDateRangeTab || "Day");
 
     useEffect(() => {
       let isMounted = true;
       if (isMounted) {
-        setActiveTab("Day");
-        const formattedDatee = moment().format("YYYY-MM-DD");
-        handleInputChange(name, `${formattedDatee},${formattedDatee}`);
+        setActiveTab(defaultDateRangeTab || "Day");
+        if ((defaultDateRangeTab || "Day").toUpperCase() === "DAY") {
+          const formattedDatee = moment().format("YYYY-MM-DD");
+          handleInputChange(name, `${formattedDatee},${formattedDatee}`);
+        } else {
+          const date_range = GetDateRange(defaultDateRangeTab)?.split(",") || [];
+          const end_date =
+            date_range[1] && date_range[1] !== "null" ? date_range[1] : "";
+          const start_date =
+            date_range[0] && date_range[0] !== "null" ? date_range[0] : "";
+          handleInputChange(name, `${start_date},${end_date}`);
+        }
       }
       return () => {
         isMounted = false;
       };
-    }, [resetField, name]);
+    }, [resetField, name, defaultDateRangeTab]);
 
     return (
       <div className={`${className} ${height} h-full w-fit relative`}>
