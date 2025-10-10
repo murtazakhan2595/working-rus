@@ -6,6 +6,9 @@ export const ApplicantStatusList = {
         { status: 'screened', label: 'Screen Application', variant: 'success', permission: 'update-status' },
         { status: 'rejected', label: 'Reject Application', variant: 'destructive', permission: 'update-status' },
     ],
+    resume_bank: [
+        { status: 'remove-resume-bank', label: 'Remove From Resume Bank', variant: 'default', permission: 'update-status' },
+    ],
     hold: [
         { status: 'revert_hold', label: 'Revert Hold', variant: 'default', permission: 'update-status' },
     ],

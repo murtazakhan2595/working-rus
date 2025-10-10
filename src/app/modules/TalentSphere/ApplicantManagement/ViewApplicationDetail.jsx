@@ -105,6 +105,10 @@ const ViewApplicationDetail = ({
         FormData.status_variant = 'revert_hold';
         FormData.status = 'in_progress';
       }
+      if (status === 'remove-resume-bank') {
+        FormData.status_variant = 'remove_resume_bank';
+        FormData.status = 'rejected';
+      }
       if (status === 'remove_blacklist') {
         FormData.status = 'rejected';
         FormData.initialData = data?.blacklist ?? {};
