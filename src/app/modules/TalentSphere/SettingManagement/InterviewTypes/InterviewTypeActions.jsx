@@ -6,8 +6,8 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const InterviewTypeActions = ({ data, DataList = [], reloadData = () => { } }) => {
-    const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
-    const isDeletePermitted = HasAccess("DELETE_TS_BENEFITS");
+    const isEditPermitted = HasAccess("EDIT_INTERVIEW_TYPE");
+    const isDeletePermitted = HasAccess("DELETE_INTERVIEW_TYPE");
     // const isViewPermitted = HasAccess("VIEW_MANPOWER");
     // const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);

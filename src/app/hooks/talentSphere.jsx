@@ -1660,8 +1660,7 @@ export const getInterviewById = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
-      const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: Response.id } });
-      return { interview_feedbacks: Feedbacks.results || [], ...ResponseData };
+      return {...ResponseData };
     }
   } catch (error) {
     if (error?.response?.status === 401) {

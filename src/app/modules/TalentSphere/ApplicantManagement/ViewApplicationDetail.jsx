@@ -10,6 +10,7 @@ import { UpdateApplicantStatus, ViewInterviewFeedback, GenerateOffer, ScheduleIn
 import { ApplicantStatusList } from './StatusList'
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { usePermissions } from "utils/PermissionUtils";
 
 const ViewApplicationDetail = ({
   currentId,
@@ -20,6 +21,12 @@ const ViewApplicationDetail = ({
   statusUpdated = () => { },
   autoAction = null,
 }) => {
+  const { hasAccess } = usePermissions();
+  const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
+  const viewFeedBackPermitted = hasAccess("VIEW_INTERVIEW_FEEDBACK");
+  const updateStatusPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const generateOfferPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const scheduleInterviewPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
@@ -29,6 +36,16 @@ const ViewApplicationDetail = ({
   const [OpenInterviewForm, setOpenInterviewForm] = useState(false);
   const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
   const [hasTriggeredAction, setHasTriggeredAction] = useState(false);
+
+  const Permissions = React.useMemo(() => {
+    return {
+      'add-feedback': addFeedBackPermitted,
+      'view-feedback': viewFeedBackPermitted,
+      'update-status': updateStatusPermitted,
+      'generate-offer': generateOfferPermitted,
+      'schedule-interview': scheduleInterviewPermitted,
+    };
+  }, [addFeedBackPermitted, viewFeedBackPermitted, scheduleInterviewPermitted, generateOfferPermitted]);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
@@ -41,7 +58,7 @@ const ViewApplicationDetail = ({
         return null;
       }
       if (status === 'reschedule-interview') {
-        const latest_interview = data?.interviews?.[data?.interviews?.length - 1]?.id;
+        const latest_interview = data?.latest_interview;
         setFormData({
           applicant: data.id,
           id: latest_interview,
@@ -57,7 +74,7 @@ const ViewApplicationDetail = ({
         return null;
       }
       if (status === 'add-feedback') {
-        const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
+        const latest_interview = data?.latest_interview;
         setFormData({
           form: latest_interview?.feedback_form,
           id: latest_interview?.id,
@@ -84,6 +101,14 @@ const ViewApplicationDetail = ({
       }
       if (status === 'hold')
         FormData.status_variant = 'default';
+      if (status === 'revert_hold') {
+        FormData.status_variant = 'revert_hold';
+        FormData.status = 'in_progress';
+      }
+      if (status === 'remove-resume-bank') {
+        FormData.status_variant = 'remove_resume_bank';
+        FormData.status = 'rejected';
+      }
       if (status === 'remove_blacklist') {
         FormData.status = 'rejected';
         FormData.initialData = data?.blacklist ?? {};
@@ -107,7 +132,7 @@ const ViewApplicationDetail = ({
   // Auto-trigger actions if requested via deep-link (only once)
   const triggerAutoAction = React.useCallback((data) => {
     if (!data || !autoAction || hasTriggeredAction) return;
-    
+
     setHasTriggeredAction(true);
     if (autoAction === 'reschedule') {
       handleClick(null, 'reschedule-interview', data);
@@ -136,18 +161,21 @@ const ViewApplicationDetail = ({
           const status = data.status.toLowerCase();
           let statusKey = status;
           if (status === 'in progress') {
-            const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
-           if (!latest_interview || latest_interview.status !== 'scheduled') return null;
+            const latest_interview = data?.latest_interview;
+            if (!latest_interview || latest_interview.status !== 'scheduled') return null;
             const isInterViewDone = moment(latest_interview.scheduled_datetime).isSameOrBefore(moment());
             // if (!isInterViewDone) return null;
             const panelist_included = (latest_interview.panel || []).includes(user_id);
-            const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
+            const feedback_submitted = (data.interview_feedbacks || []).find(obj => (obj.panel_member === user_id && obj.interview === latest_interview.id));
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';
           }
           const isOfferGenerated = data?.offer_tracking || (data?.offer_letter?.[data?.offer_letter?.length - 1] || {}).status !== 'rejected';
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
+            console.log(Permissions, option.permission, 'bfhbsjhbfjhbsj')
+
+            if (!Permissions[option.permission]) return <></>
             return (
               <Button
                 variant={option.variant}

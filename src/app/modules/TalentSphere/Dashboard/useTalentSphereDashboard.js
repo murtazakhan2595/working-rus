@@ -17,9 +17,39 @@ export const useTalentSphereDashboard = (filterData = {}) => {
   const [aiSuggestedCandidates, setAiSuggestedCandidates] = useState(null);
   const [requisitionsData, setRequisitionsData] = useState([]);
 
+  // Build single search param with JSON-encoded filterData (dt- prefixed keys)
+  // Optionally exclude certain keys (e.g., ["date_range"]) per-endpoint
+  const buildFilterParams = (filters, excludeKeys = []) => {
+    if (!filters || Object.keys(filters).length === 0) return "";
+
+    const sanitized = {};
+    const filterMap = {
+      department: "dt-department",
+      job_title: "dt-job_title",
+      date_range: "dt-date_range",
+      requisition_type: "dt-requisition_type",
+      requisition_status: "dt-requisition_status",
+      applicant_status: "dt-applicant_status",
+      is_emiratization: "dt-is_emiratization",
+    };
+    Object.keys(filters).forEach((key) => {
+      let value = filters[key];
+      if (value === undefined || value === null || value === "") return;
+      if (excludeKeys && excludeKeys.includes(key)) return;
+      if (key === "date_range" && Array.isArray(value)) value = value.join(",");
+      const backendKey = filterMap[key] || key;
+      sanitized[backendKey] = value;
+    });
+
+    const encoded = encodeURIComponent(JSON.stringify(sanitized));
+    return encoded ? `?search=${encoded}` : "";
+  };
+
   const fetchAllData = async () => {
     setLoading(true);
     try {
+      const filterParams = buildFilterParams(filterData);
+      const noDateParams = buildFilterParams(filterData, ["date_range"]);
       // Fetch all API data in parallel
       const [
         summary,
@@ -33,21 +63,31 @@ export const useTalentSphereDashboard = (filterData = {}) => {
         flagged,
         requisitions,
       ] = await Promise.all([
-        getTalentSphereSummary(),
-        axios.get(`${baseUrl}/recruitment-funnel/`, { headers: headers() }),
-        axios.get(`${baseUrl}/interview-widget`, { headers: headers() }),
-        axios.get(`${baseUrl}/offer-tracker`, { headers: headers() }),
-        axios.get(`${baseUrl}/applicaant-source`, { headers: headers() }),
-        axios.get(`${baseUrl}/Emiratizatio-Insights`, { headers: headers() }),
-        axios.get(`${baseUrl}/department-budget/budget_warnings/`, {
+        // Top summary (no date_range)
+        axios.get(`${baseUrl}/top-summary/${noDateParams}`, { headers: headers() }),
+        // Recruitment funnel (no date_range)
+        axios.get(`${baseUrl}/recruitment-funnel/${noDateParams}`, { headers: headers() }),
+        // Interview widget
+        axios.get(`${baseUrl}/interview-widget${filterParams}`, { headers: headers() }),
+        // Offer tracker (no date_range)
+        axios.get(`${baseUrl}/offer-tracker${noDateParams}`, { headers: headers() }),
+        // Applicant source
+        axios.get(`${baseUrl}/applicaant-source${filterParams}`, { headers: headers() }),
+        // Emiratization insights
+        axios.get(`${baseUrl}/Emiratizatio-Insights${filterParams}`, { headers: headers() }),
+        // Department budget warnings
+        axios.get(`${baseUrl}/department-budget/budget_warnings/${filterParams}`, {
           headers: headers(),
         }),
-        axios.get(`${baseUrl}/Ai-Hiring-Pridiction/`, { headers: headers() }),
-        axios.get(`${baseUrl}/ai-flaged`, { headers: headers() }),
+        // AI hiring prediction
+        axios.get(`${baseUrl}/Ai-Hiring-Pridiction/${filterParams}`, { headers: headers() }),
+        // AI flagged
+        axios.get(`${baseUrl}/ai-flaged${filterParams}`, { headers: headers() }),
+        // Requisitions list (not in the 9 APIs but kept consistent)
         axios.get(`${baseUrl}/requisition-requests/`, { headers: headers() }),
       ]);
 
-      setSummaryData(summary);
+      setSummaryData(summary.data || null);
       setFunnelData(funnel.data || []);
       setInterviewData(interviews.data?.results || []);
       setOfferData(offers.data || []);

@@ -47,8 +47,8 @@ const UpcomingInterviews = ({ data, loading }) => {
       })
       // FILTER: Only show interviews from today OR this week
       .filter((interview) => interview.isToday || interview.isThisWeek)
-      // Sort by date AND time (ascending - earliest first)
-      .sort((a, b) => a.momentDate.diff(b.momentDate));
+      // Sort by date AND time (descending - latest first)
+      .sort((a, b) => b.momentDate.diff(a.momentDate));
 
     return parsedInterviews;
   }, [data]);

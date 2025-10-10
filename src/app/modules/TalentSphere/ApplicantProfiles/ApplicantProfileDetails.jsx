@@ -31,6 +31,7 @@ export default function ApplicantProfileDetails() {
   const [ApplicantData, setApplicantData] = useState({});
   const SalarySetupAllowed = hasAccess("EDIT_EMPLOYEE_SALARY_SETUP");
   const viewPermitted = hasAccess("TS_VIEW_APPLICANT_PROFILE");
+  const createPermitted = hasAccess("CREATE_EMPLOYEE_FROM_APPLICANT");
 
   useEffect(() => {
     const fetchData = async (isMounted) => {
@@ -76,7 +77,7 @@ export default function ApplicantProfileDetails() {
         showBackButton={true}
         navigationLink={"/talent-sphere/applicant-management-profile"}
         content={
-          ApplicantData.status === "hired" && (
+          ApplicantData.status === "hired" && createPermitted && (
             <Button onClick={handleCreateEmployee}>Create Employee</Button>
           )
         }

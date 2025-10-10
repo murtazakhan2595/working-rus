@@ -6,9 +6,8 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const EmailTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
-    const isEditPermitted = HasAccess("EDIT_TS_EmailTemplateS");
-    const isDeletePermitted = HasAccess("DELETE_TS_EmailTemplateS");
-    const isViewPermitted = HasAccess("VIEW_MANPOWER");
+    const isEditPermitted = HasAccess("EDIT_TS_EMAIL_TEMPLATES");
+    const isDeletePermitted = HasAccess("DELETE_TS_EMAIL_TEMPLATES");
     const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
     const [deleteForm, setDeleteForm] = useState(null);
@@ -37,7 +36,7 @@ const EmailTemplateActions = ({ data, DataList = [], reloadData = () => { } }) =
     return (
         <>
             <DropdownActionMenu
-                onView={isViewPermitted ? handleView : null}
+                onView={handleView }
                 onEdit={isEditPermitted ? handleEdit : null}
                 onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="View Template"

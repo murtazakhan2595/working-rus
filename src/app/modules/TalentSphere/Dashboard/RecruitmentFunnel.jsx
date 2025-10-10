@@ -298,15 +298,8 @@ const RecruitmentFunnel = ({ data, loading }) => {
                       {stage.displayName}
                     </p>
                     <p
-                      className={`text-2xl font-bold ${
-                        isExpansion
-                          ? "text-blue-600"
-                          : stage.conversion >= 0.5
-                          ? "text-green-600"
-                          : stage.conversion >= 0.2
-                          ? "text-yellow-600"
-                          : "text-red-600"
-                      }`}
+                      className="text-2xl font-bold"
+                      style={{ color: stage.color }}
                     >
                       {conversionDisplay}
                     </p>

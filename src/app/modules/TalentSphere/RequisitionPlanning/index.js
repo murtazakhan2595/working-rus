@@ -5,6 +5,8 @@ import {
 } from './GenerateRequisition';
 
 import {PublishedVacancies,PublishVacancyActions,ViewPublishedVacancies} from './PublishedVacancies';
+import EmiratizationRequisitions from './EmiratizationRequisitions';
+
 export {
     RequisitionPlanning,
     GenerateRequisition,
@@ -12,4 +14,5 @@ export {
     PublishedVacancies,
     PublishVacancyActions,
     ViewPublishedVacancies,
+    EmiratizationRequisitions,
 };
