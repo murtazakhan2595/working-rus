@@ -40,6 +40,7 @@ const AIInsightsWidget = ({
   const [vacancies, setVacancies] = useState([]);
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [loadingVacancies, setLoadingVacancies] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   // Fetch vacancies when AI suggestions tab is opened
   const handleTabChange = async (value) => {
@@ -70,9 +71,14 @@ const AIInsightsWidget = ({
   console.log("AIInsightsWidget - vacancies", vacancies);
 
   // Handle vacancy selection
-  const handleVacancyChange = (name, value) => {
+  const handleVacancyChange = async (name, value) => {
     setSelectedVacancy(value);
-    fetchAISuggestedCandidates(value);
+    setLoadingSuggestions(true);
+    try {
+      await fetchAISuggestedCandidates(value);
+    } finally {
+      setLoadingSuggestions(false);
+    }
   };
 
   // Get budget warnings with actual warnings
@@ -228,8 +234,14 @@ const AIInsightsWidget = ({
           {/* AI Matched Candidates Tab */}
           <TabsContent value="ai_match" className="space-y-3">
             {loadingVacancies ? (
-              <div className="text-sm text-neutral-900">
-                Loading vacancies...
+              <div className="space-y-3">
+                {/* Dropdown skeleton */}
+                <div className="h-10 bg-gray-200 rounded" />
+                {/* Candidate card skeletons */}
+                <div className="space-y-2">
+                  <div className="h-24 bg-gray-100 rounded" />
+                  <div className="h-24 bg-gray-100 rounded" />
+                </div>
               </div>
             ) : (
               <SelectInputComponent
@@ -247,11 +259,10 @@ const AIInsightsWidget = ({
                   Select a vacancy to see AI-matched candidates
                 </AlertDescription>
               </Alert>
+            ) : loadingSuggestions ? (
+              <div className="text-center text-sm text-neutral-700 py-6">Loading...</div>
             ) : aiSuggestedCandidates === null ? (
-              <div className="animate-pulse space-y-2">
-                <div className="h-20 bg-gray-200 rounded"></div>
-                <div className="h-20 bg-gray-200 rounded"></div>
-              </div>
+              <div className="text-center text-sm text-neutral-700 py-6">Loading...</div>
             ) : aiSuggestedCandidates.msg ||
               aiSuggestedCandidates.resumes?.length === 0 ? (
               <Alert>
@@ -261,18 +272,57 @@ const AIInsightsWidget = ({
               </Alert>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {aiSuggestedCandidates.resumes
-                  ?.slice(0, 5)
-                  .map((candidate, index) => (
-                    <Card key={index} className="p-3 bg-neutral-50">
-                      <div className="font-semibold text-sm">
-                        Candidate #{index + 1}
-                      </div>
-                      <p className="text-xs text-neutral-1000 mt-1">
-                        Match Score: {candidate.match_score}%
-                      </p>
-                    </Card>
-                  ))}
+                {!aiSuggestedCandidates?.resumes ? (
+                  <div className="text-center text-sm text-neutral-700 py-4">
+                    Loading...
+                  </div>
+                ) : (
+                  aiSuggestedCandidates.resumes
+                    .slice(0, 5)
+                    .map((candidate, index) => (
+                      <Card key={index} className="p-3 bg-neutral-50">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="font-semibold text-sm">
+                              Candidate #{index + 1}
+                            </div>
+                            <p className="text-xs text-neutral-1000 mt-1">
+                              Match Score:{" "}
+                              {Math.round((candidate.score || 0) * 100)}%
+                            </p>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              <Badge variant="outline" className="text-[10px]">
+                                Matched: {candidate.matched_skills?.length || 0}
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px]">
+                                Missed: {candidate.missed_skills?.length || 0}
+                              </Badge>
+                            </div>
+                            {(candidate.matched_skills?.length || 0) > 0 && (
+                              <p className="text-[10px] text-neutral-900 mt-1">
+                                +{" "}
+                                {candidate.matched_skills
+                                  .slice(0, 3)
+                                  .join(", ")}
+                                {candidate.matched_skills.length > 3 ? "…" : ""}
+                              </p>
+                            )}
+                          </div>
+                          {candidate.path && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                window.open(candidate.path, "_blank")
+                              }
+                            >
+                              View Resume
+                            </Button>
+                          )}
+                        </div>
+                      </Card>
+                    ))
+                )}
               </div>
             )}
           </TabsContent>
@@ -358,7 +408,9 @@ const AIInsightsWidget = ({
                             key={index}
                             className="p-2 bg-red-50 border-red-200 cursor-pointer hover:shadow-md transition-shadow"
                             onClick={() =>
-                              navigate(`/talent-sphere/applicant/${item.applicant_id}`)
+                              navigate(
+                                `/talent-sphere/applicant/${item.applicant_id}`
+                              )
                             }
                           >
                             {console.log(item, "item")}
