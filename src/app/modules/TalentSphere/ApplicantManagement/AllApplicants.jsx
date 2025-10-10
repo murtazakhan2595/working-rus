@@ -67,6 +67,7 @@ const AllApplicants = ({ reload, variant = "all" }) => {
         ...(variant === "screened" ? { status: "screened" } : {}),
         ...(variant === "in_progress" ? { status: "in_progress" } : {}),
         ...(variant === "hired" ? { status: "hired" } : {}),
+        ...(variant === "hold" ? { status: "hold" } : {}),
       };
       const response = await getApplicantsList({
         filterData: filters,

@@ -6,7 +6,7 @@ import {
   FormPlaceholder,
   FormFieldIcon,
 } from "components/FormControl";
-import { format, parse, isValid, isToday } from "date-fns";
+import { format, parse, isValid, isToday,parseISO } from "date-fns";
 import { Input } from "components/ui/input";
 import { TooltipText } from "components";
 import { Calendar } from "src/@/components/ui/calendar";
@@ -15,7 +15,6 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { renderDate } from "utils/renderValues";
 import { useNavigation } from "react-day-picker";
-
 // Custom caption component without Month: and Year: labels
 const CustomCaption = ({ date, locale, displayMonth }) => {
   const { goToMonth } = useNavigation();
@@ -187,7 +186,8 @@ const DateInput = React.memo(
     useEffect(() => {
       if (value) {
         try {
-          const parsedDate = parse(value, dateFormat, new Date());
+          debugger
+          const parsedDate = parseISO(value);
           if (isValid(parsedDate)) {
             setDate(parsedDate);
             setInputValue(format(parsedDate, inputPattern));

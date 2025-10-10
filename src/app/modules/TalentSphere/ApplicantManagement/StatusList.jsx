@@ -6,6 +6,9 @@ export const ApplicantStatusList = {
         { status: 'screened', label: 'Screen Application', variant: 'success' },
         { status: 'rejected', label: 'Reject Application', variant: 'destructive' },
     ],
+    screened: [
+        { status: 'schedule-interview', label: 'Schedule Interview', variant: 'default' },
+         ],
     blacklisted: [
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
         { status: 'remove_blacklist', label: 'Remove from Blacklist', variant: 'default' },
