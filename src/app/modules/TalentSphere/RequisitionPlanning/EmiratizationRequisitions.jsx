@@ -152,13 +152,6 @@ const EmiratizationRequisitions = () => {
                             onRefresh={() => fetchData(true)}
                         />
                     </div> */}
-                    {console.log("TableCustom props:", {
-                        data: RequisitionList.results || [],
-                        dataLength: (RequisitionList.results || []).length,
-                        columns: RequisitionRequestColumns(fetchData),
-                        totalCount: RequisitionList.count || 0,
-                        isLoading
-                    })}
                     <TableCustom
                         data={RequisitionList.results || []}
                         columns={RequisitionRequestColumns(fetchData)}
