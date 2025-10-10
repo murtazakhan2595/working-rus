@@ -67,10 +67,10 @@ const TalentSphereDashboard = () => {
     setFilterData({});
   }, []);
 
-  // Dashboard filters
+  // Dashboard filters (linked to filterData for hook)
   const dashboardFilters = [
     {
-      type: "date-range",
+      type: "date-range-filter",
       name: "date_range",
       placeholder: "Select Date Range",
       values: filterData.date_range,
@@ -81,6 +81,59 @@ const TalentSphereDashboard = () => {
       name: "department",
       placeholder: "Department",
       values: filterData.department,
+    },
+    {
+      type: "search",
+      name: "job_title",
+      placeholder: "Job Title",
+      values: filterData.job_title,
+      width: "w-[220px]",
+    },
+    {
+      type: "select-two",
+      option: [
+        { value: "internal", label: "Internal" },
+        { value: "external", label: "External" },
+        { value: "both", label: "Both" },
+      ],
+      name: "requisition_type",
+      placeholder: "Requisition Type",
+      values: filterData.requisition_type,
+    },
+    {
+      type: "select-three",
+      option: [
+        { value: "draft", label: "Draft" },
+        { value: "pending", label: "Pending" },
+        { value: "approved", label: "Approved" },
+        { value: "published", label: "Published" },
+      ],
+      name: "requisition_status",
+      placeholder: "Requisition Status",
+      values: filterData.requisition_status,
+    },
+    {
+      type: "select-four",
+      option: [
+        { value: "screened", label: "Screened" },
+        { value: "interviewed", label: "Interviewed" },
+        { value: "offered", label: "Offered" },
+        { value: "hired", label: "Hired" },
+        { value: "rejected", label: "Rejected" },
+      ],
+      name: "applicant_status",
+      placeholder: "Applicant Status",
+      values: filterData.applicant_status,
+    },
+    {
+      type: "select-five",
+      option: [
+        { value: true, label: "Emiratization" },
+        { value: false, label: "Non-Emiratization" },
+      ],
+      name: "is_emiratization",
+      placeholder: "Emiratization",
+      values: filterData.is_emiratization,
     },
   ];
 
