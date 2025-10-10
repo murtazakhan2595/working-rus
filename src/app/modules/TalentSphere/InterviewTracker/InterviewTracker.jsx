@@ -16,20 +16,20 @@ export default function InterviewTracker() {
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isViewScreenedPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isViewResumedPermitted = HasAccess("VIEW_TS_JOB_TYPE");
-    const isViewRejectedPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+    const isViewHoldPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
     const [reloadData, setReloadData] = useState({});
 
     const TabListArray = React.useMemo(() => [
         ...(isViewInProgressPermitted ? ["In Progress"] : []),
-        // ...(isViewRejectedPermitted ? ["Rejected Applications"] : []),
+        ...(isViewHoldPermitted ? ["Hold Applications"] : []),
         // ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
         // ...(isViewScreenedPermitted ? ["Screened Application"] : []),
         // // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewInProgressPermitted]);
+    ], [isViewInProgressPermitted,isViewHoldPermitted]);
 
-    if (!isViewInProgressPermitted)
+    if (!isViewInProgressPermitted&&!isViewHoldPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -53,6 +53,9 @@ export default function InterviewTracker() {
                 <Card>
                     <TabsContent value={'In Progress'}>
                         <AllApplicants variant={"in_progress"} />
+                    </TabsContent>
+                    <TabsContent value={'Hold Applications'}>
+                        <AllApplicants variant={"hold"} />
                     </TabsContent>
                 </Card>
             </Tabs>

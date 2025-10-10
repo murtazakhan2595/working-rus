@@ -39,13 +39,15 @@ const ApplicantSources = ({ data, loading }) => {
   const chartData = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
-    return data
-      .filter((item) => item.count > 0)
-      .sort((a, b) => b.count - a.count) // Sort by count descending
-      .map((item, index) => ({
-        ...item,
-        color: COLORS[index % COLORS.length],
-      }));
+    return (
+      data
+        // Remove the filter - show all sources even if count is 0
+        .sort((a, b) => b.count - a.count)
+        .map((item, index) => ({
+          ...item,
+          color: COLORS[index % COLORS.length],
+        }))
+    );
   }, [data]);
 
   // Calculate total applicants

@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "src/@/components/ui/ta
 import { Card } from "components/ui/card";
 import Error from "app/modules/Error";
 import {APPLICANT_TAB_CONFIG} from 'app/modules/TalentSphere/Sections';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import ViewApplicationDetail from "./ViewApplicationDetail";
 
 
@@ -15,12 +15,17 @@ export default function ApplicantManagement() {
   const [activeTab, setActiveTab] = useState(null);
   const [reloadData, setReloadData] = useState({});
 
-  // Deep-link state
+  // Deep-link state for applicant details
   const [searchParams, setSearchParams] = useSearchParams();
   const [deepLinkApplicant, setDeepLinkApplicant] = useState(null);
   const [deepLinkAction, setDeepLinkAction] = useState(null);
   const [openDetail, setOpenDetail] = useState(false);
 
+  // Location state handling for deep linking from dashboard
+  const location = useLocation();
+  const [deepLinkFilterData, setDeepLinkFilterData] = useState(null);
+
+  // Handle URL params for applicant detail view
   useEffect(() => {
     const applicant = searchParams.get("applicant");
     const action = searchParams.get("action");
@@ -40,6 +45,23 @@ export default function ApplicantManagement() {
     () => APPLICANT_TAB_CONFIG.filter((tab) => hasAccess(tab.permission)),
     [hasAccess]
   );
+
+  // Handle location state for deep linking from dashboard
+  useEffect(() => {
+    if (location.state?.filterData || location.state?.tab) {
+      const { tab, filterData } = location.state;
+      
+      if (filterData) setDeepLinkFilterData(filterData);
+      
+      // Set the correct tab based on state
+      if (tab && availableTabs.some(t => t.label === tab)) {
+        setActiveTab(tab);
+      }
+      
+      // Clear location state after reading
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, availableTabs]);
 
   // If no permission -> show error page
   if (!availableTabs.length) return <Error errorType={401} />;
@@ -64,7 +86,7 @@ export default function ApplicantManagement() {
         <Card>
           {availableTabs.map((tab) => (
             <TabsContent key={tab.label} value={tab.label}>
-              {tab.component(reloadData)}
+              {tab.component(reloadData, deepLinkFilterData)}
             </TabsContent>
           ))}
         </Card>

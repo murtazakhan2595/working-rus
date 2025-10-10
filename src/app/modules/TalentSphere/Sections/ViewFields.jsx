@@ -418,7 +418,6 @@ export const InterviewDetails = [
       {
         key: "interview_type_name",
         label: "Interview Type",
-        formatter: (cell) => <EmployeeName value={cell} />
       },
       {
         key: "scheduled_datetime",
@@ -436,9 +435,9 @@ export const InterviewDetails = [
         renderCondition: (_, data) => Boolean(data.generate_meeting_link),
       },
       {
-        key: "interview_type_name",
+        key: "require_demographics",
         label: "Required Demographics",
-        renderCondition: (_, data) => Boolean(data.require_demographics),
+        formatter: (cell) => cell?'Yes':'No',
       },
       {
         key: "status",

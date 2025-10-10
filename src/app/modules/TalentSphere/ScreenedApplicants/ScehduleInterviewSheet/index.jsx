@@ -17,6 +17,7 @@ import {
 } from "app/hooks/talentSphere"
 import { getEmailTemplateList } from "app/hooks/talentSphere";
 import { getInterviewTypeList } from "app/hooks/talentSphere";
+import { TimePicker } from "components/FormControl";
 
 
 const INTERVIEW_FORM_STRUCTURE = {
@@ -52,7 +53,7 @@ const ScheduleInterviewSheet = ({
 }) => {
   const dispatch = useDispatch()
   const Employees = GetDispatchStateList("employees_detail", "emp");
-  const [formValues, setFormValues] = useState(null)
+  const [formValues, setFormValues] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState(INTERVIEW_FORM_STRUCTURE)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
@@ -71,7 +72,7 @@ const ScheduleInterviewSheet = ({
     const fetchOptionData = async (isMounted) => {
       try {
         setIsLoading(true);
-        const filterData = { };
+        const filterData = {};
         const template = await getEmailTemplateList({ filterData });
         const types = await getInterviewTypeList({ filterData });
         if (isMounted) {
@@ -153,8 +154,8 @@ const ScheduleInterviewSheet = ({
         status: values.status || "scheduled",
       }
       const savedInterview = await saveUpdateInterview(payload)
-      if(savedInterview && id) {
-        await saveUpdateInterview({status:'rescheduled'},id)
+      if (savedInterview && id) {
+        await saveUpdateInterview({ status: 'rescheduled' }, id)
       }
       if (!savedInterview) throw new Error("Failed to save interview")
       toast.success(`Interview Schedule successfully`)
@@ -186,21 +187,28 @@ const ScheduleInterviewSheet = ({
       {
         InputField: DateInput,
         name: "scheduled_datetime",
-        label: "Scheduled Date & Time",
+        label: "Scheduled Date",
         required: true,
-        colsSpan: 2,
         disabled: mode === "view",
-        minDate:new Date(),
+        minDate: new Date(),
       },
       {
-        InputField: RadioGroupInput,
-        name: "status",
-        label: "Status",
-        options: STATUS_OPTIONS,
+        InputField: TimePicker,
+        name: "scheduled_datetime",
+        label: "Scheduled Time",
         required: true,
-        colsSpan: 2,
-        disabled: mode === "view",
+        disabled: !formValues?.scheduled_datetime || mode === "view",
+        date: formValues?.scheduled_datetime,
       },
+      // {
+      //   InputField: RadioGroupInput,
+      //   name: "status",
+      //   label: "Status",
+      //   options: STATUS_OPTIONS,
+      //   required: true,
+      //   colsSpan: 2,
+      //   disabled: mode === "view",
+      // },
     ],
   })
 

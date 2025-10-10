@@ -8,17 +8,22 @@ import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
 import { useSearchParams } from "react-router-dom";
 
-const AllApplicants = ({ reload, variant = "all" }) => {
+const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
     const source = searchParams.get("source");
     const recruitmentRequisition = searchParams.get("recruitment_requisition");
+    const emiratizationFlag = searchParams.get("emiratization_flag");
     const filters = {};
     
     if (source) filters.application_source = source;
     if (recruitmentRequisition) filters.recruitment_requisition = recruitmentRequisition;
+    // Convert emiratization_flag from "required"/"not_required" string to boolean
+    if (emiratizationFlag) {
+      filters.emiratization_flag = emiratizationFlag === "required" ? true : false;
+    }
     
     return filters;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -32,15 +37,32 @@ const AllApplicants = ({ reload, variant = "all" }) => {
 
   // Clear URL parameters after applying (only once)
   useEffect(() => {
-    const hasParams = searchParams.has("source") || searchParams.has("recruitment_requisition");
+    const hasParams = searchParams.has("source") || searchParams.has("recruitment_requisition") || searchParams.has("emiratization_flag");
     
     if (hasParams) {
       if (searchParams.has("source")) searchParams.delete("source");
       if (searchParams.has("recruitment_requisition")) searchParams.delete("recruitment_requisition");
+      if (searchParams.has("emiratization_flag")) searchParams.delete("emiratization_flag");
       setSearchParams(searchParams, { replace: true });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency - run only once on mount
+
+  // Handle deep link filter data when navigating from dashboard
+  useEffect(() => {
+    if (deepLinkFilterData) {
+      const convertedFilters = { ...deepLinkFilterData };
+      
+      // Convert emiratization_flag: true/false to "required"/"not_required" for dropdown
+      if (typeof convertedFilters.emiratization_flag === 'boolean') {
+        convertedFilters.emiratization_flag = convertedFilters.emiratization_flag ? 'required' : 'not_required';
+      }
+      
+      setFilterData(convertedFilters);
+      // Reset page to 1 when applying deep link filters
+      onPageChange("page", 1);
+    }
+  }, [deepLinkFilterData]);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -58,6 +80,7 @@ const AllApplicants = ({ reload, variant = "all" }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
+      // Convert UI filter values to API format
       const filters = {
         ...filterData,
         ...(variant === "all" ? { status: "new" } : {}),
@@ -67,7 +90,14 @@ const AllApplicants = ({ reload, variant = "all" }) => {
         ...(variant === "screened" ? { status: "screened" } : {}),
         ...(variant === "in_progress" ? { status: "in_progress" } : {}),
         ...(variant === "hired" ? { status: "hired" } : {}),
+        ...(variant === "hold" ? { status: "hold" } : {}),
       };
+      
+      // Convert emiratization_flag from "required"/"not_required" string to boolean for API
+      if (filters.emiratization_flag) {
+        filters.emiratization_flag = filters.emiratization_flag === 'required' ? true : false;
+      }
+      
       const response = await getApplicantsList({
         filterData: filters,
         options,
@@ -107,15 +137,12 @@ const AllApplicants = ({ reload, variant = "all" }) => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterValue === "" || filterValue === "All") {
         delete updatedFilters[filterName];
       } else {
-        if (filterName === "emiratization_flag")
-          updatedFilters[filterName] =
-            filterValue === "required" ? true : false;
-        else if (['application_date_range'].includes(filterName))
-          updatedFilters[filterName] = filterValue?.split(',');
-        else updatedFilters[filterName] = filterValue;
+        // Store UI values as-is (strings for dropdowns)
+        // Conversion to API format happens in fetchData
+        updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
     });

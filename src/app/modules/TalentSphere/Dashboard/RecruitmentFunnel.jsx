@@ -37,6 +37,26 @@ const RecruitmentFunnel = ({ data, loading }) => {
     FinalHires: "#059669",
   };
 
+  // 📊 Data source mapping (from User Story 32)
+  const STAGE_DATA_SOURCES = {
+    "Requisitions Raised": "Requisition Planning Module",
+    RequisitionsRaised: "Requisition Planning Module",
+    "Vacancies Published": "Published Vacancy Tab",
+    VacanciesPublished: "Published Vacancy Tab",
+    "Total Applicants": "All Applicants Tab",
+    TotalApplicants: "All Applicants Tab",
+    "Screened Candidates": "Screened Applicants Tab",
+    ScreenedCandidates: "Screened Applicants Tab",
+    "Interviews Scheduled": "Interview Tracker",
+    InterviewsScheduled: "Interview Tracker",
+    "Offers Generated": "Offer Management Tab",
+    OffersGenerated: "Offer Management Tab",
+    "Offers Accepted": "Offer Tracker Tab",
+    OffersAccepted: "Offer Tracker Tab",
+    "Final Hires": "Hired Applicants Tab",
+    FinalHires: "Hired Applicants Tab",
+  };
+
   // Fallback colors if stage name doesn't match
   const fallbackColors = [
     "#3B82F6",
@@ -66,19 +86,54 @@ const RecruitmentFunnel = ({ data, loading }) => {
     return fallbackColors[index % fallbackColors.length];
   };
 
+  // Get data source by stage name
+  const getDataSource = (stageName, displayName) => {
+    // Try exact match first
+    if (STAGE_DATA_SOURCES[stageName]) {
+      return STAGE_DATA_SOURCES[stageName];
+    }
+
+    // Try normalized name (remove spaces)
+    const normalizedName = stageName?.replace(/\s+/g, "");
+    if (STAGE_DATA_SOURCES[normalizedName]) {
+      return STAGE_DATA_SOURCES[normalizedName];
+    }
+
+    // Try display name
+    if (STAGE_DATA_SOURCES[displayName]) {
+      return STAGE_DATA_SOURCES[displayName];
+    }
+
+    return "N/A";
+  };
+
   // Prepare data for visualization
   const chartData = React.useMemo(() => {
     if (!data || !Array.isArray(data) || data.length === 0) return [];
 
-    return data.map((item, index) => ({
-      ...item,
-      displayName: item.stage?.replace(/([A-Z])/g, " $1").trim() || "Unknown",
-      color: getStageColor(item.stage, index),
-    }));
+    // Calculate total pipeline (first stage count)
+    const totalPipeline = data[0]?.count || 0;
+
+    return data.map((item, index) => {
+      const displayName =
+        item.stage?.replace(/([A-Z])/g, " $1").trim() || "Unknown";
+      const percentage =
+        totalPipeline > 0
+          ? ((item.count / totalPipeline) * 100).toFixed(1)
+          : "0.0";
+
+      return {
+        ...item,
+        displayName,
+        color: getStageColor(item.stage, index),
+        percentage,
+        dataSource: getDataSource(item.stage, displayName),
+      };
+    });
   }, [data]);
 
   // Format conversion display
-  const formatConversion = (conversion, stageName) => {
+  const formatConversion = (conversion) => {
     if (conversion === null || conversion === undefined) return null;
 
     // If conversion >= 1, it's a multiplier (expansion)
@@ -114,7 +169,7 @@ const RecruitmentFunnel = ({ data, loading }) => {
       .slice(0, 4); // Show only first 4 stages with conversion
   }, [chartData]);
 
-  // Custom tooltip
+  // Custom tooltip - BB-456 FIX: Added percentage and source
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -122,14 +177,22 @@ const RecruitmentFunnel = ({ data, loading }) => {
 
       return (
         <div className="bg-white p-3 border border-neutral-300 rounded-lg shadow-lg">
-          <p className="font-semibold text-neutral-900">{data.displayName}</p>
-          <p className="text-sm text-neutral-700">Count: {data.count}</p>
+          <p className="font-semibold text-sm text-neutral-900">
+            {data.displayName}
+          </p>
+          <p className="text-xs text-neutral-700 mt-1">Count: {data.count}</p>
+          <p className="text-xs text-neutral-700">
+            Percentage: {data.percentage}%
+          </p>
           {conversionDisplay && (
-            <p className="text-sm text-neutral-700">
+            <p className="text-xs text-neutral-700">
               Conversion: {conversionDisplay}{" "}
               {getConversionExplanation(data.conversion)}
             </p>
           )}
+          <p className="text-xs text-neutral-700 mt-1 pt-1 border-t border-neutral-200">
+            Source: {data.dataSource}
+          </p>
         </div>
       );
     }
