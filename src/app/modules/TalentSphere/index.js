@@ -61,6 +61,7 @@ import {
     GenerateRequisitionActions,
     PublishVacancyActions,
     ViewPublishedVacancies,
+    EmiratizationRequisitions,
 } from './RequisitionPlanning';
 import {
     TeamTalentSphere,
@@ -79,6 +80,12 @@ import {
     ApplicationActions,
     ViewApplicationDetail,
     UpdateApplicantStatus,
+} from './ApplicantManagement';
+import {
+    EmiratizationAllApplicants,
+    EmiratizationScreenedApplicants,
+    EmiratizationShortlistedApplicants,
+    EmiratizationHiredApplicants,
 } from './ApplicantManagement';
 
 import {
@@ -123,6 +130,10 @@ export {
     ViewOfferGenerated,
     AllApplicants,
     ApplicantByRequisition,
+    EmiratizationAllApplicants,
+    EmiratizationScreenedApplicants,
+    EmiratizationShortlistedApplicants,
+    EmiratizationHiredApplicants,
     GenerateOffer,
     Skills,
     ApplicantProfileDetails,
@@ -179,6 +190,7 @@ export {
     AddUpdateVacancyForm,
     PublishVacancyActions,
     ViewPublishedVacancies,
+    EmiratizationRequisitions,
     ResumeBankApplicants,
     InterviewTypes,
     AddUpdateInterviewTypeForm,

@@ -15,6 +15,11 @@ import {
   ResumeBankApplicants,
   ApplicantProfileDetails,
   ApplicantByRequisition,
+  EmiratizationAllApplicants,
+  EmiratizationScreenedApplicants,
+  EmiratizationShortlistedApplicants,
+  EmiratizationHiredApplicants,
+  EmiratizationRequisitions,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -376,9 +381,34 @@ export const SidebarRoutes = [
         component: <ApplicantByRequisition />,
         name: "APPLICANTS",
       },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/emiratization-applicants",
+        component: <EmiratizationAllApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/emiratization-screened",
+        component: <EmiratizationScreenedApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/emiratization-shortlisted",
+        component: <EmiratizationShortlistedApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/emiratization-hired",
+        component: <EmiratizationHiredApplicants />,
+        name: "APPLICANTS",
+      },
       Config.REQUISITION_PLANNING && {
         path: "/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,
+        name: "REQUISITION_PLANNING",
+      },
+      Config.REQUISITION_PLANNING && {
+        path: "/talent-sphere/emiratization-requisitions",
+        component: <EmiratizationRequisitions />,
         name: "REQUISITION_PLANNING",
       },
       Config.APPLICANT_INTERVIEW_TRACKER && {

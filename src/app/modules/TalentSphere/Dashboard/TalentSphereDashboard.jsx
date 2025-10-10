@@ -25,11 +25,7 @@ import { useTalentSphereDashboard } from "./useTalentSphereDashboard";
 
 const TalentSphereDashboard = () => {
   const Departments = useSelector((state) => state.common.departments);
-  const [filterData, setFilterData] = useState(() => {
-    const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
-    const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
-    return { date_range: `${startOfMonth},${endOfMonth}` };
-  });
+  const [filterData, setFilterData] = useState({});
 
   // Use our custom hook
   const {
@@ -163,7 +159,7 @@ const TalentSphereDashboard = () => {
             filters={dashboardFilters}
             filterValues={filterData}
             onChange={handleFilterChange}
-            defaultDateRangeTab="Month"
+            defaultDateRangeTab="None"
             className="justify-end"
           />
         </CardContent>

@@ -578,7 +578,11 @@ const RenderDateRangeFilterField = React.memo(
       let isMounted = true;
       if (isMounted) {
         setActiveTab(defaultDateRangeTab || "Day");
-        if ((defaultDateRangeTab || "Day").toUpperCase() === "DAY") {
+        const tab = (defaultDateRangeTab || "").toUpperCase();
+        // If defaultDateRangeTab is falsy or 'NONE', do not apply any date filter on mount
+        if (!tab || tab === "NONE") {
+          // no-op: keep filter unset until user selects a tab
+        } else if (tab === "DAY") {
           const formattedDatee = moment().format("YYYY-MM-DD");
           handleInputChange(name, `${formattedDatee},${formattedDatee}`);
         } else {

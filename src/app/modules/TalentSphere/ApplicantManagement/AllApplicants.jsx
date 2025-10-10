@@ -80,7 +80,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      // Convert UI filter values to API format
+      // Start with current filters
       const filters = {
         ...filterData,
         ...(variant === "all" ? { status: "new" } : {}),
@@ -90,11 +90,24 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
         ...(variant === "screened" ? { status: "screened" } : {}),
         ...(variant === "in_progress" ? { status: "in_progress" } : {}),
         ...(variant === "hired" ? { status: "hired" } : {}),
-        // by_requisition variant: no default status filter applied
       };
-      
-      // Convert emiratization_flag from "required"/"not_required" string to boolean for API
-      if (filters.emiratization_flag) {
+
+      // Apply emiratization variants (explicit status + flag)
+      if (variant === "emiratization_all") {
+        filters.emiratization_flag = true;
+      } else if (variant === "emiratization_screened") {
+        filters.status = "screened";
+        filters.emiratization_flag = true;
+      } else if (variant === "emiratization_shortlisted") {
+        filters.status = "shortlisted";
+        filters.emiratization_flag = true;
+      } else if (variant === "emiratization_hired") {
+        filters.status = "hired";
+        filters.emiratization_flag = true;
+      }
+
+      // Convert emiratization_flag string to boolean only if it's a string
+      if (typeof filters.emiratization_flag === 'string') {
         filters.emiratization_flag = filters.emiratization_flag === 'required' ? true : false;
       }
       
@@ -242,7 +255,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
             onChange={handleFilterChange}
             filterValues={{
               ...filterData,
-              ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {})
+              ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {}),
+              // Convert boolean emiratization_flag back to string for FilterInput UI
+              ...(filterData.emiratization_flag !== undefined ? { 
+                emiratization_flag: filterData.emiratization_flag === true ? 'required' : 'not_required' 
+              } : {})
             }}
           />
         </div>
