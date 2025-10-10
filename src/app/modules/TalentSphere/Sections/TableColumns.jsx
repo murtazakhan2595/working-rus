@@ -1259,9 +1259,9 @@ export const ApplicationColumns = (reloadData, variant) => [
             text: "AI Feedback",
             formatter: (cell, row) => {
                 return (<div>
-                    <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>
-                    <div><span className="font-bold">Match Score: </span>{cell?.ai_match_score}</div>
-                    <div><StatusLabel status={cell?.ai_suggested ? 'yes' : 'no'}>{cell?.ai_suggested ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel></div>
+                    {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
+                    <div><span className="font-bold">Match Score: </span>{row?.ai_match_score}</div>
+                    <div><StatusLabel status={row?.ai_suggested ? 'yes' : 'no'}>{row?.ai_suggested ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel></div>
                 </div>
                 );
             },
