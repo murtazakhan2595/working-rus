@@ -1,10 +1,9 @@
 import React from "react";
-import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName ,Currency} from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName, Currency } from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI} from "components";
+import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
-import { DetailBox, DetailCard } from "components/SheetCardExtension";
 
 export const RequisitionViewFields = [
   {
@@ -130,9 +129,9 @@ export const RequisitionViewFields = [
       {
         key: "salary_min",
         label: "Salary Range",
-        formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency}))} (${row?.payment_frequency})`,
+        formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined', Currency({ value: row.currency }))} (${row?.payment_frequency || ''})`,
       },
-       {
+      {
         key: "recommended_posting_date",
         label: "Recommended Posting Date",
         formatter: (cell) => renderDate(cell),
@@ -413,7 +412,7 @@ export const ResumeBankInformation = [
 ]
 export const InterviewDetails = [
   {
-    title: "Interview Information",
+    title: (data) => `${data.index + 1} - Interview Information`,
     field: [
       {
         key: "interview_type_name",
@@ -437,7 +436,7 @@ export const InterviewDetails = [
       {
         key: "require_demographics",
         label: "Required Demographics",
-        formatter: (cell) => cell?'Yes':'No',
+        formatter: (cell) => cell ? 'Yes' : 'No',
       },
       {
         key: "status",
@@ -667,6 +666,7 @@ export const ApplicantDetails = [
       </>
     }),
   },
+  ...(AIGeneratedDetails),
   {
     customContent: true,
     renderSectionCondition: (data) => {

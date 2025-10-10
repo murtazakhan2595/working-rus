@@ -41,7 +41,7 @@ const ViewApplicationDetail = ({
         return null;
       }
       if (status === 'reschedule-interview') {
-        const latest_interview = data?.interviews?.[data?.interviews?.length - 1]?.id;
+        const latest_interview = data?.latest_interview;
         setFormData({
           applicant: data.id,
           id: latest_interview,
@@ -57,7 +57,7 @@ const ViewApplicationDetail = ({
         return null;
       }
       if (status === 'add-feedback') {
-        const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
+        const latest_interview = data?.latest_interview;
         setFormData({
           form: latest_interview?.feedback_form,
           id: latest_interview?.id,
@@ -107,7 +107,7 @@ const ViewApplicationDetail = ({
   // Auto-trigger actions if requested via deep-link (only once)
   const triggerAutoAction = React.useCallback((data) => {
     if (!data || !autoAction || hasTriggeredAction) return;
-    
+
     setHasTriggeredAction(true);
     if (autoAction === 'reschedule') {
       handleClick(null, 'reschedule-interview', data);
@@ -136,12 +136,12 @@ const ViewApplicationDetail = ({
           const status = data.status.toLowerCase();
           let statusKey = status;
           if (status === 'in progress') {
-            const latest_interview = data?.interviews?.[data?.interviews?.length - 1];
-           if (!latest_interview || latest_interview.status !== 'scheduled') return null;
+            const latest_interview = data?.latest_interview;
+            if (!latest_interview || latest_interview.status !== 'scheduled') return null;
             const isInterViewDone = moment(latest_interview.scheduled_datetime).isSameOrBefore(moment());
             // if (!isInterViewDone) return null;
             const panelist_included = (latest_interview.panel || []).includes(user_id);
-            const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
+            const feedback_submitted = (data.interview_feedbacks || []).find(obj => (obj.panel_member === user_id && obj.interview === latest_interview.id));
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';
           }
           const isOfferGenerated = data?.offer_tracking || (data?.offer_letter?.[data?.offer_letter?.length - 1] || {}).status !== 'rejected';

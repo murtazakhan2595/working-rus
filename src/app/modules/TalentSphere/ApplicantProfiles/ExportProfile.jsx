@@ -1,18 +1,22 @@
-import React from "react";
+import React , {useState} from "react";
 import { usePermissions } from "utils/PermissionUtils";
 import { getApplicantsList } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
 import { exportRecordToExcel } from "utils/downloadUtils";
+import { renderRange, renderDate } from "utils/renderValues";
+import { Currency } from "utils/getValuesFromTables";
 
 export default function ExportProfile({ filterData }) {
     const { hasAccess } = usePermissions();
-    const viewPermitted = hasAccess("TS_VIEW_APPLICANT_PROFILE");
+    const exportPermitted = hasAccess("TS_VIEW_APPLICANT_PROFILE");
+    const [isExporting, setIsExporting] = useState(null);
 
-    if (!viewPermitted) return null;
+    if (!exportPermitted) return null;
 
     const exportAttendanceToExcel = async (event) => {
-        event.preventDefault();
+        setIsExporting(true);
         try {
+            event.preventDefault();
             const response = await getApplicantsList({
                 filterData: { ...filterData },
                 ordering: "-id",
@@ -45,8 +49,10 @@ export default function ExportProfile({ filterData }) {
                                 'Screened Date': row.screened_date,
                                 'AI Match Score': row.ai_match_score,
                                 'AI Match Skills': row.ai_matched_skills,
-                                'AI Missing Skills':row. ai_missing_skills,
+                                'AI Missing Skills': row.ai_missing_skills,
                                 'AI Suggested': row.ai_suggested ? 'Yes' : 'No',
+                                'Joining Date': renderDate(row.offers_tracking?.[0].joining_date),
+                                'Offered Salary': `${Currency({ value: row?.publish_vacancy?.currency })} (${row?.publish_vacancy?.payment_frequency || ""})`
                             };
                         })
                     );
@@ -59,12 +65,14 @@ export default function ExportProfile({ filterData }) {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            setIsExporting(false);
         }
     };
 
     return (
         <>
-            <Button onClick={exportAttendanceToExcel}>Export To Excel</Button>
+            <Button disabled={isExporting} onClick={exportAttendanceToExcel}>{isExporting ? 'Exporting' : 'Export To Excel'}</Button>
         </>
 
     );

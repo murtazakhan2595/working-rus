@@ -1225,15 +1225,14 @@ export const ApplicationColumns = (reloadData, variant) => [
     ] : []),
     ...(variant === 'in_progress' ? [
         {
-            dataField: "interviews",
+            dataField: "latest_interview",
             text: "Interview Info",
             minWidth: '300px',
             formatter: (cell) => {
-                const interview = (cell?.[cell?.length - 1] || {});
                 return (<div>
-                    <div><span className="font-bold">Interview Type: </span>{interview.interview_type_name}</div>
-                    <div><span className="font-bold">Date & Time: </span>{renderDate(interview.scheduled_datetime, '--', 'date-time')}</div>
-                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={interview?.panel_name} variant="info" /></div>
+                    <div><span className="font-bold">Interview Type: </span>{cell?.interview_type_name}</div>
+                    <div><span className="font-bold">Date & Time: </span>{renderDate(cell?.scheduled_datetime, '--', 'date-time')}</div>
+                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={cell?.panel_name} variant="info" /></div>
                 </div>
                 );
             },

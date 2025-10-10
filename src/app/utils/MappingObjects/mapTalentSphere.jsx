@@ -632,6 +632,12 @@ export async function mapApplicantsData(data) {
             case "blacklist":
                 RecordDetails.blacklist = value ? mapBlacklistApplicantData(value) : null;
                 break;
+            case "interviews":
+                const interviews = value ? await mapInterviewList(value) : null;
+                const sortedData = (interviews || []).sort((a, b) => a.id - b.id);
+                RecordDetails.interviews = sortedData;
+                RecordDetails.latest_interview = sortedData[sortedData.length - 1];
+                break;
 
             case "recruitment_shortlist":
                 RecordDetails.recruitment_shortlist = value ? mapShortlistedApplicantData(value) : null;
@@ -1119,29 +1125,45 @@ export function mapInterviewPayloadData(data, id) {
 //-------------InterviewFeedbacks ---------------
 
 export function mapInterviewFeedbackData(data) {
-    const RecordDetails = Object.keys(InterviewFeedback).reduce((acc, key) => {
-        if (data.hasOwnProperty(key)) {
-            if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
-            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
-            else acc[key] = data[key];
-        }
-        return acc;
-    }, {});
+  const RecordDetails = Object.keys(InterviewFeedback).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "comments") acc[key] = data[key]?.trim();
+      else acc[key] = data[key];
+    }
+    return acc;
+  }, {});
 
-    return RecordDetails;
+  return RecordDetails;
 }
+
 export async function mapInterviewFeedbackList(data) {
-    const DataList = await data?.map((Record) => {
-        const Details = mapInterviewFeedbackData(Record);
-        return {
-            value: Details.id,
-            label: Details.name,
-            ...Details,
-        };
-    });
+  if (!Array.isArray(data) || data.length === 0) return [];
 
-    return DataList;
+  // Step 1: Map feedback details
+  const DataList = data.map((record) => {
+    const details = mapInterviewFeedbackData(record);
+    return {
+      ...details,
+    };
+  });
+  // Step 2: Get unique interview IDs sorted ascending
+  const uniqueInterviews = [...new Set(DataList.map(fb => fb.interview))].sort((a, b) => a - b);
+
+  // Step 3: Map interview IDs to names (Interview 01, 02, ...)
+  const interviewNames = uniqueInterviews.reduce((acc, interviewId, index) => {
+    acc[interviewId] = `Interview ${String(index + 1).padStart(2, "0")}`;
+    return acc;
+  }, {});
+
+  // Step 4: Add interview_name field to each feedback
+  const indexedFeedbacks = DataList.map(fb => ({
+    ...fb,
+    interview_name: interviewNames[fb.interview] || null,
+  }));
+
+  return indexedFeedbacks;
 }
+
 
 export function mapInterviewFeedbackPayloadData(data, id) {
     // Initialize an empty payload object
