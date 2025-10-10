@@ -186,7 +186,6 @@ const DateInput = React.memo(
     useEffect(() => {
       if (value) {
         try {
-          debugger
           const parsedDate = parseISO(value);
           if (isValid(parsedDate)) {
             setDate(parsedDate);
