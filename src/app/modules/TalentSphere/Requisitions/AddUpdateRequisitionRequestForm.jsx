@@ -285,6 +285,7 @@ const AddUpdateRequisitionRequestForm = ({
                                     onFieldUpdate: async (_, value, __, handleChange) => {
                                         if (value) getCitiesDropdown("United Arab Emirates");
                                         handleChange("countries", value ? "United Arab Emirates" : "");
+                                        handleChange('city', null);
                                     },
                                 },
                             ]),
