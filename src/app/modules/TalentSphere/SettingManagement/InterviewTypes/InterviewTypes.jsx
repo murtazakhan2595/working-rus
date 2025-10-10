@@ -127,6 +127,7 @@ const InterviewTypes = ({ reload }) => {
                         dataTotalSize={InterviewTypeList?.count || 0}
                         pagination={true}
                         className="organization-table"
+                        fallbackText={"No interview types found"}
                     />
                 )}
             </CardContent>

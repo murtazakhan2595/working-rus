@@ -149,6 +149,11 @@ export const APPLICANT_TAB_CONFIG = [
         component: (reload, deepLinkFilterData) => <AllApplicants reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
     {
+        label: "AI Talent Picks",
+        permission: "VIEW_TS_BENEFITS",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="ai_picks" deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
         label: "Screened",
         permission: "VIEW_TS_EDUCATION",
         component: (reload, deepLinkFilterData) => <AllApplicants variant="screened" reload={reload} deepLinkFilterData={deepLinkFilterData} />,

@@ -72,7 +72,7 @@ const ScheduleInterviewSheet = ({
     const fetchOptionData = async (isMounted) => {
       try {
         setIsLoading(true);
-        const filterData = {};
+        const filterData = { is_active: true };
         const template = await getEmailTemplateList({ filterData });
         const types = await getInterviewTypeList({ filterData });
         if (isMounted) {
@@ -101,9 +101,6 @@ const ScheduleInterviewSheet = ({
         if (isMounted) {
           const formattedData = {
             ...response,
-            scheduled_datetime: response.scheduled_datetime
-              ? new Date(response.scheduled_datetime).toISOString().slice(0, 16)
-              : "",
             panel: response.panel || [],
             status: response.status || "scheduled"
           }

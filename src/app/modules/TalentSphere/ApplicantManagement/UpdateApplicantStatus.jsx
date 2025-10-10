@@ -23,6 +23,7 @@ import {
     SelectMultiInputComponent,
 } from "components/FormControl";
 import moment from "moment";
+import { toast } from "react-toastify";
 
 const StatusConfig = {
     rejected: {
@@ -179,6 +180,8 @@ const UpdateApplicantStatus = ({
             handleSubmit({ ...initialData, remove: true })
         } else if (status_variant === 'screened') {
             handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
+        } else if (status_variant === 'default') {
+            handleSubmit({ id: applicant, status: status })
         }
     }, [status_variant]);
 
@@ -193,6 +196,10 @@ const UpdateApplicantStatus = ({
                 statusUpdated(true);
                 reloadData(true);
                 setIsOpen(false);
+                toast.success(`${successMessage}`, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 1000,
+                });
                 return {
                     status: true,
                     messageType: "SUCCESS",

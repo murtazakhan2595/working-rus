@@ -1247,7 +1247,7 @@ export const ApplicationColumns = (reloadData, variant) => [
                 return (<div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={cell?.rejected_on} /></div>
                     <div><span className="font-bold">Date: </span>{renderDate(cell?.rejected_by, '--', 'date')}</div>
-                    <div className='flex gap-1'><span className="font-bold">Reason: </span><TextUI text={cell?.rejection_reason} maxLength={50}/></div>
+                    <div className='flex gap-1'><span className="font-bold">Reason: </span><TextUI text={cell?.rejection_reason} maxLength={50} /></div>
                 </div>
                 );
             },
@@ -1261,6 +1261,7 @@ export const ApplicationColumns = (reloadData, variant) => [
                 return (<div>
                     <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>
                     <div><span className="font-bold">Match Score: </span>{cell?.ai_match_score}</div>
+                    <div><StatusLabel status={cell?.ai_suggested ? 'yes' : 'no'}>{cell?.ai_suggested ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel></div>
                 </div>
                 );
             },

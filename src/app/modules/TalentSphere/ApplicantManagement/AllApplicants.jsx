@@ -17,16 +17,16 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     const recruitmentRequisition = searchParams.get("recruitment_requisition");
     const emiratizationFlag = searchParams.get("emiratization_flag");
     const filters = {};
-    
+
     if (source) filters.application_source = source;
     if (recruitmentRequisition) filters.recruitment_requisition = recruitmentRequisition;
     // Convert emiratization_flag from "required"/"not_required" string to boolean
     if (emiratizationFlag) {
       filters.emiratization_flag = emiratizationFlag === "required" ? true : false;
     }
-    
+
     return filters;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty deps - calculate only once on mount
 
   const [RequisitionList, setRequisitionList] = useState({});
@@ -38,26 +38,26 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   // Clear URL parameters after applying (only once)
   useEffect(() => {
     const hasParams = searchParams.has("source") || searchParams.has("recruitment_requisition") || searchParams.has("emiratization_flag");
-    
+
     if (hasParams) {
       if (searchParams.has("source")) searchParams.delete("source");
       if (searchParams.has("recruitment_requisition")) searchParams.delete("recruitment_requisition");
       if (searchParams.has("emiratization_flag")) searchParams.delete("emiratization_flag");
       setSearchParams(searchParams, { replace: true });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency - run only once on mount
 
   // Handle deep link filter data when navigating from dashboard
   useEffect(() => {
     if (deepLinkFilterData) {
       const convertedFilters = { ...deepLinkFilterData };
-      
+
       // Convert emiratization_flag: true/false to "required"/"not_required" for dropdown
       if (typeof convertedFilters.emiratization_flag === 'boolean') {
         convertedFilters.emiratization_flag = convertedFilters.emiratization_flag ? 'required' : 'not_required';
       }
-      
+
       setFilterData(convertedFilters);
       // Reset page to 1 when applying deep link filters
       onPageChange("page", 1);
@@ -91,6 +91,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
         ...(variant === "in_progress" ? { status: "in_progress" } : {}),
         ...(variant === "hired" ? { status: "hired" } : {}),
         ...(variant === "hold" ? { status: "hold" } : {}),
+        ...(variant === "ai_picks" ? { status: "new", ai_suggested: true } : {}),
       };
 
       // Apply emiratization variants (explicit status + flag)
@@ -111,7 +112,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       if (typeof filters.emiratization_flag === 'string') {
         filters.emiratization_flag = filters.emiratization_flag === 'required' ? true : false;
       }
-      
+
       const response = await getApplicantsList({
         filterData: filters,
         options,
@@ -133,7 +134,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     return () => {
       isMounted = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData, ordering, options, variant]);
 
   useEffect(() => {
@@ -144,7 +145,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     return () => {
       isMounted = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {
@@ -258,8 +259,8 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
               ...filterData,
               ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {}),
               // Convert boolean emiratization_flag back to string for FilterInput UI
-              ...(filterData.emiratization_flag !== undefined ? { 
-                emiratization_flag: filterData.emiratization_flag === true ? 'required' : 'not_required' 
+              ...(filterData.emiratization_flag !== undefined ? {
+                emiratization_flag: filterData.emiratization_flag === true ? 'required' : 'not_required'
               } : {})
             }}
           />
