@@ -5,7 +5,7 @@ import { saveUpdateFeedBackForm } from "app/hooks/talentSphere";
 import { HasAccess } from "utils/PermissionUtils";
 
 const FeedBackFormStatusTogle = ({ status, data, reloadData }) => {
-  const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
+  const isEditPermitted = HasAccess("EDIT_INTERVIEW_FEEDBACK_FORM");
 
   const onCheckedChange = useCallback(
     async (value, data) => {

@@ -23,6 +23,7 @@ import {
     SelectMultiInputComponent,
 } from "components/FormControl";
 import moment from "moment";
+import { toast } from "react-toastify";
 
 const StatusConfig = {
     rejected: {
@@ -36,11 +37,6 @@ const StatusConfig = {
                 name: "rejection_reason",
                 required: true,
                 label: "Reason",
-            },
-            {
-                InputField: TextAreaInput,
-                name: "remarks",
-                label: "Remarks",
             },
         ],
     },
@@ -61,11 +57,11 @@ const StatusConfig = {
                 name: "expected_joining_date",
                 required: true,
                 label: "Expected Joining Date",
+                minDate:new Date(),
             },
             {
                 InputField: TextAreaInput,
                 name: "remarks",
-                required: true,
                 label: "Remarks",
             },
         ],
@@ -132,6 +128,15 @@ const StatusConfig = {
         saveStatusAuditLogs: saveUpdateApplication,
         isDefault: true,
     },
+    revert_hold: {
+        successMessage: "Application Removed from Hold Successfully!",
+        saveStatusAuditLogs: saveUpdateApplication,
+        isDefault: true,
+    },
+    remove_resume_bank: {
+        successMessage: "Application Removed from Resume Bank Successfully!",
+        saveStatusAuditLogs: saveUpdateRejectedApplication,
+    },
 };
 
 const UpdateApplicantStatus = ({
@@ -179,6 +184,10 @@ const UpdateApplicantStatus = ({
             handleSubmit({ ...initialData, remove: true })
         } else if (status_variant === 'screened') {
             handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
+        } else if (status_variant === 'default' || status_variant === 'revert_hold') {
+            handleSubmit({ id: applicant, status: status })
+        }else if (status_variant === 'remove_resume_bank') {
+            handleSubmit({ rejection_reason:'Removed from resume bank.' })
         }
     }, [status_variant]);
 
@@ -193,6 +202,10 @@ const UpdateApplicantStatus = ({
                 statusUpdated(true);
                 reloadData(true);
                 setIsOpen(false);
+                toast.success(`${successMessage}`, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 1000,
+                });
                 return {
                     status: true,
                     messageType: "SUCCESS",

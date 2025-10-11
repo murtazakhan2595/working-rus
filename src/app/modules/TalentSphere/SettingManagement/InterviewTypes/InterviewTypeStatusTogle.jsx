@@ -5,7 +5,7 @@ import { saveUpdateInterviewType } from "app/hooks/talentSphere";
 import { HasAccess } from "utils/PermissionUtils";
 
 const InterviewTypeStatusTogle = ({ status, data, reloadData }) => {
-  const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
+  const isEditPermitted = HasAccess("EDIT_INTERVIEW_TYPE");
 
   const onCheckedChange = useCallback(
     async (value, data) => {

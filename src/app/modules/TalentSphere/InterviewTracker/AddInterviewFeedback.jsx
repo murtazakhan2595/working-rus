@@ -67,10 +67,9 @@ const AddInterviewFeedback = ({
     const handleSubmit = async (values, saveStatus) => {
         setIsSubmittingForm(true);
         try {
-            debugger
             const responses = (values.sections || []).flatMap(section =>
                 (section.fields || []).map(field => ({
-                    field: field.id,
+                    field_id: field.id,
                     response_numeric: field.response_numeric,
                     response_text: field.response_text
                 })));

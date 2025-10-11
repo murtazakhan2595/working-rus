@@ -6,8 +6,8 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const BlacklistReasonActions = ({ data, DataList = [], reloadData = () => { } }) => {
-    const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
-    const isDeletePermitted = HasAccess("DELETE_TS_BENEFITS");
+    const isEditPermitted = HasAccess("EDIT_BLACKLIST_REASON");
+    const isDeletePermitted = HasAccess("DELETE_BLACKLIST_REASON");
     // const isViewPermitted = HasAccess("VIEW_MANPOWER");
     // const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);

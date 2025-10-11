@@ -621,10 +621,11 @@ const deleteRecord = async (URL, recordName) => {
       toast.error(`Unexpected response status: ${response.status}`);
     }
   } catch (error) {
-    toast.error(error.message, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 1000,
-    });
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   } finally {
     return true;
   }

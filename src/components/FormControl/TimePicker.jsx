@@ -123,7 +123,6 @@ export function setDateByType(date, value, type, period) {
 
 export function getDateByType(date, type) {
   if (!date) return "00";
-  
   switch (type) {
     case "minutes":
       return getValidMinuteOrSecond(String(date.getMinutes()));
@@ -313,7 +312,7 @@ const TimePicker = React.memo(
     disabled = false,
     value = null,
     date = null,
-    onChange = () => {},
+    onChange = () => { },
     className = "w-full",
     description,
     placeholder,
@@ -333,7 +332,6 @@ const TimePicker = React.memo(
     useEffect(() => {
       if (value) {
         let parsedDate;
-        
         // Handle moment objects
         if (value && typeof value === 'object' && value._isAMomentObject) {
           parsedDate = value.toDate();
@@ -352,7 +350,6 @@ const TimePicker = React.memo(
             const [, hours, minutes, period] = timeMatch;
             parsedDate = new Date();
             let hour24 = parseInt(hours, 10);
-            
             if (period) {
               if (period.toUpperCase() === 'PM' && hour24 !== 12) {
                 hour24 += 12;
@@ -360,11 +357,9 @@ const TimePicker = React.memo(
                 hour24 = 0;
               }
             }
-            
             parsedDate.setHours(hour24, parseInt(minutes, 10), 0, 0);
           }
         }
-        
         if (parsedDate && !isNaN(parsedDate.getTime())) {
           setInternalDate(parsedDate);
           setPeriod(parsedDate.getHours() >= 12 ? "PM" : "AM");
@@ -392,8 +387,8 @@ const TimePicker = React.memo(
         .hour(newDate.getHours())
         .minute(newDate.getMinutes())
         .second(0)
-        .millisecond(0);
-      
+        .millisecond(0)
+        .toISOString();
       onChange(name, momentObject);
     };
 

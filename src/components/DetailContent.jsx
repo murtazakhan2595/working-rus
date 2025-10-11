@@ -1,7 +1,7 @@
 import React from "react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { cn } from "src/@/lib/utils";
-const DetailContent = ({ currentItem = {}, fields = [], orientation = "vertical" , viewClassName='' }) => {
+const DetailContent = ({ currentItem = {}, fields = [], orientation = "vertical", viewClassName = '' }) => {
   return (
     <div className="mb-4">
       {fields.map(
@@ -20,9 +20,10 @@ const DetailContent = ({ currentItem = {}, fields = [], orientation = "vertical"
           if (customContent) {
             return <div className={cn(className)}>{renderContent(currentItem)}</div>;
           }
+          const cardTitle = title && typeof title === "function" ? title(currentItem) : title;
           return (
             <DetailCard
-              detailCardTitle={title}
+              detailCardTitle={cardTitle}
               date={currentItem?.[footerField]}
               dateTitle={footerTitle}
             >

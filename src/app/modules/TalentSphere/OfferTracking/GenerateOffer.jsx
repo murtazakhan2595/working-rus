@@ -54,12 +54,12 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
         const fetchDataOptions = async (isMounted) => {
             try {
                 setIsLoading(true);
-                const response = await getOfferLetterTemplateList();
+                const response = await getOfferLetterTemplateList({filterData:{is_active:true}});
                 const applicants = await getApplicantsList({ filterData: { status: 'shortlisted' } });
                 if (isMounted) {
                     setTemplateList(response.results || []);
                     const applicant_dropdown = getDropdownListWithExtraKeys(
-                        applicants.results,
+                        (applicants.results || []).filter(obj => (!obj.offers_tracking || obj.offers_tracking.length === 0)),
                         'serial_id',
                         'id',
                         ['recruitment_shortlist', 'job_title', 'location'],

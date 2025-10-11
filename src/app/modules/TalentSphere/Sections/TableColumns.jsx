@@ -1225,15 +1225,14 @@ export const ApplicationColumns = (reloadData, variant) => [
     ] : []),
     ...(variant === 'in_progress' ? [
         {
-            dataField: "interviews",
+            dataField: "latest_interview",
             text: "Interview Info",
             minWidth: '300px',
             formatter: (cell) => {
-                const interview = (cell?.[cell?.length - 1] || {});
                 return (<div>
-                    <div><span className="font-bold">Interview Type: </span>{interview.interview_type_name}</div>
-                    <div><span className="font-bold">Date & Time: </span>{renderDate(interview.scheduled_datetime, '--', 'date-time')}</div>
-                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={interview?.panel_name} variant="info" /></div>
+                    <div><span className="font-bold">Interview Type: </span>{cell?.interview_type_name}</div>
+                    <div><span className="font-bold">Date & Time: </span>{renderDate(cell?.scheduled_datetime, '--', 'date-time')}</div>
+                    <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={cell?.panel_name} variant="info" /></div>
                 </div>
                 );
             },
@@ -1248,25 +1247,29 @@ export const ApplicationColumns = (reloadData, variant) => [
                 return (<div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={cell?.rejected_on} /></div>
                     <div><span className="font-bold">Date: </span>{renderDate(cell?.rejected_by, '--', 'date')}</div>
-                    <div className='flex gap-1'><span className="font-bold">Reason: </span><TextUI text={cell?.rejection_reason} maxLength={50}/></div>
+                    <div className='flex gap-1'><span className="font-bold">Reason: </span><TextUI text={cell?.rejection_reason} maxLength={50} /></div>
                 </div>
                 );
             },
         },
     ] : []),
-    ...(variant !== 'all' ? [
+    ...(variant === 'in_progress' ? [
         {
             dataField: "ai_feedback_summary",
             text: "AI Feedback",
             formatter: (cell, row) => {
                 return (<div>
-                    <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>
-                    <div><span className="font-bold">Match Score: </span>{cell?.ai_match_score}</div>
+                    {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
                 </div>
                 );
             },
         },
     ] : []),
+    {
+        dataField: "ai_suggested",
+        text: "AI Suggestion",
+        formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_match_score}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
+    },
     {
         dataField: "status",
         text: "Status",

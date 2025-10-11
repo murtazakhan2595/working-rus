@@ -67,6 +67,7 @@ import {
   mapRejectedApplicationPayloadData,
   mapResumeBankApplicantsList,
   mapInterviewData,
+  mapInterviewPayloadData,
   mapShortlistedApplicantPayloadData,
   mapBlacklistApplicantPayloadData,
 } from "app/utils/MappingObjects/mapTalentSphere";
@@ -1255,12 +1256,10 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
       const ResumeBankData = await getResumeBankApplicantById(Response.id);
-      const OfferLetterData = await getOfferLetterByApplicantId(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
       const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
       return {
         interview_feedbacks: Feedbacks.results || [],
-        offer_letter: OfferLetterData,
         resume_bank: ResumeBankData,
         ...ResponseData,
       };
@@ -1660,8 +1659,7 @@ export const getInterviewById = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
-      const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: Response.id } });
-      return { interview_feedbacks: Feedbacks.results || [], ...ResponseData };
+      return { ...ResponseData };
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1680,10 +1678,9 @@ export const saveUpdateInterview = async (payload, id) => {
       : `${baseUrl}/interviews/`;
     const method = id ? "PATCH" : "POST";
     const expectedStatus = id ? 200 : 201;
-
-    const response = await axios({ method, url, data: payload, headers: headers() });
+    const finalPayload = mapInterviewPayloadData(payload);
+    const response = await axios({ method, url, data: finalPayload, headers: headers() });
     if (response.status === expectedStatus) return response.data;
-
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
@@ -1838,7 +1835,7 @@ export const getFeedBackFormList = async (payload) => {
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
-    
+
     console.error("Error getting regions list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();

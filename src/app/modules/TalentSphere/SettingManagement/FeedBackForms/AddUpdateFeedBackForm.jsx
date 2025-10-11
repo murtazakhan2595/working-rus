@@ -196,13 +196,13 @@ const AddUpdateFeedBackForm = ({
                       value: field.field_type,
                       options: [{ label: 'Radio', value: 'RADIO' }, { label: 'Rating', value: 'RATING' }, { label: 'Text', value: 'TEXT' }]
                     },
-                    {
+                    ...(field.field_type==='RATING'?[{
                       InputField: NumberInput,
                       name: `sections[${index}].fields[${fieldIndex}].rating_scale_max`,
                       label: "Max. Rating Scale",
                       required: true,
                       value: field.rating_scale_max,
-                    },
+                    }]:[]),
 
                   ])).flat()
                   : []
