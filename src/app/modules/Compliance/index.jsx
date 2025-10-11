@@ -44,7 +44,7 @@ const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
   const [activeSubTab, setActiveSubTab] = useState("branch-license");
   const [activeProfessionalSubTab, setActiveProfessionalSubTab] = useState(
-    "pharmacist-licenses"
+    "license-certificates"
   );
   const [activeRatioSubTab, setActiveRatioSubTab] = useState("current-ratios");
   const [activeTrainingSubTab, setActiveTrainingSubTab] =
@@ -326,7 +326,7 @@ const Compliance = () => {
     },
     {
       id: "professional",
-      title: "Professional Licensing",
+      title: "Compliance Management",
       percentage: 99,
       status: "valid",
       icon: User,
@@ -454,6 +454,106 @@ const Compliance = () => {
       complianceScore: 94,
       renewalIntimations: 2,
       renewalInitiatedAt: "2023-10-01T10:00:00Z",
+    },
+  ];
+
+  // Dummy data for employee licenses/certificates table
+  const employeeLicensesData = [
+    {
+      id: 1,
+      employeeId: "EMP001",
+      employeeName: "Sarah Ahmed",
+      designation: "Pharmacist",
+      type: "License",
+      issueAuthority: "Dubai Health Authority",
+      issuanceDate: "2023-01-15",
+      expiryDate: "2026-01-15",
+      branch: "Dubai Mall Pharmacy",
+      status: "Active",
+    },
+    {
+      id: 2,
+      employeeId: "EMP002",
+      employeeName: "Mohammed Khan",
+      designation: "Pharmacy Technician",
+      type: "Certificate",
+      issueAuthority: "Department of Health Abu Dhabi",
+      issuanceDate: "2022-11-03",
+      expiryDate: "2025-11-03",
+      branch: "Abu Dhabi Marina Pharmacy",
+      status: "Expiring Soon",
+    },
+    {
+      id: 3,
+      employeeId: "EMP003",
+      employeeName: "John Anderson",
+      designation: "Pharmacist",
+      type: "License",
+      issueAuthority: "Dubai Health Authority",
+      issuanceDate: "2023-03-20",
+      expiryDate: "2026-03-20",
+      branch: "Dubai Healthcare City Pharmacy",
+      status: "Active",
+    },
+    {
+      id: 4,
+      employeeId: "EMP004",
+      employeeName: "Fatima Al-Zahra",
+      designation: "Manager",
+      type: "Certificate",
+      issueAuthority: "Ministry of Health UAE",
+      issuanceDate: "2023-06-10",
+      expiryDate: "2026-06-10",
+      branch: "Sharjah City Center Pharmacy",
+      status: "Renewal In Progress",
+    },
+    {
+      id: 5,
+      employeeId: "EMP005",
+      employeeName: "Ahmed Hassan",
+      designation: "Supervisor",
+      type: "License",
+      issueAuthority: "Department of Health Abu Dhabi",
+      issuanceDate: "2022-08-15",
+      expiryDate: "2025-08-15",
+      branch: "Al Ain Pharmacy",
+      status: "Active",
+    },
+    {
+      id: 6,
+      employeeId: "EMP006",
+      employeeName: "Lisa Johnson",
+      designation: "Pharmacist",
+      type: "License",
+      issueAuthority: "Dubai Health Authority",
+      issuanceDate: "2023-02-01",
+      expiryDate: "2026-02-01",
+      branch: "Dubai Mall Pharmacy",
+      status: "Expired",
+    },
+    {
+      id: 7,
+      employeeId: "EMP007",
+      employeeName: "Omar Al-Rashid",
+      designation: "Pharmacy Technician",
+      type: "Certificate",
+      issueAuthority: "Sharjah Health Department",
+      issuanceDate: "2023-04-15",
+      expiryDate: "2026-04-15",
+      branch: "Sharjah City Center Pharmacy",
+      status: "Active",
+    },
+    {
+      id: 8,
+      employeeId: "EMP008",
+      employeeName: "Maria Rodriguez",
+      designation: "Cashier",
+      type: "Certificate",
+      issueAuthority: "Ministry of Health UAE",
+      issuanceDate: "2023-07-20",
+      expiryDate: "2026-07-20",
+      branch: "Abu Dhabi Marina Pharmacy",
+      status: "Expiring Soon",
     },
   ];
 
@@ -638,8 +738,8 @@ const Compliance = () => {
     {
       id: "professional",
       icon: UserCheck,
-      label: "Professional",
-      fullName: "Professional Licensing",
+      label: "Compliance Management",
+      fullName: "Compliance Management",
       value: "99%",
       color: "text-teal-600",
       bgColor: "bg-teal-50",
@@ -1206,6 +1306,113 @@ const Compliance = () => {
       },
     ],
   };
+
+  // Table columns configuration for employee licenses/certificates
+  const employeeLicensesColumns = [
+    {
+      dataField: "employeeId",
+      text: "Employee ID",
+    },
+    {
+      dataField: "employeeName",
+      text: "Employee Name",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <span className="font-semibold text-blue-700 text-sm">
+              {row.employeeName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </span>
+          </div>
+          <span className="font-medium">{row.employeeName}</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "designation",
+      text: "Designation",
+    },
+    {
+      dataField: "type",
+      text: "Type",
+      formatter: (cell, row) => (
+        <Badge
+          variant={row.type === "License" ? "success" : "secondary"}
+          className="capitalize"
+        >
+          {row.type}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "issueAuthority",
+      text: "Issue Authority",
+    },
+    {
+      dataField: "issuanceDate",
+      text: "Issuance Date",
+    },
+    {
+      dataField: "expiryDate",
+      text: "Expiry Date",
+    },
+    {
+      dataField: "branch",
+      text: "Branch",
+    },
+    {
+      dataField: "status",
+      text: "Status",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.status === "Active"
+              ? "success"
+              : row.status === "Expiring Soon"
+              ? "warning"
+              : row.status === "Renewal In Progress"
+              ? "secondary"
+              : "destructive"
+          }
+          className="capitalize"
+        >
+          {row.status}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "actions",
+      text: "Actions",
+      formatter: (cell, row) => (
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("View employee license:", row);
+            }}
+            title="View"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+          {(row.status === "Expiring Soon" || row.status === "Active") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                console.log("Proceed for renewal:", row);
+              }}
+              title="Proceed for Renewal"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
 
   // Table columns configuration
   const facilityLicensesColumns = [
@@ -1881,17 +2088,8 @@ const Compliance = () => {
               className="mb-6"
             >
               <TabsList className="grid-cols-4">
-                <TabsTrigger value="pharmacist-licenses">
-                  Pharmacist Licenses
-                </TabsTrigger>
-                <TabsTrigger value="technician-certifications">
-                  Technician Certifications
-                </TabsTrigger>
-                <TabsTrigger value="specialized-credentials">
-                  Specialized Credentials
-                </TabsTrigger>
-                <TabsTrigger value="license-verification">
-                  License Verification
+                <TabsTrigger value="license-certificates">
+                  License & Certificates
                 </TabsTrigger>
               </TabsList>
 
@@ -1899,25 +2097,22 @@ const Compliance = () => {
               <div className="grid grid-cols-4 gap-6 mb-8">
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Professionals</h3>
+                    <h3 className="text-sm font-medium">Total Employees</h3>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <User className="w-5 h-5 text-teal-400" />
+                      <Users className="w-5 h-5 text-blue-400" />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">612</p>
+                    <p className="text-3xl font-bold text-gray-900">245</p>
                     <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        ↑ 24
-                      </span>
-                      <span className="text-gray-500">from last year</span>
+                      <span className="text-gray-500">with licenses/certificates</span>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Licenses Expiring</h3>
+                    <h3 className="text-sm font-medium">Expiring within 60 Days</h3>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <AlertTriangle className="w-5 h-5 text-orange-400" />
                     </div>
@@ -1925,8 +2120,8 @@ const Compliance = () => {
                   <div className="space-y-2">
                     <p className="text-3xl font-bold text-gray-900">18</p>
                     <div className="flex items-center text-sm">
-                      <span className="text-yellow-500 font-medium">
-                        Within 60 days
+                      <span className="text-orange-500 font-medium">
+                        Require attention
                       </span>
                     </div>
                   </div>
@@ -1934,7 +2129,7 @@ const Compliance = () => {
 
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Renewal In Progress</h3>
+                    <h3 className="text-sm font-medium">Renewal in Progress</h3>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <RefreshCw className="w-5 h-5 text-blue-400" />
                     </div>
@@ -1951,16 +2146,16 @@ const Compliance = () => {
 
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Compliance Rate</h3>
+                    <h3 className="text-sm font-medium">Compliance Ratio</h3>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <CheckCircle className="w-5 h-5 text-green-400" />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">99%</p>
+                    <p className="text-3xl font-bold text-gray-900">94%</p>
                     <div className="flex items-center text-sm">
                       <span className="text-green-500 font-medium mr-1">
-                        ↑ 1%
+                        ↑ 2%
                       </span>
                       <span className="text-gray-500">from last quarter</span>
                     </div>
@@ -1973,24 +2168,48 @@ const Compliance = () => {
                 <div className="flex items-center space-x-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Region
+                      Search by Employee Name / ID
+                    </label>
+                    <input
+                      type="text"
+                      className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                      placeholder="Search employee..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Branch
                     </label>
                     <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Regions</option>
-                      <option>Dubai</option>
-                      <option>Abu Dhabi</option>
-                      <option>Sharjah</option>
+                      <option>All Branches</option>
+                      <option>Dubai Mall Pharmacy</option>
+                      <option>Abu Dhabi Marina Pharmacy</option>
+                      <option>Sharjah City Center Pharmacy</option>
+                      <option>Dubai Healthcare City Pharmacy</option>
+                      <option>Al Ain Pharmacy</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
+                      Designation
                     </label>
                     <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Statuses</option>
-                      <option>Active</option>
-                      <option>Expiring Soon</option>
-                      <option>Expired</option>
+                      <option>All Designations</option>
+                      <option>Pharmacist</option>
+                      <option>Pharmacy Technician</option>
+                      <option>Manager</option>
+                      <option>Supervisor</option>
+                      <option>Cashier</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Type
+                    </label>
+                    <select className="border border-gray-300 rounded-md px-3 py-2">
+                      <option>All Types</option>
+                      <option>License</option>
+                      <option>Certificate</option>
                     </select>
                   </div>
                 </div>
@@ -2002,19 +2221,29 @@ const Compliance = () => {
                     <Eye className="w-4 h-4 mr-2" />
                     Export
                   </Button>
-                  <Button className="flex items-center">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add License
-                  </Button>
                 </div>
               </div>
 
               {/* Sub Tab Content */}
-              <TabsContent value="pharmacist-licenses">
+              <TabsContent value="license-certificates">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Employee Licenses & Certificates</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TableCustom
+                      columns={employeeLicensesColumns}
+                      data={employeeLicensesData}
+                      pagination={true}
+                      dataTotalSize={employeeLicensesData.length}
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="complaince-ratio">
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Pharmacist Licenses
-                  </h2>
+                  <h2 className="text-xl font-bold mb-4">Compliance Ratio</h2>
                   <TableCustom
                     columns={professionalLicensesColumns}
                     data={professionalLicensesData}
@@ -2024,51 +2253,6 @@ const Compliance = () => {
                       paginationSizePerPageList: [10, 20, 50],
                       showTotal: true,
                     }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="technician-certifications">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Technician Certifications
-                  </h2>
-                  <TableCustom
-                    columns={professionalLicensesColumns}
-                    data={professionalLicensesData.slice(0, 2)}
-                    pagination={true}
-                    dataTotalSize={2}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="specialized-credentials">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Specialized Credentials
-                  </h2>
-                  <TableCustom
-                    columns={professionalLicensesColumns}
-                    data={professionalLicensesData.slice(1, 3)}
-                    pagination={true}
-                    dataTotalSize={2}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="license-verification">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    License Verification
-                  </h2>
-                  <TableCustom
-                    columns={professionalLicensesColumns}
-                    data={professionalLicensesData}
-                    pagination={true}
-                    dataTotalSize={professionalLicensesData.length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
                   />
                 </div>
               </TabsContent>
