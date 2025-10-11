@@ -33,7 +33,6 @@ import {
   CheckCircle,
   Clock,
   RefreshCw,
-  Download,
   Building2,
   UserCheck,
   Trash2,
@@ -43,7 +42,6 @@ import {
 const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
   const [activeSubTab, setActiveSubTab] = useState("branch-license");
-  const [activeSOPSubTab, setActiveSOPSubTab] = useState("hr-policies");
   const [activeInspectionsSubTab, setActiveInspectionsSubTab] =
     useState("internal-audits");
   const [activeWorkforceSubTab, setActiveWorkforceSubTab] =
@@ -81,6 +79,15 @@ const Compliance = () => {
     trainingProgram: "All Programs",
     frequency: "All Frequencies",
     status: "All Statuses",
+  });
+
+  // SOP & Policy filter states
+  const [sopFilters, setSopFilters] = useState({
+    category: "All Categories",
+    acknowledgmentStatus: "All",
+    branch: "All Branches",
+    dueDateRange: null,
+    policySearch: "",
   });
 
   // License data state
@@ -314,6 +321,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle SOP & Policy filter changes
+  const handleSopFilterChange = (filterType, value) => {
+    setSopFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -388,6 +403,54 @@ const Compliance = () => {
       filtered = filtered.filter(
         (item) => item.status === trainingFilters.status
       );
+    }
+
+    return filtered;
+  };
+
+  // Filter SOP & Policy data
+  const getFilteredSopData = () => {
+    let filtered = [...sopPolicyData];
+
+    // Search by policy name
+    if (sopFilters.policySearch) {
+      filtered = filtered.filter((item) =>
+        item.documentName
+          .toLowerCase()
+          .includes(sopFilters.policySearch.toLowerCase())
+      );
+    }
+
+    // Filter by category
+    if (sopFilters.category !== "All Categories") {
+      filtered = filtered.filter(
+        (item) => item.category === sopFilters.category
+      );
+    }
+
+    // Filter by acknowledgment status
+    if (sopFilters.acknowledgmentStatus === "Acknowledged") {
+      filtered = filtered.filter((item) => item.notAcknowledged === 0);
+    } else if (sopFilters.acknowledgmentStatus === "Not Acknowledged") {
+      filtered = filtered.filter((item) => item.notAcknowledged > 0);
+    }
+
+    // Filter by branch
+    if (sopFilters.branch !== "All Branches") {
+      filtered = filtered.filter((item) => item.branch === sopFilters.branch);
+    }
+
+    // Filter by due date range
+    if (sopFilters.dueDateRange) {
+      const [fromDateStr, toDateStr] = sopFilters.dueDateRange.split(",");
+      if (fromDateStr && toDateStr) {
+        const fromDate = new Date(fromDateStr);
+        const toDate = new Date(toDateStr);
+        filtered = filtered.filter((item) => {
+          const dueDate = new Date(item.dueDate);
+          return dueDate >= fromDate && dueDate <= toDate;
+        });
+      }
     }
 
     return filtered;
@@ -663,6 +726,98 @@ const Compliance = () => {
     },
   ];
 
+  // Dummy data for SOP & Policy table
+  const sopPolicyData = [
+    {
+      id: 1,
+      documentName: "Employee Code of Conduct",
+      category: "HR",
+      noOfAssignees: 245,
+      acknowledged: 238,
+      notAcknowledged: 7,
+      acknowledgmentPercentage: 97,
+      dueDate: "2024-01-15",
+      branch: "All Branches",
+    },
+    {
+      id: 2,
+      documentName: "Workplace Safety Policy",
+      category: "Safety",
+      noOfAssignees: 245,
+      acknowledged: 240,
+      notAcknowledged: 5,
+      acknowledgmentPercentage: 98,
+      dueDate: "2024-01-20",
+      branch: "All Branches",
+    },
+    {
+      id: 3,
+      documentName: "Data Protection Policy",
+      category: "IT",
+      noOfAssignees: 245,
+      acknowledged: 220,
+      notAcknowledged: 25,
+      acknowledgmentPercentage: 90,
+      dueDate: "2024-01-25",
+      branch: "All Branches",
+    },
+    {
+      id: 4,
+      documentName: "Leave Management Policy",
+      category: "HR",
+      noOfAssignees: 245,
+      acknowledged: 235,
+      notAcknowledged: 10,
+      acknowledgmentPercentage: 96,
+      dueDate: "2024-01-30",
+      branch: "All Branches",
+    },
+    {
+      id: 5,
+      documentName: "Financial Controls Policy",
+      category: "Finance",
+      noOfAssignees: 245,
+      acknowledged: 200,
+      notAcknowledged: 45,
+      acknowledgmentPercentage: 82,
+      dueDate: "2024-02-05",
+      branch: "All Branches",
+    },
+    {
+      id: 6,
+      documentName: "IT Security Guidelines",
+      category: "IT",
+      noOfAssignees: 245,
+      acknowledged: 210,
+      notAcknowledged: 35,
+      acknowledgmentPercentage: 86,
+      dueDate: "2024-02-10",
+      branch: "All Branches",
+    },
+    {
+      id: 7,
+      documentName: "Customer Service Standards",
+      category: "Operations",
+      noOfAssignees: 245,
+      acknowledged: 245,
+      notAcknowledged: 0,
+      acknowledgmentPercentage: 100,
+      dueDate: "2024-02-15",
+      branch: "All Branches",
+    },
+    {
+      id: 8,
+      documentName: "Quality Assurance Procedures",
+      category: "Quality",
+      noOfAssignees: 245,
+      acknowledged: 230,
+      notAcknowledged: 15,
+      acknowledgmentPercentage: 94,
+      dueDate: "2024-02-20",
+      branch: "All Branches",
+    },
+  ];
+
   // Dummy data for mandatory training table
   const mandatoryTrainingData = [
     {
@@ -752,50 +907,6 @@ const Compliance = () => {
       frequency: "Monthly",
       completionRatio: 25,
       status: "In Progress",
-    },
-  ];
-
-  // Dummy data for SOP & Policy table
-  const sopPolicyData = [
-    {
-      id: 1,
-      policyName: "Employee Code of Conduct",
-      changeType: "Major Update",
-      version: "v3.2",
-      changedBy: "Sarah Al-Mansoori",
-      changeDate: "15 Sep 2023",
-      summary: "Updated social media guidelines",
-      status: "Active",
-    },
-    {
-      id: 2,
-      policyName: "Workplace Safety Policy",
-      changeType: "Minor Update",
-      version: "v2.1",
-      changedBy: "Safety Team",
-      changeDate: "10 Sep 2023",
-      summary: "Updated emergency procedures",
-      status: "Active",
-    },
-    {
-      id: 3,
-      policyName: "Data Protection Policy",
-      changeType: "Major Update",
-      version: "v4.0",
-      changedBy: "Legal Team",
-      changeDate: "05 Sep 2023",
-      summary: "GDPR compliance updates",
-      status: "Active",
-    },
-    {
-      id: 4,
-      policyName: "Leave Management Policy",
-      changeType: "Minor Update",
-      version: "v1.5",
-      changedBy: "HR Team",
-      changeDate: "01 Sep 2023",
-      summary: "Updated leave calculation rules",
-      status: "Active",
     },
   ];
 
@@ -956,56 +1067,6 @@ const Compliance = () => {
       locationsCompliant: "238 / 238",
       lastVerified: "30 Sep 2023",
       status: "Compliant",
-    },
-  ];
-
-  // Column definitions for SOP & Policy table
-  const sopPolicyColumns = [
-    {
-      dataField: "policyName",
-      text: "Policy Name",
-    },
-    {
-      dataField: "changeType",
-      text: "Change Type",
-      formatter: (cell, row) => (
-        <Badge
-          variant={row.changeType === "Major Update" ? "warning" : "success"}
-          className="capitalize"
-        >
-          {row.changeType}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "version",
-      text: "Version",
-    },
-    {
-      dataField: "changedBy",
-      text: "Changed By",
-    },
-    {
-      dataField: "changeDate",
-      text: "Change Date",
-    },
-    {
-      dataField: "summary",
-      text: "Summary",
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Edit className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
     },
   ];
 
@@ -1252,144 +1313,6 @@ const Compliance = () => {
     },
   ];
 
-  // Dummy data for SOP Policy Management table
-  const sopPolicyManagementData = [
-    {
-      id: 1,
-      policyName: "Employee Code of Conduct",
-      category: "Employee Relations",
-      version: "v3.2",
-      lastUpdated: "15 Sep 2023",
-      nextReview: "15 Sep 2024",
-      acknowledgmentRate: 99,
-      status: "Active",
-    },
-    {
-      id: 2,
-      policyName: "Workplace Safety Policy",
-      category: "Health & Safety",
-      version: "v2.1",
-      lastUpdated: "10 Sep 2023",
-      nextReview: "10 Sep 2024",
-      acknowledgmentRate: 98,
-      status: "Active",
-    },
-    {
-      id: 3,
-      policyName: "Data Protection Policy",
-      category: "Information Security",
-      version: "v4.0",
-      lastUpdated: "05 Sep 2023",
-      nextReview: "05 Sep 2024",
-      acknowledgmentRate: 95,
-      status: "Active",
-    },
-    {
-      id: 4,
-      policyName: "Leave Management Policy",
-      category: "Employee Relations",
-      version: "v1.5",
-      lastUpdated: "01 Sep 2023",
-      nextReview: "01 Sep 2024",
-      acknowledgmentRate: 97,
-      status: "Active",
-    },
-    {
-      id: 5,
-      policyName: "Professional Development Policy",
-      category: "Employee Relations",
-      version: "v1.9",
-      lastUpdated: "15 Apr 2023",
-      nextReview: "15 Apr 2024",
-      acknowledgmentRate: 91,
-      status: "Active",
-    },
-    {
-      id: 6,
-      policyName: "Social Media & Communications",
-      category: "Professional Conduct",
-      version: "v2.0",
-      lastUpdated: "10 Mar 2023",
-      nextReview: "10 Oct 2023",
-      acknowledgmentRate: 85,
-      status: "Review Due",
-    },
-  ];
-
-  // Column definitions for SOP Policy Management table
-  const sopPolicyManagementColumns = [
-    {
-      dataField: "policyName",
-      text: "Policy Name",
-    },
-    {
-      dataField: "category",
-      text: "Category",
-    },
-    {
-      dataField: "version",
-      text: "Version",
-    },
-    {
-      dataField: "lastUpdated",
-      text: "Last Updated",
-    },
-    {
-      dataField: "nextReview",
-      text: "Next Review",
-    },
-    {
-      dataField: "acknowledgmentRate",
-      text: "Acknowledgment Rate",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-            <div
-              className={`h-2.5 rounded-full ${
-                row.acknowledgmentRate >= 95
-                  ? "bg-green-500"
-                  : row.acknowledgmentRate >= 90
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-              }`}
-              style={{ width: `${row.acknowledgmentRate}%` }}
-            ></div>
-          </div>
-          <span>{row.acknowledgmentRate}%</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={row.status === "Active" ? "success" : "warning"}
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Download className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
   // Chart data
   const complianceChartData = {
     categories: [
@@ -1408,6 +1331,106 @@ const Compliance = () => {
       },
     ],
   };
+
+  // Table columns configuration for SOP & Policy
+  const sopPolicyColumns = [
+    {
+      dataField: "documentName",
+      text: "Document Name",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <FileText className="w-4 h-4 text-blue-700" />
+          </div>
+          <span className="font-medium">{row.documentName}</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "category",
+      text: "Category",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.category === "HR"
+              ? "success"
+              : row.category === "IT"
+              ? "secondary"
+              : row.category === "Safety"
+              ? "warning"
+              : row.category === "Finance"
+              ? "destructive"
+              : "default"
+          }
+          className="capitalize"
+        >
+          {row.category}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "noOfAssignees",
+      text: "No. of Assignees",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.noOfAssignees}</span>
+      ),
+    },
+    {
+      dataField: "acknowledged",
+      text: "Acknowledged",
+      formatter: (cell, row) => (
+        <span className="font-semibold text-green-600">{row.acknowledged}</span>
+      ),
+    },
+    {
+      dataField: "notAcknowledged",
+      text: "Not Acknowledged",
+      formatter: (cell, row) => (
+        <span className="font-semibold text-red-600">
+          {row.notAcknowledged}
+        </span>
+      ),
+    },
+    {
+      dataField: "acknowledgmentPercentage",
+      text: "Acknowledgment %",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+            <div
+              className={`h-2.5 rounded-full ${
+                row.acknowledgmentPercentage >= 95
+                  ? "bg-green-500"
+                  : row.acknowledgmentPercentage >= 80
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
+              }`}
+              style={{ width: `${row.acknowledgmentPercentage}%` }}
+            ></div>
+          </div>
+          <span className="font-semibold">{row.acknowledgmentPercentage}%</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "actions",
+      text: "Action",
+      formatter: (cell, row) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("View acknowledgment details for:", row);
+            }}
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   // Table columns configuration for mandatory training
   const mandatoryTrainingColumns = [
@@ -1834,53 +1857,53 @@ const Compliance = () => {
 
           {/* Compliance Overview Cards */}
           {/* {vs2 && (
-            <div className="grid grid-cols-7 gap-4 mb-6 mt-6">
-              {complianceStats.map((stat) => {
-                const IconComponent = stat.icon;
-                return (
-                  <Card
-                    key={stat.id}
-                    className={`p-3 hover:shadow-md transition-shadow ${
-                      activeTab === stat.id && vs2
-                        ? "border border-primary-900 hover:cursor-pointer"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      if (vs2) setActiveTab(stat.id);
-                    }}
-                  >
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                          activeTab === stat.id && vs2
-                            ? "bg-plum-50 text-plum-900"
-                            : ""
-                        }`}
-                      >
-                        <IconComponent className="w-6 h-6" />
-                      </div>
-                      <p
-                        className={`text-sm font-semibold mb-1 ${
+          <div className="grid grid-cols-7 gap-4 mb-6 mt-6">
+            {complianceStats.map((stat) => {
+              const IconComponent = stat.icon;
+              return (
+                <Card
+                  key={stat.id}
+                  className={`p-3 hover:shadow-md transition-shadow ${
+                    activeTab === stat.id && vs2
+                      ? "border border-primary-900 hover:cursor-pointer"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (vs2) setActiveTab(stat.id);
+                  }}
+                >
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+                        activeTab === stat.id && vs2
+                          ? "bg-plum-50 text-plum-900"
+                          : ""
+                      }`}
+                    >
+                      <IconComponent className="w-6 h-6" />
+                    </div>
+                    <p
+                      className={`text-sm font-semibold mb-1 ${
+                        activeTab === stat.id && vs2 ? "text-plum-900" : ""
+                      }`}
+                    >
+                      {stat.title}
+                    </p>
+                    <div className="flex items-center">
+                      <span
+                        className={`text-xs font-bold mr-1 ${
                           activeTab === stat.id && vs2 ? "text-plum-900" : ""
                         }`}
                       >
-                        {stat.title}
-                      </p>
-                      <div className="flex items-center">
-                        <span
-                          className={`text-xs font-bold mr-1 ${
-                            activeTab === stat.id && vs2 ? "text-plum-900" : ""
-                          }`}
-                        >
-                          {stat.percentage}%
-                        </span>
-                        {getStatusIcon(stat.status)}
-                      </div>
+                        {stat.percentage}%
+                      </span>
+                      {getStatusIcon(stat.status)}
                     </div>
-                  </Card>
-                );
-              })}
-            </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
           )} */}
 
           {/* Facility Licensing Tab */}
@@ -2730,156 +2753,214 @@ const Compliance = () => {
 
           {/* SOP & Policy Tab */}
           <TabsContent value="sop">
-            {/* Sub Tabs */}
-            <Tabs
-              value={activeSOPSubTab}
-              onValueChange={setActiveSOPSubTab}
-              className="mb-6"
-            >
-              <TabsList className="grid-cols-4">
-                <TabsTrigger value="hr-policies">HR Policies</TabsTrigger>
-                <TabsTrigger value="document-management">
-                  Document Management
-                </TabsTrigger>
-                <TabsTrigger value="policy-compliance">
-                  Policy Compliance
-                </TabsTrigger>
-                <TabsTrigger value="policy-updates">Policy Updates</TabsTrigger>
-              </TabsList>
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-5 gap-6 mb-8">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Total Policies</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-blue-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500">
+                      Total number of policies/SOPs added
+                    </span>
+                  </div>
+                </div>
+              </Card>
 
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Policies</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-purple-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Active Documents</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">42</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-gray-500">Active documents</span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-green-500 font-medium">
+                      Currently active or published
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Staff Acknowledged</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Staff Acknowledged</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-purple-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">97%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        594 of 612
-                      </span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">93%</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-purple-500 font-medium">
+                      Overall acknowledgment compliance rate
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Pending Reviews</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-orange-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Pending Reviews</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">5</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-orange-500 font-medium">
-                        Due this month
-                      </span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">142</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-orange-500 font-medium">
+                      Policies with incomplete acknowledgment
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">
-                      Updated This Quarter
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <RefreshCw className="w-5 h-5 text-purple-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Due This Month</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-red-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">8</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-purple-500 font-medium mr-1">
-                        Policy revisions
-                      </span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-red-500 font-medium">
+                      Policies reaching acknowledgment deadline
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
+            </div>
+
+            {/* Filters */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Policy Name / Search
+                  </label>
+                  <input
+                    type="text"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                    placeholder="Search policies..."
+                    value={sopFilters.policySearch}
+                    onChange={(e) =>
+                      handleSopFilterChange("policySearch", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={sopFilters.category}
+                    onChange={(e) =>
+                      handleSopFilterChange("category", e.target.value)
+                    }
+                  >
+                    <option value="All Categories">All Categories</option>
+                    <option value="HR">HR</option>
+                    <option value="IT">IT</option>
+                    <option value="Safety">Safety</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Quality">Quality</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Acknowledgment Status
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={sopFilters.acknowledgmentStatus}
+                    onChange={(e) =>
+                      handleSopFilterChange(
+                        "acknowledgmentStatus",
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="All">All</option>
+                    <option value="Acknowledged">Acknowledged</option>
+                    <option value="Not Acknowledged">Not Acknowledged</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Branch
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={sopFilters.branch}
+                    onChange={(e) =>
+                      handleSopFilterChange("branch", e.target.value)
+                    }
+                  >
+                    <option value="All Branches">All Branches</option>
+                    <option value="Dubai Mall Pharmacy">
+                      Dubai Mall Pharmacy
+                    </option>
+                    <option value="Abu Dhabi Marina Pharmacy">
+                      Abu Dhabi Marina Pharmacy
+                    </option>
+                    <option value="Sharjah City Center Pharmacy">
+                      Sharjah City Center Pharmacy
+                    </option>
+                    <option value="Dubai Healthcare City Pharmacy">
+                      Dubai Healthcare City Pharmacy
+                    </option>
+                    <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Due Date Range
+                  </label>
+                  <DateRangeInput
+                    name="dueDateRange"
+                    value={sopFilters.dueDateRange}
+                    onChange={(field, value) =>
+                      handleSopFilterChange("dueDateRange", value)
+                    }
+                    placeholder="Select date range"
+                  />
+                </div>
               </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="successOutline" className="flex items-center">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
 
-              {/* Sub Tab Content */}
-              <TabsContent value="hr-policies">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Policy Acknowledgment Status
-                  </h2>
-                  <TableCustom
-                    columns={sopPolicyColumns}
-                    data={sopPolicyData}
-                    tableOptions={{
-                      pagination: true,
-                      paginationSize: 10,
-                      paginationSizePerPageList: [10, 20, 50],
-                      showTotal: true,
-                    }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="document-management">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Document Repository
-                  </h2>
-                  <TableCustom
-                    columns={sopPolicyManagementColumns}
-                    data={sopPolicyManagementData.slice(0, 4)}
-                    pagination={true}
-                    dataTotalSize={4}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="policy-compliance">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Policy Compliance</h2>
-                  <TableCustom
-                    columns={sopPolicyManagementColumns}
-                    data={sopPolicyManagementData.slice(2, 6)}
-                    pagination={true}
-                    dataTotalSize={4}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="policy-updates">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Recent Policy Changes (Last 90 Days)
-                  </h2>
-                  <TableCustom
-                    columns={sopPolicyColumns}
-                    data={sopPolicyData}
-                    pagination={true}
-                    dataTotalSize={sopPolicyData.length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
+            {/* SOP & Policy Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>SOP & Policy Acknowledgment Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TableCustom
+                  columns={sopPolicyColumns}
+                  data={getFilteredSopData()}
+                  pagination={true}
+                  dataTotalSize={getFilteredSopData().length}
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Inspections & Audits Tab */}
