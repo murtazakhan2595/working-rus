@@ -12,6 +12,13 @@ import TableCustom from "components/CustomTable";
 import BarChart from "components/BarChart";
 import { Badge } from "components/ui/badge";
 import {
+  AddLicenseModal,
+  ViewLicenseModal,
+  EditLicenseModal,
+  DeleteLicenseModal,
+} from "components/Compliance";
+import { DateRangeInput } from "components/FormControl";
+import {
   Building,
   User,
   Scale,
@@ -29,6 +36,8 @@ import {
   Download,
   Building2,
   UserCheck,
+  Trash2,
+  RotateCcw,
 } from "lucide-react";
 
 const Compliance = () => {
@@ -46,6 +55,26 @@ const Compliance = () => {
   const [activeWorkforceSubTab, setActiveWorkforceSubTab] =
     useState("labor-law");
   const [vs2, setVs2] = useState(false);
+
+  // Modal states
+  const [isAddLicenseModalOpen, setIsAddLicenseModalOpen] = useState(false);
+  const [isViewLicenseModalOpen, setIsViewLicenseModalOpen] = useState(false);
+  const [isEditLicenseModalOpen, setIsEditLicenseModalOpen] = useState(false);
+  const [isDeleteLicenseModalOpen, setIsDeleteLicenseModalOpen] =
+    useState(false);
+  const [selectedLicense, setSelectedLicense] = useState(null);
+
+  // Filter states
+  const [filters, setFilters] = useState({
+    branch: "All Branches",
+    licenseType: "All Types",
+    status: "All Statuses",
+    expiryDateRange: null, // Will be string format "YYYY-MM-DD,YYYY-MM-DD"
+  });
+
+  // License data state
+  const [facilityLicenses, setFacilityLicenses] = useState([]);
+
   console.log(vs2, "vs2");
   // Check for v2 parameter in URL
   useEffect(() => {
@@ -53,6 +82,237 @@ const Compliance = () => {
     const v2Param = urlParams.get("v2");
     setVs2(v2Param === "true");
   }, []);
+
+  // Initialize facility licenses data
+  useEffect(() => {
+    setFacilityLicenses(facilityLicensesData);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-update license statuses based on expiry dates
+  useEffect(() => {
+    const updateLicenseStatuses = () => {
+      const today = new Date();
+      setFacilityLicenses((prevLicenses) =>
+        prevLicenses.map((license) => {
+          const expiryDate = new Date(license.expiryDate);
+          const daysUntilExpiry = Math.ceil(
+            (expiryDate - today) / (1000 * 60 * 60 * 24)
+          );
+
+          let newStatus = license.status;
+          let renewalIntimations = license.renewalIntimations || 0;
+
+          // Update status based on expiry logic
+          if (daysUntilExpiry <= 0) {
+            newStatus = "Expired";
+          } else if (daysUntilExpiry <= 30) {
+            if (license.status === "Expiring Soon" && renewalIntimations >= 1) {
+              // Move to renewal tracking on second intimation
+              newStatus = "Renewal Tracking";
+              renewalIntimations = 2;
+            } else if (license.status !== "Renewal Tracking") {
+              newStatus = "Expiring Soon";
+              renewalIntimations = renewalIntimations + 1;
+            }
+          } else if (
+            daysUntilExpiry > 30 &&
+            license.status !== "Renewal Tracking"
+          ) {
+            newStatus = "Active";
+          }
+
+          return {
+            ...license,
+            status: newStatus,
+            daysUntilExpiry,
+            renewalIntimations,
+          };
+        })
+      );
+    };
+
+    // Update statuses immediately
+    updateLicenseStatuses();
+
+    // Update statuses daily
+    const interval = setInterval(updateLicenseStatuses, 24 * 60 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Notification system for expiring licenses
+  useEffect(() => {
+    const checkExpiringLicenses = () => {
+      const expiringLicenses = facilityLicenses.filter(
+        (license) =>
+          license.status === "Expiring Soon" ||
+          license.status === "Renewal Tracking"
+      );
+
+      if (expiringLicenses.length > 0) {
+        // Show browser notification if permission is granted
+        if (Notification.permission === "granted") {
+          expiringLicenses.forEach((license) => {
+            new Notification(`License Expiring Soon`, {
+              body: `${license.facilityName} - ${license.licenseNumber} expires in ${license.daysUntilExpiry} days`,
+              icon: "/favicon.ico",
+            });
+          });
+        } else if (Notification.permission === "default") {
+          Notification.requestPermission();
+        }
+      }
+    };
+
+    // Check for expiring licenses every hour
+    const notificationInterval = setInterval(
+      checkExpiringLicenses,
+      60 * 60 * 1000
+    );
+
+    // Check immediately
+    checkExpiringLicenses();
+
+    return () => clearInterval(notificationInterval);
+  }, [facilityLicenses]);
+
+  // Handler functions for license operations
+  const handleAddLicense = (newLicense) => {
+    console.log("handleAddLicense called with:", newLicense);
+    setFacilityLicenses((prev) => {
+      const updated = [...prev, newLicense];
+      console.log("Updated facilityLicenses:", updated);
+      return updated;
+    });
+    updateDashboardCards();
+  };
+
+  const handleEditLicense = (updatedLicense) => {
+    setFacilityLicenses((prev) =>
+      prev.map((license) =>
+        license.id === updatedLicense.id ? updatedLicense : license
+      )
+    );
+    updateDashboardCards();
+  };
+
+  const handleDeleteLicense = (licenseToDelete) => {
+    setFacilityLicenses((prev) =>
+      prev.filter((license) => license.id !== licenseToDelete.id)
+    );
+    updateDashboardCards();
+  };
+
+  const handleProceedForRenewal = (license) => {
+    // Move license to renewal tracking tab
+    const updatedLicense = {
+      ...license,
+      status: "Renewal Tracking",
+      renewalInitiatedAt: new Date().toISOString(),
+      renewalIntimations: 2, // Mark as second intimation
+    };
+    handleEditLicense(updatedLicense);
+  };
+
+  const updateDashboardCards = () => {
+    // This function will be called to update dashboard cards
+    // The cards will automatically update based on the facilityLicenses state
+  };
+
+  // Filter functions
+  const getFilteredLicenses = () => {
+    let filtered = [...facilityLicenses];
+
+    if (filters.branch !== "All Branches") {
+      filtered = filtered.filter(
+        (license) => license.facilityName === filters.branch
+      );
+    }
+
+    if (filters.licenseType !== "All Types") {
+      filtered = filtered.filter(
+        (license) => license.licenseType === filters.licenseType
+      );
+    }
+
+    if (filters.status !== "All Statuses") {
+      filtered = filtered.filter(
+        (license) => license.status === filters.status
+      );
+    }
+
+    if (filters.expiryDateRange) {
+      const [fromDateStr, toDateStr] = filters.expiryDateRange.split(",");
+      if (fromDateStr && toDateStr) {
+        const fromDate = new Date(fromDateStr);
+        const toDate = new Date(toDateStr);
+        filtered = filtered.filter((license) => {
+          const expiryDate = new Date(license.expiryDate);
+          return expiryDate >= fromDate && expiryDate <= toDate;
+        });
+      }
+    }
+
+    return filtered;
+  };
+
+  // Get unique values for filter dropdowns
+  const getUniqueBranches = () => {
+    const branches = facilityLicenses.map((license) => license.facilityName);
+    return [...new Set(branches)].sort();
+  };
+
+  const getUniqueLicenseTypes = () => {
+    const types = facilityLicenses.map((license) => license.licenseType);
+    return [...new Set(types)].sort();
+  };
+
+  const getUniqueStatuses = () => {
+    const statuses = facilityLicenses.map((license) => license.status);
+    return [...new Set(statuses)].sort();
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (filterType, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
+  const handleDateRangeChange = (field, dateRangeString) => {
+    setFilters((prev) => ({
+      ...prev,
+      expiryDateRange: dateRangeString,
+    }));
+  };
+
+  // Calculate dashboard metrics
+  const getDashboardMetrics = () => {
+    const totalFacilities = facilityLicenses.length;
+    const expiringSoon = facilityLicenses.filter(
+      (license) => license.status === "Expiring Soon"
+    ).length;
+    const renewalInProgress = facilityLicenses.filter(
+      (license) => license.status === "Renewal Tracking"
+    ).length;
+    const activeLicenses = facilityLicenses.filter(
+      (license) => license.status === "Active"
+    ).length;
+    const complianceRate =
+      totalFacilities > 0
+        ? Math.round(
+            ((activeLicenses + renewalInProgress) / totalFacilities) * 100
+          )
+        : 0;
+
+    return {
+      totalFacilities,
+      expiringSoon,
+      renewalInProgress,
+      complianceRate,
+    };
+  };
 
   // Dummy data for compliance overview cards
   const complianceStats = [
@@ -120,45 +380,80 @@ const Compliance = () => {
       id: 1,
       facilityName: "Dubai Mall Pharmacy",
       licenseNumber: "DHA-FL-2023-001",
+      licenseType: "Retail Pharmacy License",
       issuingAuthority: "Dubai Health Authority",
       issueDate: "2023-01-15",
       expiryDate: "2026-01-15",
       location: "Dubai Mall, Dubai",
       status: "Active",
       complianceScore: 98,
+      renewalIntimations: 0,
     },
     {
       id: 2,
       facilityName: "Abu Dhabi Marina Pharmacy",
       licenseNumber: "DOH-FL-2022-045",
+      licenseType: "Retail Pharmacy License",
       issuingAuthority: "Department of Health Abu Dhabi",
       issueDate: "2022-11-03",
       expiryDate: "2025-11-03",
       location: "Marina Walk, Abu Dhabi",
       status: "Active",
       complianceScore: 95,
+      renewalIntimations: 0,
     },
     {
       id: 3,
       facilityName: "Sharjah City Center Pharmacy",
       licenseNumber: "SHD-FL-2023-012",
+      licenseType: "Retail Pharmacy License",
       issuingAuthority: "Sharjah Health Department",
       issueDate: "2023-03-20",
       expiryDate: "2026-03-20",
       location: "City Center, Sharjah",
       status: "Expiring Soon",
       complianceScore: 92,
+      renewalIntimations: 1,
     },
     {
       id: 4,
       facilityName: "Dubai Healthcare City Pharmacy",
       licenseNumber: "DHA-FL-2023-078",
+      licenseType: "Retail Pharmacy License",
       issuingAuthority: "Dubai Health Authority",
       issueDate: "2023-06-10",
       expiryDate: "2026-06-10",
       location: "Healthcare City, Dubai",
       status: "Active",
       complianceScore: 99,
+      renewalIntimations: 0,
+    },
+    {
+      id: 5,
+      facilityName: "Dubai Warehouse Facility",
+      licenseNumber: "DHA-WH-2023-001",
+      licenseType: "Warehouse License",
+      issuingAuthority: "Dubai Health Authority",
+      issueDate: "2023-02-01",
+      expiryDate: "2026-02-01",
+      location: "Dubai Industrial City",
+      status: "Active",
+      complianceScore: 97,
+      renewalIntimations: 0,
+    },
+    {
+      id: 6,
+      facilityName: "Abu Dhabi Clinical Center",
+      licenseNumber: "DOH-CL-2023-002",
+      licenseType: "Clinical License",
+      issuingAuthority: "Department of Health Abu Dhabi",
+      issueDate: "2023-04-15",
+      expiryDate: "2026-04-15",
+      location: "Abu Dhabi Medical City",
+      status: "Renewal Tracking",
+      complianceScore: 94,
+      renewalIntimations: 2,
+      renewalInitiatedAt: "2023-10-01T10:00:00Z",
     },
   ];
 
@@ -916,19 +1211,20 @@ const Compliance = () => {
   const facilityLicensesColumns = [
     {
       dataField: "facilityName",
-      text: "Facility Name",
+      text: "Branch *",
       formatter: (cell, row) => (
         <div className="flex items-center">
-          {/* <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <Building className="w-4 h-4 text-blue-600" />
-          </div> */}
           <span className="font-medium">{row.facilityName}</span>
         </div>
       ),
     },
     {
       dataField: "licenseNumber",
-      text: "License Number",
+      text: "License No *",
+    },
+    {
+      dataField: "licenseType",
+      text: "License Type *",
     },
     {
       dataField: "issuingAuthority",
@@ -936,22 +1232,26 @@ const Compliance = () => {
     },
     {
       dataField: "issueDate",
-      text: "Issue Date",
+      text: "Issue Date *",
     },
     {
       dataField: "expiryDate",
-      text: "Expiry Date",
-    },
-    {
-      dataField: "location",
-      text: "Location",
+      text: "Expiry Date *",
     },
     {
       dataField: "status",
       text: "Status",
       formatter: (cell, row) => (
         <Badge
-          variant={row.status === "Active" ? "success" : "warning"}
+          variant={
+            row.status === "Active"
+              ? "success"
+              : row.status === "Expiring Soon"
+              ? "warning"
+              : row.status === "Renewal Tracking"
+              ? "secondary"
+              : "destructive"
+          }
           className="capitalize"
         >
           {row.status}
@@ -962,13 +1262,50 @@ const Compliance = () => {
       dataField: "actions",
       text: "Actions",
       formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedLicense(row);
+              setIsViewLicenseModalOpen(true);
+            }}
+            title="View"
+          >
             <Eye className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedLicense(row);
+              setIsEditLicenseModalOpen(true);
+            }}
+            title="Edit"
+          >
             <Edit className="w-4 h-4" />
           </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedLicense(row);
+              setIsDeleteLicenseModalOpen(true);
+            }}
+            title="Delete"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+          {(row.status === "Expiring Soon" || row.status === "Active") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleProceedForRenewal(row)}
+              title="Proceed for Renewal"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -1105,30 +1442,6 @@ const Compliance = () => {
     },
   ];
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "warning":
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      case "expired":
-        return <Clock className="w-4 h-4 text-red-500" />;
-      default:
-        return null;
-    }
-  };
-
-  const getColorClasses = (color) => {
-    const colorMap = {
-      purple: "bg-purple-50 text-purple-600",
-      teal: "bg-teal-50 text-teal-600",
-      orange: "bg-orange-50 text-orange-600",
-      green: "bg-green-50 text-green-600",
-      blue: "bg-blue-50 text-blue-600",
-      pink: "bg-pink-50 text-pink-600",
-      gray: "bg-gray-50 text-gray-600",
-    };
-    return colorMap[color] || "bg-gray-100 text-gray-600";
-  };
-
   return (
     <div className="flex flex-col">
       <Header />
@@ -1196,14 +1509,16 @@ const Compliance = () => {
                     }
                     `}
                   >
-                    {vs2 ? stat.fullName: stat.label}
+                    {vs2 ? stat.fullName : stat.label}
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className={`text-2xl font-semibold  ${
-                      activeTab === stat.id && vs2
-                        ? "text-plum-900"
-                        : "text-slate-900"
-                    }`}>
+                    <div
+                      className={`text-2xl font-semibold  ${
+                        activeTab === stat.id && vs2
+                          ? "text-plum-900"
+                          : "text-slate-900"
+                      }`}
+                    >
                       {stat.value}
                     </div>
                     {stat.warning && (
@@ -1300,75 +1615,102 @@ const Compliance = () => {
 
               {/* Dashboard Cards */}
               <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Facilities</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Building className="w-5 h-5 text-purple-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">238</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        ↑ 12
-                      </span>
-                      <span className="text-gray-500">from last year</span>
-                    </div>
-                  </div>
-                </Card>
+                {(() => {
+                  const metrics = getDashboardMetrics();
+                  return (
+                    <>
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-sm font-medium">
+                            Total Facilities
+                          </h3>
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <Building className="w-5 h-5 text-purple-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-3xl font-bold text-gray-900">
+                            {metrics.totalFacilities}
+                          </p>
+                          <div className="flex items-center text-sm">
+                            <span className="text-green-500 font-medium mr-1">
+                              ↑ {Math.floor(metrics.totalFacilities * 0.05)}
+                            </span>
+                            <span className="text-gray-500">
+                              from last year
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Licenses Expiring</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">14</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-yellow-500 font-medium">
-                        Within 60 days
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-sm font-medium">
+                            Licenses Expiring
+                          </h3>
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <AlertTriangle className="w-5 h-5 text-orange-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-3xl font-bold text-gray-900">
+                            {metrics.expiringSoon}
+                          </p>
+                          <div className="flex items-center text-sm">
+                            <span className="text-yellow-500 font-medium">
+                              Within 60 days
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Renewal In Progress</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <RefreshCw className="w-5 h-5 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">8</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-blue-500 font-medium">
-                        Applications submitted
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-sm font-medium">
+                            Renewal In Progress
+                          </h3>
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <RefreshCw className="w-5 h-5 text-blue-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-3xl font-bold text-gray-900">
+                            {metrics.renewalInProgress}
+                          </p>
+                          <div className="flex items-center text-sm">
+                            <span className="text-blue-500 font-medium">
+                              Applications submitted
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Compliance Rate</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">98%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        ↑ 2%
-                      </span>
-                      <span className="text-gray-500">from last quarter</span>
-                    </div>
-                  </div>
-                </Card>
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-sm font-medium">
+                            Compliance Rate
+                          </h3>
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-3xl font-bold text-gray-900">
+                            {metrics.complianceRate}%
+                          </p>
+                          <div className="flex items-center text-sm">
+                            <span className="text-green-500 font-medium mr-1">
+                              ↑ {Math.floor(metrics.complianceRate * 0.02)}%
+                            </span>
+                            <span className="text-gray-500">
+                              from last quarter
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </>
+                  );
+                })()}
               </div>
 
               {/* Filters and Actions */}
@@ -1376,25 +1718,71 @@ const Compliance = () => {
                 <div className="flex items-center space-x-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Region
+                      Branch Name
                     </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Regions</option>
-                      <option>Dubai</option>
-                      <option>Abu Dhabi</option>
-                      <option>Sharjah</option>
+                    <select
+                      className="border border-gray-300 rounded-md px-3 py-2"
+                      value={filters.branch}
+                      onChange={(e) =>
+                        handleFilterChange("branch", e.target.value)
+                      }
+                    >
+                      <option value="All Branches">All Branches</option>
+                      {getUniqueBranches().map((branch) => (
+                        <option key={branch} value={branch}>
+                          {branch}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      License Type
+                    </label>
+                    <select
+                      className="border border-gray-300 rounded-md px-3 py-2"
+                      value={filters.licenseType}
+                      onChange={(e) =>
+                        handleFilterChange("licenseType", e.target.value)
+                      }
+                    >
+                      <option value="All Types">All Types</option>
+                      {getUniqueLicenseTypes().map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Status
                     </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Statuses</option>
-                      <option>Active</option>
-                      <option>Expiring Soon</option>
-                      <option>Expired</option>
+                    <select
+                      className="border border-gray-300 rounded-md px-3 py-2"
+                      value={filters.status}
+                      onChange={(e) =>
+                        handleFilterChange("status", e.target.value)
+                      }
+                    >
+                      <option value="All Statuses">All Statuses</option>
+                      {getUniqueStatuses().map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
                     </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Expiry Date Range
+                    </label>
+                    <DateRangeInput
+                      name="expiryDateRange"
+                      value={filters.expiryDateRange}
+                      onChange={handleDateRangeChange}
+                      placeholder="Select date range"
+                    />
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -1405,7 +1793,10 @@ const Compliance = () => {
                     <Eye className="w-4 h-4 mr-2" />
                     Export
                   </Button>
-                  <Button className="flex items-center">
+                  <Button
+                    className="flex items-center"
+                    onClick={() => setIsAddLicenseModalOpen(true)}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add License
                   </Button>
@@ -1421,9 +1812,9 @@ const Compliance = () => {
                   <CardContent>
                     <TableCustom
                       columns={facilityLicensesColumns}
-                      data={facilityLicensesData}
+                      data={getFilteredLicenses()}
                       pagination={true}
-                      dataTotalSize={facilityLicensesData.length}
+                      dataTotalSize={getFilteredLicenses().length}
                       tableOptions={{ page: 1, sizePerPage: 10 }}
                     />
                   </CardContent>
@@ -1455,13 +1846,13 @@ const Compliance = () => {
                   <CardContent>
                     <TableCustom
                       columns={facilityLicensesColumns}
-                      data={facilityLicensesData.filter(
-                        (item) => item.status === "Expiring Soon"
+                      data={getFilteredLicenses().filter(
+                        (item) => item.status === "Renewal Tracking"
                       )}
                       pagination={true}
                       dataTotalSize={
-                        facilityLicensesData.filter(
-                          (item) => item.status === "Expiring Soon"
+                        getFilteredLicenses().filter(
+                          (item) => item.status === "Renewal Tracking"
                         ).length
                       }
                       tableOptions={{ page: 1, sizePerPage: 10 }}
@@ -2482,6 +2873,37 @@ const Compliance = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <AddLicenseModal
+        isOpen={isAddLicenseModalOpen}
+        onClose={() => setIsAddLicenseModalOpen(false)}
+        onSave={handleAddLicense}
+        existingLicenses={facilityLicenses}
+      />
+
+      <ViewLicenseModal
+        isOpen={isViewLicenseModalOpen}
+        onClose={() => setIsViewLicenseModalOpen(false)}
+        licenseData={selectedLicense}
+      />
+
+      {isEditLicenseModalOpen && selectedLicense && (
+        <EditLicenseModal
+          isOpen={isEditLicenseModalOpen}
+          onClose={() => setIsEditLicenseModalOpen(false)}
+          onSave={handleEditLicense}
+          licenseData={selectedLicense}
+          existingLicenses={facilityLicenses}
+        />
+      )}
+
+      <DeleteLicenseModal
+        isOpen={isDeleteLicenseModalOpen}
+        onClose={() => setIsDeleteLicenseModalOpen(false)}
+        onConfirm={handleDeleteLicense}
+        licenseData={selectedLicense}
+      />
     </div>
   );
 };
