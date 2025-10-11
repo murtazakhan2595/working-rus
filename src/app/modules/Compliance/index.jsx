@@ -95,6 +95,15 @@ const Compliance = () => {
     categoryType: "All Categories",
   });
 
+  // Working Hours filter states
+  const [workingHoursFilters, setWorkingHoursFilters] = useState({
+    region: "All Regions",
+    status: "All Statuses",
+    branch: "",
+    dateRange: null,
+    department: "All Departments",
+  });
+
   // License data state
   const [facilityLicenses, setFacilityLicenses] = useState([]);
 
@@ -342,6 +351,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle Working Hours filter changes
+  const handleWorkingHoursFilterChange = (filterType, value) => {
+    setWorkingHoursFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -501,6 +518,48 @@ const Compliance = () => {
       filtered = filtered.filter(
         (item) => item.categoryType === workforceFilters.categoryType
       );
+    }
+
+    return filtered;
+  };
+
+  // Filter Working Hours data
+  const getFilteredWorkingHoursData = () => {
+    let filtered = [...workingHoursData];
+
+    // Search by branch name
+    if (workingHoursFilters.branch) {
+      filtered = filtered.filter((item) =>
+        item.branchName
+          .toLowerCase()
+          .includes(workingHoursFilters.branch.toLowerCase())
+      );
+    }
+
+    // Filter by region
+    if (workingHoursFilters.region !== "All Regions") {
+      filtered = filtered.filter(
+        (item) => item.region === workingHoursFilters.region
+      );
+    }
+
+    // Filter by status
+    if (workingHoursFilters.status !== "All Statuses") {
+      filtered = filtered.filter(
+        (item) => item.status === workingHoursFilters.status
+      );
+    }
+
+    // Filter by department (optional - using totalStaff as proxy for department size)
+    if (workingHoursFilters.department !== "All Departments") {
+      // This is a placeholder filter - in real implementation, you'd filter by actual department
+      filtered = filtered.filter((item) => item.totalStaff > 30); // Example: filter by staff size
+    }
+
+    // Filter by date range (placeholder - in real implementation, you'd filter by actual date ranges)
+    if (workingHoursFilters.dateRange) {
+      // This would filter by actual date ranges in a real implementation
+      // For now, we'll just return the filtered data as is
     }
 
     return filtered;
@@ -1010,7 +1069,173 @@ const Compliance = () => {
     },
   ];
 
-  // Dummy data for Workforce Regulations table
+  // Dummy data for Working Hours table
+  const workingHoursData = [
+    {
+      id: 1,
+      branchName: "Dubai Mall Pharmacy",
+      region: "Dubai",
+      totalStaff: 45,
+      avgWeeklyHours: 46.2,
+      overtimeHours: 2.1,
+      legalLimit: 48,
+      status: "Compliant",
+    },
+    {
+      id: 2,
+      branchName: "Abu Dhabi Marina Pharmacy",
+      region: "Abu Dhabi",
+      totalStaff: 38,
+      avgWeeklyHours: 47.8,
+      overtimeHours: 3.2,
+      legalLimit: 48,
+      status: "At Risk",
+    },
+    {
+      id: 3,
+      branchName: "Sharjah City Center Pharmacy",
+      region: "Sharjah",
+      totalStaff: 42,
+      avgWeeklyHours: 49.1,
+      overtimeHours: 5.3,
+      legalLimit: 48,
+      status: "Non-Compliant",
+    },
+    {
+      id: 4,
+      branchName: "Dubai Healthcare City Pharmacy",
+      region: "Dubai",
+      totalStaff: 52,
+      avgWeeklyHours: 45.8,
+      overtimeHours: 1.2,
+      legalLimit: 48,
+      status: "Compliant",
+    },
+    {
+      id: 5,
+      branchName: "Al Ain Pharmacy",
+      region: "Al Ain",
+      totalStaff: 28,
+      avgWeeklyHours: 47.5,
+      overtimeHours: 2.8,
+      legalLimit: 48,
+      status: "At Risk",
+    },
+    {
+      id: 6,
+      branchName: "Fujairah Pharmacy",
+      region: "Fujairah",
+      totalStaff: 22,
+      avgWeeklyHours: 44.2,
+      overtimeHours: 0.8,
+      legalLimit: 48,
+      status: "Compliant",
+    },
+    {
+      id: 7,
+      branchName: "Ajman Pharmacy",
+      region: "Ajman",
+      totalStaff: 35,
+      avgWeeklyHours: 48.5,
+      overtimeHours: 4.1,
+      legalLimit: 48,
+      status: "At Risk",
+    },
+    {
+      id: 8,
+      branchName: "Ras Al Khaimah Pharmacy",
+      region: "Ras Al Khaimah",
+      totalStaff: 31,
+      avgWeeklyHours: 46.8,
+      overtimeHours: 1.9,
+      legalLimit: 48,
+      status: "Compliant",
+    },
+  ];
+
+  // Column definitions for Working Hours table
+  const workingHoursColumns = [
+    {
+      dataField: "branchName",
+      text: "Branch Name",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <Building className="w-4 h-4 text-blue-700" />
+          </div>
+          <span className="font-medium">{row.branchName}</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "region",
+      text: "Region",
+    },
+    {
+      dataField: "totalStaff",
+      text: "Total Staff",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.totalStaff}</span>
+      ),
+    },
+    {
+      dataField: "avgWeeklyHours",
+      text: "Avg. Weekly Hours",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.avgWeeklyHours}</span>
+      ),
+    },
+    {
+      dataField: "overtimeHours",
+      text: "Overtime Hours",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.overtimeHours}</span>
+      ),
+    },
+    {
+      dataField: "legalLimit",
+      text: "Legal Limit",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.legalLimit}</span>
+      ),
+    },
+    {
+      dataField: "status",
+      text: "Status",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.status === "Compliant"
+              ? "success"
+              : row.status === "At Risk"
+              ? "warning"
+              : "destructive"
+          }
+          className="capitalize"
+        >
+          {row.status}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "actions",
+      text: "Action",
+      formatter: (cell, row) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("View details for:", row);
+            }}
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
   const workforceRegulationsData = [
     {
       id: 1,
@@ -3224,18 +3449,286 @@ const Compliance = () => {
               </TabsContent>
 
               <TabsContent value="working-hours">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Working Hours Compliance
-                  </h2>
-                  <TableCustom
-                    columns={workforceRegulationsColumns}
-                    data={workforceRegulationsData.slice(2, 5)}
-                    pagination={true}
-                    dataTotalSize={3}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                {/* Dashboard Cards */}
+                <div className="grid grid-cols-5 gap-6 mb-8">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Total Employees</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-500">
+                          Total number of active employees included in
+                          attendance tracking
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Under Contract</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
+                          Total number of employees under valid employment
+                          contracts
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Compliance Rate</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Scale className="w-5 h-5 text-purple-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">75%</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-purple-500 font-medium">
+                          % of branches within legal working hours
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Average Working Hours (hrs/week)
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-orange-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">46.8</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-orange-500 font-medium">
+                          Organization-wide average weekly hours
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Labor Law Compliance
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">
+                        75% Compliant
+                      </p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
+                          High-level summary
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
+
+                {/* Additional Recommended Cards */}
+                <div className="grid grid-cols-3 gap-6 mb-8">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Total Overtime Hours (This Month)
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-red-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">1,247</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-red-500 font-medium">
+                          Sum of all overtime hours logged across branches
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Branches At Risk</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">3</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-orange-500 font-medium">
+                          Count of branches nearing or exceeding the legal limit
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Last Audit Date</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">25 Jan</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-blue-500 font-medium">
+                          Date when working hour data was last reviewed or
+                          verified
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Filters */}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Region
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={workingHoursFilters.region}
+                        onChange={(e) =>
+                          handleWorkingHoursFilterChange(
+                            "region",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <option value="All Regions">All Regions</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Abu Dhabi">Abu Dhabi</option>
+                        <option value="Sharjah">Sharjah</option>
+                        <option value="Al Ain">Al Ain</option>
+                        <option value="Fujairah">Fujairah</option>
+                        <option value="Ajman">Ajman</option>
+                        <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Status
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={workingHoursFilters.status}
+                        onChange={(e) =>
+                          handleWorkingHoursFilterChange(
+                            "status",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <option value="All Statuses">All Statuses</option>
+                        <option value="Compliant">Compliant</option>
+                        <option value="At Risk">At Risk</option>
+                        <option value="Non-Compliant">Non-Compliant</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Branch
+                      </label>
+                      <input
+                        type="text"
+                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                        placeholder="Search for a specific branch"
+                        value={workingHoursFilters.branch}
+                        onChange={(e) =>
+                          handleWorkingHoursFilterChange(
+                            "branch",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date Range / Period
+                      </label>
+                      <DateRangeInput
+                        name="dateRange"
+                        value={workingHoursFilters.dateRange}
+                        onChange={(field, value) =>
+                          handleWorkingHoursFilterChange("dateRange", value)
+                        }
+                        placeholder="Filter by time period (week/month)"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Department (optional)
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={workingHoursFilters.department}
+                        onChange={(e) =>
+                          handleWorkingHoursFilterChange(
+                            "department",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <option value="All Departments">All Departments</option>
+                        <option value="Large Departments">
+                          Large Departments (30+ staff)
+                        </option>
+                        <option value="Small Departments">
+                          Small Departments {`(<30 staff)`}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="successOutline"
+                      className="flex items-center"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Working Hours Compliance Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Working Hours Compliance by Branch</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TableCustom
+                      columns={workingHoursColumns}
+                      data={getFilteredWorkingHoursData()}
+                      pagination={true}
+                      dataTotalSize={getFilteredWorkingHoursData().length}
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </TabsContent>
