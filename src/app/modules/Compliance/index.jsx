@@ -43,8 +43,6 @@ import {
 const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
   const [activeSubTab, setActiveSubTab] = useState("branch-license");
-  const [activeTrainingSubTab, setActiveTrainingSubTab] =
-    useState("training-modules");
   const [activeSOPSubTab, setActiveSOPSubTab] = useState("hr-policies");
   const [activeInspectionsSubTab, setActiveInspectionsSubTab] =
     useState("internal-audits");
@@ -74,6 +72,15 @@ const Compliance = () => {
     country: "All Countries",
     city: "All Cities",
     complianceStatus: "All Statuses",
+  });
+
+  // Mandatory Training filter states
+  const [trainingFilters, setTrainingFilters] = useState({
+    branch: "All Branches",
+    department: "All Departments",
+    trainingProgram: "All Programs",
+    frequency: "All Frequencies",
+    status: "All Statuses",
   });
 
   // License data state
@@ -299,6 +306,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle mandatory training filter changes
+  const handleTrainingFilterChange = (filterType, value) => {
+    setTrainingFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -306,23 +321,73 @@ const Compliance = () => {
     // Search by branch name
     if (complianceFilters.branchSearch) {
       filtered = filtered.filter((item) =>
-        item.branch.toLowerCase().includes(complianceFilters.branchSearch.toLowerCase())
+        item.branch
+          .toLowerCase()
+          .includes(complianceFilters.branchSearch.toLowerCase())
       );
     }
 
     // Filter by country
     if (complianceFilters.country !== "All Countries") {
-      filtered = filtered.filter((item) => item.country === complianceFilters.country);
+      filtered = filtered.filter(
+        (item) => item.country === complianceFilters.country
+      );
     }
 
     // Filter by city
     if (complianceFilters.city !== "All Cities") {
-      filtered = filtered.filter((item) => item.city === complianceFilters.city);
+      filtered = filtered.filter(
+        (item) => item.city === complianceFilters.city
+      );
     }
 
     // Filter by compliance status
     if (complianceFilters.complianceStatus !== "All Statuses") {
-      filtered = filtered.filter((item) => item.status === complianceFilters.complianceStatus);
+      filtered = filtered.filter(
+        (item) => item.status === complianceFilters.complianceStatus
+      );
+    }
+
+    return filtered;
+  };
+
+  // Filter mandatory training data
+  const getFilteredTrainingData = () => {
+    let filtered = [...mandatoryTrainingData];
+
+    // Filter by branch
+    if (trainingFilters.branch !== "All Branches") {
+      filtered = filtered.filter(
+        (item) => item.branch === trainingFilters.branch
+      );
+    }
+
+    // Filter by department (using designation as department)
+    if (trainingFilters.department !== "All Departments") {
+      filtered = filtered.filter(
+        (item) => item.designation === trainingFilters.department
+      );
+    }
+
+    // Filter by training program
+    if (trainingFilters.trainingProgram !== "All Programs") {
+      filtered = filtered.filter(
+        (item) => item.trainingProgramName === trainingFilters.trainingProgram
+      );
+    }
+
+    // Filter by frequency
+    if (trainingFilters.frequency !== "All Frequencies") {
+      filtered = filtered.filter(
+        (item) => item.frequency === trainingFilters.frequency
+      );
+    }
+
+    // Filter by status
+    if (trainingFilters.status !== "All Statuses") {
+      filtered = filtered.filter(
+        (item) => item.status === trainingFilters.status
+      );
     }
 
     return filtered;
@@ -598,127 +663,95 @@ const Compliance = () => {
     },
   ];
 
-  // Dummy data for professional licensing table
-  const professionalLicensesData = [
+  // Dummy data for mandatory training table
+  const mandatoryTrainingData = [
     {
       id: 1,
-      name: "Sarah Ahmed",
-      licenseNumber: "DHA-PH-2023-45678",
-      issuingAuthority: "Dubai Health Authority",
-      issueDate: "15 Dec 2022",
-      expiryDate: "15 Dec 2025",
-      primaryLocation: "Dubai Mall Pharmacy",
-      status: "Active",
+      employeeId: "EMP001",
+      employeeName: "Sarah Ahmed",
+      designation: "Pharmacist",
+      branch: "Dubai Mall Pharmacy",
+      trainingProgramName: "UAE Labor Law Compliance",
+      frequency: "Annual",
+      completionRatio: 100,
+      status: "Completed",
     },
     {
       id: 2,
-      name: "Mohammed Khan",
-      licenseNumber: "DOH-PH-2022-12345",
-      issuingAuthority: "Department of Health Abu Dhabi",
-      issueDate: "03 Nov 2021",
-      expiryDate: "03 Nov 2023",
-      primaryLocation: "Abu Dhabi Marina Pharmacy",
-      status: "Expiring Soon",
+      employeeId: "EMP002",
+      employeeName: "Mohammed Khan",
+      designation: "Pharmacy Technician",
+      branch: "Abu Dhabi Marina Pharmacy",
+      trainingProgramName: "Workplace Safety & Health",
+      frequency: "Quarterly",
+      completionRatio: 75,
+      status: "In Progress",
     },
     {
       id: 3,
-      name: "John Anderson",
-      licenseNumber: "DHA-PH-2023-56789",
-      issuingAuthority: "Dubai Health Authority",
-      issueDate: "10 Jan 2023",
-      expiryDate: "10 Jan 2026",
-      primaryLocation: "Dubai Healthcare City Pharmacy",
-      status: "Active",
+      employeeId: "EMP003",
+      employeeName: "John Anderson",
+      designation: "Pharmacist",
+      branch: "Dubai Healthcare City Pharmacy",
+      trainingProgramName: "UAE Pharmacy Regulations",
+      frequency: "Annual",
+      completionRatio: 0,
+      status: "Pending",
     },
     {
       id: 4,
-      name: "Fatima Al-Zahra",
-      licenseNumber: "MOH-PH-2023-78901",
-      issuingAuthority: "Ministry of Health Sharjah",
-      issueDate: "20 Mar 2023",
-      expiryDate: "20 Mar 2026",
-      primaryLocation: "Sharjah City Center Pharmacy",
-      status: "Active",
+      employeeId: "EMP004",
+      employeeName: "Fatima Al-Zahra",
+      designation: "Manager",
+      branch: "Sharjah City Center Pharmacy",
+      trainingProgramName: "Fire Safety & Emergency Response",
+      frequency: "Monthly",
+      completionRatio: 100,
+      status: "Completed",
     },
     {
       id: 5,
-      name: "Ahmed Hassan",
-      licenseNumber: "DOH-PH-2022-23456",
-      issuingAuthority: "Department of Health Abu Dhabi",
-      issueDate: "15 Aug 2021",
-      expiryDate: "15 Aug 2024",
-      primaryLocation: "Al Ain Pharmacy",
-      status: "Active",
-    },
-  ];
-
-  // Dummy data for training sessions table
-  const trainingSessionsData = [
-    {
-      id: 1,
-      trainingModule: "UAE Labor Law Compliance",
-      dateTime: "Oct 8, 2023 | 10:00 AM",
-      location: "Online",
-      type: "Webinar",
-      trainer: "Legal Team",
-      registered: 42,
-      capacity: 50,
-      status: "Open",
-    },
-    {
-      id: 2,
-      trainingModule: "Workplace Safety & Health",
-      dateTime: "Oct 11, 2023 | 2:00 PM",
-      location: "Dubai HQ",
-      type: "Workshop",
-      trainer: "Safety Team",
-      registered: 28,
-      capacity: 30,
-      status: "Almost Full",
-    },
-    {
-      id: 3,
-      trainingModule: "UAE Pharmacy Regulations",
-      dateTime: "Oct 17, 2023 | 11:00 AM",
-      location: "Online",
-      type: "Webinar",
-      trainer: "Dr. Fatima Al-Mansoori",
-      registered: 35,
-      capacity: 100,
-      status: "Open",
-    },
-    {
-      id: 4,
-      trainingModule: "Fire Safety & Emergency Response",
-      dateTime: "Oct 23, 2023 | 9:00 AM",
-      location: "All Locations",
-      type: "In-Person",
-      trainer: "Safety Team",
-      registered: 580,
-      capacity: 612,
-      status: "Open",
-    },
-    {
-      id: 5,
-      trainingModule: "Data Privacy & GDPR Compliance",
-      dateTime: "Oct 26, 2023 | 1:00 PM",
-      location: "Online",
-      type: "Webinar",
-      trainer: "Legal Team",
-      registered: 120,
-      capacity: 200,
-      status: "Open",
+      employeeId: "EMP005",
+      employeeName: "Ahmed Hassan",
+      designation: "Supervisor",
+      branch: "Al Ain Pharmacy",
+      trainingProgramName: "Data Privacy & GDPR Compliance",
+      frequency: "Annual",
+      completionRatio: 50,
+      status: "In Progress",
     },
     {
       id: 6,
-      trainingModule: "Patient Counseling Excellence",
-      dateTime: "Oct 31, 2023 | 10:00 AM",
-      location: "Abu Dhabi HQ",
-      type: "Workshop",
-      trainer: "Customer Service Manager",
-      registered: 65,
-      capacity: 80,
-      status: "Open",
+      employeeId: "EMP006",
+      employeeName: "Lisa Johnson",
+      designation: "Pharmacist",
+      branch: "Dubai Mall Pharmacy",
+      trainingProgramName: "Patient Counseling Excellence",
+      frequency: "Quarterly",
+      completionRatio: 0,
+      status: "Pending",
+    },
+    {
+      id: 7,
+      employeeId: "EMP007",
+      employeeName: "Omar Al-Rashid",
+      designation: "Pharmacy Technician",
+      branch: "Sharjah City Center Pharmacy",
+      trainingProgramName: "UAE Labor Law Compliance",
+      frequency: "Annual",
+      completionRatio: 100,
+      status: "Completed",
+    },
+    {
+      id: 8,
+      employeeId: "EMP008",
+      employeeName: "Maria Rodriguez",
+      designation: "Cashier",
+      branch: "Abu Dhabi Marina Pharmacy",
+      trainingProgramName: "Workplace Safety & Health",
+      frequency: "Monthly",
+      completionRatio: 25,
+      status: "In Progress",
     },
   ];
 
@@ -1204,8 +1237,8 @@ const Compliance = () => {
       text: "Actions",
       formatter: (cell, row) => (
         <div className="flex space-x-2">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             onClick={() => {
               console.log("View details for:", row);
@@ -1375,6 +1408,118 @@ const Compliance = () => {
       },
     ],
   };
+
+  // Table columns configuration for mandatory training
+  const mandatoryTrainingColumns = [
+    {
+      dataField: "employeeId",
+      text: "Employee ID",
+    },
+    {
+      dataField: "employeeName",
+      text: "Employee Name",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <span className="font-semibold text-blue-700 text-sm">
+              {row.employeeName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </span>
+          </div>
+          <span className="font-medium">{row.employeeName}</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "designation",
+      text: "Designation",
+    },
+    {
+      dataField: "branch",
+      text: "Branch",
+    },
+    {
+      dataField: "trainingProgramName",
+      text: "Training Program Name",
+    },
+    {
+      dataField: "frequency",
+      text: "Frequency",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.frequency === "Annual"
+              ? "success"
+              : row.frequency === "Quarterly"
+              ? "warning"
+              : "secondary"
+          }
+          className="capitalize"
+        >
+          {row.frequency}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "completionRatio",
+      text: "Completion Ratio (%)",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+            <div
+              className={`h-2.5 rounded-full ${
+                row.completionRatio >= 100
+                  ? "bg-green-500"
+                  : row.completionRatio >= 50
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
+              }`}
+              style={{ width: `${row.completionRatio}%` }}
+            ></div>
+          </div>
+          <span className="font-semibold">{row.completionRatio}%</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "status",
+      text: "Status",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.status === "Completed"
+              ? "success"
+              : row.status === "In Progress"
+              ? "warning"
+              : "destructive"
+          }
+          className="capitalize"
+        >
+          {row.status}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "actions",
+      text: "Action",
+      formatter: (cell, row) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("View details for:", row);
+            }}
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   // Table columns configuration for employee licenses/certificates
   const employeeLicensesColumns = [
@@ -1582,137 +1727,6 @@ const Compliance = () => {
               <RotateCcw className="w-4 h-4" />
             </Button>
           )}
-        </div>
-      ),
-    },
-  ];
-
-  const professionalLicensesColumns = [
-    {
-      dataField: "name",
-      text: "Name",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <span className="font-semibold text-blue-700 text-sm">
-              {row.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </span>
-          </div>
-          <span>{row.name}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "licenseNumber",
-      text: "License Number",
-    },
-    {
-      dataField: "issuingAuthority",
-      text: "Issuing Authority",
-    },
-    {
-      dataField: "issueDate",
-      text: "Issue Date",
-    },
-    {
-      dataField: "expiryDate",
-      text: "Expiry Date",
-    },
-    {
-      dataField: "primaryLocation",
-      text: "Primary Location",
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={row.status === "Active" ? "success" : "warning"}
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Edit className="w-4 h-4" />
-          </Button>
-          {row.status === "Expiring Soon" && (
-            <Button variant="ghost" size="sm">
-              <AlertTriangle className="w-4 h-4 text-yellow-600" />
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ];
-
-  const trainingSessionsColumns = [
-    {
-      dataField: "trainingModule",
-      text: "Training Module",
-    },
-    {
-      dataField: "dateTime",
-      text: "Date & Time",
-    },
-    {
-      dataField: "location",
-      text: "Location",
-    },
-    {
-      dataField: "type",
-      text: "Type",
-    },
-    {
-      dataField: "trainer",
-      text: "Trainer",
-    },
-    {
-      dataField: "registered",
-      text: "Registered",
-    },
-    {
-      dataField: "capacity",
-      text: "Capacity",
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={row.status === "Open" ? "success" : "warning"}
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Plus className="w-4 h-4 text-purple-600" />
-          </Button>
         </div>
       ),
     },
@@ -2162,14 +2176,18 @@ const Compliance = () => {
                 <div className="space-y-2">
                   <p className="text-3xl font-bold text-gray-900">245</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">with licenses/certificates</span>
+                    <span className="text-gray-500">
+                      with licenses/certificates
+                    </span>
                   </div>
                 </div>
               </Card>
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Expiring within 60 Days</h3>
+                  <h3 className="text-sm font-medium">
+                    Expiring within 60 Days
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
@@ -2271,10 +2289,7 @@ const Compliance = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <Button
-                  variant="successOutline"
-                  className="flex items-center"
-                >
+                <Button variant="successOutline" className="flex items-center">
                   <Eye className="w-4 h-4 mr-2" />
                   Export
                 </Button>
@@ -2300,197 +2315,242 @@ const Compliance = () => {
 
           {/* Mandatory Training Tab */}
           <TabsContent value="training">
-            {/* Sub Tabs */}
-            <Tabs
-              value={activeTrainingSubTab}
-              onValueChange={setActiveTrainingSubTab}
-              className="mb-6"
-            >
-              <TabsList className="grid-cols-4">
-                <TabsTrigger value="training-modules">
-                  Training Modules
-                </TabsTrigger>
-                <TabsTrigger value="staff-completion">
-                  Staff Completion
-                </TabsTrigger>
-                <TabsTrigger value="overdue-training">
-                  Overdue Training
-                </TabsTrigger>
-                <TabsTrigger value="training-calendar">
-                  Training Calendar
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Staff</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">612</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-gray-500">Requiring training</span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Fully Compliant</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">563</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        92% of total
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Training Due</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-yellow-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">41</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-yellow-500 font-medium">
-                        Within 30 days
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Overdue</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">6</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-red-500 font-medium">
-                        Require immediate action
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Filters and Actions */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Training Type
-                    </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Types</option>
-                      <option>Mandatory</option>
-                      <option>Professional Development</option>
-                      <option>Emergency Training</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
-                    </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Statuses</option>
-                      <option>Open</option>
-                      <option>Almost Full</option>
-                      <option>Completed</option>
-                    </select>
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-5 gap-6 mb-8">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">
+                    Total Assigned Trainings
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="successOutline"
-                    className="flex items-center"
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500">
+                      All mandatory trainings assigned
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Completed Trainings</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">3</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-green-500 font-medium">
+                      Successfully completed
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">In Progress Trainings</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-blue-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">3</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-blue-500 font-medium">
+                      Currently being completed
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">
+                    Pending / Overdue Trainings
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-orange-500 font-medium">
+                      Due or not started
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Compliance %</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Scale className="w-5 h-5 text-purple-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">37.5%</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-purple-500 font-medium">
+                      Training completion rate
+                    </span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Filters */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Branch
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={trainingFilters.branch}
+                    onChange={(e) =>
+                      handleTrainingFilterChange("branch", e.target.value)
+                    }
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
-                  <Button className="flex items-center">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Schedule Training
-                  </Button>
+                    <option value="All Branches">All Branches</option>
+                    <option value="Dubai Mall Pharmacy">
+                      Dubai Mall Pharmacy
+                    </option>
+                    <option value="Abu Dhabi Marina Pharmacy">
+                      Abu Dhabi Marina Pharmacy
+                    </option>
+                    <option value="Sharjah City Center Pharmacy">
+                      Sharjah City Center Pharmacy
+                    </option>
+                    <option value="Dubai Healthcare City Pharmacy">
+                      Dubai Healthcare City Pharmacy
+                    </option>
+                    <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Department
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={trainingFilters.department}
+                    onChange={(e) =>
+                      handleTrainingFilterChange("department", e.target.value)
+                    }
+                  >
+                    <option value="All Departments">All Departments</option>
+                    <option value="Pharmacist">Pharmacist</option>
+                    <option value="Pharmacy Technician">
+                      Pharmacy Technician
+                    </option>
+                    <option value="Manager">Manager</option>
+                    <option value="Supervisor">Supervisor</option>
+                    <option value="Cashier">Cashier</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Training Program
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={trainingFilters.trainingProgram}
+                    onChange={(e) =>
+                      handleTrainingFilterChange(
+                        "trainingProgram",
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="All Programs">All Programs</option>
+                    <option value="UAE Labor Law Compliance">
+                      UAE Labor Law Compliance
+                    </option>
+                    <option value="Workplace Safety & Health">
+                      Workplace Safety & Health
+                    </option>
+                    <option value="UAE Pharmacy Regulations">
+                      UAE Pharmacy Regulations
+                    </option>
+                    <option value="Fire Safety & Emergency Response">
+                      Fire Safety & Emergency Response
+                    </option>
+                    <option value="Data Privacy & GDPR Compliance">
+                      Data Privacy & GDPR Compliance
+                    </option>
+                    <option value="Patient Counseling Excellence">
+                      Patient Counseling Excellence
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Frequency
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={trainingFilters.frequency}
+                    onChange={(e) =>
+                      handleTrainingFilterChange("frequency", e.target.value)
+                    }
+                  >
+                    <option value="All Frequencies">All Frequencies</option>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly">Quarterly</option>
+                    <option value="Annual">Annual</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={trainingFilters.status}
+                    onChange={(e) =>
+                      handleTrainingFilterChange("status", e.target.value)
+                    }
+                  >
+                    <option value="All Statuses">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
                 </div>
               </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="successOutline" className="flex items-center">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
 
-              {/* Sub Tab Content */}
-              <TabsContent value="training-modules">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Mandatory Training Modules
-                  </h2>
-                  <TableCustom
-                    columns={trainingSessionsColumns}
-                    data={trainingSessionsData}
-                    pagination={true}
-                    dataTotalSize={trainingSessionsData.length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="staff-completion">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Staff Completion</h2>
-                  <TableCustom
-                    columns={trainingSessionsColumns}
-                    data={trainingSessionsData.slice(0, 3)}
-                    pagination={true}
-                    dataTotalSize={3}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="overdue-training">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Overdue Training</h2>
-                  <TableCustom
-                    columns={trainingSessionsColumns}
-                    data={trainingSessionsData.slice(2, 4)}
-                    pagination={true}
-                    dataTotalSize={2}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="training-calendar">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Upcoming Training Sessions
-                  </h2>
-                  <TableCustom
-                    columns={trainingSessionsColumns}
-                    data={trainingSessionsData}
-                    tableOptions={{
-                      pagination: true,
-                      paginationSize: 10,
-                      paginationSizePerPageList: [10, 20, 50],
-                      showTotal: true,
-                    }}
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
+            {/* Mandatory Training Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Mandatory Training Progress</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TableCustom
+                  columns={mandatoryTrainingColumns}
+                  data={getFilteredTrainingData()}
+                  pagination={true}
+                  dataTotalSize={getFilteredTrainingData().length}
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Compliance Ratio Tab */}
@@ -2499,7 +2559,9 @@ const Compliance = () => {
             <div className="grid grid-cols-4 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Locations (Cities)</h3>
+                  <h3 className="text-sm font-medium">
+                    Total Locations (Cities)
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Building className="w-5 h-5 text-blue-400" />
                   </div>
@@ -2507,7 +2569,9 @@ const Compliance = () => {
                 <div className="space-y-2">
                   <p className="text-3xl font-bold text-gray-900">7</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">Unique cities with branches</span>
+                    <span className="text-gray-500">
+                      Unique cities with branches
+                    </span>
                   </div>
                 </div>
               </Card>
@@ -2575,7 +2639,10 @@ const Compliance = () => {
                     placeholder="Find a specific branch quickly"
                     value={complianceFilters.branchSearch}
                     onChange={(e) =>
-                      handleComplianceFilterChange("branchSearch", e.target.value)
+                      handleComplianceFilterChange(
+                        "branchSearch",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
@@ -2623,7 +2690,10 @@ const Compliance = () => {
                     className="border border-gray-300 rounded-md px-3 py-2"
                     value={complianceFilters.complianceStatus}
                     onChange={(e) =>
-                      handleComplianceFilterChange("complianceStatus", e.target.value)
+                      handleComplianceFilterChange(
+                        "complianceStatus",
+                        e.target.value
+                      )
                     }
                   >
                     <option value="All Statuses">All Statuses</option>
@@ -2634,10 +2704,7 @@ const Compliance = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <Button
-                  variant="successOutline"
-                  className="flex items-center"
-                >
+                <Button variant="successOutline" className="flex items-center">
                   <Eye className="w-4 h-4 mr-2" />
                   Export
                 </Button>
