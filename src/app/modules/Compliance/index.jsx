@@ -87,6 +87,14 @@ const Compliance = () => {
     policySearch: "",
   });
 
+  // Workforce Regulations filter states
+  const [workforceFilters, setWorkforceFilters] = useState({
+    complianceStatus: "All Statuses",
+    regulationArea: "",
+    branch: "All Branches",
+    categoryType: "All Categories",
+  });
+
   // License data state
   const [facilityLicenses, setFacilityLicenses] = useState([]);
 
@@ -326,6 +334,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle Workforce Regulations filter changes
+  const handleWorkforceFilterChange = (filterType, value) => {
+    setWorkforceFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -448,6 +464,43 @@ const Compliance = () => {
           return dueDate >= fromDate && dueDate <= toDate;
         });
       }
+    }
+
+    return filtered;
+  };
+
+  // Filter Workforce Regulations data
+  const getFilteredWorkforceData = () => {
+    let filtered = [...workforceRegulationsData];
+
+    // Search by regulation area
+    if (workforceFilters.regulationArea) {
+      filtered = filtered.filter((item) =>
+        item.regulationArea
+          .toLowerCase()
+          .includes(workforceFilters.regulationArea.toLowerCase())
+      );
+    }
+
+    // Filter by compliance status
+    if (workforceFilters.complianceStatus !== "All Statuses") {
+      filtered = filtered.filter(
+        (item) => item.status === workforceFilters.complianceStatus
+      );
+    }
+
+    // Filter by branch
+    if (workforceFilters.branch !== "All Branches") {
+      filtered = filtered.filter((item) =>
+        item.branchCompliant.includes(workforceFilters.branch)
+      );
+    }
+
+    // Filter by category type
+    if (workforceFilters.categoryType !== "All Categories") {
+      filtered = filtered.filter(
+        (item) => item.categoryType === workforceFilters.categoryType
+      );
     }
 
     return filtered;
@@ -961,48 +1014,83 @@ const Compliance = () => {
   const workforceRegulationsData = [
     {
       id: 1,
-      regulationArea: "Maximum Working Hours",
-      requirement: "48 hrs/week (8 hrs/day)",
-      currentStatus: "Avg: 46.2 hrs/week",
-      locationsCompliant: "238 / 238",
-      lastVerified: "30 Sep 2023",
+      regulationArea: "Working Hours",
+      requirement: "Maximum 48 hours per week (8 hours per day)",
+      currentStatus: "Average: 46.2 hours/week",
+      branchCompliant: "238 / 238",
+      lastVerified: "2024-01-15",
       status: "Compliant",
+      categoryType: "Working Hours",
     },
     {
       id: 2,
       regulationArea: "Annual Leave",
-      requirement: "30 days/year (after 1 year)",
-      currentStatus: "Tracked & Accrued",
-      locationsCompliant: "238 / 238",
-      lastVerified: "30 Sep 2023",
-      status: "Compliant",
+      requirement: "30 days annual leave after 1 year of service",
+      currentStatus: "Tracked and accrued properly",
+      branchCompliant: "235 / 238",
+      lastVerified: "2024-01-10",
+      status: "At Risk",
+      categoryType: "Leave",
     },
     {
       id: 3,
       regulationArea: "Sick Leave",
-      requirement: "90 days/year (15 full, 30 half)",
-      currentStatus: "Tracked & Documented",
-      locationsCompliant: "238 / 238",
-      lastVerified: "30 Sep 2023",
+      requirement: "90 days per year (15 full pay, 30 half pay)",
+      currentStatus: "Properly documented and tracked",
+      branchCompliant: "238 / 238",
+      lastVerified: "2024-01-12",
       status: "Compliant",
+      categoryType: "Leave",
     },
     {
       id: 4,
       regulationArea: "End of Service Benefits",
-      requirement: "21 days per year (1-5 yrs)",
-      currentStatus: "Calculated & Reserved",
-      locationsCompliant: "238 / 238",
-      lastVerified: "30 Sep 2023",
-      status: "Compliant",
+      requirement: "21 days salary per year (1-5 years service)",
+      currentStatus: "Calculated and reserved correctly",
+      branchCompliant: "230 / 238",
+      lastVerified: "2024-01-08",
+      status: "At Risk",
+      categoryType: "End of Service",
     },
     {
       id: 5,
       regulationArea: "Wage Protection System",
-      requirement: "WPS Registration Required",
-      currentStatus: "All Staff Registered",
-      locationsCompliant: "238 / 238",
-      lastVerified: "30 Sep 2023",
+      requirement: "WPS registration mandatory for all employees",
+      currentStatus: "All staff registered in WPS",
+      branchCompliant: "238 / 238",
+      lastVerified: "2024-01-14",
       status: "Compliant",
+      categoryType: "Wages",
+    },
+    {
+      id: 6,
+      regulationArea: "Overtime Compensation",
+      requirement: "125% of basic salary for overtime hours",
+      currentStatus: "Overtime rates not properly calculated",
+      branchCompliant: "180 / 238",
+      lastVerified: "2024-01-05",
+      status: "Non-Compliant",
+      categoryType: "Wages",
+    },
+    {
+      id: 7,
+      regulationArea: "Maternity Leave",
+      requirement: "45 days paid maternity leave",
+      currentStatus: "Maternity leave properly implemented",
+      branchCompliant: "238 / 238",
+      lastVerified: "2024-01-11",
+      status: "Compliant",
+      categoryType: "Leave",
+    },
+    {
+      id: 8,
+      regulationArea: "Probation Period",
+      requirement: "Maximum 6 months probation period",
+      currentStatus: "Probation periods extended beyond limit",
+      branchCompliant: "200 / 238",
+      lastVerified: "2024-01-09",
+      status: "At Risk",
+      categoryType: "Employment",
     },
   ];
 
@@ -1011,6 +1099,14 @@ const Compliance = () => {
     {
       dataField: "regulationArea",
       text: "Regulation Area",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <Scale className="w-4 h-4 text-blue-700" />
+          </div>
+          <span className="font-medium">{row.regulationArea}</span>
+        </div>
+      ),
     },
     {
       dataField: "requirement",
@@ -1021,8 +1117,11 @@ const Compliance = () => {
       text: "Current Status",
     },
     {
-      dataField: "locationsCompliant",
-      text: "Locations Compliant",
+      dataField: "branchCompliant",
+      text: "Branch Compliant",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.branchCompliant}</span>
+      ),
     },
     {
       dataField: "lastVerified",
@@ -1032,7 +1131,16 @@ const Compliance = () => {
       dataField: "status",
       text: "Status",
       formatter: (cell, row) => (
-        <Badge variant="success" className="capitalize">
+        <Badge
+          variant={
+            row.status === "Compliant"
+              ? "success"
+              : row.status === "At Risk"
+              ? "warning"
+              : "destructive"
+          }
+          className="capitalize"
+        >
           {row.status}
         </Badge>
       ),
@@ -1042,10 +1150,34 @@ const Compliance = () => {
       text: "Actions",
       formatter: (cell, row) => (
         <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("View details for:", row);
+            }}
+            title="View Details"
+          >
             <Eye className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("Mark reviewed for:", row);
+            }}
+            title="Mark Reviewed"
+          >
+            <CheckCircle className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("Update for:", row);
+            }}
+            title="Update"
+          >
             <Edit className="w-4 h-4" />
           </Button>
         </div>
@@ -2860,90 +2992,220 @@ const Compliance = () => {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Employees</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">612</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-gray-500">Under contract </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Compliance Rate</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">100%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium">
-                        Labor law compliant
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Contracts Expiring </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-purple-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">24</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-purple-500 font-medium">
-                        Within 90 days
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Avg. Working Hours</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-orange-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">46.2</p>
-                    <div className="flex items-center text-sm">
-                      <span className="font-medium mr-1">hours/week</span>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
               {/* Sub Tab Content */}
               <TabsContent value="labor-law">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    UAE Labor Law Compliance Status
-                  </h2>
-                  <TableCustom
-                    columns={workforceRegulationsColumns}
-                    data={workforceRegulationsData}
-                    tableOptions={{
-                      pagination: true,
-                      paginationSize: 10,
-                      paginationSizePerPageList: [10, 20, 50],
-                      showTotal: true,
-                    }}
-                  />
+                {/* Dashboard Cards */}
+                <div className="grid grid-cols-5 gap-6 mb-8">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Total Regulations Tracked
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Scale className="w-5 h-5 text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">25</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-500">
+                          Total number of UAE Labour Law regulations monitored
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Fully Compliant Areas
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">18</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
+                          Number of regulation areas marked as "Compliant"
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">At Risk Areas</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">5</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-orange-500 font-medium">
+                          Regulation areas nearing non-compliance
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Non-Compliant Areas
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">2</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-red-500 font-medium">
+                          Number of areas currently failing compliance
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">
+                        Last Verification Date
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-purple-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">28 Jan</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-purple-500 font-medium">
+                          Date of last successful full compliance audit
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
+
+                {/* Filters */}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Compliance Status
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={workforceFilters.complianceStatus}
+                        onChange={(e) =>
+                          handleWorkforceFilterChange(
+                            "complianceStatus",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <option value="All Statuses">All Statuses</option>
+                        <option value="Compliant">Compliant</option>
+                        <option value="At Risk">At Risk</option>
+                        <option value="Non-Compliant">Non-Compliant</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Regulation Area
+                      </label>
+                      <input
+                        type="text"
+                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                        placeholder="Search or filter by specific Labor law areas"
+                        value={workforceFilters.regulationArea}
+                        onChange={(e) =>
+                          handleWorkforceFilterChange(
+                            "regulationArea",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Branch
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={workforceFilters.branch}
+                        onChange={(e) =>
+                          handleWorkforceFilterChange("branch", e.target.value)
+                        }
+                      >
+                        <option value="All Branches">All Branches</option>
+                        <option value="Dubai Mall Pharmacy">
+                          Dubai Mall Pharmacy
+                        </option>
+                        <option value="Abu Dhabi Marina Pharmacy">
+                          Abu Dhabi Marina Pharmacy
+                        </option>
+                        <option value="Sharjah City Center Pharmacy">
+                          Sharjah City Center Pharmacy
+                        </option>
+                        <option value="Dubai Healthcare City Pharmacy">
+                          Dubai Healthcare City Pharmacy
+                        </option>
+                        <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Category Type
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={workforceFilters.categoryType}
+                        onChange={(e) =>
+                          handleWorkforceFilterChange(
+                            "categoryType",
+                            e.target.value
+                          )
+                        }
+                      >
+                        <option value="All Categories">All Categories</option>
+                        <option value="Leave">Leave</option>
+                        <option value="Working Hours">Working Hours</option>
+                        <option value="End of Service">End of Service</option>
+                        <option value="Wages">Wages</option>
+                        <option value="Employment">Employment</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="successOutline"
+                      className="flex items-center"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </div>
+                </div>
+
+                {/* UAE Labor Law Compliance Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>UAE Labor Law Compliance Status</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TableCustom
+                      columns={workforceRegulationsColumns}
+                      data={getFilteredWorkforceData()}
+                      pagination={true}
+                      dataTotalSize={getFilteredWorkforceData().length}
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="emiratization">
