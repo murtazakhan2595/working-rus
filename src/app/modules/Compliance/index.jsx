@@ -27,6 +27,8 @@ import {
   Clock,
   RefreshCw,
   Download,
+  Building2,
+  UserCheck,
 } from "lucide-react";
 
 const Compliance = () => {
@@ -325,6 +327,73 @@ const Compliance = () => {
       changeDate: "01 Sep 2023",
       summary: "Updated leave calculation rules",
       status: "Active",
+    },
+  ];
+
+  const stats = [
+    {
+      id: "facility",
+      icon: Building2,
+      label: "Facility",
+      fullName: "Facility Licensing",
+      value: "98%",
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+    },
+    {
+      id: "professional",
+      icon: UserCheck,
+      label: "Professional",
+      fullName: "Professional Licensing",
+      value: "99%",
+      color: "text-teal-600",
+      bgColor: "bg-teal-50",
+    },
+    {
+      id: "ratio",
+      icon: Scale,
+      label: "Ratio",
+      fullName: "Ratio Compliance",
+      value: "95%",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+    {
+      id: "training",
+      icon: GraduationCap,
+      label: "Training",
+      fullName: "Mandatory Training",
+      value: "92%",
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      warning: true,
+    },
+    {
+      id: "sop",
+      icon: FileText,
+      label: "SOP",
+      fullName: "SOP & Policy",
+      value: "97%",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+    },
+    {
+      id: "inspections",
+      icon: ClipboardCheck,
+      label: "Inspections",
+      fullName: "Inspections & Audits",
+      value: "96%",
+      color: "text-pink-600",
+      bgColor: "bg-pink-50",
+    },
+    {
+      id: "workforce",
+      icon: Users,
+      label: "Workforce",
+      fullName: "Workforce Regulations",
+      value: "100%",
+      color: "text-slate-600",
+      bgColor: "bg-slate-50",
     },
   ];
 
@@ -1097,6 +1166,55 @@ const Compliance = () => {
               Workforce Regulations
             </TabsTrigger>
           </TabsList> */}
+
+          <div className="grid grid-cols-7 gap-4 mb-8">
+            {stats.map((stat, index) => (
+              <Card
+                key={index}
+                // className="border-slate-200 hover:shadow-lg transition-shadow"
+                className={`border-slate-200 hover:shadow-lg transition-shadow${
+                  activeTab === stat.id && vs2
+                    ? "border border-primary-900 hover:cursor-pointer"
+                    : ""
+                }`}
+                onClick={() => {
+                  if (vs2) setActiveTab(stat.id);
+                }}
+              >
+                <CardContent className="p-6">
+                  <div
+                    className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center mb-4`}
+                  >
+                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                  <div
+                    className={`text-sm mb-1 
+                    ${
+                      activeTab === stat.id && vs2
+                        ? "text-plum-900"
+                        : "text-slate-900"
+                    }
+                    `}
+                  >
+                    {vs2 ? stat.fullName: stat.label}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className={`text-2xl font-semibold  ${
+                      activeTab === stat.id && vs2
+                        ? "text-plum-900"
+                        : "text-slate-900"
+                    }`}>
+                      {stat.value}
+                    </div>
+                    {stat.warning && (
+                      <AlertTriangle className="w-4 h-4 text-orange-500" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
           {!vs2 && (
             <TabsList className="bg-transparent">
               {complianceStats.map((stat) => {
@@ -1110,53 +1228,55 @@ const Compliance = () => {
           )}
 
           {/* Compliance Overview Cards */}
-          <div className="grid grid-cols-7 gap-4 mb-6 mt-6">
-            {complianceStats.map((stat) => {
-              const IconComponent = stat.icon;
-              return (
-                <Card
-                  key={stat.id}
-                  className={`p-3 hover:shadow-md transition-shadow ${
-                    activeTab === stat.id && vs2
-                      ? "border border-primary-900 hover:cursor-pointer"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    if (vs2) setActiveTab(stat.id);
-                  }}
-                >
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                        activeTab === stat.id && vs2
-                          ? "bg-plum-50 text-plum-900"
-                          : ""
-                      }`}
-                    >
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-                    <p
-                      className={`text-sm font-semibold mb-1 ${
-                        activeTab === stat.id && vs2 ? "text-plum-900" : ""
-                      }`}
-                    >
-                      {stat.title}
-                    </p>
-                    <div className="flex items-center">
-                      <span
-                        className={`text-xs font-bold mr-1 ${
+          {/* {vs2 && (
+            <div className="grid grid-cols-7 gap-4 mb-6 mt-6">
+              {complianceStats.map((stat) => {
+                const IconComponent = stat.icon;
+                return (
+                  <Card
+                    key={stat.id}
+                    className={`p-3 hover:shadow-md transition-shadow ${
+                      activeTab === stat.id && vs2
+                        ? "border border-primary-900 hover:cursor-pointer"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      if (vs2) setActiveTab(stat.id);
+                    }}
+                  >
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+                          activeTab === stat.id && vs2
+                            ? "bg-plum-50 text-plum-900"
+                            : ""
+                        }`}
+                      >
+                        <IconComponent className="w-6 h-6" />
+                      </div>
+                      <p
+                        className={`text-sm font-semibold mb-1 ${
                           activeTab === stat.id && vs2 ? "text-plum-900" : ""
                         }`}
                       >
-                        {stat.percentage}%
-                      </span>
-                      {getStatusIcon(stat.status)}
+                        {stat.title}
+                      </p>
+                      <div className="flex items-center">
+                        <span
+                          className={`text-xs font-bold mr-1 ${
+                            activeTab === stat.id && vs2 ? "text-plum-900" : ""
+                          }`}
+                        >
+                          {stat.percentage}%
+                        </span>
+                        {getStatusIcon(stat.status)}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )} */}
 
           {/* Facility Licensing Tab */}
           <TabsContent value="facility">
@@ -2304,9 +2424,7 @@ const Compliance = () => {
                   <div className="space-y-2">
                     <p className="text-3xl font-bold text-gray-900">46.2</p>
                     <div className="flex items-center text-sm">
-                      <span className="font-medium mr-1">
-                        hours/week
-                      </span>
+                      <span className="font-medium mr-1">hours/week</span>
                     </div>
                   </div>
                 </Card>
