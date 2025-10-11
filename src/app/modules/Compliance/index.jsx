@@ -42,7 +42,7 @@ import {
 
 const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
-  const [activeSubTab, setActiveSubTab] = useState("retail-licenses");
+  const [activeSubTab, setActiveSubTab] = useState("branch-license");
   const [activeProfessionalSubTab, setActiveProfessionalSubTab] = useState(
     "pharmacist-licenses"
   );
@@ -318,7 +318,7 @@ const Compliance = () => {
   const complianceStats = [
     {
       id: "facility",
-      title: "Facility Licensing",
+      title: "Branch & Licensing",
       percentage: 98,
       status: "valid",
       icon: Building,
@@ -629,8 +629,8 @@ const Compliance = () => {
     {
       id: "facility",
       icon: Building2,
-      label: "Facility",
-      fullName: "Facility Licensing",
+      label: "Licensing",
+      fullName: "Branch & Licensing",
       value: "98%",
       color: "text-purple-600",
       bgColor: "bg-purple-50",
@@ -1602,12 +1602,7 @@ const Compliance = () => {
               className="mb-6"
             >
               <TabsList className="grid-cols-3">
-                <TabsTrigger value="retail-licenses">
-                  Retail Licenses
-                </TabsTrigger>
-                <TabsTrigger value="warehouse-licenses">
-                  Warehouse Licenses
-                </TabsTrigger>
+                <TabsTrigger value="branch-license">Branch License</TabsTrigger>
                 <TabsTrigger value="renewal-tracking">
                   Renewal Tracking
                 </TabsTrigger>
@@ -1804,10 +1799,10 @@ const Compliance = () => {
               </div>
 
               {/* Sub Tab Content */}
-              <TabsContent value="retail-licenses">
+              <TabsContent value="branch-license">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Retail Pharmacy Licenses</CardTitle>
+                    <CardTitle>Branch Licenses</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <TableCustom
@@ -1815,23 +1810,6 @@ const Compliance = () => {
                       data={getFilteredLicenses()}
                       pagination={true}
                       dataTotalSize={getFilteredLicenses().length}
-                      tableOptions={{ page: 1, sizePerPage: 10 }}
-                    />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="warehouse-licenses">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Warehouse Licenses</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <TableCustom
-                      columns={facilityLicensesColumns}
-                      data={facilityLicensesData.slice(0, 2)} // Show fewer items for warehouse
-                      pagination={true}
-                      dataTotalSize={2}
                       tableOptions={{ page: 1, sizePerPage: 10 }}
                     />
                   </CardContent>
