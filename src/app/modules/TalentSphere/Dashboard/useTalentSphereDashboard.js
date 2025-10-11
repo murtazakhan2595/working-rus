@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { getTalentSphereSummary } from "app/hooks/talentSphere";
+import { 
+  getTalentSphereSummary,
+  getHiringPrediction,
+  getHiringTrends,
+  getSkillsGap
+} from "app/hooks/talentSphere";
 import axios from "axios";
 import { baseUrl, headers } from "app/hooks/general";
 
@@ -16,6 +21,11 @@ export const useTalentSphereDashboard = (filterData = {}) => {
   const [aiFlaggedData, setAiFlaggedData] = useState(null);
   const [aiSuggestedCandidates, setAiSuggestedCandidates] = useState(null);
   const [requisitionsData, setRequisitionsData] = useState([]);
+  
+  // Predictive Analytics States
+  const [hiringPredictionData, setHiringPredictionData] = useState(null);
+  const [hiringTrendsData, setHiringTrendsData] = useState(null);
+  const [skillsGapData, setSkillsGapData] = useState(null);
 
   // Build single search param with JSON-encoded filterData (dt- prefixed keys)
   // Optionally exclude certain keys (e.g., ["date_range"]) per-endpoint
@@ -62,6 +72,9 @@ export const useTalentSphereDashboard = (filterData = {}) => {
         predictions,
         flagged,
         requisitions,
+        hiringPrediction,
+        hiringTrends,
+        skillsGap,
       ] = await Promise.all([
         // Top summary (no date_range)
         axios.get(`${baseUrl}/top-summary/${noDateParams}`, { headers: headers() }),
@@ -85,6 +98,10 @@ export const useTalentSphereDashboard = (filterData = {}) => {
         axios.get(`${baseUrl}/ai-flaged${filterParams}`, { headers: headers() }),
         // Requisitions list (not in the 9 APIs but kept consistent)
         axios.get(`${baseUrl}/requisition-requests/`, { headers: headers() }),
+        // Predictive Analytics APIs
+        getHiringPrediction(),
+        getHiringTrends(),
+        getSkillsGap(),
       ]);
 
       setSummaryData(summary.data || null);
@@ -97,6 +114,11 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       setHiringPredictions(predictions.data?.results || []);
       setAiFlaggedData(flagged.data || null);
       setRequisitionsData(requisitions.data?.results || []);
+      
+      // Set Predictive Analytics Data
+      setHiringPredictionData(hiringPrediction || null);
+      setHiringTrendsData(hiringTrends || null);
+      setSkillsGapData(skillsGap || null);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -146,5 +168,9 @@ export const useTalentSphereDashboard = (filterData = {}) => {
     requisitionsData,
     fetchAISuggestedCandidates,
     refetch: fetchAllData,
+    // Predictive Analytics
+    hiringPredictionData,
+    hiringTrendsData,
+    skillsGapData,
   };
 };
