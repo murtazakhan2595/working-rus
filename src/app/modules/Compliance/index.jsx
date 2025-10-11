@@ -43,9 +43,6 @@ import {
 const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
   const [activeSubTab, setActiveSubTab] = useState("branch-license");
-  const [activeProfessionalSubTab, setActiveProfessionalSubTab] = useState(
-    "license-certificates"
-  );
   const [activeTrainingSubTab, setActiveTrainingSubTab] =
     useState("training-modules");
   const [activeSOPSubTab, setActiveSOPSubTab] = useState("hr-policies");
@@ -369,8 +366,8 @@ const Compliance = () => {
       color: "purple",
     },
     {
-      id: "professional",
-      title: "Compliance Management",
+      id: "license-certificates",
+      title: "License & Certificates",
       percentage: 99,
       status: "valid",
       icon: User,
@@ -780,10 +777,10 @@ const Compliance = () => {
       bgColor: "bg-purple-50",
     },
     {
-      id: "professional",
+      id: "license-certificates",
       icon: UserCheck,
-      label: "Compliance Management",
-      fullName: "Compliance Management",
+      label: "License & Certificates",
+      fullName: "License & Certificates",
       value: "99%",
       color: "text-teal-600",
       bgColor: "bg-teal-50",
@@ -1364,7 +1361,7 @@ const Compliance = () => {
   const complianceChartData = {
     categories: [
       "Facility",
-      "Professional",
+      "License & Certificates",
       "Ratio",
       "Training",
       "SOP",
@@ -2151,184 +2148,154 @@ const Compliance = () => {
             </div>
           </TabsContent>
 
-          {/* Professional Licensing Tab */}
-          <TabsContent value="professional">
-            {/* Sub Tabs */}
-            <Tabs
-              value={activeProfessionalSubTab}
-              onValueChange={setActiveProfessionalSubTab}
-              className="mb-6"
-            >
-              <TabsList className="grid-cols-4">
-                <TabsTrigger value="license-certificates">
-                  License & Certificates
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Employees</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">245</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-gray-500">with licenses/certificates</span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Expiring within 60 Days</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">18</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-orange-500 font-medium">
-                        Require attention
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Renewal in Progress</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <RefreshCw className="w-5 h-5 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">12</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-blue-500 font-medium">
-                        Applications submitted
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Compliance Ratio</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">94%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        ↑ 2%
-                      </span>
-                      <span className="text-gray-500">from last quarter</span>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Filters and Actions */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Search by Employee Name / ID
-                    </label>
-                    <input
-                      type="text"
-                      className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                      placeholder="Search employee..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Branch
-                    </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Branches</option>
-                      <option>Dubai Mall Pharmacy</option>
-                      <option>Abu Dhabi Marina Pharmacy</option>
-                      <option>Sharjah City Center Pharmacy</option>
-                      <option>Dubai Healthcare City Pharmacy</option>
-                      <option>Al Ain Pharmacy</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Designation
-                    </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Designations</option>
-                      <option>Pharmacist</option>
-                      <option>Pharmacy Technician</option>
-                      <option>Manager</option>
-                      <option>Supervisor</option>
-                      <option>Cashier</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Type
-                    </label>
-                    <select className="border border-gray-300 rounded-md px-3 py-2">
-                      <option>All Types</option>
-                      <option>License</option>
-                      <option>Certificate</option>
-                    </select>
+          {/* License & Certificates Tab */}
+          <TabsContent value="license-certificates">
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-4 gap-6 mb-8">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Total Employees</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="successOutline"
-                    className="flex items-center"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">245</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500">with licenses/certificates</span>
+                  </div>
                 </div>
-              </div>
+              </Card>
 
-              {/* Sub Tab Content */}
-              <TabsContent value="license-certificates">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Employee Licenses & Certificates</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <TableCustom
-                      columns={employeeLicensesColumns}
-                      data={employeeLicensesData}
-                      pagination={true}
-                      dataTotalSize={employeeLicensesData.length}
-                      tableOptions={{ page: 1, sizePerPage: 10 }}
-                    />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="complaince-ratio">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Compliance Ratio</h2>
-                  <TableCustom
-                    columns={professionalLicensesColumns}
-                    data={professionalLicensesData}
-                    tableOptions={{
-                      pagination: true,
-                      paginationSize: 10,
-                      paginationSizePerPageList: [10, 20, 50],
-                      showTotal: true,
-                    }}
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Expiring within 60 Days</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">18</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-orange-500 font-medium">
+                      Require attention
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Renewal in Progress</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <RefreshCw className="w-5 h-5 text-blue-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">12</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-blue-500 font-medium">
+                      Applications submitted
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Compliance Ratio</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">94%</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-green-500 font-medium mr-1">
+                      ↑ 2%
+                    </span>
+                    <span className="text-gray-500">from last quarter</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Filters and Actions */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Search by Employee Name / ID
+                  </label>
+                  <input
+                    type="text"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                    placeholder="Search employee..."
                   />
                 </div>
-              </TabsContent>
-            </Tabs>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Branch
+                  </label>
+                  <select className="border border-gray-300 rounded-md px-3 py-2">
+                    <option>All Branches</option>
+                    <option>Dubai Mall Pharmacy</option>
+                    <option>Abu Dhabi Marina Pharmacy</option>
+                    <option>Sharjah City Center Pharmacy</option>
+                    <option>Dubai Healthcare City Pharmacy</option>
+                    <option>Al Ain Pharmacy</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Designation
+                  </label>
+                  <select className="border border-gray-300 rounded-md px-3 py-2">
+                    <option>All Designations</option>
+                    <option>Pharmacist</option>
+                    <option>Pharmacy Technician</option>
+                    <option>Manager</option>
+                    <option>Supervisor</option>
+                    <option>Cashier</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Type
+                  </label>
+                  <select className="border border-gray-300 rounded-md px-3 py-2">
+                    <option>All Types</option>
+                    <option>License</option>
+                    <option>Certificate</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="successOutline"
+                  className="flex items-center"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
+
+            {/* Employee Licenses & Certificates Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Employee Licenses & Certificates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TableCustom
+                  columns={employeeLicensesColumns}
+                  data={employeeLicensesData}
+                  pagination={true}
+                  dataTotalSize={employeeLicensesData.length}
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Mandatory Training Tab */}
