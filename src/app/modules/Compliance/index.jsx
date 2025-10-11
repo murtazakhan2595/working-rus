@@ -24,7 +24,6 @@ import {
   Scale,
   GraduationCap,
   FileText,
-  ClipboardCheck,
   Users,
   Plus,
   Eye,
@@ -42,8 +41,6 @@ import {
 const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
   const [activeSubTab, setActiveSubTab] = useState("branch-license");
-  const [activeInspectionsSubTab, setActiveInspectionsSubTab] =
-    useState("internal-audits");
   const [activeWorkforceSubTab, setActiveWorkforceSubTab] =
     useState("labor-law");
   const [vs2, setVs2] = useState(false);
@@ -526,14 +523,6 @@ const Compliance = () => {
       color: "blue",
     },
     {
-      id: "inspections",
-      title: "Inspections & Audits",
-      percentage: 96,
-      status: "valid",
-      icon: ClipboardCheck,
-      color: "pink",
-    },
-    {
       id: "workforce",
       title: "Workforce Regulations",
       percentage: 100,
@@ -958,15 +947,6 @@ const Compliance = () => {
       bgColor: "bg-blue-50",
     },
     {
-      id: "inspections",
-      icon: ClipboardCheck,
-      label: "Inspections",
-      fullName: "Inspections & Audits",
-      value: "96%",
-      color: "text-pink-600",
-      bgColor: "bg-pink-50",
-    },
-    {
       id: "workforce",
       icon: Users,
       label: "Workforce",
@@ -974,50 +954,6 @@ const Compliance = () => {
       value: "100%",
       color: "text-slate-600",
       bgColor: "bg-slate-50",
-    },
-  ];
-
-  // Dummy data for Inspections & Audits table
-  const inspectionsAuditsData = [
-    {
-      id: 1,
-      auditType: "HR Compliance",
-      location: "Dubai Mall Pharmacy",
-      auditDate: "25 Sep 2023",
-      auditor: "Internal Audit Team",
-      score: 97,
-      status: "Completed",
-      findings: 2,
-    },
-    {
-      id: 2,
-      auditType: "Labor Law",
-      location: "Abu Dhabi Marina Pharmacy",
-      auditDate: "22 Sep 2023",
-      auditor: "External Auditor",
-      score: 95,
-      status: "Completed",
-      findings: 1,
-    },
-    {
-      id: 3,
-      auditType: "Workplace Safety",
-      location: "Sharjah City Center Pharmacy",
-      auditDate: "20 Sep 2023",
-      auditor: "Safety Inspector",
-      score: 93,
-      status: "Completed",
-      findings: 3,
-    },
-    {
-      id: 4,
-      auditType: "Document Review",
-      location: "Dubai Healthcare City Pharmacy",
-      auditDate: "18 Sep 2023",
-      auditor: "Compliance Officer",
-      score: 96,
-      status: "Completed",
-      findings: 1,
     },
   ];
 
@@ -1067,60 +1003,6 @@ const Compliance = () => {
       locationsCompliant: "238 / 238",
       lastVerified: "30 Sep 2023",
       status: "Compliant",
-    },
-  ];
-
-  // Column definitions for Inspections & Audits table
-  const inspectionsAuditsColumns = [
-    {
-      dataField: "auditType",
-      text: "Audit Type",
-    },
-    {
-      dataField: "location",
-      text: "Location",
-    },
-    {
-      dataField: "auditDate",
-      text: "Audit Date",
-    },
-    {
-      dataField: "auditor",
-      text: "Auditor",
-    },
-    {
-      dataField: "score",
-      text: "Score",
-      formatter: (cell, row) => (
-        <span className="font-semibold text-green-600">{row.score}%</span>
-      ),
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge variant="success" className="capitalize">
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "findings",
-      text: "Findings",
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Edit className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
     },
   ];
 
@@ -1321,13 +1203,12 @@ const Compliance = () => {
       "Ratio",
       "Training",
       "SOP",
-      "Inspections",
       "Workforce",
     ],
     series: [
       {
         name: "Compliance Rate",
-        data: [98, 99, 95, 92, 97, 96, 100],
+        data: [98, 99, 95, 92, 97, 100],
       },
     ],
   };
@@ -2963,141 +2844,6 @@ const Compliance = () => {
             </Card>
           </TabsContent>
 
-          {/* Inspections & Audits Tab */}
-          <TabsContent value="inspections">
-            {/* Sub Tabs */}
-            <Tabs
-              value={activeInspectionsSubTab}
-              onValueChange={setActiveInspectionsSubTab}
-              className="mb-6"
-            >
-              <TabsList className="grid-cols-4">
-                <TabsTrigger value="internal-audits">
-                  Internal Audits
-                </TabsTrigger>
-                <TabsTrigger value="external-inspections">
-                  External Inspections
-                </TabsTrigger>
-                <TabsTrigger value="audit-findings">Audit Findings</TabsTrigger>
-                <TabsTrigger value="corrective-actions">
-                  Corrective Actions
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Audits (YTD)</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <ClipboardCheck className="w-5 h-5 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">48</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-gray-500">Completed this year</span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Average Score</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">96%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium">
-                        Compliance rate
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Open Findings</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">12</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-yellow-500 font-medium">
-                        Require action
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Scheduled Audits</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">8</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-plum-900 font-medium mr-1">
-                        Next 90 days
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Sub Tab Content */}
-              <TabsContent value="audit-schedule">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Audit Schedule</h2>
-                  <TableCustom
-                    columns={inspectionsAuditsColumns}
-                    data={inspectionsAuditsData}
-                    tableOptions={{
-                      pagination: true,
-                      paginationSize: 10,
-                      paginationSizePerPageList: [10, 20, 50],
-                      showTotal: true,
-                    }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="inspection-reports">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Inspection Reports</h2>
-                  <TableCustom
-                    columns={inspectionsAuditsColumns}
-                    data={inspectionsAuditsData.slice(0, 3)}
-                    pagination={true}
-                    dataTotalSize={3}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="compliance-scores">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">Compliance Scores</h2>
-                  <TableCustom
-                    columns={inspectionsAuditsColumns}
-                    data={inspectionsAuditsData.slice(1, 4)}
-                    pagination={true}
-                    dataTotalSize={3}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
-          </TabsContent>
-
           {/* Workforce Regulations Tab */}
           <TabsContent value="workforce">
             {/* Sub Tabs */}
@@ -3111,9 +2857,6 @@ const Compliance = () => {
                 <TabsTrigger value="working-hours">Working Hours</TabsTrigger>
                 <TabsTrigger value="employment-contracts">
                   Employment Contracts
-                </TabsTrigger>
-                <TabsTrigger value="benefits-entitlements">
-                  Benefits & Entitlements
                 </TabsTrigger>
               </TabsList>
 
