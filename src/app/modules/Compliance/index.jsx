@@ -104,6 +104,13 @@ const Compliance = () => {
     department: "All Departments",
   });
 
+  // Employee Contracts filter states
+  const [contractFilters, setContractFilters] = useState({
+    branch: "All Branches",
+    status: "All Statuses",
+    search: "",
+  });
+
   // License data state
   const [facilityLicenses, setFacilityLicenses] = useState([]);
 
@@ -359,6 +366,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle Employee Contracts filter changes
+  const handleContractFilterChange = (filterType, value) => {
+    setContractFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -560,6 +575,40 @@ const Compliance = () => {
     if (workingHoursFilters.dateRange) {
       // This would filter by actual date ranges in a real implementation
       // For now, we'll just return the filtered data as is
+    }
+
+    return filtered;
+  };
+
+  // Filter Employee Contracts data
+  const getFilteredContractData = () => {
+    let filtered = [...employeeContractsData];
+
+    // Search by employee name or ID
+    if (contractFilters.search) {
+      filtered = filtered.filter(
+        (item) =>
+          item.employeeName
+            .toLowerCase()
+            .includes(contractFilters.search.toLowerCase()) ||
+          item.employeeId
+            .toLowerCase()
+            .includes(contractFilters.search.toLowerCase())
+      );
+    }
+
+    // Filter by branch
+    if (contractFilters.branch !== "All Branches") {
+      filtered = filtered.filter(
+        (item) => item.branch === contractFilters.branch
+      );
+    }
+
+    // Filter by status
+    if (contractFilters.status !== "All Statuses") {
+      filtered = filtered.filter(
+        (item) => item.status === contractFilters.status
+      );
     }
 
     return filtered;
@@ -1066,6 +1115,283 @@ const Compliance = () => {
       value: "100%",
       color: "text-slate-600",
       bgColor: "bg-slate-50",
+    },
+  ];
+
+  // Dummy data for Employee Contracts table
+  const employeeContractsData = [
+    {
+      id: 1,
+      employeeId: "EMP001",
+      employeeName: "Sarah Ahmed",
+      designation: "Pharmacist",
+      branch: "Dubai Mall Pharmacy",
+      contractType: "Permanent",
+      contractDuration: "3 Years",
+      startDate: "2023-01-15",
+      endDate: "2026-01-15",
+      daysRemaining: 365,
+      status: "Active",
+    },
+    {
+      id: 2,
+      employeeId: "EMP002",
+      employeeName: "Mohammed Khan",
+      designation: "Pharmacy Technician",
+      branch: "Abu Dhabi Marina Pharmacy",
+      contractType: "Fixed-term",
+      contractDuration: "2 Years",
+      startDate: "2022-11-03",
+      endDate: "2024-11-03",
+      daysRemaining: 15,
+      status: "Expiring Soon",
+    },
+    {
+      id: 3,
+      employeeId: "EMP003",
+      employeeName: "John Anderson",
+      designation: "Pharmacist",
+      branch: "Dubai Healthcare City Pharmacy",
+      contractType: "Consultant",
+      contractDuration: "1 Year",
+      startDate: "2023-03-20",
+      endDate: "2024-03-20",
+      daysRemaining: 45,
+      status: "Expiring Soon",
+    },
+    {
+      id: 4,
+      employeeId: "EMP004",
+      employeeName: "Fatima Al-Zahra",
+      designation: "Manager",
+      branch: "Sharjah City Center Pharmacy",
+      contractType: "Permanent",
+      contractDuration: "3 Years",
+      startDate: "2023-06-10",
+      endDate: "2026-06-10",
+      daysRemaining: 520,
+      status: "Active",
+    },
+    {
+      id: 5,
+      employeeId: "EMP005",
+      employeeName: "Ahmed Hassan",
+      designation: "Supervisor",
+      branch: "Al Ain Pharmacy",
+      contractType: "Fixed-term",
+      contractDuration: "2 Years",
+      startDate: "2022-08-15",
+      endDate: "2024-08-15",
+      daysRemaining: -30,
+      status: "Expired",
+    },
+    {
+      id: 6,
+      employeeId: "EMP006",
+      employeeName: "Lisa Johnson",
+      designation: "Pharmacist",
+      branch: "Dubai Mall Pharmacy",
+      contractType: "Permanent",
+      contractDuration: "3 Years",
+      startDate: "2023-02-01",
+      endDate: "2026-02-01",
+      daysRemaining: 400,
+      status: "Active",
+    },
+    {
+      id: 7,
+      employeeId: "EMP007",
+      employeeName: "Omar Al-Rashid",
+      designation: "Pharmacy Technician",
+      branch: "Sharjah City Center Pharmacy",
+      contractType: "Probation",
+      contractDuration: "6 Months",
+      startDate: "2023-10-15",
+      endDate: "2024-04-15",
+      daysRemaining: 90,
+      status: "Active",
+    },
+    {
+      id: 8,
+      employeeId: "EMP008",
+      employeeName: "Maria Rodriguez",
+      designation: "Cashier",
+      branch: "Abu Dhabi Marina Pharmacy",
+      contractType: "Fixed-term",
+      contractDuration: "1 Year",
+      startDate: "2023-07-20",
+      endDate: "2024-07-20",
+      daysRemaining: 180,
+      status: "Active",
+    },
+    {
+      id: 9,
+      employeeId: "EMP009",
+      employeeName: "David Wilson",
+      designation: "Pharmacist",
+      branch: "Fujairah Pharmacy",
+      contractType: "Consultant",
+      contractDuration: "6 Months",
+      startDate: "2023-12-01",
+      endDate: "2024-06-01",
+      daysRemaining: 120,
+      status: "Active",
+    },
+    {
+      id: 10,
+      employeeId: "EMP010",
+      employeeName: "Aisha Al-Mansouri",
+      designation: "Manager",
+      branch: "Ajman Pharmacy",
+      contractType: "Permanent",
+      contractDuration: "3 Years",
+      startDate: "2022-05-10",
+      endDate: "2025-05-10",
+      daysRemaining: -60,
+      status: "Expired",
+    },
+  ];
+
+  // Column definitions for Employee Contracts table
+  const employeeContractsColumns = [
+    {
+      dataField: "employeeId",
+      text: "Employee ID",
+    },
+    {
+      dataField: "employeeName",
+      text: "Employee Name",
+      formatter: (cell, row) => (
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+            <span className="font-semibold text-blue-700 text-sm">
+              {row.employeeName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </span>
+          </div>
+          <span className="font-medium">{row.employeeName}</span>
+        </div>
+      ),
+    },
+    {
+      dataField: "designation",
+      text: "Designation",
+    },
+    {
+      dataField: "branch",
+      text: "Branch",
+    },
+    {
+      dataField: "contractType",
+      text: "Contract Type",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.contractType === "Permanent"
+              ? "success"
+              : row.contractType === "Fixed-term"
+              ? "warning"
+              : row.contractType === "Consultant"
+              ? "secondary"
+              : "default"
+          }
+          className="capitalize"
+        >
+          {row.contractType}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "contractDuration",
+      text: "Contract Duration",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.contractDuration}</span>
+      ),
+    },
+    {
+      dataField: "startDate",
+      text: "Start Date",
+    },
+    {
+      dataField: "endDate",
+      text: "End Date",
+    },
+    {
+      dataField: "daysRemaining",
+      text: "Days Remaining",
+      formatter: (cell, row) => (
+        <span
+          className={`font-semibold ${
+            row.daysRemaining < 0
+              ? "text-red-600"
+              : row.daysRemaining <= 30
+              ? "text-orange-600"
+              : "text-green-600"
+          }`}
+        >
+          {row.daysRemaining < 0 ? "Expired" : `${row.daysRemaining} days`}
+        </span>
+      ),
+    },
+    {
+      dataField: "status",
+      text: "Status",
+      formatter: (cell, row) => (
+        <Badge
+          variant={
+            row.status === "Active"
+              ? "success"
+              : row.status === "Expiring Soon"
+              ? "warning"
+              : row.status === "Expired"
+              ? "destructive"
+              : "secondary"
+          }
+          className="capitalize"
+        >
+          {row.status}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "actions",
+      text: "Action",
+      formatter: (cell, row) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("View contract details for:", row);
+            }}
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("Renew contract for:", row);
+            }}
+            title="Renew"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              console.log("Upload contract for:", row);
+            }}
+            title="Upload"
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
     },
   ];
 
@@ -3725,6 +4051,192 @@ const Compliance = () => {
                       data={getFilteredWorkingHoursData()}
                       pagination={true}
                       dataTotalSize={getFilteredWorkingHoursData().length}
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="employment-contracts">
+                {/* Dashboard Cards */}
+                <div className="grid grid-cols-5 gap-6 mb-8">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Total Employees</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-500">
+                          Total employees having contract records
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Active Contracts</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">245</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
+                          Count of currently valid employee contracts
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Expiring Soon</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">24</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-orange-500 font-medium">
+                          Count of contracts nearing expiration (e.g., within 30
+                          days)
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Expired Contracts</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">24</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-red-500 font-medium">
+                          Count of contracts that have passed their end date
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium">Compliance Rate</h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Scale className="w-5 h-5 text-purple-400" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-gray-900">84%</p>
+                      <div className="flex items-center text-sm">
+                        <span className="text-purple-500 font-medium">
+                          Percentage of employees with valid active contracts =
+                          (Active Contracts / Total Employees) × 100
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Filters */}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Branch
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={contractFilters.branch}
+                        onChange={(e) =>
+                          handleContractFilterChange("branch", e.target.value)
+                        }
+                      >
+                        <option value="All Branches">All Branches</option>
+                        <option value="Dubai Mall Pharmacy">
+                          Dubai Mall Pharmacy
+                        </option>
+                        <option value="Abu Dhabi Marina Pharmacy">
+                          Abu Dhabi Marina Pharmacy
+                        </option>
+                        <option value="Dubai Healthcare City Pharmacy">
+                          Dubai Healthcare City Pharmacy
+                        </option>
+                        <option value="Sharjah City Center Pharmacy">
+                          Sharjah City Center Pharmacy
+                        </option>
+                        <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
+                        <option value="Fujairah Pharmacy">
+                          Fujairah Pharmacy
+                        </option>
+                        <option value="Ajman Pharmacy">Ajman Pharmacy</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Status
+                      </label>
+                      <select
+                        className="border border-gray-300 rounded-md px-3 py-2"
+                        value={contractFilters.status}
+                        onChange={(e) =>
+                          handleContractFilterChange("status", e.target.value)
+                        }
+                      >
+                        <option value="All Statuses">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Expiring Soon">Expiring Soon</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Not Available">Not Available</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Search by Employee Name/ID
+                      </label>
+                      <input
+                        type="text"
+                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                        placeholder="Search by employee name or ID"
+                        value={contractFilters.search}
+                        onChange={(e) =>
+                          handleContractFilterChange("search", e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="successOutline"
+                      className="flex items-center"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Employee Contracts Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Employee Contracts</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TableCustom
+                      columns={employeeContractsColumns}
+                      data={getFilteredContractData()}
+                      pagination={true}
+                      dataTotalSize={getFilteredContractData().length}
                       tableOptions={{ page: 1, sizePerPage: 10 }}
                     />
                   </CardContent>
