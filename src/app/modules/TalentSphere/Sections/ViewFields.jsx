@@ -449,7 +449,7 @@ export const InterviewDetails = [
 ];
 export const OfferDetails = [
   {
-    title: "Offer Information",
+    title: (data) => `${data.index + 1} - Offer Information`,
     field: [
       {
         key: "generated_on",
@@ -464,20 +464,16 @@ export const OfferDetails = [
       {
         key: "offered_salary",
         label: "Offered Salary",
-        formatter: (cell) => `${cell || '0'}`
+        formatter: (cell, row) => `${cell || '0'} ${row.currency || ''}`
       },
       {
         key: "status",
         label: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
       },
-    ],
-  },
-  {
-    title: `Offer Letter`,
-    field: [
       {
-        key: 'final_letter_pdf',
+        key: "final_letter_pdf",
+        label: "Offer Letter",
         formatter: (cell, data) =>
           cell ? (
             <AttachmentUI
@@ -686,14 +682,14 @@ export const ApplicantDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
-      if (data.offer_letter && Array.isArray(data.offer_letter) && data.offer_letter.length > 0) return true;
+      if (data.offer_letters && Array.isArray(data.offer_letters) && data.offer_letters.length > 0) return true;
       return false;
     },
-    renderContent: ({ offer_letter }) => (offer_letter || []).map((letter, index) => {
+    renderContent: ({ offer_letters, publish_vacancy }) => (offer_letters || []).map((letter, index) => {
       return <>
         <DetailContent
           fields={OfferDetails}
-          currentItem={{ ...letter, index } || {}}
+          currentItem={{ ...letter, index, currency: Currency({ value: publish_vacancy?.currency }) } || {}}
         />
       </>
     }),
@@ -782,14 +778,14 @@ export const AllOfferDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
-      if (data.offer_letter && Array.isArray(data.offer_letter) && data.offer_letter.length > 0) return true;
+      if (data.offer_letters && Array.isArray(data.offer_letters) && data.offer_letters.length > 0) return true;
       return false;
     },
-    renderContent: ({ offer_letter, }) => (offer_letter || []).map((letter, index) => {
+    renderContent: ({ offer_letters, publish_vacancy }) => (offer_letters || []).map((letter, index) => {
       return <>
         <DetailContent
           fields={OfferDetails}
-          currentItem={{ ...letter, index } || {}}
+          currentItem={{ ...letter, index, currency: Currency({ value: publish_vacancy?.currency }) } || {}}
         />
       </>
     }),

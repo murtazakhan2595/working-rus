@@ -649,6 +649,11 @@ export async function mapApplicantsData(data) {
             case "offers_tracking":
                 RecordDetails.offers_tracking = value?.[0] ? mapOfferTrackingData(value[0]) : null;
                 break;
+            case "offer_letters":
+                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value) : null;
+                const sorted_offer_letters = (offer_letters || []).sort((a, b) => a.id - b.id);
+                RecordDetails.offer_letters = sorted_offer_letters;
+                break;
 
             case "publish_vacancy":
                 RecordDetails.publish_vacancy = value ? await mapRequisitionRequestData(value) : null;

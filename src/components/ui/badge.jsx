@@ -46,16 +46,17 @@ const badgeVariants = cva(
 );
 
 const Badge = React.forwardRef(
-  ({ key, className, variant, size, dot, ...props }, ref) => {
+  ({ key, className, variant, size, dot, topLabel, ...props }, ref) => {
     return (
       <div
         key={key}
-        className={cn(badgeVariants({ variant, size }), className)}
+        className={cn(badgeVariants({ variant, size }), className, 'relative')}
         ref={ref}
         {...props}
       >
         {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
         {props.children}
+        {topLabel && <span className={`absolute top-[-0.5rem] right-[-0.5rem] rounded-full rounded shadow p-0.5 text-[12px]`}>{topLabel}</span>}
       </div>
     );
   }

@@ -1253,20 +1253,23 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
-    ...(variant !== 'all' ? [
+    ...(variant === 'in_progress' ? [
         {
             dataField: "ai_feedback_summary",
             text: "AI Feedback",
             formatter: (cell, row) => {
                 return (<div>
                     {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
-                    <div><span className="font-bold">Match Score: </span>{row?.ai_match_score}</div>
-                    <div><StatusLabel status={row?.ai_suggested ? 'yes' : 'no'}>{row?.ai_suggested ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel></div>
                 </div>
                 );
             },
         },
     ] : []),
+    {
+        dataField: "ai_suggested",
+        text: "AI Suggestion",
+        formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_match_score}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
+    },
     {
         dataField: "status",
         text: "Status",
