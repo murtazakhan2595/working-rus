@@ -8,7 +8,7 @@ import {
 } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { Badge } from "components/ui/badge";
-import { TableCustom } from "components";
+import { TableCustom, StatusLabel } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { DepartmentName } from "utils/getValuesFromTables";
@@ -128,12 +128,9 @@ const OpenRequisitions = ({ data, loading }) => {
       dataField: "status",
       text: "Status",
       formatter: (cell) => (
-        <Badge
-          variant={cell === "approved" ? "default" : "secondary"}
-          className="text-xs"
-        >
+        <StatusLabel status={cell}>
           {cell.charAt(0).toUpperCase() + cell.slice(1)}
-        </Badge>
+        </StatusLabel>
       ),
       style: { width: "100px" },
     },
