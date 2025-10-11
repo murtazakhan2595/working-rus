@@ -8,11 +8,11 @@ import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import { RoleAssignmentEmployeesLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate } from "react-router-dom";
 import RoleAssignmentEmployeeHistoryLogs from "./RoleAssignmentEmployeeHistoryLogs";
- 
+
 const RoleAssignmentHistoryLogs = () => {
   const [Employees, setEmployees] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(false);
@@ -38,8 +38,11 @@ const RoleAssignmentHistoryLogs = () => {
       setLoading(true);
       // Add organizationId to filter if available
 
-      const response = await getEmployeeList({
-        filterData,
+      const response = await getEmployeeCustomList({
+        filterData: {
+          ...filterData,
+          employee_status: "Active,Probation,Notice Period",
+        },
         options,
         ordering,
       });

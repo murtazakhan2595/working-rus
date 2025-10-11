@@ -209,12 +209,6 @@ export const SidebarRoutes = [
         component: <MyClearanceTab />,
         name: "MY_CLEARANCE",
       },
-      Config.MANAGER_CLEARANCE_DASHBOARD && {
-        path: "/manager-clearance-dashboard",
-        component: <ManagerClearanceDashboard />,
-        name: "MANAGER_CLEARANCE_DASHBOARD",
-      },
-
       Config.MY_PERFORMANCE && {
         path: "/my-performance",
         component: <MyPerformance />,
@@ -253,6 +247,11 @@ export const SidebarRoutes = [
         path: "/team-talent-sphere",
         component: <TeamTalentSphere />,
         name: "TEAM_TALENT_SPHERE",
+      },
+        Config.MANAGER_CLEARANCE_DASHBOARD && {
+        path: "/manager-clearance-dashboard",
+        component: <ManagerClearanceDashboard />,
+        name: "MANAGER_CLEARANCE_DASHBOARD",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),

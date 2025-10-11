@@ -14,7 +14,7 @@ import { DateInput } from 'components/FormControl';
 import { getApplicantsList } from 'app/hooks/talentSphere';
 import { getDropdownListWithExtraKeys } from 'utils/Lists';
 
-const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData = {} }) => {
+const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, initialData = {} }) => {
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
@@ -30,10 +30,10 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
     };
 
     useEffect(() => {
-        const fetchData = async (isMounted, id) => {
+        const fetchData = async (isMounted) => {
             try {
                 setIsLoading(true);
-                const response = await getOfferLetterData(id);
+                const response = await getOfferLetterData(id ?? offer_id);
                 if (isMounted) {
                     setFormData({ ...response });
                 }
@@ -44,22 +44,31 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
             }
         };
         let isMounted = true;
-        if (id) fetchData(isMounted, id);
+        if (id || offer_id) fetchData(isMounted);
         return () => {
             isMounted = false;
         };
-    }, [id]);
+    }, [id, offer_id]);
 
     useEffect(() => {
         const fetchDataOptions = async (isMounted) => {
             try {
                 setIsLoading(true);
-                const response = await getOfferLetterTemplateList({filterData:{is_active:true}});
+                const response = await getOfferLetterTemplateList({ filterData: { is_active: true } });
                 const applicants = await getApplicantsList({ filterData: { status: 'shortlisted' } });
                 if (isMounted) {
                     setTemplateList(response.results || []);
+                    const filtered_applicant = (applicants.results || []).filter(obj => {
+                        if (obj.offers_tracking)
+                            return false;
+                        if (obj.offer_letters && obj.offer_letters.length > 0)
+                            if (obj.offer_letters[obj.offer_letters.length - 1]?.status === 'rejected')
+                                return true;
+                        return false;
+                    });
+                    console.log(filtered_applicant);
                     const applicant_dropdown = getDropdownListWithExtraKeys(
-                        (applicants.results || []).filter(obj => (!obj.offers_tracking || obj.offers_tracking.length === 0)),
+                        filtered_applicant,
                         'serial_id',
                         'id',
                         ['recruitment_shortlist', 'job_title', 'location'],
@@ -142,7 +151,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                                 label: "Applicant",
                                 required: true,
                                 options: Applicants,
-                                disabled: initialData.applicant,
+                                disabled: initialData.applicant || id || offer_id,
                                 onFieldUpdate: async (_, value, __, handleChange) => {
                                     const applicant = Applicants.find(obj => obj.value === value);
                                     handleChange('expected_joining_date', applicant.recruitment_shortlist.expected_joining_date);
@@ -162,6 +171,7 @@ const GenerateOffer = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                                 InputField: NumberInput,
                                 name: `offered_salary`,
                                 label: "Offered Salary",
+                                required: true,
                             },
                             {
                                 InputField: DateInput,
