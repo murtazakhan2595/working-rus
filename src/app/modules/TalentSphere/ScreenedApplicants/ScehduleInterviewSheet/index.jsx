@@ -18,6 +18,7 @@ import {
 import { getEmailTemplateList } from "app/hooks/talentSphere";
 import { getInterviewTypeList } from "app/hooks/talentSphere";
 import { TimePicker } from "components/FormControl";
+import moment from "moment";
 
 
 const INTERVIEW_FORM_STRUCTURE = {
@@ -124,22 +125,20 @@ const ScheduleInterviewSheet = ({
   }
 
   const validateForm = (values) => {
-
-    if (!values.scheduled_datetime) {
-      toast.error("Please select a scheduled date and time")
-      return false
+    const errors = {};
+    if (values.scheduled_datetime) {
+      if (moment(values.scheduled_datetime).isSameOrBefore(moment()))
+        errors.scheduled_datetime = 'Interview cannot be schedule is past time.';
     }
     if (!values.panel || values.panel.length === 0) {
-      toast.error("Please select at least one panel member")
-      return false
+      errors.panel = 'At least one panelist is required.'
     }
-    return true
+    return errors;
   }
 
   const handleSubmit = async (values) => {
     setIsSubmittingForm(true)
     try {
-      if (!validateForm(values)) return
       const payload = {
         applicant: applicant,
         interview_type: values.interview_type || null,
@@ -261,6 +260,7 @@ const ScheduleInterviewSheet = ({
     cancelButtonText: "Cancel",
     columns: 2,
     renderUpdatedFormValues: setFormValues,
+    validateFormSchema: validateForm,
     formFields,
     disableSubmit: isLoading || isSubmittingForm,
     loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
