@@ -625,6 +625,9 @@ export async function mapApplicantsData(data) {
             case "candidate_name":
                 RecordDetails[key] = value?.trim?.() || "";
                 break;
+            case "ai_match_score":
+                RecordDetails[key] = `${parseFloat(value || 0) * 100}%`;
+                break;
             case "status":
                 RecordDetails.status = value === "resume_bank" ? "Resume Bank" : value === "in_progress" ? "In Progress" : value;
                 break;
@@ -1125,43 +1128,43 @@ export function mapInterviewPayloadData(data, id) {
 //-------------InterviewFeedbacks ---------------
 
 export function mapInterviewFeedbackData(data) {
-  const RecordDetails = Object.keys(InterviewFeedback).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      if (key === "comments") acc[key] = data[key]?.trim();
-      else acc[key] = data[key];
-    }
-    return acc;
-  }, {});
+    const RecordDetails = Object.keys(InterviewFeedback).reduce((acc, key) => {
+        if (data.hasOwnProperty(key)) {
+            if (key === "comments") acc[key] = data[key]?.trim();
+            else acc[key] = data[key];
+        }
+        return acc;
+    }, {});
 
-  return RecordDetails;
+    return RecordDetails;
 }
 
 export async function mapInterviewFeedbackList(data) {
-  if (!Array.isArray(data) || data.length === 0) return [];
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-  // Step 1: Map feedback details
-  const DataList = data.map((record) => {
-    const details = mapInterviewFeedbackData(record);
-    return {
-      ...details,
-    };
-  });
-  // Step 2: Get unique interview IDs sorted ascending
-  const uniqueInterviews = [...new Set(DataList.map(fb => fb.interview))].sort((a, b) => a - b);
+    // Step 1: Map feedback details
+    const DataList = data.map((record) => {
+        const details = mapInterviewFeedbackData(record);
+        return {
+            ...details,
+        };
+    });
+    // Step 2: Get unique interview IDs sorted ascending
+    const uniqueInterviews = [...new Set(DataList.map(fb => fb.interview))].sort((a, b) => a - b);
 
-  // Step 3: Map interview IDs to names (Interview 01, 02, ...)
-  const interviewNames = uniqueInterviews.reduce((acc, interviewId, index) => {
-    acc[interviewId] = `Interview ${String(index + 1).padStart(2, "0")}`;
-    return acc;
-  }, {});
+    // Step 3: Map interview IDs to names (Interview 01, 02, ...)
+    const interviewNames = uniqueInterviews.reduce((acc, interviewId, index) => {
+        acc[interviewId] = `Interview ${String(index + 1).padStart(2, "0")}`;
+        return acc;
+    }, {});
 
-  // Step 4: Add interview_name field to each feedback
-  const indexedFeedbacks = DataList.map(fb => ({
-    ...fb,
-    interview_name: interviewNames[fb.interview] || null,
-  }));
+    // Step 4: Add interview_name field to each feedback
+    const indexedFeedbacks = DataList.map(fb => ({
+        ...fb,
+        interview_name: interviewNames[fb.interview] || null,
+    }));
 
-  return indexedFeedbacks;
+    return indexedFeedbacks;
 }
 
 
