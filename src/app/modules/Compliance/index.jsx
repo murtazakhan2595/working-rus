@@ -46,7 +46,6 @@ const Compliance = () => {
   const [activeProfessionalSubTab, setActiveProfessionalSubTab] = useState(
     "license-certificates"
   );
-  const [activeRatioSubTab, setActiveRatioSubTab] = useState("current-ratios");
   const [activeTrainingSubTab, setActiveTrainingSubTab] =
     useState("training-modules");
   const [activeSOPSubTab, setActiveSOPSubTab] = useState("hr-policies");
@@ -70,6 +69,14 @@ const Compliance = () => {
     licenseType: "All Types",
     status: "All Statuses",
     expiryDateRange: null, // Will be string format "YYYY-MM-DD,YYYY-MM-DD"
+  });
+
+  // Compliance Ratio filter states
+  const [complianceFilters, setComplianceFilters] = useState({
+    branchSearch: "",
+    country: "All Countries",
+    city: "All Cities",
+    complianceStatus: "All Statuses",
   });
 
   // License data state
@@ -287,6 +294,43 @@ const Compliance = () => {
     }));
   };
 
+  // Handle compliance ratio filter changes
+  const handleComplianceFilterChange = (filterType, value) => {
+    setComplianceFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
+  // Filter compliance ratio data
+  const getFilteredComplianceData = () => {
+    let filtered = [...complianceRatioData];
+
+    // Search by branch name
+    if (complianceFilters.branchSearch) {
+      filtered = filtered.filter((item) =>
+        item.branch.toLowerCase().includes(complianceFilters.branchSearch.toLowerCase())
+      );
+    }
+
+    // Filter by country
+    if (complianceFilters.country !== "All Countries") {
+      filtered = filtered.filter((item) => item.country === complianceFilters.country);
+    }
+
+    // Filter by city
+    if (complianceFilters.city !== "All Cities") {
+      filtered = filtered.filter((item) => item.city === complianceFilters.city);
+    }
+
+    // Filter by compliance status
+    if (complianceFilters.complianceStatus !== "All Statuses") {
+      filtered = filtered.filter((item) => item.status === complianceFilters.complianceStatus);
+    }
+
+    return filtered;
+  };
+
   // Calculate dashboard metrics
   const getDashboardMetrics = () => {
     const totalFacilities = facilityLicenses.length;
@@ -334,7 +378,7 @@ const Compliance = () => {
     },
     {
       id: "ratio",
-      title: "Ratio Compliance",
+      title: "Compliance Ratio",
       percentage: 95,
       status: "valid",
       icon: Scale,
@@ -747,8 +791,8 @@ const Compliance = () => {
     {
       id: "ratio",
       icon: Scale,
-      label: "Ratio",
-      fullName: "Ratio Compliance",
+      label: " Compliance Ratio",
+      fullName: "Compliance Ratio",
       value: "95%",
       color: "text-orange-600",
       bgColor: "bg-orange-50",
@@ -1036,85 +1080,109 @@ const Compliance = () => {
     },
   ];
 
-  // Dummy data for Ratio Compliance table
-  const ratioComplianceData = [
+  // Dummy data for Compliance Ratio table
+  const complianceRatioData = [
     {
       id: 1,
-      facility: "Dubai Mall Pharmacy",
-      region: "Dubai",
-      pharmacists: 4,
-      technicians: 6,
-      requiredRatio: "1:2",
-      currentRatio: "1:1.5",
+      branch: "Dubai Mall Pharmacy",
+      country: "UAE",
+      city: "Dubai",
+      requiredRatio: 95,
+      currentRatio: 98,
       status: "Compliant",
     },
     {
       id: 2,
-      facility: "Abu Dhabi Marina Pharmacy",
-      region: "Abu Dhabi",
-      pharmacists: 3,
-      technicians: 7,
-      requiredRatio: "1:2",
-      currentRatio: "1:2.33",
+      branch: "Abu Dhabi Marina Pharmacy",
+      country: "UAE",
+      city: "Abu Dhabi",
+      requiredRatio: 95,
+      currentRatio: 92,
       status: "At Risk",
     },
     {
       id: 3,
-      facility: "Sharjah City Center Pharmacy",
-      region: "Sharjah",
-      pharmacists: 2,
-      technicians: 5,
-      requiredRatio: "1:2",
-      currentRatio: "1:2.5",
+      branch: "Sharjah City Center Pharmacy",
+      country: "UAE",
+      city: "Sharjah",
+      requiredRatio: 95,
+      currentRatio: 88,
       status: "Non-Compliant",
     },
     {
       id: 4,
-      facility: "Al Ain Pharmacy",
-      region: "Abu Dhabi",
-      pharmacists: 2,
-      technicians: 3,
-      requiredRatio: "1:2",
-      currentRatio: "1:1.5",
+      branch: "Al Ain Pharmacy",
+      country: "UAE",
+      city: "Al Ain",
+      requiredRatio: 95,
+      currentRatio: 96,
       status: "Compliant",
     },
     {
       id: 5,
-      facility: "Dubai Healthcare City Pharmacy",
-      region: "Dubai",
-      pharmacists: 5,
-      technicians: 8,
-      requiredRatio: "1:2",
-      currentRatio: "1:1.6",
+      branch: "Dubai Healthcare City Pharmacy",
+      country: "UAE",
+      city: "Dubai",
+      requiredRatio: 95,
+      currentRatio: 97,
+      status: "Compliant",
+    },
+    {
+      id: 6,
+      branch: "Fujairah Pharmacy",
+      country: "UAE",
+      city: "Fujairah",
+      requiredRatio: 95,
+      currentRatio: 90,
+      status: "At Risk",
+    },
+    {
+      id: 7,
+      branch: "Ajman Pharmacy",
+      country: "UAE",
+      city: "Ajman",
+      requiredRatio: 95,
+      currentRatio: 85,
+      status: "Non-Compliant",
+    },
+    {
+      id: 8,
+      branch: "Ras Al Khaimah Pharmacy",
+      country: "UAE",
+      city: "Ras Al Khaimah",
+      requiredRatio: 95,
+      currentRatio: 94,
       status: "Compliant",
     },
   ];
 
-  // Column definitions for Ratio Compliance table
-  const ratioComplianceColumns = [
+  // Column definitions for Compliance Ratio table
+  const complianceRatioColumns = [
     {
-      dataField: "facility",
-      text: "Facility",
+      dataField: "branch",
+      text: "Branch",
     },
     {
-      dataField: "region",
-      text: "Region",
+      dataField: "country",
+      text: "Country",
     },
     {
-      dataField: "pharmacists",
-      text: "Pharmacists",
-    },
-    {
-      dataField: "technicians",
-      text: "Technicians",
+      dataField: "city",
+      text: "City",
     },
     {
       dataField: "requiredRatio",
-      text: "Required Ratio",
+      text: "Required Ratio (%)",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.requiredRatio}%</span>
+      ),
     },
     {
       dataField: "currentRatio",
-      text: "Current Ratio",
+      text: "Current Ratio (%)",
+      formatter: (cell, row) => (
+        <span className="font-semibold">{row.currentRatio}%</span>
+      ),
     },
     {
       dataField: "status",
@@ -1139,11 +1207,15 @@ const Compliance = () => {
       text: "Actions",
       formatter: (cell, row) => (
         <div className="flex space-x-2">
-          <Button variant="ghost" size="sm">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => {
+              console.log("View details for:", row);
+            }}
+            title="View Details"
+          >
             <Eye className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Edit className="w-4 h-4" />
           </Button>
         </div>
       ),
@@ -2454,158 +2526,172 @@ const Compliance = () => {
             </Tabs>
           </TabsContent>
 
-          {/* Ratio Compliance Tab */}
+          {/* Compliance Ratio Tab */}
           <TabsContent value="ratio">
-            {/* Sub Tabs */}
-            <Tabs
-              value={activeRatioSubTab}
-              onValueChange={setActiveRatioSubTab}
-              className="mb-6"
-            >
-              <TabsList className="grid-cols-4">
-                <TabsTrigger value="current-ratios">Current Ratios</TabsTrigger>
-                <TabsTrigger value="scheduling-compliance">
-                  Scheduling Compliance
-                </TabsTrigger>
-                <TabsTrigger value="historical-compliance">
-                  Historical Compliance
-                </TabsTrigger>
-                <TabsTrigger value="regulatory-requirements">
-                  Regulatory Requirements
-                </TabsTrigger>
-              </TabsList>
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-4 gap-6 mb-8">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Total Locations (Cities)</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Building className="w-5 h-5 text-blue-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">7</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500">Unique cities with branches</span>
+                  </div>
+                </div>
+              </Card>
 
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Total Locations</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Building className="w-5 h-5 text-orange-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Total Branches</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Building className="w-5 h-5 text-green-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">238</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-gray-500">Being monitored</span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500">All branches</span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Compliant Locations</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Non-Compliant Count</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-red-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">226</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
-                        95% of total
-                      </span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-red-500 font-medium mr-1">
+                      Branches marked as Non-Compliant
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Non-Compliant</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
-                    </div>
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-medium">Average Compliance %</h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <Scale className="w-5 h-5 text-orange-400" />
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">12</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-red-500 font-medium mr-1">
-                        Require attention
-                      </span>
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-bold text-gray-900">92.5%</p>
+                  <div className="flex items-center text-sm">
+                    <span className="text-orange-500 font-medium mr-1">
+                      Across all branches
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
+            </div>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium">Avg. Compliance</h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Scale className="w-5 h-5 text-orange-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-3xl font-bold text-gray-900">95%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-orange-500 font-medium mr-1">
-                        ↑ 3%
-                      </span>
-                      <span className="text-gray-500">from last quarter</span>
-                    </div>
-                  </div>
-                </Card>
+            {/* Filters Above Data Table */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Search by Branch Name
+                  </label>
+                  <input
+                    type="text"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                    placeholder="Find a specific branch quickly"
+                    value={complianceFilters.branchSearch}
+                    onChange={(e) =>
+                      handleComplianceFilterChange("branchSearch", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Country
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={complianceFilters.country}
+                    onChange={(e) =>
+                      handleComplianceFilterChange("country", e.target.value)
+                    }
+                  >
+                    <option value="All Countries">All Countries</option>
+                    <option value="UAE">UAE</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    City
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={complianceFilters.city}
+                    onChange={(e) =>
+                      handleComplianceFilterChange("city", e.target.value)
+                    }
+                  >
+                    <option value="All Cities">All Cities</option>
+                    <option value="Dubai">Dubai</option>
+                    <option value="Abu Dhabi">Abu Dhabi</option>
+                    <option value="Sharjah">Sharjah</option>
+                    <option value="Al Ain">Al Ain</option>
+                    <option value="Fujairah">Fujairah</option>
+                    <option value="Ajman">Ajman</option>
+                    <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Compliance Status
+                  </label>
+                  <select
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={complianceFilters.complianceStatus}
+                    onChange={(e) =>
+                      handleComplianceFilterChange("complianceStatus", e.target.value)
+                    }
+                  >
+                    <option value="All Statuses">All Statuses</option>
+                    <option value="Compliant">Compliant</option>
+                    <option value="At Risk">At Risk</option>
+                    <option value="Non-Compliant">Non-Compliant</option>
+                  </select>
+                </div>
               </div>
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="successOutline"
+                  className="flex items-center"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
 
-              {/* Sub Tab Content */}
-              <TabsContent value="current-ratios">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Pharmacist-to-Technician Ratio Compliance
-                  </h2>
-                  <TableCustom
-                    columns={ratioComplianceColumns}
-                    data={ratioComplianceData}
-                    pagination={true}
-                    dataTotalSize={ratioComplianceData.length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="scheduling-compliance">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Scheduling Compliance
-                  </h2>
-                  <TableCustom
-                    columns={ratioComplianceColumns}
-                    data={ratioComplianceData.slice(0, 3)}
-                    pagination={true}
-                    dataTotalSize={3}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="historical-compliance">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Historical Compliance
-                  </h2>
-                  <TableCustom
-                    columns={ratioComplianceColumns}
-                    data={ratioComplianceData.slice(2, 5)}
-                    pagination={true}
-                    dataTotalSize={3}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="regulatory-requirements">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-4">
-                    Regulatory Requirements
-                  </h2>
-                  <TableCustom
-                    columns={ratioComplianceColumns}
-                    data={ratioComplianceData}
-                    pagination={true}
-                    dataTotalSize={ratioComplianceData.length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
+            {/* Compliance Ratio Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Compliance Ratio by Branch</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TableCustom
+                  columns={complianceRatioColumns}
+                  data={getFilteredComplianceData()}
+                  pagination={true}
+                  dataTotalSize={getFilteredComplianceData().length}
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* SOP & Policy Tab */}
