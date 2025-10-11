@@ -117,7 +117,7 @@ export const StatusIcon = ({ status }) => {
 };
 
 const StatusLabel = React.forwardRef(
-  ({ status, key, variant, className, size, iconVariant, ...props }, ref) => {
+  ({ status, key, variant, className, size, topLabel, iconVariant, ...props }, ref) => {
     const StatusVariant = variant ?? getStatusVariant(status);
     return (
       <Badge
@@ -132,6 +132,7 @@ const StatusLabel = React.forwardRef(
         key={key}
         size={size}
         {...props}
+        topLabel={topLabel}
       >
         {iconVariant && (
           <StatusIcon status={status} iconVariant={iconVariant} />
@@ -503,68 +504,68 @@ export const getDecision = (status) => {
   else return status;
 };
 
-export const JobStatusLabel = ({ label, type }) => {
-  if (!label) return "";
+// export const JobStatusLabel = ({ label, type }) => {
+//   if (!label) return "";
 
-  const getStylesByType = () => {
-    switch (type) {
-      case "status":
-        return {
-          bgColor:
-            label.toLowerCase() === "open"
-              ? "bg-green-100/50"
-              : "bg-red-100/50",
-          dotColor:
-            label.toLowerCase() === "open"
-              ? "before:bg-green-500"
-              : "before:bg-red-500",
-          textColor:
-            label.toLowerCase() === "open" ? "text-green-700" : "text-red-700",
-        };
-      case "employeeType":
-        return {
-          bgColor: "bg-blue-100/50",
-          dotColor: "before:bg-blue-500",
-          textColor: "text-blue-700",
-        };
-      case "workType":
-        return {
-          bgColor: "bg-purple-100/50",
-          dotColor: "before:bg-purple-500",
-          textColor: "text-purple-700",
-        };
-      case "workLocation":
-        return {
-          bgColor: "bg-orange-100/50",
-          dotColor: "before:bg-orange-500",
-          textColor: "text-orange-700",
-        };
-      case "jobType":
-        return {
-          bgColor: "bg-emerald-100/50",
-          dotColor: "before:bg-emerald-500",
-          textColor: "text-emerald-700",
-        };
-      default:
-        return {
-          bgColor: "bg-gray-100/50",
-          dotColor: "before:bg-gray-500",
-          textColor: "text-gray-700",
-        };
-    }
-  };
+//   const getStylesByType = () => {
+//     switch (type) {
+//       case "status":
+//         return {
+//           bgColor:
+//             label.toLowerCase() === "open"
+//               ? "bg-green-100/50"
+//               : "bg-red-100/50",
+//           dotColor:
+//             label.toLowerCase() === "open"
+//               ? "before:bg-green-500"
+//               : "before:bg-red-500",
+//           textColor:
+//             label.toLowerCase() === "open" ? "text-green-700" : "text-red-700",
+//         };
+//       case "employeeType":
+//         return {
+//           bgColor: "bg-blue-100/50",
+//           dotColor: "before:bg-blue-500",
+//           textColor: "text-blue-700",
+//         };
+//       case "workType":
+//         return {
+//           bgColor: "bg-purple-100/50",
+//           dotColor: "before:bg-purple-500",
+//           textColor: "text-purple-700",
+//         };
+//       case "workLocation":
+//         return {
+//           bgColor: "bg-orange-100/50",
+//           dotColor: "before:bg-orange-500",
+//           textColor: "text-orange-700",
+//         };
+//       case "jobType":
+//         return {
+//           bgColor: "bg-emerald-100/50",
+//           dotColor: "before:bg-emerald-500",
+//           textColor: "text-emerald-700",
+//         };
+//       default:
+//         return {
+//           bgColor: "bg-gray-100/50",
+//           dotColor: "before:bg-gray-500",
+//           textColor: "text-gray-700",
+//         };
+//     }
+//   };
 
-  const { bgColor, dotColor, textColor } = getStylesByType();
+//   const { bgColor, dotColor, textColor } = getStylesByType();
 
-  return (
-    <Badge
-      variant="secondary"
-      className={`relative pl-5 ${bgColor} ${textColor} before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full ${dotColor}`}
-    >
-      {label}
-    </Badge>
-  );
-};
+//   return (
+//     <Badge
+//       variant="secondary"
+//       className={`relative pl-5 ${bgColor} ${textColor} before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full ${dotColor}`}
+//     >
+//       {label}
+//     </Badge>
+//   );
+// };
 
 export const StatusList = ({ status_list, className, infoPrefix = "By" }) => {
   if (!status_list || !Array.isArray(status_list) || status_list.length === 0)

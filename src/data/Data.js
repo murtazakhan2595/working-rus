@@ -813,8 +813,8 @@ export const handleUpdateProfile = async (dispatch, data) => {
   const MyPermissions = await dispatch(fetchMyPermissions());
   await dispatch(fetchUser(userprofile.id));
   await dispatch(fetchUserPermittedModules({ modules: ModuleList.payload, permissions: MyPermissions.payload, }));
-  await dispatch(fetchEmployees());
   await dispatch(fetchEmployeesDetail());
+  dispatch(fetchEmployees());
   dispatch(fetchBranches());
   dispatch(fetchCountries());
   dispatch(fetchCurrencies());
