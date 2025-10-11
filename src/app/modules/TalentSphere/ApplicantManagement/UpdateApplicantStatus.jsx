@@ -57,6 +57,7 @@ const StatusConfig = {
                 name: "expected_joining_date",
                 required: true,
                 label: "Expected Joining Date",
+                minDate:new Date(),
             },
             {
                 InputField: TextAreaInput,

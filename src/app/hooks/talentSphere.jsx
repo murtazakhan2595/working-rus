@@ -67,6 +67,7 @@ import {
   mapRejectedApplicationPayloadData,
   mapResumeBankApplicantsList,
   mapInterviewData,
+  mapInterviewPayloadData,
   mapShortlistedApplicantPayloadData,
   mapBlacklistApplicantPayloadData,
 } from "app/utils/MappingObjects/mapTalentSphere";
@@ -1660,7 +1661,7 @@ export const getInterviewById = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
-      return {...ResponseData };
+      return { ...ResponseData };
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1679,10 +1680,9 @@ export const saveUpdateInterview = async (payload, id) => {
       : `${baseUrl}/interviews/`;
     const method = id ? "PATCH" : "POST";
     const expectedStatus = id ? 200 : 201;
-
-    const response = await axios({ method, url, data: payload, headers: headers() });
+    const finalPayload = mapInterviewPayloadData(payload);
+    const response = await axios({ method, url, data: finalPayload, headers: headers() });
     if (response.status === expectedStatus) return response.data;
-
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
@@ -1837,7 +1837,7 @@ export const getFeedBackFormList = async (payload) => {
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
-    
+
     console.error("Error getting regions list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();

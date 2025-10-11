@@ -17,8 +17,11 @@ import {
 } from "app/hooks/talentSphere"
 import { getEmailTemplateList } from "app/hooks/talentSphere";
 import { getInterviewTypeList } from "app/hooks/talentSphere";
+import { Interview } from "app/utils/Types/TalentSphere";
 import { TimePicker } from "components/FormControl";
 import moment from "moment";
+import { getFeedBackFormList } from "app/hooks/talentSphere";
+import { renderDate } from "utils/renderValues";
 
 
 const INTERVIEW_FORM_STRUCTURE = {
@@ -54,11 +57,12 @@ const ScheduleInterviewSheet = ({
 }) => {
   const dispatch = useDispatch()
   const Employees = GetDispatchStateList("employees_detail", "emp");
-  const [formValues, setFormValues] = useState({})
+  const [formValues, setFormValues] = useState(Interview)
   const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState(INTERVIEW_FORM_STRUCTURE)
+  const [formData, setFormData] = useState(Interview)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
   const [emailTemplates, setEmailTemplateOptions] = useState([]);
+  const [feedbackFormOptions, setFeedbackFormOptions] = useState([]);
   const [InterviewTypeOptions, setInterviewTypeOptions] = useState([]);
 
   const FormSheetData = {
@@ -76,9 +80,11 @@ const ScheduleInterviewSheet = ({
         const filterData = { is_active: true };
         const template = await getEmailTemplateList({ filterData });
         const types = await getInterviewTypeList({ filterData });
+        const forms = await getFeedBackFormList({ filterData: { status: 'Active' } });
         if (isMounted) {
           setInterviewTypeOptions(types.results);
           setEmailTemplateOptions(template.results);
+          setFeedbackFormOptions(forms.results);
         }
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -139,28 +145,30 @@ const ScheduleInterviewSheet = ({
   const handleSubmit = async (values) => {
     setIsSubmittingForm(true)
     try {
-      const payload = {
-        applicant: applicant,
-        interview_type: values.interview_type || null,
-        scheduled_datetime: new Date(values.scheduled_datetime).toISOString(),
-        panel: values.panel,
-        email_template: values.email_template || null,
-        generate_meeting_link: Boolean(values.generate_meeting_link),
-        require_demographics: Boolean(values.require_demographics),
-        status: values.status || "scheduled",
+      // const payload = {
+      //   applicant: applicant,
+      //   interview_type: values.interview_type || null,
+      //   scheduled_datetime: new Date(values.scheduled_datetime).toISOString(),
+      //   panel: values.panel,
+      //   email_template: values.email_template || null,
+      //   generate_meeting_link: Boolean(values.generate_meeting_link),
+      //   require_demographics: Boolean(values.require_demographics),
+      //   status: values.status || "scheduled",
+      // }
+      const savedInterview = await saveUpdateInterview({ ...values, applicant: applicant })
+      if (savedInterview) {
+        if (id) await saveUpdateInterview({ status: 'rescheduled' }, id)
+        reloadData(true)
+        setIsOpen(false)
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: `Interview Scheduled Successfully`,
+          description: `Interview has beeon succesfully schedules with ${savedInterview.candidate_name} at ${renderDate(savedInterview.scheduled_datetime, '--', 'time')} on ${renderDate(savedInterview.scheduled_datetime, '--',)}`,
+        }
       }
-      const savedInterview = await saveUpdateInterview(payload)
-      if (savedInterview && id) {
-        await saveUpdateInterview({ status: 'rescheduled' }, id)
-      }
-      if (!savedInterview) throw new Error("Failed to save interview")
-      toast.success(`Interview Schedule successfully`)
-      reloadData(true)
-      setIsOpen(false)
-
     } catch (error) {
       console.error("Interview save error:", error)
-      toast.error(error.message || "Failed to save interview")
     } finally {
       setIsSubmittingForm(false)
     }
@@ -228,8 +236,13 @@ const ScheduleInterviewSheet = ({
         label: "Email Template",
         options: emailTemplates,
         required: true,
-        placeholder: "Select email template (optional)",
-        colsSpan: 2,
+      },
+      {
+        InputField: SelectInputComponent,
+        name: "interview_form",
+        label: "Feedback Form",
+        options: feedbackFormOptions,
+        required: true,
       },
       {
         InputField: RadioGroupInput,

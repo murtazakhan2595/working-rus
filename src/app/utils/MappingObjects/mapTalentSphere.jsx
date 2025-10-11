@@ -1114,9 +1114,7 @@ export function mapInterviewPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
-            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
-            else payload[key] = data[key];
+            payload[key] = data[key];
         }
     }
 

@@ -294,7 +294,7 @@ export const VacancyDetails = [
       {
         key: "requisition_id",
         label: "Requisition ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"RR-"} />,
+        formatter: (cell) => <FormatID value={cell} prefix={"RR-"} />,
       },
       {
         key: "job_title",
@@ -304,6 +304,7 @@ export const VacancyDetails = [
       {
         key: "department",
         label: "Department",
+        formatter: (cell) => <DepartmentName value={cell} />,
       },
       {
         key: "job_type_name",

@@ -27,9 +27,9 @@ export default function InterviewTracker() {
         // ...(isViewScreenedPermitted ? ["Screened Application"] : []),
         // // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
 
-    ], [isViewInProgressPermitted,isViewHoldPermitted]);
+    ], [isViewInProgressPermitted, isViewHoldPermitted]);
 
-    if (!isViewInProgressPermitted&&!isViewHoldPermitted)
+    if (!isViewInProgressPermitted && !isViewHoldPermitted)
         return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
@@ -50,14 +50,12 @@ export default function InterviewTracker() {
                     </TabsList>
                 </div>
 
-                <Card>
-                    <TabsContent value={'In Progress'}>
-                        <AllApplicants variant={"in_progress"} />
-                    </TabsContent>
-                    <TabsContent value={'Hold Applications'}>
-                        <AllApplicants variant={"hold"} />
-                    </TabsContent>
-                </Card>
+                <TabsContent value={'In Progress'}>
+                    <AllApplicants variant={"in_progress"} />
+                </TabsContent>
+                <TabsContent value={'Hold Applications'}>
+                    <AllApplicants variant={"hold"} />
+                </TabsContent>
             </Tabs>
         </div>
     );

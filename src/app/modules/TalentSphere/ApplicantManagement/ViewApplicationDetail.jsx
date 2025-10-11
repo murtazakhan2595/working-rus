@@ -58,10 +58,11 @@ const ViewApplicationDetail = ({
         return null;
       }
       if (status === 'reschedule-interview') {
+
         const latest_interview = data?.latest_interview;
         setFormData({
           applicant: data.id,
-          id: latest_interview,
+          id: latest_interview?.id,
         });
         setOpenInterviewForm(true);
         return null;
@@ -76,7 +77,7 @@ const ViewApplicationDetail = ({
       if (status === 'add-feedback') {
         const latest_interview = data?.latest_interview;
         setFormData({
-          form: latest_interview?.feedback_form,
+          form: latest_interview?.interview_form,
           id: latest_interview?.id,
         });
         setOpenFeedbackForm(true);
@@ -164,7 +165,7 @@ const ViewApplicationDetail = ({
             const latest_interview = data?.latest_interview;
             if (!latest_interview || latest_interview.status !== 'scheduled') return null;
             const isInterViewDone = moment(latest_interview.scheduled_datetime).isSameOrBefore(moment());
-            // if (!isInterViewDone) return null;
+            if (!isInterViewDone) return null;
             const panelist_included = (latest_interview.panel || []).includes(user_id);
             const feedback_submitted = (data.interview_feedbacks || []).find(obj => (obj.panel_member === user_id && obj.interview === latest_interview.id));
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';
@@ -173,8 +174,6 @@ const ViewApplicationDetail = ({
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
-            console.log(Permissions, option.permission, 'bfhbsjhbfjhbsj')
-
             if (!Permissions[option.permission]) return <></>
             return (
               <Button
