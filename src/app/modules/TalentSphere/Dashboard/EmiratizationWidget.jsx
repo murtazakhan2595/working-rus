@@ -66,22 +66,22 @@ const EmiratizationWidget = ({ data, loading }) => {
     switch (metricTitle) {
       case "Total Emiratization Roles":
         // Navigate to dedicated emiratization requisitions page
-        navigate("/talent-sphere/emiratization-requisitions");
+        navigate("/talent-sphere/applicant-management/emiratization-requisitions");
         break;
 
       case "Applicants for Emiratization Roles":
         // Navigate to dedicated emiratization applicants page
-        navigate("/talent-sphere/emiratization-applicants?emiratization_flag=required");
+        navigate("/talent-sphere/applicant-management/emiratization-applicants?emiratization_flag=required");
         break;
 
       case "Shortlisted Emirati Applicants":
         // Navigate to dedicated emiratization shortlisted page
-        navigate("/talent-sphere/emiratization-shortlisted?emiratization_flag=required");
+        navigate("/talent-sphere/applicant-management/emiratization-shortlisted?emiratization_flag=required");
         break;
 
       case "Hired Emirati Applicants":
         // Navigate to dedicated emiratization hired page
-        navigate("/talent-sphere/emiratization-hired?emiratization_flag=required");
+        navigate("/talent-sphere/applicant-management/emiratization-hired?emiratization_flag=required");
         break;
 
       default:
