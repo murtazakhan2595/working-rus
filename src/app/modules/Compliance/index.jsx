@@ -843,7 +843,7 @@ const Compliance = () => {
                     className={`text-sm mb-1 
                     ${
                       activeTab === stat.id && vs2
-                        ? "text-plum-900"
+                        ? "text-primary-900"
                         : "text-black"
                     }
                     `}
@@ -854,7 +854,7 @@ const Compliance = () => {
                     <div
                       className={`text-2xl font-semibold  ${
                         activeTab === stat.id && vs2
-                          ? "text-plum-900"
+                          ? "text-primary-900"
                           : "text-black"
                       }`}
                     >
