@@ -17,7 +17,11 @@ import {
   EditLicenseModal,
   DeleteLicenseModal,
 } from "components/Compliance";
-import { DateRangeInput, SelectInputComponent } from "components/FormControl";
+import {
+  DateRangeInput,
+  SelectInputComponent,
+  TextInput,
+} from "components/FormControl";
 import {
   Building,
   Scale,
@@ -795,7 +799,7 @@ const Compliance = () => {
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
-            </Button>
+          </Button>
           {(row.status === "Expiring Soon" || row.status === "Active") && (
             <Button
               variant="ghost"
@@ -804,7 +808,7 @@ const Compliance = () => {
               title="Proceed for Renewal"
             >
               <RotateCcw className="w-4 h-4" />
-          </Button>
+            </Button>
           )}
         </div>
       ),
@@ -877,7 +881,7 @@ const Compliance = () => {
                     variant="inner-tab"
                   >
                     {stat.title}
-            </TabsTrigger>
+                  </TabsTrigger>
                 );
               })}
             </TabsList>
@@ -957,95 +961,95 @@ const Compliance = () => {
                   const metrics = getDashboardMetrics();
                   return (
                     <>
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
                           <h3 className="text-sm font-medium text-black">
                             Total Facilities
                           </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Building className="w-5 h-5 text-purple-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <Building className="w-5 h-5 text-purple-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
                           <p className="text-3xl font-bold text-black">
                             {metrics.totalFacilities}
                           </p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
+                          <div className="flex items-center text-sm">
+                            <span className="text-green-500 font-medium mr-1">
                               ↑ {Math.floor(metrics.totalFacilities * 0.05)}
-                      </span>
+                            </span>
                             <span className="text-gray-700">
                               from last year
                             </span>
-                    </div>
-                  </div>
-                </Card>
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
                           <h3 className="text-sm font-medium text-black">
                             Licenses Expiring
                           </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <AlertTriangle className="w-5 h-5 text-orange-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
                           <p className="text-3xl font-bold text-black">
                             {metrics.expiringSoon}
                           </p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-yellow-500 font-medium">
-                        Within 60 days
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                          <div className="flex items-center text-sm">
+                            <span className="text-yellow-500 font-medium">
+                              Within 60 days
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
                           <h3 className="text-sm font-medium text-black">
                             Renewal In Progress
                           </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <RefreshCw className="w-5 h-5 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <RefreshCw className="w-5 h-5 text-blue-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
                           <p className="text-3xl font-bold text-black">
                             {metrics.renewalInProgress}
                           </p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-blue-500 font-medium">
-                        Applications submitted
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                          <div className="flex items-center text-sm">
+                            <span className="text-blue-500 font-medium">
+                              Applications submitted
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                      <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
                           <h3 className="text-sm font-medium text-black">
                             Compliance Rate
                           </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
                           <p className="text-3xl font-bold text-black">
                             {metrics.complianceRate}%
                           </p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
+                          <div className="flex items-center text-sm">
+                            <span className="text-green-500 font-medium mr-1">
                               ↑ {Math.floor(metrics.complianceRate * 0.02)}%
-                      </span>
+                            </span>
                             <span className="text-gray-700">
                               from last quarter
                             </span>
-                    </div>
-                  </div>
-                </Card>
+                          </div>
+                        </div>
+                      </Card>
                     </>
                   );
                 })()}
@@ -1208,107 +1212,100 @@ const Compliance = () => {
 
           {/* License & Certificates Tab */}
           <TabsContent value="license-certificates">
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-4 gap-6 mb-8">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Total Employees
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">245</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-gray-700">
                       with licenses/certificates
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Expiring within 60 Days
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">18</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Require attention
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Renewal in Progress
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <RefreshCw className="w-5 h-5 text-blue-400" />
-                    </div>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <RefreshCw className="w-5 h-5 text-blue-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">12</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-blue-500 font-medium">
-                        Applications submitted
-                      </span>
-                    </div>
+                  <div className="flex items-center text-sm">
+                    <span className="text-blue-500 font-medium">
+                      Applications submitted
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Compliance Ratio
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">94%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium mr-1">
+                  <div className="flex items-center text-sm">
+                    <span className="text-green-500 font-medium mr-1">
                       ↑ 2%
-                      </span>
+                    </span>
                     <span className="text-gray-700">from last quarter</span>
-                    </div>
                   </div>
-                </Card>
-              </div>
+                </div>
+              </Card>
+            </div>
 
-              {/* Filters and Actions */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center space-x-4">
-                  <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">
-                    Search by Employee Name / ID
-                    </label>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                    placeholder="Search employee..."
+            {/* Filters and Actions */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <TextInput
+                    name="search"
+                    label="Search by Employee Name / ID"
                     value={licenseCertificatesFilters.search}
-                    onChange={(e) =>
-                      handleLicenseCertificatesFilterChange(
-                        "search",
-                        e.target.value
-                      )
-                    }
+                    onChange={handleLicenseCertificatesFilterChange}
+                    placeholder="Search employee..."
+                    className="w-64"
                   />
-                  </div>
-                  <div>
+                </div>
+                <div>
                   <SelectInputComponent
                     name="branch"
                     label="Branch"
@@ -1316,10 +1313,22 @@ const Compliance = () => {
                     onChange={handleLicenseCertificatesFilterChange}
                     options={[
                       { label: "All Branches", value: "All Branches" },
-                      { label: "Dubai Mall Pharmacy", value: "Dubai Mall Pharmacy" },
-                      { label: "Abu Dhabi Marina Pharmacy", value: "Abu Dhabi Marina Pharmacy" },
-                      { label: "Sharjah City Center Pharmacy", value: "Sharjah City Center Pharmacy" },
-                      { label: "Dubai Healthcare City Pharmacy", value: "Dubai Healthcare City Pharmacy" },
+                      {
+                        label: "Dubai Mall Pharmacy",
+                        value: "Dubai Mall Pharmacy",
+                      },
+                      {
+                        label: "Abu Dhabi Marina Pharmacy",
+                        value: "Abu Dhabi Marina Pharmacy",
+                      },
+                      {
+                        label: "Sharjah City Center Pharmacy",
+                        value: "Sharjah City Center Pharmacy",
+                      },
+                      {
+                        label: "Dubai Healthcare City Pharmacy",
+                        value: "Dubai Healthcare City Pharmacy",
+                      },
                       { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
                     ]}
                     className="w-48"
@@ -1334,7 +1343,10 @@ const Compliance = () => {
                     options={[
                       { label: "All Designations", value: "All Designations" },
                       { label: "Pharmacist", value: "Pharmacist" },
-                      { label: "Pharmacy Technician", value: "Pharmacy Technician" },
+                      {
+                        label: "Pharmacy Technician",
+                        value: "Pharmacy Technician",
+                      },
                       { label: "Manager", value: "Manager" },
                       { label: "Supervisor", value: "Supervisor" },
                       { label: "Cashier", value: "Cashier" },
@@ -1355,15 +1367,15 @@ const Compliance = () => {
                     ]}
                     className="w-48"
                   />
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                <Button variant="successOutline" className="flex items-center">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
                 </div>
               </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="successOutline" className="flex items-center">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
 
             {/* Employee Licenses & Certificates Table */}
             <Card>
@@ -1371,50 +1383,50 @@ const Compliance = () => {
                 <CardTitle>Employee Licenses & Certificates</CardTitle>
               </CardHeader>
               <CardContent>
-                  <TableCustom
+                <TableCustom
                   columns={employeeLicensesColumns}
                   data={getFilteredLicenseCertificatesData()}
-                    pagination={true}
+                  pagination={true}
                   dataTotalSize={getFilteredLicenseCertificatesData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Mandatory Training Tab */}
           <TabsContent value="training">
-              {/* Dashboard Cards */}
+            {/* Dashboard Cards */}
             <div className="grid grid-cols-5 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Total Assigned Trainings
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <GraduationCap className="w-5 h-5 text-blue-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">8</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-gray-700">
                       All mandatory trainings assigned
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Completed Trainings
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">3</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium">
@@ -1435,57 +1447,57 @@ const Compliance = () => {
                 </div>
                 <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">3</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-blue-500 font-medium">
+                  <div className="flex items-center text-sm">
+                    <span className="text-blue-500 font-medium">
                       Currently being completed
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Pending / Overdue Trainings
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">2</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Due or not started
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Compliance %
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Scale className="w-5 h-5 text-purple-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">37.5%</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-purple-500 font-medium">
                       Training completion rate
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
-              </div>
+                </div>
+              </Card>
+            </div>
 
             {/* Filters */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center space-x-4">
-                  <div>
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
                   <SelectInputComponent
                     name="branch"
                     label="Branch"
@@ -1493,16 +1505,28 @@ const Compliance = () => {
                     onChange={handleTrainingFilterChange}
                     options={[
                       { label: "All Branches", value: "All Branches" },
-                      { label: "Dubai Mall Pharmacy", value: "Dubai Mall Pharmacy" },
-                      { label: "Abu Dhabi Marina Pharmacy", value: "Abu Dhabi Marina Pharmacy" },
-                      { label: "Sharjah City Center Pharmacy", value: "Sharjah City Center Pharmacy" },
-                      { label: "Dubai Healthcare City Pharmacy", value: "Dubai Healthcare City Pharmacy" },
+                      {
+                        label: "Dubai Mall Pharmacy",
+                        value: "Dubai Mall Pharmacy",
+                      },
+                      {
+                        label: "Abu Dhabi Marina Pharmacy",
+                        value: "Abu Dhabi Marina Pharmacy",
+                      },
+                      {
+                        label: "Sharjah City Center Pharmacy",
+                        value: "Sharjah City Center Pharmacy",
+                      },
+                      {
+                        label: "Dubai Healthcare City Pharmacy",
+                        value: "Dubai Healthcare City Pharmacy",
+                      },
                       { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
                     ]}
                     className="w-48"
                   />
-                  </div>
-                  <div>
+                </div>
+                <div>
                   <SelectInputComponent
                     name="department"
                     label="Department"
@@ -1511,7 +1535,10 @@ const Compliance = () => {
                     options={[
                       { label: "All Departments", value: "All Departments" },
                       { label: "Pharmacist", value: "Pharmacist" },
-                      { label: "Pharmacy Technician", value: "Pharmacy Technician" },
+                      {
+                        label: "Pharmacy Technician",
+                        value: "Pharmacy Technician",
+                      },
                       { label: "Manager", value: "Manager" },
                       { label: "Supervisor", value: "Supervisor" },
                       { label: "Cashier", value: "Cashier" },
@@ -1527,12 +1554,30 @@ const Compliance = () => {
                     onChange={handleTrainingFilterChange}
                     options={[
                       { label: "All Programs", value: "All Programs" },
-                      { label: "UAE Labor Law Compliance", value: "UAE Labor Law Compliance" },
-                      { label: "Workplace Safety & Health", value: "Workplace Safety & Health" },
-                      { label: "UAE Pharmacy Regulations", value: "UAE Pharmacy Regulations" },
-                      { label: "Fire Safety & Emergency Response", value: "Fire Safety & Emergency Response" },
-                      { label: "Data Privacy & GDPR Compliance", value: "Data Privacy & GDPR Compliance" },
-                      { label: "Patient Counseling Excellence", value: "Patient Counseling Excellence" },
+                      {
+                        label: "UAE Labor Law Compliance",
+                        value: "UAE Labor Law Compliance",
+                      },
+                      {
+                        label: "Workplace Safety & Health",
+                        value: "Workplace Safety & Health",
+                      },
+                      {
+                        label: "UAE Pharmacy Regulations",
+                        value: "UAE Pharmacy Regulations",
+                      },
+                      {
+                        label: "Fire Safety & Emergency Response",
+                        value: "Fire Safety & Emergency Response",
+                      },
+                      {
+                        label: "Data Privacy & GDPR Compliance",
+                        value: "Data Privacy & GDPR Compliance",
+                      },
+                      {
+                        label: "Patient Counseling Excellence",
+                        value: "Patient Counseling Excellence",
+                      },
                     ]}
                     className="w-48"
                   />
@@ -1566,15 +1611,15 @@ const Compliance = () => {
                     ]}
                     className="w-48"
                   />
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                <Button variant="successOutline" className="flex items-center">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
                 </div>
               </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="successOutline" className="flex items-center">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
 
             {/* Mandatory Training Table */}
             <Card>
@@ -1582,114 +1627,107 @@ const Compliance = () => {
                 <CardTitle>Mandatory Training Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                  <TableCustom
+                <TableCustom
                   columns={mandatoryTrainingColumns}
                   data={getFilteredTrainingData()}
-                    pagination={true}
+                  pagination={true}
                   dataTotalSize={getFilteredTrainingData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
               </CardContent>
             </Card>
-              </TabsContent>
+          </TabsContent>
 
           {/* Compliance Ratio Tab */}
           <TabsContent value="ratio">
-              {/* Dashboard Cards */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-4 gap-6 mb-8">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Total Locations (Cities)
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Building className="w-5 h-5 text-blue-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">7</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-gray-700">
                       Unique cities with branches
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Total Branches
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Building className="w-5 h-5 text-green-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">8</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-gray-700">All branches</span>
-                    </div>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Non-Compliant Count
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-red-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">2</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-red-500 font-medium mr-1">
                       Branches marked as Non-Compliant
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Average Compliance %
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Scale className="w-5 h-5 text-orange-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">92.5%</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium mr-1">
                       Across all branches
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
-              </div>
+                </div>
+              </Card>
+            </div>
 
             {/* Filters Above Data Table */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center space-x-4">
-                  <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">
-                    Search by Branch Name
-                    </label>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                    placeholder="Find a specific branch quickly"
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <TextInput
+                    name="branchSearch"
+                    label="Search by Branch Name"
                     value={complianceFilters.branchSearch}
-                    onChange={(e) =>
-                      handleComplianceFilterChange(
-                        "branchSearch",
-                        e.target.value
-                      )
-                    }
+                    onChange={handleComplianceFilterChange}
+                    placeholder="Find a specific branch quickly"
+                    className="w-64"
                   />
                 </div>
                 <div>
@@ -1739,14 +1777,14 @@ const Compliance = () => {
                     className="w-48"
                   />
                 </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                <Button variant="successOutline" className="flex items-center">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
-                </div>
               </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="successOutline" className="flex items-center">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
 
             {/* Compliance Ratio Table */}
             <Card>
@@ -1754,132 +1792,128 @@ const Compliance = () => {
                 <CardTitle>Compliance Ratio by Branch</CardTitle>
               </CardHeader>
               <CardContent>
-                  <TableCustom
+                <TableCustom
                   columns={complianceRatioColumns}
                   data={getFilteredComplianceData()}
-                    pagination={true}
+                  pagination={true}
                   dataTotalSize={getFilteredComplianceData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* SOP & Policy Tab */}
           <TabsContent value="sop">
-              {/* Dashboard Cards */}
+            {/* Dashboard Cards */}
             <div className="grid grid-cols-5 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Total Policies
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-blue-400" />
-                    </div>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-blue-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">8</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-gray-700">
                       Total number of policies/SOPs added
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Active Documents
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    </div>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">8</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium">
+                  <div className="flex items-center text-sm">
+                    <span className="text-green-500 font-medium">
                       Currently active or published
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Staff Acknowledged
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-purple-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">93%</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-purple-500 font-medium">
                       Overall acknowledgment compliance rate
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Pending Reviews
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
-                    </div>
+                  </h3>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">142</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Policies with incomplete acknowledgment
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
+                </div>
+              </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+              <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-black">
                     Due This Month
                   </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Clock className="w-5 h-5 text-red-400" />
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                   <p className="text-3xl font-bold text-black">2</p>
-                    <div className="flex items-center text-sm">
+                  <div className="flex items-center text-sm">
                     <span className="text-red-500 font-medium">
                       Policies reaching acknowledgment deadline
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                </Card>
-              </div>
+                </div>
+              </Card>
+            </div>
 
             {/* Filters */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-black-700 mb-1">
-                    Policy Name / Search
-                  </label>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                    placeholder="Search policies..."
+                  <TextInput
+                    name="policySearch"
+                    label="Policy Name / Search"
                     value={sopFilters.policySearch}
-                    onChange={(e) =>
-                      handleSopFilterChange("policySearch", e.target.value)
-                    }
+                    onChange={handleSopFilterChange}
+                    placeholder="Search policies..."
+                    className="w-64"
                   />
                 </div>
                 <div>
@@ -1922,10 +1956,22 @@ const Compliance = () => {
                     onChange={handleSopFilterChange}
                     options={[
                       { label: "All Branches", value: "All Branches" },
-                      { label: "Dubai Mall Pharmacy", value: "Dubai Mall Pharmacy" },
-                      { label: "Abu Dhabi Marina Pharmacy", value: "Abu Dhabi Marina Pharmacy" },
-                      { label: "Sharjah City Center Pharmacy", value: "Sharjah City Center Pharmacy" },
-                      { label: "Dubai Healthcare City Pharmacy", value: "Dubai Healthcare City Pharmacy" },
+                      {
+                        label: "Dubai Mall Pharmacy",
+                        value: "Dubai Mall Pharmacy",
+                      },
+                      {
+                        label: "Abu Dhabi Marina Pharmacy",
+                        value: "Abu Dhabi Marina Pharmacy",
+                      },
+                      {
+                        label: "Sharjah City Center Pharmacy",
+                        value: "Sharjah City Center Pharmacy",
+                      },
+                      {
+                        label: "Dubai Healthcare City Pharmacy",
+                        value: "Dubai Healthcare City Pharmacy",
+                      },
                       { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
                     ]}
                     className="w-48"
@@ -1959,13 +2005,13 @@ const Compliance = () => {
                 <CardTitle>SOP & Policy Acknowledgment Status</CardTitle>
               </CardHeader>
               <CardContent>
-                  <TableCustom
-                    columns={sopPolicyColumns}
+                <TableCustom
+                  columns={sopPolicyColumns}
                   data={getFilteredSopData()}
-                    pagination={true}
+                  pagination={true}
                   dataTotalSize={getFilteredSopData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                  tableOptions={{ page: 1, sizePerPage: 10 }}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -1995,83 +2041,83 @@ const Compliance = () => {
 
               {/* Sub Tab Content */}
               <TabsContent value="labor-law">
-              {/* Dashboard Cards */}
+                {/* Dashboard Cards */}
                 <div className="grid grid-cols-5 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Total Regulations Tracked
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-blue-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">25</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-gray-700">
                           Total number of UAE Labour Law regulations monitored
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Fully Compliant Areas
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">18</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium">
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
                           Number of regulation areas marked as "Compliant"
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         At Risk Areas
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">5</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Regulation areas nearing non-compliance
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Non-Compliant Areas
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">2</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Number of areas currently failing compliance
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
@@ -2080,18 +2126,18 @@ const Compliance = () => {
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Clock className="w-5 h-5 text-purple-400" />
-                </div>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">28 Jan</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           Date of last successful full compliance audit
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
 
                 {/* Filters */}
                 <div className="flex justify-between items-center mb-6">
@@ -2109,25 +2155,18 @@ const Compliance = () => {
                           { label: "Non-Compliant", value: "Non-Compliant" },
                         ]}
                         className="w-48"
-                  />
-                </div>
+                      />
+                    </div>
                     <div>
-                      <label className="block text-sm font-medium text-black-700 mb-1">
-                        Regulation Area
-                      </label>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                        placeholder="Search or filter by specific Labor law areas"
+                      <TextInput
+                        name="regulationArea"
+                        label="Regulation Area"
                         value={workforceFilters.regulationArea}
-                        onChange={(e) =>
-                          handleWorkforceFilterChange(
-                            "regulationArea",
-                            e.target.value
-                          )
-                        }
-                  />
-                </div>
+                        onChange={handleWorkforceFilterChange}
+                        placeholder="Search or filter by specific Labor law areas"
+                        className="w-64"
+                      />
+                    </div>
                     <div>
                       <SelectInputComponent
                         name="branch"
@@ -2136,11 +2175,26 @@ const Compliance = () => {
                         onChange={handleWorkforceFilterChange}
                         options={[
                           { label: "All Branches", value: "All Branches" },
-                          { label: "Dubai Mall Pharmacy", value: "Dubai Mall Pharmacy" },
-                          { label: "Abu Dhabi Marina Pharmacy", value: "Abu Dhabi Marina Pharmacy" },
-                          { label: "Sharjah City Center Pharmacy", value: "Sharjah City Center Pharmacy" },
-                          { label: "Dubai Healthcare City Pharmacy", value: "Dubai Healthcare City Pharmacy" },
-                          { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
+                          {
+                            label: "Dubai Mall Pharmacy",
+                            value: "Dubai Mall Pharmacy",
+                          },
+                          {
+                            label: "Abu Dhabi Marina Pharmacy",
+                            value: "Abu Dhabi Marina Pharmacy",
+                          },
+                          {
+                            label: "Sharjah City Center Pharmacy",
+                            value: "Sharjah City Center Pharmacy",
+                          },
+                          {
+                            label: "Dubai Healthcare City Pharmacy",
+                            value: "Dubai Healthcare City Pharmacy",
+                          },
+                          {
+                            label: "Al Ain Pharmacy",
+                            value: "Al Ain Pharmacy",
+                          },
                         ]}
                         className="w-48"
                       />
@@ -2180,13 +2234,13 @@ const Compliance = () => {
                     <CardTitle>UAE Labor Law Compliance Status</CardTitle>
                   </CardHeader>
                   <CardContent>
-                  <TableCustom
+                    <TableCustom
                       columns={workforceRegulationsColumns}
                       data={getFilteredWorkforceData()}
-                    pagination={true}
+                      pagination={true}
                       dataTotalSize={getFilteredWorkforceData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -2204,82 +2258,82 @@ const Compliance = () => {
                     tableOptions={{ page: 1, sizePerPage: 10 }}
                   />
                 </div>
-          </TabsContent>
+              </TabsContent>
 
               <TabsContent value="working-hours">
-              {/* Dashboard Cards */}
+                {/* Dashboard Cards */}
                 <div className="grid grid-cols-5 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Total Employees
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-blue-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-blue-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">293</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-gray-700">
                           Total number of active employees included in
                           attendance tracking
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Under Contract
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">293</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium">
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
                           Total number of employees under valid employment
                           contracts
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Compliance Rate
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-purple-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">75%</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-purple-500 font-medium">
+                      <div className="flex items-center text-sm">
+                        <span className="text-purple-500 font-medium">
                           % of branches within legal working hours
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Average Working Hours (hrs/week)
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-orange-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-orange-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">46.8</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Organization-wide average weekly hours
                         </span>
@@ -2303,11 +2357,11 @@ const Compliance = () => {
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           High-level summary
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
 
                 {/* Additional Recommended Cards */}
                 <div className="grid grid-cols-3 gap-6 mb-8">
@@ -2335,40 +2389,40 @@ const Compliance = () => {
                       <h3 className="text-sm font-medium text-black">
                         Branches At Risk
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">3</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Count of branches nearing or exceeding the legal limit
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Last Audit Date
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Clock className="w-5 h-5 text-blue-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">25 Jan</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-blue-500 font-medium">
                           Date when working hour data was last reviewed or
                           verified
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
 
                 {/* Filters */}
                 <div className="flex justify-between items-center mb-6">
@@ -2390,8 +2444,8 @@ const Compliance = () => {
                           { label: "Ras Al Khaimah", value: "Ras Al Khaimah" },
                         ]}
                         className="w-48"
-                  />
-                </div>
+                      />
+                    </div>
                     <div>
                       <SelectInputComponent
                         name="status"
@@ -2408,22 +2462,15 @@ const Compliance = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-black-700 mb-1">
-                        Branch
-                      </label>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                        placeholder="Search for a specific branch"
+                      <TextInput
+                        name="branch"
+                        label="Branch"
                         value={workingHoursFilters.branch}
-                        onChange={(e) =>
-                          handleWorkingHoursFilterChange(
-                            "branch",
-                            e.target.value
-                          )
-                        }
-                  />
-                </div>
+                        onChange={handleWorkingHoursFilterChange}
+                        placeholder="Search for a specific branch"
+                        className="w-64"
+                      />
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-black-700 mb-1">
                         Date Range / Period
@@ -2435,8 +2482,8 @@ const Compliance = () => {
                           handleWorkingHoursFilterChange("dateRange", value)
                         }
                         placeholder="Filter by time period (week/month)"
-                  />
-                </div>
+                      />
+                    </div>
                     <div>
                       <SelectInputComponent
                         name="department"
@@ -2444,9 +2491,18 @@ const Compliance = () => {
                         value={workingHoursFilters.department}
                         onChange={handleWorkingHoursFilterChange}
                         options={[
-                          { label: "All Departments", value: "All Departments" },
-                          { label: "Large Departments (30+ staff)", value: "Large Departments" },
-                          { label: "Small Departments (<30 staff)", value: "Small Departments" },
+                          {
+                            label: "All Departments",
+                            value: "All Departments",
+                          },
+                          {
+                            label: "Large Departments (30+ staff)",
+                            value: "Large Departments",
+                          },
+                          {
+                            label: "Small Departments (<30 staff)",
+                            value: "Small Departments",
+                          },
                         ]}
                         className="w-48"
                       />
@@ -2469,96 +2525,96 @@ const Compliance = () => {
                     <CardTitle>Working Hours Compliance by Branch</CardTitle>
                   </CardHeader>
                   <CardContent>
-                  <TableCustom
+                    <TableCustom
                       columns={workingHoursColumns}
                       data={getFilteredWorkingHoursData()}
-                    pagination={true}
+                      pagination={true}
                       dataTotalSize={getFilteredWorkingHoursData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
 
               <TabsContent value="employment-contracts">
-              {/* Dashboard Cards */}
+                {/* Dashboard Cards */}
                 <div className="grid grid-cols-5 gap-6 mb-8">
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Total Employees
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <Users className="w-5 h-5 text-blue-400" />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-blue-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">293</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-gray-700">
                           Total employees having contract records
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Active Contracts
-                    </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      </h3>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">245</p>
-                    <div className="flex items-center text-sm">
-                      <span className="text-green-500 font-medium">
+                      <div className="flex items-center text-sm">
+                        <span className="text-green-500 font-medium">
                           Count of currently valid employee contracts
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Expiring Soon
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">24</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Count of contracts nearing expiration (e.g., within 30
                           days)
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
+                  <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-medium text-black">
                         Expired Contracts
                       </h3>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-red-400" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">24</p>
-                    <div className="flex items-center text-sm">
+                      <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Count of contracts that have passed their end date
-                      </span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
@@ -2567,7 +2623,7 @@ const Compliance = () => {
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-purple-400" />
-                </div>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <p className="text-3xl font-bold text-black">84%</p>
@@ -2592,12 +2648,30 @@ const Compliance = () => {
                         onChange={handleContractFilterChange}
                         options={[
                           { label: "All Branches", value: "All Branches" },
-                          { label: "Dubai Mall Pharmacy", value: "Dubai Mall Pharmacy" },
-                          { label: "Abu Dhabi Marina Pharmacy", value: "Abu Dhabi Marina Pharmacy" },
-                          { label: "Dubai Healthcare City Pharmacy", value: "Dubai Healthcare City Pharmacy" },
-                          { label: "Sharjah City Center Pharmacy", value: "Sharjah City Center Pharmacy" },
-                          { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
-                          { label: "Fujairah Pharmacy", value: "Fujairah Pharmacy" },
+                          {
+                            label: "Dubai Mall Pharmacy",
+                            value: "Dubai Mall Pharmacy",
+                          },
+                          {
+                            label: "Abu Dhabi Marina Pharmacy",
+                            value: "Abu Dhabi Marina Pharmacy",
+                          },
+                          {
+                            label: "Dubai Healthcare City Pharmacy",
+                            value: "Dubai Healthcare City Pharmacy",
+                          },
+                          {
+                            label: "Sharjah City Center Pharmacy",
+                            value: "Sharjah City Center Pharmacy",
+                          },
+                          {
+                            label: "Al Ain Pharmacy",
+                            value: "Al Ain Pharmacy",
+                          },
+                          {
+                            label: "Fujairah Pharmacy",
+                            value: "Fujairah Pharmacy",
+                          },
                           { label: "Ajman Pharmacy", value: "Ajman Pharmacy" },
                         ]}
                         className="w-48"
@@ -2620,19 +2694,15 @@ const Compliance = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-black-700 mb-1">
-                        Search by Employee Name/ID
-                      </label>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                        placeholder="Search by employee name or ID"
+                      <TextInput
+                        name="search"
+                        label="Search by Employee Name/ID"
                         value={contractFilters.search}
-                        onChange={(e) =>
-                          handleContractFilterChange("search", e.target.value)
-                        }
-                  />
-                </div>
+                        onChange={handleContractFilterChange}
+                        placeholder="Search by employee name or ID"
+                        className="w-64"
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center space-x-4">
                     <Button
@@ -2651,13 +2721,13 @@ const Compliance = () => {
                     <CardTitle>Employee Contracts</CardTitle>
                   </CardHeader>
                   <CardContent>
-                  <TableCustom
+                    <TableCustom
                       columns={employeeContractsColumns}
                       data={getFilteredContractData()}
-                    pagination={true}
+                      pagination={true}
                       dataTotalSize={getFilteredContractData().length}
-                    tableOptions={{ page: 1, sizePerPage: 10 }}
-                  />
+                      tableOptions={{ page: 1, sizePerPage: 10 }}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
