@@ -1171,23 +1171,16 @@ export const ApplicationColumns = (reloadData, variant) => [
     ...(variant === 'blacklisted' ? [
         {
             dataField: "blacklist",
-            text: "Blacklist Reasons",
-            formatter: (cell) => <MultiStatusLabel statusList={cell?.reasons} variant="info" displayAll={true} />
-        },
-        {
-            dataField: "blacklist",
-            text: "Blacklist Remarks",
-            formatter: (cell) => cell?.remarks,
-        },
-        {
-            dataField: "blacklist",
-            text: "Blacklisted By",
-            formatter: (cell) => <EmployeeName value={cell?.blacklisted_by} />
-        },
-        {
-            dataField: "blacklist",
-            text: "Blacklist On",
-            formatter: (cell) => renderDate(cell?.blacklisted_on, "--"),
+            text: "Blacklist Information",
+            formatter: (cell) => {
+                return (
+                    <div>
+                        <div><span className="font-bold">Blacklisted By: </span><EmployeeName value={cell?.blacklisted_by} /></div>
+                        <div><span className="font-bold">Date: </span>{renderDate(cell?.blacklisted_on, "--")}</div>
+                        <div className="flex gap-1"><span className="font-bold">Reasons: </span><MultiStatusLabel statusList={cell?.reasons} variant="info" /></div>
+                    </div>
+                );
+            },
         },
     ] : []),
     ...(variant === 'shortlisted' ? [
@@ -1202,6 +1195,19 @@ export const ApplicationColumns = (reloadData, variant) => [
                     <div><span className="font-bold">Expected Joining Date: </span>{renderDate(cell?.expected_joining_date, '--', 'date')}</div>
                     <div><span className="font-bold">Shortlisted By: </span><EmployeeName value={cell?.shortlisted_by} /></div>
                     <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--")}</div>
+                </div>
+                );
+            },
+        },
+    ] : []),
+    ...(variant === 'screened' ? [
+        {
+            dataField: "screened_by",
+            text: "Screening Info",
+            formatter: (cell, row) => {
+                return (<div>
+                    <div><span className="font-bold">Screened By: </span><EmployeeName value={cell} /></div>
+                    <div><span className="font-bold">Date: </span>{renderDate(row?.screened_date, "--")}</div>
                 </div>
                 );
             },
@@ -1245,8 +1251,8 @@ export const ApplicationColumns = (reloadData, variant) => [
             minWidth: '300px',
             formatter: (cell) => {
                 return (<div>
-                    <div><span className="font-bold">Rejected By: </span><EmployeeName value={cell?.rejected_on} /></div>
-                    <div><span className="font-bold">Date: </span>{renderDate(cell?.rejected_by, '--', 'date')}</div>
+                    <div><span className="font-bold">Rejected By: </span><EmployeeName value={cell?.rejected_by} /></div>
+                    <div><span className="font-bold">Date: </span>{renderDate(cell?.rejected_on, '--', 'date')}</div>
                     <div className='flex gap-1'><span className="font-bold">Reason: </span><TextUI text={cell?.rejection_reason} maxLength={50} /></div>
                 </div>
                 );

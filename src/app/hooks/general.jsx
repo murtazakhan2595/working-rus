@@ -261,7 +261,7 @@ const getManagersList = async () => {
   return [];
 };
 
-const getEmployeeList = async (payload) => {
+export const getEmployeeDropdownList = async (payload) => {
   try {
     const pageNo = payload?.options?.page ?? "";
     const ordering = payload?.ordering ?? "first_name";
@@ -272,15 +272,13 @@ const getEmployeeList = async (payload) => {
         employee_status: "Active,Probation,Notice Period",
       }
       : { employee_status: "Active,Probation,Notice Period" };
-    const URL = `/customemp/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+    const URL = `/timetracker/customemployees/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
       }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
         JSON.stringify(filterData)
       )}`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
-      const employeeResponse = response.data?.results?.employees ?? [];
+      const employeeResponse = response?.data?.results ?? [];
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
@@ -289,25 +287,12 @@ const getEmployeeList = async (payload) => {
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,
         department_position: employee.department_position,
-        employee_location: employee.employee_location,
-        direct_report: parseInt(employee.direct_report) || null,
-        indirect_report: employee.indirect_report,
         branch_id: employee.branch_id,
-        work_email: employee.work_email,
         serial_number: employee.serial_number,
-        basic_salary: employee.ctc,
-        salary_type: employee.salary_type,
-        is_eos_applicable: employee.is_eos_applicable,
-        is_new: employee.is_new,
-        joining_date: employee.joining_date,
-        employee_status: employee.employee_status,
-        default_shift: employee.shift_assignment,
-        user_role: employee.user_role,
-        user_role_name: employee.user_role_name,
         name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
           }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
-      return { results: employeeList, count: response.data?.count };
+      return { results: employeeList, count: response?.count };
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -999,7 +984,6 @@ export {
   getList,
   deleteRecord,
   getOrganizationList,
-  getEmployeeList,
   getEmployeeCustomList,
   getNewEmployeeCustomList,
   getProjectsList,

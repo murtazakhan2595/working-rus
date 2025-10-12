@@ -1,6 +1,5 @@
 
 import { useEffect, useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
 import { toast } from "react-toastify"
 import { GetDispatchStateList } from "utils/Lists";
 import { SheetUI } from "components"
@@ -23,25 +22,6 @@ import moment from "moment";
 import { getFeedBackFormList } from "app/hooks/talentSphere";
 import { renderDate } from "utils/renderValues";
 
-
-const INTERVIEW_FORM_STRUCTURE = {
-  applicant: null,
-  interview_type: null,
-  scheduled_datetime: "",
-  panel: [],
-  email_template: "",
-  generate_meeting_link: true,
-  require_demographics: false,
-  status: "scheduled",
-}
-
-const STATUS_OPTIONS = [
-  { label: "Scheduled", value: "scheduled" },
-  { label: "Completed", value: "completed" },
-  { label: "Cancelled", value: "cancelled" },
-  { label: "Rescheduled", value: "rescheduled" },
-]
-
 const BOOLEAN_OPTIONS = [
   { label: "Yes", value: true },
   { label: "No", value: false },
@@ -55,8 +35,7 @@ const ScheduleInterviewSheet = ({
   mode,
   applicant,
 }) => {
-  const dispatch = useDispatch()
-  const Employees = GetDispatchStateList("employees_detail", "emp");
+  const Employees = GetDispatchStateList("employees", "emp");
   const [formValues, setFormValues] = useState(Interview)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState(Interview)
@@ -145,16 +124,6 @@ const ScheduleInterviewSheet = ({
   const handleSubmit = async (values) => {
     setIsSubmittingForm(true)
     try {
-      // const payload = {
-      //   applicant: applicant,
-      //   interview_type: values.interview_type || null,
-      //   scheduled_datetime: new Date(values.scheduled_datetime).toISOString(),
-      //   panel: values.panel,
-      //   email_template: values.email_template || null,
-      //   generate_meeting_link: Boolean(values.generate_meeting_link),
-      //   require_demographics: Boolean(values.require_demographics),
-      //   status: values.status || "scheduled",
-      // }
       const savedInterview = await saveUpdateInterview({ ...values, applicant: applicant })
       if (savedInterview) {
         if (id) await saveUpdateInterview({ status: 'rescheduled' }, id)

@@ -8,7 +8,7 @@ import {
 } from "src/@/components/ui/tabs";
 import { Header } from "components";
 import { useSelector } from "react-redux";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import Emplist from "./ShiftCalendarTab/Emplist";
 import ShiftRequest from "./ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
@@ -68,9 +68,10 @@ const ShiftCalendar = () => {
         if (!isEditPendingSchedulesPermitted && userProfile?.id) {
           filterDataToSend.direct_report = userProfile.id;
         }
-        const response = await getEmployeeList({
+        const response = await getEmployeeCustomList({
           filterData: {
-            ...filterDataToSend
+            ...filterDataToSend,
+             employee_status: "Active,Probation,Notice Period",
           },
         });
         if (response) {

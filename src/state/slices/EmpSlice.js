@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  getEmployeeList,
+  getEmployeeDropdownList,
   getEmployeeListWithDetail,
   getManagersList,
 } from "app/hooks/general";
@@ -33,7 +33,7 @@ export const fetchEmployees = createAsyncThunk(
   "employees/fetchEmployees",
   async () => {
     try {
-      const response = await getEmployeeList();
+      const response = await getEmployeeDropdownList();
       return response.results;
     } catch (error) {
       throw error;

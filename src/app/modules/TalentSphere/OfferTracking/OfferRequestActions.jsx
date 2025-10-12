@@ -11,7 +11,7 @@ const OfferRequestActions = ({ data, DataList = [], reloadData = () => { }, isOf
     const isViewPermitted = HasAccess("VIEW_MANPOWER");
     const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
-    const [deleteForm, setDeleteForm] = useState(null);
+    const [generateOffer, setGenerateOffer] = useState(null);
 
     const handleEdit = (e) => {
         setOpenEditForm(true)
@@ -20,41 +20,34 @@ const OfferRequestActions = ({ data, DataList = [], reloadData = () => { }, isOf
         setView(true)
     };
 
-    const handleDelete = () => {
-        setDeleteForm(true);
-    };
-
-    const confirmDelete = async () => {
-        try {
-            await deleteRecord(`/recruitment-email-templates/${data.id}`, `${data.name}`);
-            setDeleteForm(null);
-            reloadData(true);
-        } catch (error) {
-            console.error("ERROR", error);
-        }
+    const handleGenerate = () => {
+        setGenerateOffer(true);
     };
 
     return (
         <>
             <DropdownActionMenu
                 onView={isViewPermitted ? handleView : null}
-                onEdit={isEditPermitted && data?.status === 'draft' ? handleEdit : null}
+                onEdit={isEditPermitted && (data?.status === 'draft') ? handleEdit : null}
+                onDelete={isEditPermitted && (data?.status === 'rejected') ? handleGenerate : null}
                 // onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="View Offer"
                 editText="Edit Offer"
-                deleteText="Delete Offer"
+                deleteText="Edit Offer"
                 menuTooltip="Offer Actions"
             />
 
-            {deleteForm && (
-                <AlertDialogue
-                    title="Confirm Delete?"
-                    description={`This action can't be undone. All information associated with ${data.name} will be lost.`}
-                    isOpen={deleteForm}
-                    setIsOpen={(isOpen) =>
-                        setDeleteForm(false)
-                    }
-                    handleContinue={confirmDelete}
+            {generateOffer && (
+                <GenerateOffer
+                    isOpen={generateOffer}
+                    reloadData={() => {
+                        reloadData(true);
+                        setGenerateOffer(false);
+                    }}
+                    setIsOpen={() => {
+                        setGenerateOffer(false);
+                    }}
+                    offer_id={data.id}
                 />
             )}
 

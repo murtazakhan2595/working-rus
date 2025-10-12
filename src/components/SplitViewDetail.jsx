@@ -61,7 +61,7 @@ const SplitViewDetail = ({
             {data && Array.isArray(data) && data.length > 0 ? (
               data?.map((item, index) => (
                 <div
-                  key={index}
+                  key={`${item?.title}-${index}`}
                   onClick={() => setSelectedItem(item)}
                   className={`p-2 my-2 cursor-pointer border-b hover:bg-gray-100 ${
                     selectedItem?.[uniqueKey] === item?.[uniqueKey] ? "bg-gray-200" : ""

@@ -6,7 +6,7 @@ import Calendar from "./Calendar";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import Listview from "../../Sections/Listview";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import { fetchEmployeeShiftData, } from "./shiftScheduleUtils";
 import { HasAccess } from "utils/PermissionUtils";
 import { useSelector } from "react-redux";
@@ -54,7 +54,10 @@ const Emplist = () => {
         setIsLoading(true);
         setActiveMember(null);
         const filters = { ...filterData, ...(userProfile.role.includes(1) ? {} : { reporting_employee: userProfile.id }) }
-        const response = await getEmployeeList({ filterData: filters });
+        const response = await getEmployeeCustomList({
+          filterData: filters,
+          employee_status: "Active,Probation,Notice Period",
+        });
         if (response) {
           if (filterData.shift_status) {
             if (filterData.shift_status === 'assigned') {

@@ -9,7 +9,7 @@ import {
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
 import { getLeaveTypeListData, getLeaveListData } from "app/hooks/leaveTracker";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import { getLabelByValue } from "utils/getValuesFromTables";
 import { LeaveRecordColumns } from "app/modules/LeaveTracker/Sections";
 import { AddSpecialLeave } from "./index";
@@ -52,8 +52,8 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
   const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
-      const Leaves = await getEmployeeList({
-        filterData,
+      const Leaves = await getEmployeeCustomList({
+        filterData: { ...filterData, employee_status: "Active,Probation,Notice Period", },
         options,
         ordering
       });
@@ -112,10 +112,10 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
           <FilterInput
             filters={[
               {
-                  type: "search",
-                  placeholder: "Search by ID and Name",
-                  name: "emp_search",
-                },
+                type: "search",
+                placeholder: "Search by ID and Name",
+                name: "emp_search",
+              },
               {
                 type: "select",
                 options: Departments,
@@ -151,7 +151,7 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
           setIsOpen={() => {
             setOpenSpecialLeaveForm(false);
           }}
-          // reloadData={()=>{}}
+        // reloadData={()=>{}}
         />
       )}
     </div>

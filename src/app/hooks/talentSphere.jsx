@@ -1232,7 +1232,6 @@ export const getApplicantsList = async (payload = {}) => {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
     if (response.status === 200) {
       const ResponseData = response.data;
-      console.log(ResponseData)
       const ResponseDataList = await mapApplicantsList(ResponseData.results);
       return { results: ResponseDataList, count: ResponseData.count };
     }

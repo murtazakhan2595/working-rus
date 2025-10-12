@@ -166,6 +166,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   const TabTitle = React.useMemo(() => {
     return {
       by_requisition: { title: 'Requisition', description: ', that have applied for specific requisition.', navigationLink: '/talent-sphere/dashboard' },
+      emiratization_all : { title: 'Emiratization', description: ', that have applied for requisition with emiratization role.', navigationLink: '/talent-sphere/dashboard' },
       ai_picks: { title: 'AI Pick', description: '. The system automatically analyzes job descriptions and applicants’ resumes using AI, helping you quickly identify the most suitable candidates without the need for manual review.' },
       in_progress: { title: 'In Progress', description: ' whose interviews have been scheduled.' },
     };

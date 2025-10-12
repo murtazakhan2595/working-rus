@@ -210,12 +210,6 @@ export const SidebarRoutes = [
         component: <MyClearanceTab />,
         name: "MY_CLEARANCE",
       },
-      Config.MANAGER_CLEARANCE_DASHBOARD && {
-        path: "/manager-clearance-dashboard",
-        component: <ManagerClearanceDashboard />,
-        name: "MANAGER_CLEARANCE_DASHBOARD",
-      },
-
       Config.MY_PERFORMANCE && {
         path: "/my-performance",
         component: <MyPerformance />,
@@ -254,6 +248,11 @@ export const SidebarRoutes = [
         path: "/team-talent-sphere",
         component: <TeamTalentSphere />,
         name: "TEAM_TALENT_SPHERE",
+      },
+        Config.MANAGER_CLEARANCE_DASHBOARD && {
+        path: "/manager-clearance-dashboard",
+        component: <ManagerClearanceDashboard />,
+        name: "MANAGER_CLEARANCE_DASHBOARD",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),
@@ -382,27 +381,27 @@ export const SidebarRoutes = [
         name: "APPLICANTS",
       },
       Config.TS_DASHBOARD && {
-        path: "/talent-sphere/requisition-applicants",
+        path: "/talent-sphere/applicant-management/requisition-applicants",
         component: <ApplicantByRequisition />,
         name: "APPLICANTS",
       },
       Config.TS_DASHBOARD && {
-        path: "/talent-sphere/emiratization-applicants",
+        path: "/talent-sphere/applicant-management/emiratization-applicants",
         component: <EmiratizationAllApplicants />,
         name: "APPLICANTS",
       },
       Config.TS_DASHBOARD && {
-        path: "/talent-sphere/emiratization-screened",
+        path: "/talent-sphere/applicant-management/emiratization-screened",
         component: <EmiratizationScreenedApplicants />,
         name: "APPLICANTS",
       },
       Config.TS_DASHBOARD && {
-        path: "/talent-sphere/emiratization-shortlisted",
+        path: "/talent-sphere/applicant-management/emiratization-shortlisted",
         component: <EmiratizationShortlistedApplicants />,
         name: "APPLICANTS",
       },
       Config.TS_DASHBOARD && {
-        path: "/talent-sphere/emiratization-hired",
+        path: "/talent-sphere/applicant-management/emiratization-hired",
         component: <EmiratizationHiredApplicants />,
         name: "APPLICANTS",
       },
