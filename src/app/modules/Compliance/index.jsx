@@ -111,6 +111,13 @@ const Compliance = () => {
     search: "",
   });
 
+  const [licenseCertificatesFilters, setLicenseCertificatesFilters] = useState({
+    search: "",
+    branch: "All Branches",
+    designation: "All Designations",
+    type: "All Types",
+  });
+
   // License data state
   const [facilityLicenses, setFacilityLicenses] = useState([]);
 
@@ -374,6 +381,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle License & Certificates filter changes
+  const handleLicenseCertificatesFilterChange = (filterType, value) => {
+    setLicenseCertificatesFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -608,6 +623,40 @@ const Compliance = () => {
     if (contractFilters.status !== "All Statuses") {
       filtered = filtered.filter(
         (item) => item.status === contractFilters.status
+      );
+    }
+
+    return filtered;
+  };
+
+  // Filter License & Certificates data
+  const getFilteredLicenseCertificatesData = () => {
+    let filtered = [...employeeLicensesData];
+
+    if (licenseCertificatesFilters.branch !== "All Branches") {
+      filtered = filtered.filter(
+        (license) => license.branch === licenseCertificatesFilters.branch
+      );
+    }
+
+    if (licenseCertificatesFilters.designation !== "All Designations") {
+      filtered = filtered.filter(
+        (license) => license.designation === licenseCertificatesFilters.designation
+      );
+    }
+
+    if (licenseCertificatesFilters.type !== "All Types") {
+      filtered = filtered.filter(
+        (license) => license.type === licenseCertificatesFilters.type
+      );
+    }
+
+    if (licenseCertificatesFilters.search) {
+      const searchLower = licenseCertificatesFilters.search.toLowerCase();
+      filtered = filtered.filter(
+        (license) =>
+          license.employeeName.toLowerCase().includes(searchLower) ||
+          license.employeeId.toLowerCase().includes(searchLower)
       );
     }
 
@@ -2836,13 +2885,23 @@ const Compliance = () => {
                     type="text"
                     className="border border-gray-300 rounded-md px-3 py-2 w-64"
                     placeholder="Search employee..."
+                    value={licenseCertificatesFilters.search}
+                    onChange={(e) =>
+                      handleLicenseCertificatesFilterChange("search", e.target.value)
+                    }
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Branch
                   </label>
-                  <select className="border border-gray-300 rounded-md px-3 py-2">
+                  <select 
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={licenseCertificatesFilters.branch}
+                    onChange={(e) =>
+                      handleLicenseCertificatesFilterChange("branch", e.target.value)
+                    }
+                  >
                     <option>All Branches</option>
                     <option>Dubai Mall Pharmacy</option>
                     <option>Abu Dhabi Marina Pharmacy</option>
@@ -2855,7 +2914,13 @@ const Compliance = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Designation
                   </label>
-                  <select className="border border-gray-300 rounded-md px-3 py-2">
+                  <select 
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={licenseCertificatesFilters.designation}
+                    onChange={(e) =>
+                      handleLicenseCertificatesFilterChange("designation", e.target.value)
+                    }
+                  >
                     <option>All Designations</option>
                     <option>Pharmacist</option>
                     <option>Pharmacy Technician</option>
@@ -2868,7 +2933,13 @@ const Compliance = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Type
                   </label>
-                  <select className="border border-gray-300 rounded-md px-3 py-2">
+                  <select 
+                    className="border border-gray-300 rounded-md px-3 py-2"
+                    value={licenseCertificatesFilters.type}
+                    onChange={(e) =>
+                      handleLicenseCertificatesFilterChange("type", e.target.value)
+                    }
+                  >
                     <option>All Types</option>
                     <option>License</option>
                     <option>Certificate</option>
@@ -2891,9 +2962,9 @@ const Compliance = () => {
               <CardContent>
                 <TableCustom
                   columns={employeeLicensesColumns}
-                  data={employeeLicensesData}
+                  data={getFilteredLicenseCertificatesData()}
                   pagination={true}
-                  dataTotalSize={employeeLicensesData.length}
+                  dataTotalSize={getFilteredLicenseCertificatesData().length}
                   tableOptions={{ page: 1, sizePerPage: 10 }}
                 />
               </CardContent>
