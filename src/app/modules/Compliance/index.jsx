@@ -842,7 +842,7 @@ const Compliance = () => {
                     ${
                       activeTab === stat.id && vs2
                         ? "text-plum-900"
-                        : "text-slate-900"
+                        : "text-black"
                     }
                     `}
                   >
@@ -853,7 +853,7 @@ const Compliance = () => {
                       className={`text-2xl font-semibold  ${
                         activeTab === stat.id && vs2
                           ? "text-plum-900"
-                          : "text-slate-900"
+                          : "text-black"
                       }`}
                     >
                       {stat.value}
@@ -871,7 +871,11 @@ const Compliance = () => {
             <TabsList className="bg-transparent">
               {complianceStats.map((stat) => {
                 return (
-                  <TabsTrigger value={stat.id} variant="inner-tab">
+                  <TabsTrigger
+                    value={stat.id}
+                    className="data-[state=active]:bg-transparent text-black"
+                    variant="inner-tab"
+                  >
                     {stat.title}
                   </TabsTrigger>
                 );
@@ -939,8 +943,10 @@ const Compliance = () => {
               className="mb-6"
             >
               <TabsList className="grid-cols-3">
-                <TabsTrigger value="branch-license">Branch License</TabsTrigger>
-                <TabsTrigger value="renewal-tracking">
+                <TabsTrigger value="branch-license" className="text-black">
+                  Branch License
+                </TabsTrigger>
+                <TabsTrigger value="renewal-tracking" className="text-black">
                   Renewal Tracking
                 </TabsTrigger>
               </TabsList>
@@ -953,7 +959,7 @@ const Compliance = () => {
                     <>
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Total Facilities
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -961,14 +967,14 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.totalFacilities}
                           </p>
                           <div className="flex items-center text-sm">
                             <span className="text-green-500 font-medium mr-1">
                               ↑ {Math.floor(metrics.totalFacilities * 0.05)}
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-700">
                               from last year
                             </span>
                           </div>
@@ -977,7 +983,7 @@ const Compliance = () => {
 
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Licenses Expiring
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -985,7 +991,7 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.expiringSoon}
                           </p>
                           <div className="flex items-center text-sm">
@@ -998,7 +1004,7 @@ const Compliance = () => {
 
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Renewal In Progress
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -1006,7 +1012,7 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.renewalInProgress}
                           </p>
                           <div className="flex items-center text-sm">
@@ -1019,7 +1025,7 @@ const Compliance = () => {
 
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Compliance Rate
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -1027,14 +1033,14 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.complianceRate}%
                           </p>
                           <div className="flex items-center text-sm">
                             <span className="text-green-500 font-medium mr-1">
                               ↑ {Math.floor(metrics.complianceRate * 0.02)}%
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-700">
                               from last quarter
                             </span>
                           </div>
@@ -1049,7 +1055,7 @@ const Compliance = () => {
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center space-x-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black-700 mb-1">
                       Branch Name
                     </label>
                     <select
@@ -1068,7 +1074,7 @@ const Compliance = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black-700 mb-1">
                       License Type
                     </label>
                     <select
@@ -1087,7 +1093,7 @@ const Compliance = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black-700 mb-1">
                       Status
                     </label>
                     <select
@@ -1106,7 +1112,7 @@ const Compliance = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black-700 mb-1">
                       Expiry Date Range
                     </label>
                     <DateRangeInput
@@ -1215,15 +1221,17 @@ const Compliance = () => {
             <div className="grid grid-cols-4 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Employees</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Total Employees
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">245</p>
+                  <p className="text-3xl font-bold text-black">245</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       with licenses/certificates
                     </span>
                   </div>
@@ -1232,7 +1240,7 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Expiring within 60 Days
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -1240,7 +1248,7 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">18</p>
+                  <p className="text-3xl font-bold text-black">18</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Require attention
@@ -1251,13 +1259,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Renewal in Progress</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Renewal in Progress
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <RefreshCw className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">12</p>
+                  <p className="text-3xl font-bold text-black">12</p>
                   <div className="flex items-center text-sm">
                     <span className="text-blue-500 font-medium">
                       Applications submitted
@@ -1268,18 +1278,20 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Compliance Ratio</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Compliance Ratio
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">94%</p>
+                  <p className="text-3xl font-bold text-black">94%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium mr-1">
                       ↑ 2%
                     </span>
-                    <span className="text-gray-500">from last quarter</span>
+                    <span className="text-gray-700">from last quarter</span>
                   </div>
                 </div>
               </Card>
@@ -1289,7 +1301,7 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Search by Employee Name / ID
                   </label>
                   <input
@@ -1306,7 +1318,7 @@ const Compliance = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Branch
                   </label>
                   <select
@@ -1328,7 +1340,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Designation
                   </label>
                   <select
@@ -1350,7 +1362,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Type
                   </label>
                   <select
@@ -1400,7 +1412,7 @@ const Compliance = () => {
             <div className="grid grid-cols-5 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Total Assigned Trainings
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -1408,9 +1420,9 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       All mandatory trainings assigned
                     </span>
                   </div>
@@ -1419,13 +1431,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Completed Trainings</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Completed Trainings
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">3</p>
+                  <p className="text-3xl font-bold text-black">3</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium">
                       Successfully completed
@@ -1436,13 +1450,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">In Progress Trainings</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    In Progress Trainings
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Clock className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">3</p>
+                  <p className="text-3xl font-bold text-black">3</p>
                   <div className="flex items-center text-sm">
                     <span className="text-blue-500 font-medium">
                       Currently being completed
@@ -1453,7 +1469,7 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Pending / Overdue Trainings
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -1461,7 +1477,7 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <p className="text-3xl font-bold text-black">2</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Due or not started
@@ -1472,13 +1488,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Compliance %</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Compliance %
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Scale className="w-5 h-5 text-purple-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">37.5%</p>
+                  <p className="text-3xl font-bold text-black">37.5%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-purple-500 font-medium">
                       Training completion rate
@@ -1492,7 +1510,7 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Branch
                   </label>
                   <select
@@ -1519,7 +1537,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Department
                   </label>
                   <select
@@ -1540,7 +1558,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Training Program
                   </label>
                   <select
@@ -1575,7 +1593,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Frequency
                   </label>
                   <select
@@ -1592,7 +1610,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Status
                   </label>
                   <select
@@ -1640,7 +1658,7 @@ const Compliance = () => {
             <div className="grid grid-cols-4 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Total Locations (Cities)
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -1648,9 +1666,9 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">7</p>
+                  <p className="text-3xl font-bold text-black">7</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       Unique cities with branches
                     </span>
                   </div>
@@ -1659,28 +1677,32 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Branches</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Total Branches
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Building className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">All branches</span>
+                    <span className="text-gray-700">All branches</span>
                   </div>
                 </div>
               </Card>
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Non-Compliant Count</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Non-Compliant Count
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-red-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <p className="text-3xl font-bold text-black">2</p>
                   <div className="flex items-center text-sm">
                     <span className="text-red-500 font-medium mr-1">
                       Branches marked as Non-Compliant
@@ -1691,13 +1713,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Average Compliance %</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Average Compliance %
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Scale className="w-5 h-5 text-orange-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">92.5%</p>
+                  <p className="text-3xl font-bold text-black">92.5%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium mr-1">
                       Across all branches
@@ -1711,7 +1735,7 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Search by Branch Name
                   </label>
                   <input
@@ -1728,7 +1752,7 @@ const Compliance = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Country
                   </label>
                   <select
@@ -1743,7 +1767,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     City
                   </label>
                   <select
@@ -1764,7 +1788,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Compliance Status
                   </label>
                   <select
@@ -1815,15 +1839,17 @@ const Compliance = () => {
             <div className="grid grid-cols-5 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Policies</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Total Policies
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <FileText className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       Total number of policies/SOPs added
                     </span>
                   </div>
@@ -1832,13 +1858,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Active Documents</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Active Documents
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium">
                       Currently active or published
@@ -1849,13 +1877,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Staff Acknowledged</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Staff Acknowledged
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-purple-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">93%</p>
+                  <p className="text-3xl font-bold text-black">93%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-purple-500 font-medium">
                       Overall acknowledgment compliance rate
@@ -1866,13 +1896,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Pending Reviews</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Pending Reviews
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">142</p>
+                  <p className="text-3xl font-bold text-black">142</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Policies with incomplete acknowledgment
@@ -1883,13 +1915,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Due This Month</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Due This Month
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Clock className="w-5 h-5 text-red-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <p className="text-3xl font-bold text-black">2</p>
                   <div className="flex items-center text-sm">
                     <span className="text-red-500 font-medium">
                       Policies reaching acknowledgment deadline
@@ -1903,7 +1937,7 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Policy Name / Search
                   </label>
                   <input
@@ -1917,7 +1951,7 @@ const Compliance = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Category
                   </label>
                   <select
@@ -1937,7 +1971,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Acknowledgment Status
                   </label>
                   <select
@@ -1956,7 +1990,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Branch
                   </label>
                   <select
@@ -1983,7 +2017,7 @@ const Compliance = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Due Date Range
                   </label>
                   <DateRangeInput
@@ -2030,9 +2064,16 @@ const Compliance = () => {
               className="mb-6"
             >
               <TabsList className="grid-cols-3">
-                <TabsTrigger value="labor-law">UAE Labor Law</TabsTrigger>
-                <TabsTrigger value="working-hours">Working Hours</TabsTrigger>
-                <TabsTrigger value="employment-contracts">
+                <TabsTrigger value="labor-law" className="text-black">
+                  UAE Labor Law
+                </TabsTrigger>
+                <TabsTrigger value="working-hours" className="text-black">
+                  Working Hours
+                </TabsTrigger>
+                <TabsTrigger
+                  value="employment-contracts"
+                  className="text-black"
+                >
                   Employment Contracts
                 </TabsTrigger>
               </TabsList>
@@ -2043,7 +2084,7 @@ const Compliance = () => {
                 <div className="grid grid-cols-5 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Total Regulations Tracked
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2051,9 +2092,9 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">25</p>
+                      <p className="text-3xl font-bold text-black">25</p>
                       <div className="flex items-center text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-gray-700">
                           Total number of UAE Labour Law regulations monitored
                         </span>
                       </div>
@@ -2062,7 +2103,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Fully Compliant Areas
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2070,7 +2111,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">18</p>
+                      <p className="text-3xl font-bold text-black">18</p>
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           Number of regulation areas marked as "Compliant"
@@ -2081,13 +2122,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">At Risk Areas</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        At Risk Areas
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">5</p>
+                      <p className="text-3xl font-bold text-black">5</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Regulation areas nearing non-compliance
@@ -2098,7 +2141,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Non-Compliant Areas
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2106,7 +2149,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">2</p>
+                      <p className="text-3xl font-bold text-black">2</p>
                       <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Number of areas currently failing compliance
@@ -2117,7 +2160,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Last Verification Date
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2125,7 +2168,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">28 Jan</p>
+                      <p className="text-3xl font-bold text-black">28 Jan</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           Date of last successful full compliance audit
@@ -2139,7 +2182,7 @@ const Compliance = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center space-x-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Compliance Status
                       </label>
                       <select
@@ -2159,7 +2202,7 @@ const Compliance = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Regulation Area
                       </label>
                       <input
@@ -2176,7 +2219,7 @@ const Compliance = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Branch
                       </label>
                       <select
@@ -2203,7 +2246,7 @@ const Compliance = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Category Type
                       </label>
                       <select
@@ -2273,15 +2316,17 @@ const Compliance = () => {
                 <div className="grid grid-cols-5 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Total Employees</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Total Employees
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Users className="w-5 h-5 text-blue-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <p className="text-3xl font-bold text-black">293</p>
                       <div className="flex items-center text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-gray-700">
                           Total number of active employees included in
                           attendance tracking
                         </span>
@@ -2291,13 +2336,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Under Contract</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Under Contract
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-green-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <p className="text-3xl font-bold text-black">293</p>
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           Total number of employees under valid employment
@@ -2309,13 +2356,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Compliance Rate</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Compliance Rate
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-purple-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">75%</p>
+                      <p className="text-3xl font-bold text-black">75%</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           % of branches within legal working hours
@@ -2326,7 +2375,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Average Working Hours (hrs/week)
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2334,7 +2383,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">46.8</p>
+                      <p className="text-3xl font-bold text-black">46.8</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Organization-wide average weekly hours
@@ -2345,7 +2394,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Labor Law Compliance
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2353,7 +2402,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">
+                      <p className="text-3xl font-bold text-black">
                         75% Compliant
                       </p>
                       <div className="flex items-center text-sm">
@@ -2369,7 +2418,7 @@ const Compliance = () => {
                 <div className="grid grid-cols-3 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Total Overtime Hours (This Month)
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2377,7 +2426,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">1,247</p>
+                      <p className="text-3xl font-bold text-black">1,247</p>
                       <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Sum of all overtime hours logged across branches
@@ -2388,13 +2437,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Branches At Risk</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Branches At Risk
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">3</p>
+                      <p className="text-3xl font-bold text-black">3</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Count of branches nearing or exceeding the legal limit
@@ -2405,13 +2456,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Last Audit Date</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Last Audit Date
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Clock className="w-5 h-5 text-blue-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">25 Jan</p>
+                      <p className="text-3xl font-bold text-black">25 Jan</p>
                       <div className="flex items-center text-sm">
                         <span className="text-blue-500 font-medium">
                           Date when working hour data was last reviewed or
@@ -2426,7 +2479,7 @@ const Compliance = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center space-x-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Region
                       </label>
                       <select
@@ -2450,7 +2503,7 @@ const Compliance = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Status
                       </label>
                       <select
@@ -2470,7 +2523,7 @@ const Compliance = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Branch
                       </label>
                       <input
@@ -2487,7 +2540,7 @@ const Compliance = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Date Range / Period
                       </label>
                       <DateRangeInput
@@ -2500,7 +2553,7 @@ const Compliance = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Department (optional)
                       </label>
                       <select
@@ -2556,15 +2609,17 @@ const Compliance = () => {
                 <div className="grid grid-cols-5 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Total Employees</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Total Employees
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Users className="w-5 h-5 text-blue-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <p className="text-3xl font-bold text-black">293</p>
                       <div className="flex items-center text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-gray-700">
                           Total employees having contract records
                         </span>
                       </div>
@@ -2573,13 +2628,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Active Contracts</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Active Contracts
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-green-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">245</p>
+                      <p className="text-3xl font-bold text-black">245</p>
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           Count of currently valid employee contracts
@@ -2590,13 +2647,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Expiring Soon</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Expiring Soon
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">24</p>
+                      <p className="text-3xl font-bold text-black">24</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Count of contracts nearing expiration (e.g., within 30
@@ -2608,13 +2667,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Expired Contracts</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Expired Contracts
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-red-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">24</p>
+                      <p className="text-3xl font-bold text-black">24</p>
                       <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Count of contracts that have passed their end date
@@ -2625,13 +2686,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Compliance Rate</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Compliance Rate
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-purple-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">84%</p>
+                      <p className="text-3xl font-bold text-black">84%</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           Percentage of employees with valid active contracts =
@@ -2646,7 +2709,7 @@ const Compliance = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center space-x-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Branch
                       </label>
                       <select
@@ -2677,7 +2740,7 @@ const Compliance = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Status
                       </label>
                       <select
@@ -2695,7 +2758,7 @@ const Compliance = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Search by Employee Name/ID
                       </label>
                       <input
