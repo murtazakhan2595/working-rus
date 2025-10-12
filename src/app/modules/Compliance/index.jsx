@@ -9,7 +9,6 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import TableCustom from "components/CustomTable";
-import BarChart from "components/BarChart";
 import { Badge } from "components/ui/badge";
 import {
   AddLicenseModal,
@@ -39,7 +38,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 import {
-  complianceChartData,
   complianceRatioColumns,
   complianceRatioData,
   complianceStats,
@@ -1177,37 +1175,6 @@ const Compliance = () => {
                 </Card>
               </TabsContent>
             </Tabs>
-
-            {/* Charts Section */}
-            <div className="grid grid-cols-2 gap-6 mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Compliance Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <BarChart
-                    categories={complianceChartData.categories}
-                    series={complianceChartData.series}
-                  />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>License Status Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                      <p className="text-5xl font-bold text-green-600">98%</p>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Active Licenses
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </TabsContent>
 
           {/* License & Certificates Tab */}

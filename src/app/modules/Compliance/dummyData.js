@@ -1255,24 +1255,6 @@ export const complianceStats = [
   },
 ];
 
-// Chart data
-export const complianceChartData = {
-  categories: [
-    "Facility",
-    "License & Certificates",
-    "Ratio",
-    "Training",
-    "SOP",
-    "Workforce",
-  ],
-  series: [
-    {
-      name: "Compliance Rate",
-      data: [98, 99, 95, 92, 97, 100],
-    },
-  ],
-};
-
 // Table columns configuration for SOP & Policy
 export const sopPolicyColumns = [
   {
@@ -1591,4 +1573,3 @@ export const employeeLicensesColumns = [
 ];
 
 // Table columns configuration
-
