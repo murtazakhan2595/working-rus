@@ -626,7 +626,10 @@ export async function mapApplicantsData(data) {
                 RecordDetails[key] = value?.trim?.() || "";
                 break;
             case "ai_match_score":
-                RecordDetails[key] = `${parseFloat(value || 0) * 100}%`;
+                RecordDetails[key] = `${parseFloat(value || 0) * 100}`;
+                break;
+            case "ai_feedback_confidence":
+                RecordDetails[key] = `${parseInt(value || 0)}%`;
                 break;
             case "status":
                 RecordDetails.status = value === "resume_bank" ? "Resume Bank" : value === "in_progress" ? "In Progress" : value;

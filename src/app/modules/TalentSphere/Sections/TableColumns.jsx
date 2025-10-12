@@ -1274,7 +1274,7 @@ export const ApplicationColumns = (reloadData, variant) => [
     {
         dataField: "ai_suggested",
         text: "AI Suggestion",
-        formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_match_score}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
+        formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_feedback_confidence}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
     },
     {
         dataField: "status",
