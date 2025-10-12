@@ -125,6 +125,7 @@ import { HRDocumentsReports } from "app/modules/Reports";
 import { TransferAndRotationReports } from "app/modules/Reports";
 import { AttendanceAndShiftReports } from "app/modules/Reports";
 import DemographicsForm from "app/modules/TalentSphere/OfferTracking/DemographicsForm";
+import Compliance from "app/modules/Compliance";
 
 export const SidebarRoutes = [
   {
@@ -256,7 +257,11 @@ export const SidebarRoutes = [
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PEOPLE_TEAM
-    ? [
+    ? [{
+      path: "/compliance",
+      component: <Compliance />,
+      name: "COMPLIANCE",
+    },
       Config.PROFILE_MANAGEMENT && {
         path: "/profile-management",
         component: <Employee />,

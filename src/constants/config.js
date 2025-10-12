@@ -41,6 +41,7 @@ const Config = {
   EXIT_CLEARANCE: true,
   EMPLOYEE_CREATION: true,
   HR_DOCUMENTS: true,
+  COMPLIANCE: true,
   EMPLOYEE_TRANSFER: true,
   CLEARANCE_AND_HANDOVER: true,
 

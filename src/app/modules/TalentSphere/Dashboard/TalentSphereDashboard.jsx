@@ -21,6 +21,9 @@ import OfferTrackerWidget from "./OfferTrackerWidget";
 import ApplicantSources from "./ApplicantSources";
 import EmiratizationWidget from "./EmiratizationWidget";
 import OpenRequisitions from "./OpenRequisitions";
+import HiringPredictionWidget from "./HiringPredictionWidget";
+import HiringTrendsWidget from "./HiringTrendsWidget";
+import SkillsGapWidget from "./SkillsGapWidget";
 import { useTalentSphereDashboard } from "./useTalentSphereDashboard";
 
 const TalentSphereDashboard = () => {
@@ -43,6 +46,10 @@ const TalentSphereDashboard = () => {
     requisitionsData,
     fetchAISuggestedCandidates,
     refetch,
+    // Predictive Analytics
+    hiringPredictionData,
+    hiringTrendsData,
+    skillsGapData,
   } = useTalentSphereDashboard(filterData);
 
   // Handle filter changes
@@ -202,6 +209,25 @@ const TalentSphereDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ApplicantSources data={sourceData} loading={loading} />
             <EmiratizationWidget data={emiratizationData} loading={loading} />
+          </div>
+
+          {/* Charts Row 5: Predictive Analytics */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-1">
+              <HiringPredictionWidget
+                data={hiringPredictionData}
+                loading={loading}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <HiringTrendsWidget
+                data={hiringTrendsData}
+                loading={loading}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <SkillsGapWidget data={skillsGapData} loading={loading} />
+            </div>
           </div>
         </>
       )}

@@ -2447,6 +2447,59 @@ export const getTalentSphereSummary = async () => {
   }
 };
 
+// ==================== Predictive Analytics APIs ====================
+
+export const getHiringPrediction = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/analytics/hiring-prediction/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting hiring prediction:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
+export const getHiringTrends = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/analytics/hiring-trends/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting hiring trends:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
+export const getSkillsGap = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/skills-gap`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting skills gap:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
 export const getApplicantOfferDetails = async (uuid) => {
   try {
     const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`, {
