@@ -9,7 +9,6 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import TableCustom from "components/CustomTable";
-import BarChart from "components/BarChart";
 import { Badge } from "components/ui/badge";
 import {
   AddLicenseModal,
@@ -17,10 +16,13 @@ import {
   EditLicenseModal,
   DeleteLicenseModal,
 } from "components/Compliance";
-import { DateRangeInput } from "components/FormControl";
+import {
+  DateRangeInput,
+  SelectInputComponent,
+  TextInput,
+} from "components/FormControl";
 import {
   Building,
-  User,
   Scale,
   GraduationCap,
   FileText,
@@ -32,11 +34,28 @@ import {
   CheckCircle,
   Clock,
   RefreshCw,
-  Building2,
-  UserCheck,
   Trash2,
   RotateCcw,
 } from "lucide-react";
+import {
+  complianceRatioColumns,
+  complianceRatioData,
+  complianceStats,
+  employeeContractsColumns,
+  employeeContractsData,
+  employeeLicensesColumns,
+  employeeLicensesData,
+  facilityLicensesData,
+  mandatoryTrainingColumns,
+  mandatoryTrainingData,
+  sopPolicyColumns,
+  sopPolicyData,
+  stats,
+  workforceRegulationsColumns,
+  workforceRegulationsData,
+  workingHoursColumns,
+  workingHoursData,
+} from "./dummyData";
 
 const Compliance = () => {
   const [activeTab, setActiveTab] = useState("facility");
@@ -109,6 +128,13 @@ const Compliance = () => {
     branch: "All Branches",
     status: "All Statuses",
     search: "",
+  });
+
+  const [licenseCertificatesFilters, setLicenseCertificatesFilters] = useState({
+    search: "",
+    branch: "All Branches",
+    designation: "All Designations",
+    type: "All Types",
   });
 
   // License data state
@@ -374,6 +400,14 @@ const Compliance = () => {
     }));
   };
 
+  // Handle License & Certificates filter changes
+  const handleLicenseCertificatesFilterChange = (filterType, value) => {
+    setLicenseCertificatesFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
   // Filter compliance ratio data
   const getFilteredComplianceData = () => {
     let filtered = [...complianceRatioData];
@@ -614,6 +648,41 @@ const Compliance = () => {
     return filtered;
   };
 
+  // Filter License & Certificates data
+  const getFilteredLicenseCertificatesData = () => {
+    let filtered = [...employeeLicensesData];
+
+    if (licenseCertificatesFilters.branch !== "All Branches") {
+      filtered = filtered.filter(
+        (license) => license.branch === licenseCertificatesFilters.branch
+      );
+    }
+
+    if (licenseCertificatesFilters.designation !== "All Designations") {
+      filtered = filtered.filter(
+        (license) =>
+          license.designation === licenseCertificatesFilters.designation
+      );
+    }
+
+    if (licenseCertificatesFilters.type !== "All Types") {
+      filtered = filtered.filter(
+        (license) => license.type === licenseCertificatesFilters.type
+      );
+    }
+
+    if (licenseCertificatesFilters.search) {
+      const searchLower = licenseCertificatesFilters.search.toLowerCase();
+      filtered = filtered.filter(
+        (license) =>
+          license.employeeName.toLowerCase().includes(searchLower) ||
+          license.employeeId.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return filtered;
+  };
+
   // Calculate dashboard metrics
   const getDashboardMetrics = () => {
     const totalFacilities = facilityLicenses.length;
@@ -641,1581 +710,6 @@ const Compliance = () => {
     };
   };
 
-  // Dummy data for compliance overview cards
-  const complianceStats = [
-    {
-      id: "facility",
-      title: "Branch & Licensing",
-      percentage: 98,
-      status: "valid",
-      icon: Building,
-      color: "purple",
-    },
-    {
-      id: "license-certificates",
-      title: "License & Certificates",
-      percentage: 99,
-      status: "valid",
-      icon: User,
-      color: "teal",
-    },
-    {
-      id: "ratio",
-      title: "Compliance Ratio",
-      percentage: 95,
-      status: "valid",
-      icon: Scale,
-      color: "orange",
-    },
-    {
-      id: "training",
-      title: "Mandatory Training",
-      percentage: 92,
-      status: "warning",
-      icon: GraduationCap,
-      color: "green",
-    },
-    {
-      id: "sop",
-      title: "SOP & Policy",
-      percentage: 97,
-      status: "valid",
-      icon: FileText,
-      color: "blue",
-    },
-    {
-      id: "workforce",
-      title: "Workforce Regulations",
-      percentage: 100,
-      status: "valid",
-      icon: Users,
-      color: "gray",
-    },
-  ];
-
-  // Dummy data for facility licensing table
-  const facilityLicensesData = [
-    {
-      id: 1,
-      facilityName: "Dubai Mall Pharmacy",
-      licenseNumber: "DHA-FL-2023-001",
-      licenseType: "Retail Pharmacy License",
-      issuingAuthority: "Dubai Health Authority",
-      issueDate: "2023-01-15",
-      expiryDate: "2026-01-15",
-      location: "Dubai Mall, Dubai",
-      status: "Active",
-      complianceScore: 98,
-      renewalIntimations: 0,
-    },
-    {
-      id: 2,
-      facilityName: "Abu Dhabi Marina Pharmacy",
-      licenseNumber: "DOH-FL-2022-045",
-      licenseType: "Retail Pharmacy License",
-      issuingAuthority: "Department of Health Abu Dhabi",
-      issueDate: "2022-11-03",
-      expiryDate: "2025-11-03",
-      location: "Marina Walk, Abu Dhabi",
-      status: "Active",
-      complianceScore: 95,
-      renewalIntimations: 0,
-    },
-    {
-      id: 3,
-      facilityName: "Sharjah City Center Pharmacy",
-      licenseNumber: "SHD-FL-2023-012",
-      licenseType: "Retail Pharmacy License",
-      issuingAuthority: "Sharjah Health Department",
-      issueDate: "2023-03-20",
-      expiryDate: "2026-03-20",
-      location: "City Center, Sharjah",
-      status: "Expiring Soon",
-      complianceScore: 92,
-      renewalIntimations: 1,
-    },
-    {
-      id: 4,
-      facilityName: "Dubai Healthcare City Pharmacy",
-      licenseNumber: "DHA-FL-2023-078",
-      licenseType: "Retail Pharmacy License",
-      issuingAuthority: "Dubai Health Authority",
-      issueDate: "2023-06-10",
-      expiryDate: "2026-06-10",
-      location: "Healthcare City, Dubai",
-      status: "Active",
-      complianceScore: 99,
-      renewalIntimations: 0,
-    },
-    {
-      id: 5,
-      facilityName: "Dubai Warehouse Facility",
-      licenseNumber: "DHA-WH-2023-001",
-      licenseType: "Warehouse License",
-      issuingAuthority: "Dubai Health Authority",
-      issueDate: "2023-02-01",
-      expiryDate: "2026-02-01",
-      location: "Dubai Industrial City",
-      status: "Active",
-      complianceScore: 97,
-      renewalIntimations: 0,
-    },
-    {
-      id: 6,
-      facilityName: "Abu Dhabi Clinical Center",
-      licenseNumber: "DOH-CL-2023-002",
-      licenseType: "Clinical License",
-      issuingAuthority: "Department of Health Abu Dhabi",
-      issueDate: "2023-04-15",
-      expiryDate: "2026-04-15",
-      location: "Abu Dhabi Medical City",
-      status: "Renewal Tracking",
-      complianceScore: 94,
-      renewalIntimations: 2,
-      renewalInitiatedAt: "2023-10-01T10:00:00Z",
-    },
-  ];
-
-  // Dummy data for employee licenses/certificates table
-  const employeeLicensesData = [
-    {
-      id: 1,
-      employeeId: "EMP001",
-      employeeName: "Sarah Ahmed",
-      designation: "Pharmacist",
-      type: "License",
-      issueAuthority: "Dubai Health Authority",
-      issuanceDate: "2023-01-15",
-      expiryDate: "2026-01-15",
-      branch: "Dubai Mall Pharmacy",
-      status: "Active",
-    },
-    {
-      id: 2,
-      employeeId: "EMP002",
-      employeeName: "Mohammed Khan",
-      designation: "Pharmacy Technician",
-      type: "Certificate",
-      issueAuthority: "Department of Health Abu Dhabi",
-      issuanceDate: "2022-11-03",
-      expiryDate: "2025-11-03",
-      branch: "Abu Dhabi Marina Pharmacy",
-      status: "Expiring Soon",
-    },
-    {
-      id: 3,
-      employeeId: "EMP003",
-      employeeName: "John Anderson",
-      designation: "Pharmacist",
-      type: "License",
-      issueAuthority: "Dubai Health Authority",
-      issuanceDate: "2023-03-20",
-      expiryDate: "2026-03-20",
-      branch: "Dubai Healthcare City Pharmacy",
-      status: "Active",
-    },
-    {
-      id: 4,
-      employeeId: "EMP004",
-      employeeName: "Fatima Al-Zahra",
-      designation: "Manager",
-      type: "Certificate",
-      issueAuthority: "Ministry of Health UAE",
-      issuanceDate: "2023-06-10",
-      expiryDate: "2026-06-10",
-      branch: "Sharjah City Center Pharmacy",
-      status: "Renewal In Progress",
-    },
-    {
-      id: 5,
-      employeeId: "EMP005",
-      employeeName: "Ahmed Hassan",
-      designation: "Supervisor",
-      type: "License",
-      issueAuthority: "Department of Health Abu Dhabi",
-      issuanceDate: "2022-08-15",
-      expiryDate: "2025-08-15",
-      branch: "Al Ain Pharmacy",
-      status: "Active",
-    },
-    {
-      id: 6,
-      employeeId: "EMP006",
-      employeeName: "Lisa Johnson",
-      designation: "Pharmacist",
-      type: "License",
-      issueAuthority: "Dubai Health Authority",
-      issuanceDate: "2023-02-01",
-      expiryDate: "2026-02-01",
-      branch: "Dubai Mall Pharmacy",
-      status: "Expired",
-    },
-    {
-      id: 7,
-      employeeId: "EMP007",
-      employeeName: "Omar Al-Rashid",
-      designation: "Pharmacy Technician",
-      type: "Certificate",
-      issueAuthority: "Sharjah Health Department",
-      issuanceDate: "2023-04-15",
-      expiryDate: "2026-04-15",
-      branch: "Sharjah City Center Pharmacy",
-      status: "Active",
-    },
-    {
-      id: 8,
-      employeeId: "EMP008",
-      employeeName: "Maria Rodriguez",
-      designation: "Cashier",
-      type: "Certificate",
-      issueAuthority: "Ministry of Health UAE",
-      issuanceDate: "2023-07-20",
-      expiryDate: "2026-07-20",
-      branch: "Abu Dhabi Marina Pharmacy",
-      status: "Expiring Soon",
-    },
-  ];
-
-  // Dummy data for SOP & Policy table
-  const sopPolicyData = [
-    {
-      id: 1,
-      documentName: "Employee Code of Conduct",
-      category: "HR",
-      noOfAssignees: 245,
-      acknowledged: 238,
-      notAcknowledged: 7,
-      acknowledgmentPercentage: 97,
-      dueDate: "2024-01-15",
-      branch: "All Branches",
-    },
-    {
-      id: 2,
-      documentName: "Workplace Safety Policy",
-      category: "Safety",
-      noOfAssignees: 245,
-      acknowledged: 240,
-      notAcknowledged: 5,
-      acknowledgmentPercentage: 98,
-      dueDate: "2024-01-20",
-      branch: "All Branches",
-    },
-    {
-      id: 3,
-      documentName: "Data Protection Policy",
-      category: "IT",
-      noOfAssignees: 245,
-      acknowledged: 220,
-      notAcknowledged: 25,
-      acknowledgmentPercentage: 90,
-      dueDate: "2024-01-25",
-      branch: "All Branches",
-    },
-    {
-      id: 4,
-      documentName: "Leave Management Policy",
-      category: "HR",
-      noOfAssignees: 245,
-      acknowledged: 235,
-      notAcknowledged: 10,
-      acknowledgmentPercentage: 96,
-      dueDate: "2024-01-30",
-      branch: "All Branches",
-    },
-    {
-      id: 5,
-      documentName: "Financial Controls Policy",
-      category: "Finance",
-      noOfAssignees: 245,
-      acknowledged: 200,
-      notAcknowledged: 45,
-      acknowledgmentPercentage: 82,
-      dueDate: "2024-02-05",
-      branch: "All Branches",
-    },
-    {
-      id: 6,
-      documentName: "IT Security Guidelines",
-      category: "IT",
-      noOfAssignees: 245,
-      acknowledged: 210,
-      notAcknowledged: 35,
-      acknowledgmentPercentage: 86,
-      dueDate: "2024-02-10",
-      branch: "All Branches",
-    },
-    {
-      id: 7,
-      documentName: "Customer Service Standards",
-      category: "Operations",
-      noOfAssignees: 245,
-      acknowledged: 245,
-      notAcknowledged: 0,
-      acknowledgmentPercentage: 100,
-      dueDate: "2024-02-15",
-      branch: "All Branches",
-    },
-    {
-      id: 8,
-      documentName: "Quality Assurance Procedures",
-      category: "Quality",
-      noOfAssignees: 245,
-      acknowledged: 230,
-      notAcknowledged: 15,
-      acknowledgmentPercentage: 94,
-      dueDate: "2024-02-20",
-      branch: "All Branches",
-    },
-  ];
-
-  // Dummy data for mandatory training table
-  const mandatoryTrainingData = [
-    {
-      id: 1,
-      employeeId: "EMP001",
-      employeeName: "Sarah Ahmed",
-      designation: "Pharmacist",
-      branch: "Dubai Mall Pharmacy",
-      trainingProgramName: "UAE Labor Law Compliance",
-      frequency: "Annual",
-      completionRatio: 100,
-      status: "Completed",
-    },
-    {
-      id: 2,
-      employeeId: "EMP002",
-      employeeName: "Mohammed Khan",
-      designation: "Pharmacy Technician",
-      branch: "Abu Dhabi Marina Pharmacy",
-      trainingProgramName: "Workplace Safety & Health",
-      frequency: "Quarterly",
-      completionRatio: 75,
-      status: "In Progress",
-    },
-    {
-      id: 3,
-      employeeId: "EMP003",
-      employeeName: "John Anderson",
-      designation: "Pharmacist",
-      branch: "Dubai Healthcare City Pharmacy",
-      trainingProgramName: "UAE Pharmacy Regulations",
-      frequency: "Annual",
-      completionRatio: 0,
-      status: "Pending",
-    },
-    {
-      id: 4,
-      employeeId: "EMP004",
-      employeeName: "Fatima Al-Zahra",
-      designation: "Manager",
-      branch: "Sharjah City Center Pharmacy",
-      trainingProgramName: "Fire Safety & Emergency Response",
-      frequency: "Monthly",
-      completionRatio: 100,
-      status: "Completed",
-    },
-    {
-      id: 5,
-      employeeId: "EMP005",
-      employeeName: "Ahmed Hassan",
-      designation: "Supervisor",
-      branch: "Al Ain Pharmacy",
-      trainingProgramName: "Data Privacy & GDPR Compliance",
-      frequency: "Annual",
-      completionRatio: 50,
-      status: "In Progress",
-    },
-    {
-      id: 6,
-      employeeId: "EMP006",
-      employeeName: "Lisa Johnson",
-      designation: "Pharmacist",
-      branch: "Dubai Mall Pharmacy",
-      trainingProgramName: "Patient Counseling Excellence",
-      frequency: "Quarterly",
-      completionRatio: 0,
-      status: "Pending",
-    },
-    {
-      id: 7,
-      employeeId: "EMP007",
-      employeeName: "Omar Al-Rashid",
-      designation: "Pharmacy Technician",
-      branch: "Sharjah City Center Pharmacy",
-      trainingProgramName: "UAE Labor Law Compliance",
-      frequency: "Annual",
-      completionRatio: 100,
-      status: "Completed",
-    },
-    {
-      id: 8,
-      employeeId: "EMP008",
-      employeeName: "Maria Rodriguez",
-      designation: "Cashier",
-      branch: "Abu Dhabi Marina Pharmacy",
-      trainingProgramName: "Workplace Safety & Health",
-      frequency: "Monthly",
-      completionRatio: 25,
-      status: "In Progress",
-    },
-  ];
-
-  const stats = [
-    {
-      id: "facility",
-      icon: Building2,
-      label: "Licensing",
-      fullName: "Branch & Licensing",
-      value: "98%",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-    },
-    {
-      id: "license-certificates",
-      icon: UserCheck,
-      label: "License & Certificates",
-      fullName: "License & Certificates",
-      value: "99%",
-      color: "text-teal-600",
-      bgColor: "bg-teal-50",
-    },
-    {
-      id: "ratio",
-      icon: Scale,
-      label: " Compliance Ratio",
-      fullName: "Compliance Ratio",
-      value: "95%",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-    },
-    {
-      id: "training",
-      icon: GraduationCap,
-      label: "Training",
-      fullName: "Mandatory Training",
-      value: "92%",
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
-      warning: true,
-    },
-    {
-      id: "sop",
-      icon: FileText,
-      label: "SOP",
-      fullName: "SOP & Policy",
-      value: "97%",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-    },
-    {
-      id: "workforce",
-      icon: Users,
-      label: "Workforce",
-      fullName: "Workforce Regulations",
-      value: "100%",
-      color: "text-slate-600",
-      bgColor: "bg-slate-50",
-    },
-  ];
-
-  // Dummy data for Employee Contracts table
-  const employeeContractsData = [
-    {
-      id: 1,
-      employeeId: "EMP001",
-      employeeName: "Sarah Ahmed",
-      designation: "Pharmacist",
-      branch: "Dubai Mall Pharmacy",
-      contractType: "Permanent",
-      contractDuration: "3 Years",
-      startDate: "2023-01-15",
-      endDate: "2026-01-15",
-      daysRemaining: 365,
-      status: "Active",
-    },
-    {
-      id: 2,
-      employeeId: "EMP002",
-      employeeName: "Mohammed Khan",
-      designation: "Pharmacy Technician",
-      branch: "Abu Dhabi Marina Pharmacy",
-      contractType: "Fixed-term",
-      contractDuration: "2 Years",
-      startDate: "2022-11-03",
-      endDate: "2024-11-03",
-      daysRemaining: 15,
-      status: "Expiring Soon",
-    },
-    {
-      id: 3,
-      employeeId: "EMP003",
-      employeeName: "John Anderson",
-      designation: "Pharmacist",
-      branch: "Dubai Healthcare City Pharmacy",
-      contractType: "Consultant",
-      contractDuration: "1 Year",
-      startDate: "2023-03-20",
-      endDate: "2024-03-20",
-      daysRemaining: 45,
-      status: "Expiring Soon",
-    },
-    {
-      id: 4,
-      employeeId: "EMP004",
-      employeeName: "Fatima Al-Zahra",
-      designation: "Manager",
-      branch: "Sharjah City Center Pharmacy",
-      contractType: "Permanent",
-      contractDuration: "3 Years",
-      startDate: "2023-06-10",
-      endDate: "2026-06-10",
-      daysRemaining: 520,
-      status: "Active",
-    },
-    {
-      id: 5,
-      employeeId: "EMP005",
-      employeeName: "Ahmed Hassan",
-      designation: "Supervisor",
-      branch: "Al Ain Pharmacy",
-      contractType: "Fixed-term",
-      contractDuration: "2 Years",
-      startDate: "2022-08-15",
-      endDate: "2024-08-15",
-      daysRemaining: -30,
-      status: "Expired",
-    },
-    {
-      id: 6,
-      employeeId: "EMP006",
-      employeeName: "Lisa Johnson",
-      designation: "Pharmacist",
-      branch: "Dubai Mall Pharmacy",
-      contractType: "Permanent",
-      contractDuration: "3 Years",
-      startDate: "2023-02-01",
-      endDate: "2026-02-01",
-      daysRemaining: 400,
-      status: "Active",
-    },
-    {
-      id: 7,
-      employeeId: "EMP007",
-      employeeName: "Omar Al-Rashid",
-      designation: "Pharmacy Technician",
-      branch: "Sharjah City Center Pharmacy",
-      contractType: "Probation",
-      contractDuration: "6 Months",
-      startDate: "2023-10-15",
-      endDate: "2024-04-15",
-      daysRemaining: 90,
-      status: "Active",
-    },
-    {
-      id: 8,
-      employeeId: "EMP008",
-      employeeName: "Maria Rodriguez",
-      designation: "Cashier",
-      branch: "Abu Dhabi Marina Pharmacy",
-      contractType: "Fixed-term",
-      contractDuration: "1 Year",
-      startDate: "2023-07-20",
-      endDate: "2024-07-20",
-      daysRemaining: 180,
-      status: "Active",
-    },
-    {
-      id: 9,
-      employeeId: "EMP009",
-      employeeName: "David Wilson",
-      designation: "Pharmacist",
-      branch: "Fujairah Pharmacy",
-      contractType: "Consultant",
-      contractDuration: "6 Months",
-      startDate: "2023-12-01",
-      endDate: "2024-06-01",
-      daysRemaining: 120,
-      status: "Active",
-    },
-    {
-      id: 10,
-      employeeId: "EMP010",
-      employeeName: "Aisha Al-Mansouri",
-      designation: "Manager",
-      branch: "Ajman Pharmacy",
-      contractType: "Permanent",
-      contractDuration: "3 Years",
-      startDate: "2022-05-10",
-      endDate: "2025-05-10",
-      daysRemaining: -60,
-      status: "Expired",
-    },
-  ];
-
-  // Column definitions for Employee Contracts table
-  const employeeContractsColumns = [
-    {
-      dataField: "employeeId",
-      text: "Employee ID",
-    },
-    {
-      dataField: "employeeName",
-      text: "Employee Name",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <span className="font-semibold text-blue-700 text-sm">
-              {row.employeeName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </span>
-          </div>
-          <span className="font-medium">{row.employeeName}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "designation",
-      text: "Designation",
-    },
-    {
-      dataField: "branch",
-      text: "Branch",
-    },
-    {
-      dataField: "contractType",
-      text: "Contract Type",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.contractType === "Permanent"
-              ? "success"
-              : row.contractType === "Fixed-term"
-              ? "warning"
-              : row.contractType === "Consultant"
-              ? "secondary"
-              : "default"
-          }
-          className="capitalize"
-        >
-          {row.contractType}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "contractDuration",
-      text: "Contract Duration",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.contractDuration}</span>
-      ),
-    },
-    {
-      dataField: "startDate",
-      text: "Start Date",
-    },
-    {
-      dataField: "endDate",
-      text: "End Date",
-    },
-    {
-      dataField: "daysRemaining",
-      text: "Days Remaining",
-      formatter: (cell, row) => (
-        <span
-          className={`font-semibold ${
-            row.daysRemaining < 0
-              ? "text-red-600"
-              : row.daysRemaining <= 30
-              ? "text-orange-600"
-              : "text-green-600"
-          }`}
-        >
-          {row.daysRemaining < 0 ? "Expired" : `${row.daysRemaining} days`}
-        </span>
-      ),
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.status === "Active"
-              ? "success"
-              : row.status === "Expiring Soon"
-              ? "warning"
-              : row.status === "Expired"
-              ? "destructive"
-              : "secondary"
-          }
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Action",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View contract details for:", row);
-            }}
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("Renew contract for:", row);
-            }}
-            title="Renew"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("Upload contract for:", row);
-            }}
-            title="Upload"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  // Dummy data for Working Hours table
-  const workingHoursData = [
-    {
-      id: 1,
-      branchName: "Dubai Mall Pharmacy",
-      region: "Dubai",
-      totalStaff: 45,
-      avgWeeklyHours: 46.2,
-      overtimeHours: 2.1,
-      legalLimit: 48,
-      status: "Compliant",
-    },
-    {
-      id: 2,
-      branchName: "Abu Dhabi Marina Pharmacy",
-      region: "Abu Dhabi",
-      totalStaff: 38,
-      avgWeeklyHours: 47.8,
-      overtimeHours: 3.2,
-      legalLimit: 48,
-      status: "At Risk",
-    },
-    {
-      id: 3,
-      branchName: "Sharjah City Center Pharmacy",
-      region: "Sharjah",
-      totalStaff: 42,
-      avgWeeklyHours: 49.1,
-      overtimeHours: 5.3,
-      legalLimit: 48,
-      status: "Non-Compliant",
-    },
-    {
-      id: 4,
-      branchName: "Dubai Healthcare City Pharmacy",
-      region: "Dubai",
-      totalStaff: 52,
-      avgWeeklyHours: 45.8,
-      overtimeHours: 1.2,
-      legalLimit: 48,
-      status: "Compliant",
-    },
-    {
-      id: 5,
-      branchName: "Al Ain Pharmacy",
-      region: "Al Ain",
-      totalStaff: 28,
-      avgWeeklyHours: 47.5,
-      overtimeHours: 2.8,
-      legalLimit: 48,
-      status: "At Risk",
-    },
-    {
-      id: 6,
-      branchName: "Fujairah Pharmacy",
-      region: "Fujairah",
-      totalStaff: 22,
-      avgWeeklyHours: 44.2,
-      overtimeHours: 0.8,
-      legalLimit: 48,
-      status: "Compliant",
-    },
-    {
-      id: 7,
-      branchName: "Ajman Pharmacy",
-      region: "Ajman",
-      totalStaff: 35,
-      avgWeeklyHours: 48.5,
-      overtimeHours: 4.1,
-      legalLimit: 48,
-      status: "At Risk",
-    },
-    {
-      id: 8,
-      branchName: "Ras Al Khaimah Pharmacy",
-      region: "Ras Al Khaimah",
-      totalStaff: 31,
-      avgWeeklyHours: 46.8,
-      overtimeHours: 1.9,
-      legalLimit: 48,
-      status: "Compliant",
-    },
-  ];
-
-  // Column definitions for Working Hours table
-  const workingHoursColumns = [
-    {
-      dataField: "branchName",
-      text: "Branch Name",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <Building className="w-4 h-4 text-blue-700" />
-          </div>
-          <span className="font-medium">{row.branchName}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "region",
-      text: "Region",
-    },
-    {
-      dataField: "totalStaff",
-      text: "Total Staff",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.totalStaff}</span>
-      ),
-    },
-    {
-      dataField: "avgWeeklyHours",
-      text: "Avg. Weekly Hours",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.avgWeeklyHours}</span>
-      ),
-    },
-    {
-      dataField: "overtimeHours",
-      text: "Overtime Hours",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.overtimeHours}</span>
-      ),
-    },
-    {
-      dataField: "legalLimit",
-      text: "Legal Limit",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.legalLimit}</span>
-      ),
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.status === "Compliant"
-              ? "success"
-              : row.status === "At Risk"
-              ? "warning"
-              : "destructive"
-          }
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Action",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View details for:", row);
-            }}
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-  const workforceRegulationsData = [
-    {
-      id: 1,
-      regulationArea: "Working Hours",
-      requirement: "Maximum 48 hours per week (8 hours per day)",
-      currentStatus: "Average: 46.2 hours/week",
-      branchCompliant: "238 / 238",
-      lastVerified: "2024-01-15",
-      status: "Compliant",
-      categoryType: "Working Hours",
-    },
-    {
-      id: 2,
-      regulationArea: "Annual Leave",
-      requirement: "30 days annual leave after 1 year of service",
-      currentStatus: "Tracked and accrued properly",
-      branchCompliant: "235 / 238",
-      lastVerified: "2024-01-10",
-      status: "At Risk",
-      categoryType: "Leave",
-    },
-    {
-      id: 3,
-      regulationArea: "Sick Leave",
-      requirement: "90 days per year (15 full pay, 30 half pay)",
-      currentStatus: "Properly documented and tracked",
-      branchCompliant: "238 / 238",
-      lastVerified: "2024-01-12",
-      status: "Compliant",
-      categoryType: "Leave",
-    },
-    {
-      id: 4,
-      regulationArea: "End of Service Benefits",
-      requirement: "21 days salary per year (1-5 years service)",
-      currentStatus: "Calculated and reserved correctly",
-      branchCompliant: "230 / 238",
-      lastVerified: "2024-01-08",
-      status: "At Risk",
-      categoryType: "End of Service",
-    },
-    {
-      id: 5,
-      regulationArea: "Wage Protection System",
-      requirement: "WPS registration mandatory for all employees",
-      currentStatus: "All staff registered in WPS",
-      branchCompliant: "238 / 238",
-      lastVerified: "2024-01-14",
-      status: "Compliant",
-      categoryType: "Wages",
-    },
-    {
-      id: 6,
-      regulationArea: "Overtime Compensation",
-      requirement: "125% of basic salary for overtime hours",
-      currentStatus: "Overtime rates not properly calculated",
-      branchCompliant: "180 / 238",
-      lastVerified: "2024-01-05",
-      status: "Non-Compliant",
-      categoryType: "Wages",
-    },
-    {
-      id: 7,
-      regulationArea: "Maternity Leave",
-      requirement: "45 days paid maternity leave",
-      currentStatus: "Maternity leave properly implemented",
-      branchCompliant: "238 / 238",
-      lastVerified: "2024-01-11",
-      status: "Compliant",
-      categoryType: "Leave",
-    },
-    {
-      id: 8,
-      regulationArea: "Probation Period",
-      requirement: "Maximum 6 months probation period",
-      currentStatus: "Probation periods extended beyond limit",
-      branchCompliant: "200 / 238",
-      lastVerified: "2024-01-09",
-      status: "At Risk",
-      categoryType: "Employment",
-    },
-  ];
-
-  // Column definitions for Workforce Regulations table
-  const workforceRegulationsColumns = [
-    {
-      dataField: "regulationArea",
-      text: "Regulation Area",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <Scale className="w-4 h-4 text-blue-700" />
-          </div>
-          <span className="font-medium">{row.regulationArea}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "requirement",
-      text: "Requirement",
-    },
-    {
-      dataField: "currentStatus",
-      text: "Current Status",
-    },
-    {
-      dataField: "branchCompliant",
-      text: "Branch Compliant",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.branchCompliant}</span>
-      ),
-    },
-    {
-      dataField: "lastVerified",
-      text: "Last Verified",
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.status === "Compliant"
-              ? "success"
-              : row.status === "At Risk"
-              ? "warning"
-              : "destructive"
-          }
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View details for:", row);
-            }}
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("Mark reviewed for:", row);
-            }}
-            title="Mark Reviewed"
-          >
-            <CheckCircle className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("Update for:", row);
-            }}
-            title="Update"
-          >
-            <Edit className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  // Dummy data for Compliance Ratio table
-  const complianceRatioData = [
-    {
-      id: 1,
-      branch: "Dubai Mall Pharmacy",
-      country: "UAE",
-      city: "Dubai",
-      requiredRatio: 95,
-      currentRatio: 98,
-      status: "Compliant",
-    },
-    {
-      id: 2,
-      branch: "Abu Dhabi Marina Pharmacy",
-      country: "UAE",
-      city: "Abu Dhabi",
-      requiredRatio: 95,
-      currentRatio: 92,
-      status: "At Risk",
-    },
-    {
-      id: 3,
-      branch: "Sharjah City Center Pharmacy",
-      country: "UAE",
-      city: "Sharjah",
-      requiredRatio: 95,
-      currentRatio: 88,
-      status: "Non-Compliant",
-    },
-    {
-      id: 4,
-      branch: "Al Ain Pharmacy",
-      country: "UAE",
-      city: "Al Ain",
-      requiredRatio: 95,
-      currentRatio: 96,
-      status: "Compliant",
-    },
-    {
-      id: 5,
-      branch: "Dubai Healthcare City Pharmacy",
-      country: "UAE",
-      city: "Dubai",
-      requiredRatio: 95,
-      currentRatio: 97,
-      status: "Compliant",
-    },
-    {
-      id: 6,
-      branch: "Fujairah Pharmacy",
-      country: "UAE",
-      city: "Fujairah",
-      requiredRatio: 95,
-      currentRatio: 90,
-      status: "At Risk",
-    },
-    {
-      id: 7,
-      branch: "Ajman Pharmacy",
-      country: "UAE",
-      city: "Ajman",
-      requiredRatio: 95,
-      currentRatio: 85,
-      status: "Non-Compliant",
-    },
-    {
-      id: 8,
-      branch: "Ras Al Khaimah Pharmacy",
-      country: "UAE",
-      city: "Ras Al Khaimah",
-      requiredRatio: 95,
-      currentRatio: 94,
-      status: "Compliant",
-    },
-  ];
-
-  // Column definitions for Compliance Ratio table
-  const complianceRatioColumns = [
-    {
-      dataField: "branch",
-      text: "Branch",
-    },
-    {
-      dataField: "country",
-      text: "Country",
-    },
-    {
-      dataField: "city",
-      text: "City",
-    },
-    {
-      dataField: "requiredRatio",
-      text: "Required Ratio (%)",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.requiredRatio}%</span>
-      ),
-    },
-    {
-      dataField: "currentRatio",
-      text: "Current Ratio (%)",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.currentRatio}%</span>
-      ),
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.status === "Compliant"
-              ? "success"
-              : row.status === "At Risk"
-              ? "warning"
-              : "destructive"
-          }
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View details for:", row);
-            }}
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  // Chart data
-  const complianceChartData = {
-    categories: [
-      "Facility",
-      "License & Certificates",
-      "Ratio",
-      "Training",
-      "SOP",
-      "Workforce",
-    ],
-    series: [
-      {
-        name: "Compliance Rate",
-        data: [98, 99, 95, 92, 97, 100],
-      },
-    ],
-  };
-
-  // Table columns configuration for SOP & Policy
-  const sopPolicyColumns = [
-    {
-      dataField: "documentName",
-      text: "Document Name",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <FileText className="w-4 h-4 text-blue-700" />
-          </div>
-          <span className="font-medium">{row.documentName}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "category",
-      text: "Category",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.category === "HR"
-              ? "success"
-              : row.category === "IT"
-              ? "secondary"
-              : row.category === "Safety"
-              ? "warning"
-              : row.category === "Finance"
-              ? "destructive"
-              : "default"
-          }
-          className="capitalize"
-        >
-          {row.category}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "noOfAssignees",
-      text: "No. of Assignees",
-      formatter: (cell, row) => (
-        <span className="font-semibold">{row.noOfAssignees}</span>
-      ),
-    },
-    {
-      dataField: "acknowledged",
-      text: "Acknowledged",
-      formatter: (cell, row) => (
-        <span className="font-semibold text-green-600">{row.acknowledged}</span>
-      ),
-    },
-    {
-      dataField: "notAcknowledged",
-      text: "Not Acknowledged",
-      formatter: (cell, row) => (
-        <span className="font-semibold text-red-600">
-          {row.notAcknowledged}
-        </span>
-      ),
-    },
-    {
-      dataField: "acknowledgmentPercentage",
-      text: "Acknowledgment %",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-            <div
-              className={`h-2.5 rounded-full ${
-                row.acknowledgmentPercentage >= 95
-                  ? "bg-green-500"
-                  : row.acknowledgmentPercentage >= 80
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-              }`}
-              style={{ width: `${row.acknowledgmentPercentage}%` }}
-            ></div>
-          </div>
-          <span className="font-semibold">{row.acknowledgmentPercentage}%</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Action",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View acknowledgment details for:", row);
-            }}
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  // Table columns configuration for mandatory training
-  const mandatoryTrainingColumns = [
-    {
-      dataField: "employeeId",
-      text: "Employee ID",
-    },
-    {
-      dataField: "employeeName",
-      text: "Employee Name",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <span className="font-semibold text-blue-700 text-sm">
-              {row.employeeName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </span>
-          </div>
-          <span className="font-medium">{row.employeeName}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "designation",
-      text: "Designation",
-    },
-    {
-      dataField: "branch",
-      text: "Branch",
-    },
-    {
-      dataField: "trainingProgramName",
-      text: "Training Program Name",
-    },
-    {
-      dataField: "frequency",
-      text: "Frequency",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.frequency === "Annual"
-              ? "success"
-              : row.frequency === "Quarterly"
-              ? "warning"
-              : "secondary"
-          }
-          className="capitalize"
-        >
-          {row.frequency}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "completionRatio",
-      text: "Completion Ratio (%)",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-            <div
-              className={`h-2.5 rounded-full ${
-                row.completionRatio >= 100
-                  ? "bg-green-500"
-                  : row.completionRatio >= 50
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-              }`}
-              style={{ width: `${row.completionRatio}%` }}
-            ></div>
-          </div>
-          <span className="font-semibold">{row.completionRatio}%</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.status === "Completed"
-              ? "success"
-              : row.status === "In Progress"
-              ? "warning"
-              : "destructive"
-          }
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Action",
-      formatter: (cell, row) => (
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View details for:", row);
-            }}
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  // Table columns configuration for employee licenses/certificates
-  const employeeLicensesColumns = [
-    {
-      dataField: "employeeId",
-      text: "Employee ID",
-    },
-    {
-      dataField: "employeeName",
-      text: "Employee Name",
-      formatter: (cell, row) => (
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <span className="font-semibold text-blue-700 text-sm">
-              {row.employeeName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </span>
-          </div>
-          <span className="font-medium">{row.employeeName}</span>
-        </div>
-      ),
-    },
-    {
-      dataField: "designation",
-      text: "Designation",
-    },
-    {
-      dataField: "type",
-      text: "Type",
-      formatter: (cell, row) => (
-        <Badge
-          variant={row.type === "License" ? "success" : "secondary"}
-          className="capitalize"
-        >
-          {row.type}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "issueAuthority",
-      text: "Issue Authority",
-    },
-    {
-      dataField: "issuanceDate",
-      text: "Issuance Date",
-    },
-    {
-      dataField: "expiryDate",
-      text: "Expiry Date",
-    },
-    {
-      dataField: "branch",
-      text: "Branch",
-    },
-    {
-      dataField: "status",
-      text: "Status",
-      formatter: (cell, row) => (
-        <Badge
-          variant={
-            row.status === "Active"
-              ? "success"
-              : row.status === "Expiring Soon"
-              ? "warning"
-              : row.status === "Renewal In Progress"
-              ? "secondary"
-              : "destructive"
-          }
-          className="capitalize"
-        >
-          {row.status}
-        </Badge>
-      ),
-    },
-    {
-      dataField: "actions",
-      text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex space-x-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              console.log("View employee license:", row);
-            }}
-            title="View"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-          {(row.status === "Expiring Soon" || row.status === "Active") && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                console.log("Proceed for renewal:", row);
-              }}
-              title="Proceed for Renewal"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ];
-
-  // Table columns configuration
   const facilityLicensesColumns = [
     {
       dataField: "facilityName",
@@ -2324,44 +818,12 @@ const Compliance = () => {
       <Header />
 
       <div className="p-4">
-        {/* Page Header */}
-        {/* <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Pharmacy Compliance Hub
-          </h1>
-        </div> */}
-
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          {/* <TabsList className="bg-transparent">
-            <TabsTrigger value="facility" variant="inner-tab">
-              Facility Licensing
-            </TabsTrigger>
-            <TabsTrigger value="professional" variant="inner-tab">
-              Professional Licensing
-            </TabsTrigger>
-            <TabsTrigger value="ratio" variant="inner-tab">
-              Ratio Compliance
-            </TabsTrigger>
-            <TabsTrigger value="training" variant="inner-tab">
-              Mandatory Training
-            </TabsTrigger>
-            <TabsTrigger value="sop" variant="inner-tab">
-              SOP & Policy
-            </TabsTrigger>
-            <TabsTrigger value="inspections" variant="inner-tab">
-              Inspections & Audits
-            </TabsTrigger>
-            <TabsTrigger value="workforce" variant="inner-tab">
-              Workforce Regulations
-            </TabsTrigger>
-          </TabsList> */}
-
           <div className="grid grid-cols-7 gap-4 mb-8">
             {stats.map((stat, index) => (
               <Card
                 key={index}
-                // className="border-slate-200 hover:shadow-lg transition-shadow"
                 className={`border-slate-200 hover:shadow-lg transition-shadow${
                   activeTab === stat.id && vs2
                     ? "border border-primary-900 hover:cursor-pointer"
@@ -2382,7 +844,7 @@ const Compliance = () => {
                     ${
                       activeTab === stat.id && vs2
                         ? "text-plum-900"
-                        : "text-slate-900"
+                        : "text-black"
                     }
                     `}
                   >
@@ -2393,7 +855,7 @@ const Compliance = () => {
                       className={`text-2xl font-semibold  ${
                         activeTab === stat.id && vs2
                           ? "text-plum-900"
-                          : "text-slate-900"
+                          : "text-black"
                       }`}
                     >
                       {stat.value}
@@ -2411,7 +873,11 @@ const Compliance = () => {
             <TabsList className="bg-transparent">
               {complianceStats.map((stat) => {
                 return (
-                  <TabsTrigger value={stat.id} variant="inner-tab">
+                  <TabsTrigger
+                    value={stat.id}
+                    className="data-[state=active]:bg-transparent text-black"
+                    variant="inner-tab"
+                  >
                     {stat.title}
                   </TabsTrigger>
                 );
@@ -2479,8 +945,10 @@ const Compliance = () => {
               className="mb-6"
             >
               <TabsList className="grid-cols-3">
-                <TabsTrigger value="branch-license">Branch License</TabsTrigger>
-                <TabsTrigger value="renewal-tracking">
+                <TabsTrigger value="branch-license" className="text-black">
+                  Branch License
+                </TabsTrigger>
+                <TabsTrigger value="renewal-tracking" className="text-black">
                   Renewal Tracking
                 </TabsTrigger>
               </TabsList>
@@ -2493,7 +961,7 @@ const Compliance = () => {
                     <>
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Total Facilities
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2501,14 +969,14 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.totalFacilities}
                           </p>
                           <div className="flex items-center text-sm">
                             <span className="text-green-500 font-medium mr-1">
                               ↑ {Math.floor(metrics.totalFacilities * 0.05)}
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-700">
                               from last year
                             </span>
                           </div>
@@ -2517,7 +985,7 @@ const Compliance = () => {
 
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Licenses Expiring
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2525,7 +993,7 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.expiringSoon}
                           </p>
                           <div className="flex items-center text-sm">
@@ -2538,7 +1006,7 @@ const Compliance = () => {
 
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Renewal In Progress
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2546,7 +1014,7 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.renewalInProgress}
                           </p>
                           <div className="flex items-center text-sm">
@@ -2559,7 +1027,7 @@ const Compliance = () => {
 
                       <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-sm font-medium">
+                          <h3 className="text-sm font-medium text-black">
                             Compliance Rate
                           </h3>
                           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2567,14 +1035,14 @@ const Compliance = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-black">
                             {metrics.complianceRate}%
                           </p>
                           <div className="flex items-center text-sm">
                             <span className="text-green-500 font-medium mr-1">
                               ↑ {Math.floor(metrics.complianceRate * 0.02)}%
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-700">
                               from last quarter
                             </span>
                           </div>
@@ -2589,64 +1057,55 @@ const Compliance = () => {
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center space-x-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Branch Name
-                    </label>
-                    <select
-                      className="border border-gray-300 rounded-md px-3 py-2"
+                    <SelectInputComponent
+                      name="branch"
+                      label="Branch Name"
                       value={filters.branch}
-                      onChange={(e) =>
-                        handleFilterChange("branch", e.target.value)
-                      }
-                    >
-                      <option value="All Branches">All Branches</option>
-                      {getUniqueBranches().map((branch) => (
-                        <option key={branch} value={branch}>
-                          {branch}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={handleFilterChange}
+                      options={[
+                        { label: "All Branches", value: "All Branches" },
+                        ...getUniqueBranches().map((branch) => ({
+                          label: branch,
+                          value: branch,
+                        })),
+                      ]}
+                      className="w-48"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      License Type
-                    </label>
-                    <select
-                      className="border border-gray-300 rounded-md px-3 py-2"
+                    <SelectInputComponent
+                      name="licenseType"
+                      label="License Type"
                       value={filters.licenseType}
-                      onChange={(e) =>
-                        handleFilterChange("licenseType", e.target.value)
-                      }
-                    >
-                      <option value="All Types">All Types</option>
-                      {getUniqueLicenseTypes().map((type) => (
-                        <option key={type} value={type}>
-                          {type}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={handleFilterChange}
+                      options={[
+                        { label: "All Types", value: "All Types" },
+                        ...getUniqueLicenseTypes().map((type) => ({
+                          label: type,
+                          value: type,
+                        })),
+                      ]}
+                      className="w-48"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
-                    </label>
-                    <select
-                      className="border border-gray-300 rounded-md px-3 py-2"
+                    <SelectInputComponent
+                      name="status"
+                      label="Status"
                       value={filters.status}
-                      onChange={(e) =>
-                        handleFilterChange("status", e.target.value)
-                      }
-                    >
-                      <option value="All Statuses">All Statuses</option>
-                      {getUniqueStatuses().map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={handleFilterChange}
+                      options={[
+                        { label: "All Statuses", value: "All Statuses" },
+                        ...getUniqueStatuses().map((status) => ({
+                          label: status,
+                          value: status,
+                        })),
+                      ]}
+                      className="w-48"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black-700 mb-1">
                       Expiry Date Range
                     </label>
                     <DateRangeInput
@@ -2716,37 +1175,6 @@ const Compliance = () => {
                 </Card>
               </TabsContent>
             </Tabs>
-
-            {/* Charts Section */}
-            <div className="grid grid-cols-2 gap-6 mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Compliance Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <BarChart
-                    categories={complianceChartData.categories}
-                    series={complianceChartData.series}
-                  />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>License Status Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                      <p className="text-5xl font-bold text-green-600">98%</p>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Active Licenses
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </TabsContent>
 
           {/* License & Certificates Tab */}
@@ -2755,15 +1183,17 @@ const Compliance = () => {
             <div className="grid grid-cols-4 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Employees</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Total Employees
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">245</p>
+                  <p className="text-3xl font-bold text-black">245</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       with licenses/certificates
                     </span>
                   </div>
@@ -2772,7 +1202,7 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Expiring within 60 Days
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2780,7 +1210,7 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">18</p>
+                  <p className="text-3xl font-bold text-black">18</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Require attention
@@ -2791,13 +1221,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Renewal in Progress</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Renewal in Progress
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <RefreshCw className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">12</p>
+                  <p className="text-3xl font-bold text-black">12</p>
                   <div className="flex items-center text-sm">
                     <span className="text-blue-500 font-medium">
                       Applications submitted
@@ -2808,18 +1240,20 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Compliance Ratio</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Compliance Ratio
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">94%</p>
+                  <p className="text-3xl font-bold text-black">94%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium mr-1">
                       ↑ 2%
                     </span>
-                    <span className="text-gray-500">from last quarter</span>
+                    <span className="text-gray-700">from last quarter</span>
                   </div>
                 </div>
               </Card>
@@ -2829,50 +1263,77 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Search by Employee Name / ID
-                  </label>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
+                  <TextInput
+                    name="search"
+                    label="Search by Employee Name / ID"
+                    value={licenseCertificatesFilters.search}
+                    onChange={handleLicenseCertificatesFilterChange}
                     placeholder="Search employee..."
+                    className="w-64"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Branch
-                  </label>
-                  <select className="border border-gray-300 rounded-md px-3 py-2">
-                    <option>All Branches</option>
-                    <option>Dubai Mall Pharmacy</option>
-                    <option>Abu Dhabi Marina Pharmacy</option>
-                    <option>Sharjah City Center Pharmacy</option>
-                    <option>Dubai Healthcare City Pharmacy</option>
-                    <option>Al Ain Pharmacy</option>
-                  </select>
+                  <SelectInputComponent
+                    name="branch"
+                    label="Branch"
+                    value={licenseCertificatesFilters.branch}
+                    onChange={handleLicenseCertificatesFilterChange}
+                    options={[
+                      { label: "All Branches", value: "All Branches" },
+                      {
+                        label: "Dubai Mall Pharmacy",
+                        value: "Dubai Mall Pharmacy",
+                      },
+                      {
+                        label: "Abu Dhabi Marina Pharmacy",
+                        value: "Abu Dhabi Marina Pharmacy",
+                      },
+                      {
+                        label: "Sharjah City Center Pharmacy",
+                        value: "Sharjah City Center Pharmacy",
+                      },
+                      {
+                        label: "Dubai Healthcare City Pharmacy",
+                        value: "Dubai Healthcare City Pharmacy",
+                      },
+                      { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Designation
-                  </label>
-                  <select className="border border-gray-300 rounded-md px-3 py-2">
-                    <option>All Designations</option>
-                    <option>Pharmacist</option>
-                    <option>Pharmacy Technician</option>
-                    <option>Manager</option>
-                    <option>Supervisor</option>
-                    <option>Cashier</option>
-                  </select>
+                  <SelectInputComponent
+                    name="designation"
+                    label="Designation"
+                    value={licenseCertificatesFilters.designation}
+                    onChange={handleLicenseCertificatesFilterChange}
+                    options={[
+                      { label: "All Designations", value: "All Designations" },
+                      { label: "Pharmacist", value: "Pharmacist" },
+                      {
+                        label: "Pharmacy Technician",
+                        value: "Pharmacy Technician",
+                      },
+                      { label: "Manager", value: "Manager" },
+                      { label: "Supervisor", value: "Supervisor" },
+                      { label: "Cashier", value: "Cashier" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type
-                  </label>
-                  <select className="border border-gray-300 rounded-md px-3 py-2">
-                    <option>All Types</option>
-                    <option>License</option>
-                    <option>Certificate</option>
-                  </select>
+                  <SelectInputComponent
+                    name="type"
+                    label="Type"
+                    value={licenseCertificatesFilters.type}
+                    onChange={handleLicenseCertificatesFilterChange}
+                    options={[
+                      { label: "All Types", value: "All Types" },
+                      { label: "License", value: "License" },
+                      { label: "Certificate", value: "Certificate" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -2891,9 +1352,9 @@ const Compliance = () => {
               <CardContent>
                 <TableCustom
                   columns={employeeLicensesColumns}
-                  data={employeeLicensesData}
+                  data={getFilteredLicenseCertificatesData()}
                   pagination={true}
-                  dataTotalSize={employeeLicensesData.length}
+                  dataTotalSize={getFilteredLicenseCertificatesData().length}
                   tableOptions={{ page: 1, sizePerPage: 10 }}
                 />
               </CardContent>
@@ -2906,7 +1367,7 @@ const Compliance = () => {
             <div className="grid grid-cols-5 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Total Assigned Trainings
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2914,9 +1375,9 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       All mandatory trainings assigned
                     </span>
                   </div>
@@ -2925,13 +1386,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Completed Trainings</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Completed Trainings
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">3</p>
+                  <p className="text-3xl font-bold text-black">3</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium">
                       Successfully completed
@@ -2942,13 +1405,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">In Progress Trainings</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    In Progress Trainings
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Clock className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">3</p>
+                  <p className="text-3xl font-bold text-black">3</p>
                   <div className="flex items-center text-sm">
                     <span className="text-blue-500 font-medium">
                       Currently being completed
@@ -2959,7 +1424,7 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Pending / Overdue Trainings
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -2967,7 +1432,7 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <p className="text-3xl font-bold text-black">2</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Due or not started
@@ -2978,13 +1443,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Compliance %</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Compliance %
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Scale className="w-5 h-5 text-purple-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">37.5%</p>
+                  <p className="text-3xl font-bold text-black">37.5%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-purple-500 font-medium">
                       Training completion rate
@@ -2998,121 +1465,119 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Branch
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="branch"
+                    label="Branch"
                     value={trainingFilters.branch}
-                    onChange={(e) =>
-                      handleTrainingFilterChange("branch", e.target.value)
-                    }
-                  >
-                    <option value="All Branches">All Branches</option>
-                    <option value="Dubai Mall Pharmacy">
-                      Dubai Mall Pharmacy
-                    </option>
-                    <option value="Abu Dhabi Marina Pharmacy">
-                      Abu Dhabi Marina Pharmacy
-                    </option>
-                    <option value="Sharjah City Center Pharmacy">
-                      Sharjah City Center Pharmacy
-                    </option>
-                    <option value="Dubai Healthcare City Pharmacy">
-                      Dubai Healthcare City Pharmacy
-                    </option>
-                    <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
-                  </select>
+                    onChange={handleTrainingFilterChange}
+                    options={[
+                      { label: "All Branches", value: "All Branches" },
+                      {
+                        label: "Dubai Mall Pharmacy",
+                        value: "Dubai Mall Pharmacy",
+                      },
+                      {
+                        label: "Abu Dhabi Marina Pharmacy",
+                        value: "Abu Dhabi Marina Pharmacy",
+                      },
+                      {
+                        label: "Sharjah City Center Pharmacy",
+                        value: "Sharjah City Center Pharmacy",
+                      },
+                      {
+                        label: "Dubai Healthcare City Pharmacy",
+                        value: "Dubai Healthcare City Pharmacy",
+                      },
+                      { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Department
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="department"
+                    label="Department"
                     value={trainingFilters.department}
-                    onChange={(e) =>
-                      handleTrainingFilterChange("department", e.target.value)
-                    }
-                  >
-                    <option value="All Departments">All Departments</option>
-                    <option value="Pharmacist">Pharmacist</option>
-                    <option value="Pharmacy Technician">
-                      Pharmacy Technician
-                    </option>
-                    <option value="Manager">Manager</option>
-                    <option value="Supervisor">Supervisor</option>
-                    <option value="Cashier">Cashier</option>
-                  </select>
+                    onChange={handleTrainingFilterChange}
+                    options={[
+                      { label: "All Departments", value: "All Departments" },
+                      { label: "Pharmacist", value: "Pharmacist" },
+                      {
+                        label: "Pharmacy Technician",
+                        value: "Pharmacy Technician",
+                      },
+                      { label: "Manager", value: "Manager" },
+                      { label: "Supervisor", value: "Supervisor" },
+                      { label: "Cashier", value: "Cashier" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Training Program
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="trainingProgram"
+                    label="Training Program"
                     value={trainingFilters.trainingProgram}
-                    onChange={(e) =>
-                      handleTrainingFilterChange(
-                        "trainingProgram",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="All Programs">All Programs</option>
-                    <option value="UAE Labor Law Compliance">
-                      UAE Labor Law Compliance
-                    </option>
-                    <option value="Workplace Safety & Health">
-                      Workplace Safety & Health
-                    </option>
-                    <option value="UAE Pharmacy Regulations">
-                      UAE Pharmacy Regulations
-                    </option>
-                    <option value="Fire Safety & Emergency Response">
-                      Fire Safety & Emergency Response
-                    </option>
-                    <option value="Data Privacy & GDPR Compliance">
-                      Data Privacy & GDPR Compliance
-                    </option>
-                    <option value="Patient Counseling Excellence">
-                      Patient Counseling Excellence
-                    </option>
-                  </select>
+                    onChange={handleTrainingFilterChange}
+                    options={[
+                      { label: "All Programs", value: "All Programs" },
+                      {
+                        label: "UAE Labor Law Compliance",
+                        value: "UAE Labor Law Compliance",
+                      },
+                      {
+                        label: "Workplace Safety & Health",
+                        value: "Workplace Safety & Health",
+                      },
+                      {
+                        label: "UAE Pharmacy Regulations",
+                        value: "UAE Pharmacy Regulations",
+                      },
+                      {
+                        label: "Fire Safety & Emergency Response",
+                        value: "Fire Safety & Emergency Response",
+                      },
+                      {
+                        label: "Data Privacy & GDPR Compliance",
+                        value: "Data Privacy & GDPR Compliance",
+                      },
+                      {
+                        label: "Patient Counseling Excellence",
+                        value: "Patient Counseling Excellence",
+                      },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Frequency
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="frequency"
+                    label="Frequency"
                     value={trainingFilters.frequency}
-                    onChange={(e) =>
-                      handleTrainingFilterChange("frequency", e.target.value)
-                    }
-                  >
-                    <option value="All Frequencies">All Frequencies</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Quarterly">Quarterly</option>
-                    <option value="Annual">Annual</option>
-                  </select>
+                    onChange={handleTrainingFilterChange}
+                    options={[
+                      { label: "All Frequencies", value: "All Frequencies" },
+                      { label: "Monthly", value: "Monthly" },
+                      { label: "Quarterly", value: "Quarterly" },
+                      { label: "Annual", value: "Annual" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="status"
+                    label="Status"
                     value={trainingFilters.status}
-                    onChange={(e) =>
-                      handleTrainingFilterChange("status", e.target.value)
-                    }
-                  >
-                    <option value="All Statuses">All Statuses</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                  </select>
+                    onChange={handleTrainingFilterChange}
+                    options={[
+                      { label: "All Statuses", value: "All Statuses" },
+                      { label: "Pending", value: "Pending" },
+                      { label: "In Progress", value: "In Progress" },
+                      { label: "Completed", value: "Completed" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -3146,7 +1611,7 @@ const Compliance = () => {
             <div className="grid grid-cols-4 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">
+                  <h3 className="text-sm font-medium text-black">
                     Total Locations (Cities)
                   </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3154,9 +1619,9 @@ const Compliance = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">7</p>
+                  <p className="text-3xl font-bold text-black">7</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       Unique cities with branches
                     </span>
                   </div>
@@ -3165,28 +1630,32 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Branches</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Total Branches
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Building className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">All branches</span>
+                    <span className="text-gray-700">All branches</span>
                   </div>
                 </div>
               </Card>
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Non-Compliant Count</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Non-Compliant Count
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-red-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <p className="text-3xl font-bold text-black">2</p>
                   <div className="flex items-center text-sm">
                     <span className="text-red-500 font-medium mr-1">
                       Branches marked as Non-Compliant
@@ -3197,13 +1666,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Average Compliance %</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Average Compliance %
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Scale className="w-5 h-5 text-orange-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">92.5%</p>
+                  <p className="text-3xl font-bold text-black">92.5%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium mr-1">
                       Across all branches
@@ -3217,77 +1688,61 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Search by Branch Name
-                  </label>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                    placeholder="Find a specific branch quickly"
+                  <TextInput
+                    name="branchSearch"
+                    label="Search by Branch Name"
                     value={complianceFilters.branchSearch}
-                    onChange={(e) =>
-                      handleComplianceFilterChange(
-                        "branchSearch",
-                        e.target.value
-                      )
-                    }
+                    onChange={handleComplianceFilterChange}
+                    placeholder="Find a specific branch quickly"
+                    className="w-64"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Country
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="country"
+                    label="Country"
                     value={complianceFilters.country}
-                    onChange={(e) =>
-                      handleComplianceFilterChange("country", e.target.value)
-                    }
-                  >
-                    <option value="All Countries">All Countries</option>
-                    <option value="UAE">UAE</option>
-                  </select>
+                    onChange={handleComplianceFilterChange}
+                    options={[
+                      { label: "All Countries", value: "All Countries" },
+                      { label: "UAE", value: "UAE" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    City
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="city"
+                    label="City"
                     value={complianceFilters.city}
-                    onChange={(e) =>
-                      handleComplianceFilterChange("city", e.target.value)
-                    }
-                  >
-                    <option value="All Cities">All Cities</option>
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
-                    <option value="Sharjah">Sharjah</option>
-                    <option value="Al Ain">Al Ain</option>
-                    <option value="Fujairah">Fujairah</option>
-                    <option value="Ajman">Ajman</option>
-                    <option value="Ras Al Khaimah">Ras Al Khaimah</option>
-                  </select>
+                    onChange={handleComplianceFilterChange}
+                    options={[
+                      { label: "All Cities", value: "All Cities" },
+                      { label: "Dubai", value: "Dubai" },
+                      { label: "Abu Dhabi", value: "Abu Dhabi" },
+                      { label: "Sharjah", value: "Sharjah" },
+                      { label: "Al Ain", value: "Al Ain" },
+                      { label: "Fujairah", value: "Fujairah" },
+                      { label: "Ajman", value: "Ajman" },
+                      { label: "Ras Al Khaimah", value: "Ras Al Khaimah" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Compliance Status
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="complianceStatus"
+                    label="Compliance Status"
                     value={complianceFilters.complianceStatus}
-                    onChange={(e) =>
-                      handleComplianceFilterChange(
-                        "complianceStatus",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="All Statuses">All Statuses</option>
-                    <option value="Compliant">Compliant</option>
-                    <option value="At Risk">At Risk</option>
-                    <option value="Non-Compliant">Non-Compliant</option>
-                  </select>
+                    onChange={handleComplianceFilterChange}
+                    options={[
+                      { label: "All Statuses", value: "All Statuses" },
+                      { label: "Compliant", value: "Compliant" },
+                      { label: "At Risk", value: "At Risk" },
+                      { label: "Non-Compliant", value: "Non-Compliant" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -3321,15 +1776,17 @@ const Compliance = () => {
             <div className="grid grid-cols-5 gap-6 mb-8">
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Total Policies</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Total Policies
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <FileText className="w-5 h-5 text-blue-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-700">
                       Total number of policies/SOPs added
                     </span>
                   </div>
@@ -3338,13 +1795,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Active Documents</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Active Documents
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">8</p>
+                  <p className="text-3xl font-bold text-black">8</p>
                   <div className="flex items-center text-sm">
                     <span className="text-green-500 font-medium">
                       Currently active or published
@@ -3355,13 +1814,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Staff Acknowledged</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Staff Acknowledged
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-purple-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">93%</p>
+                  <p className="text-3xl font-bold text-black">93%</p>
                   <div className="flex items-center text-sm">
                     <span className="text-purple-500 font-medium">
                       Overall acknowledgment compliance rate
@@ -3372,13 +1833,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Pending Reviews</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Pending Reviews
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-orange-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">142</p>
+                  <p className="text-3xl font-bold text-black">142</p>
                   <div className="flex items-center text-sm">
                     <span className="text-orange-500 font-medium">
                       Policies with incomplete acknowledgment
@@ -3389,13 +1852,15 @@ const Compliance = () => {
 
               <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium">Due This Month</h3>
+                  <h3 className="text-sm font-medium text-black">
+                    Due This Month
+                  </h3>
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                     <Clock className="w-5 h-5 text-red-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">2</p>
+                  <p className="text-3xl font-bold text-black">2</p>
                   <div className="flex items-center text-sm">
                     <span className="text-red-500 font-medium">
                       Policies reaching acknowledgment deadline
@@ -3409,87 +1874,78 @@ const Compliance = () => {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Policy Name / Search
-                  </label>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                    placeholder="Search policies..."
+                  <TextInput
+                    name="policySearch"
+                    label="Policy Name / Search"
                     value={sopFilters.policySearch}
-                    onChange={(e) =>
-                      handleSopFilterChange("policySearch", e.target.value)
-                    }
+                    onChange={handleSopFilterChange}
+                    placeholder="Search policies..."
+                    className="w-64"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="category"
+                    label="Category"
                     value={sopFilters.category}
-                    onChange={(e) =>
-                      handleSopFilterChange("category", e.target.value)
-                    }
-                  >
-                    <option value="All Categories">All Categories</option>
-                    <option value="HR">HR</option>
-                    <option value="IT">IT</option>
-                    <option value="Safety">Safety</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Operations">Operations</option>
-                    <option value="Quality">Quality</option>
-                  </select>
+                    onChange={handleSopFilterChange}
+                    options={[
+                      { label: "All Categories", value: "All Categories" },
+                      { label: "HR", value: "HR" },
+                      { label: "IT", value: "IT" },
+                      { label: "Safety", value: "Safety" },
+                      { label: "Finance", value: "Finance" },
+                      { label: "Operations", value: "Operations" },
+                      { label: "Quality", value: "Quality" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Acknowledgment Status
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="acknowledgmentStatus"
+                    label="Acknowledgment Status"
                     value={sopFilters.acknowledgmentStatus}
-                    onChange={(e) =>
-                      handleSopFilterChange(
-                        "acknowledgmentStatus",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="All">All</option>
-                    <option value="Acknowledged">Acknowledged</option>
-                    <option value="Not Acknowledged">Not Acknowledged</option>
-                  </select>
+                    onChange={handleSopFilterChange}
+                    options={[
+                      { label: "All", value: "All" },
+                      { label: "Acknowledged", value: "Acknowledged" },
+                      { label: "Not Acknowledged", value: "Not Acknowledged" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Branch
-                  </label>
-                  <select
-                    className="border border-gray-300 rounded-md px-3 py-2"
+                  <SelectInputComponent
+                    name="branch"
+                    label="Branch"
                     value={sopFilters.branch}
-                    onChange={(e) =>
-                      handleSopFilterChange("branch", e.target.value)
-                    }
-                  >
-                    <option value="All Branches">All Branches</option>
-                    <option value="Dubai Mall Pharmacy">
-                      Dubai Mall Pharmacy
-                    </option>
-                    <option value="Abu Dhabi Marina Pharmacy">
-                      Abu Dhabi Marina Pharmacy
-                    </option>
-                    <option value="Sharjah City Center Pharmacy">
-                      Sharjah City Center Pharmacy
-                    </option>
-                    <option value="Dubai Healthcare City Pharmacy">
-                      Dubai Healthcare City Pharmacy
-                    </option>
-                    <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
-                  </select>
+                    onChange={handleSopFilterChange}
+                    options={[
+                      { label: "All Branches", value: "All Branches" },
+                      {
+                        label: "Dubai Mall Pharmacy",
+                        value: "Dubai Mall Pharmacy",
+                      },
+                      {
+                        label: "Abu Dhabi Marina Pharmacy",
+                        value: "Abu Dhabi Marina Pharmacy",
+                      },
+                      {
+                        label: "Sharjah City Center Pharmacy",
+                        value: "Sharjah City Center Pharmacy",
+                      },
+                      {
+                        label: "Dubai Healthcare City Pharmacy",
+                        value: "Dubai Healthcare City Pharmacy",
+                      },
+                      { label: "Al Ain Pharmacy", value: "Al Ain Pharmacy" },
+                    ]}
+                    className="w-48"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-black-700 mb-1">
                     Due Date Range
                   </label>
                   <DateRangeInput
@@ -3536,9 +1992,16 @@ const Compliance = () => {
               className="mb-6"
             >
               <TabsList className="grid-cols-3">
-                <TabsTrigger value="labor-law">UAE Labor Law</TabsTrigger>
-                <TabsTrigger value="working-hours">Working Hours</TabsTrigger>
-                <TabsTrigger value="employment-contracts">
+                <TabsTrigger value="labor-law" className="text-black">
+                  UAE Labor Law
+                </TabsTrigger>
+                <TabsTrigger value="working-hours" className="text-black">
+                  Working Hours
+                </TabsTrigger>
+                <TabsTrigger
+                  value="employment-contracts"
+                  className="text-black"
+                >
                   Employment Contracts
                 </TabsTrigger>
               </TabsList>
@@ -3549,7 +2012,7 @@ const Compliance = () => {
                 <div className="grid grid-cols-5 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Total Regulations Tracked
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3557,9 +2020,9 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">25</p>
+                      <p className="text-3xl font-bold text-black">25</p>
                       <div className="flex items-center text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-gray-700">
                           Total number of UAE Labour Law regulations monitored
                         </span>
                       </div>
@@ -3568,7 +2031,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Fully Compliant Areas
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3576,7 +2039,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">18</p>
+                      <p className="text-3xl font-bold text-black">18</p>
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           Number of regulation areas marked as "Compliant"
@@ -3587,13 +2050,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">At Risk Areas</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        At Risk Areas
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">5</p>
+                      <p className="text-3xl font-bold text-black">5</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Regulation areas nearing non-compliance
@@ -3604,7 +2069,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Non-Compliant Areas
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3612,7 +2077,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">2</p>
+                      <p className="text-3xl font-bold text-black">2</p>
                       <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Number of areas currently failing compliance
@@ -3623,7 +2088,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Last Verification Date
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3631,7 +2096,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">28 Jan</p>
+                      <p className="text-3xl font-bold text-black">28 Jan</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           Date of last successful full compliance audit
@@ -3645,90 +2110,78 @@ const Compliance = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center space-x-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Compliance Status
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
+                      <SelectInputComponent
+                        name="complianceStatus"
+                        label="Compliance Status"
                         value={workforceFilters.complianceStatus}
-                        onChange={(e) =>
-                          handleWorkforceFilterChange(
-                            "complianceStatus",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="All Statuses">All Statuses</option>
-                        <option value="Compliant">Compliant</option>
-                        <option value="At Risk">At Risk</option>
-                        <option value="Non-Compliant">Non-Compliant</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Regulation Area
-                      </label>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                        placeholder="Search or filter by specific Labor law areas"
-                        value={workforceFilters.regulationArea}
-                        onChange={(e) =>
-                          handleWorkforceFilterChange(
-                            "regulationArea",
-                            e.target.value
-                          )
-                        }
+                        onChange={handleWorkforceFilterChange}
+                        options={[
+                          { label: "All Statuses", value: "All Statuses" },
+                          { label: "Compliant", value: "Compliant" },
+                          { label: "At Risk", value: "At Risk" },
+                          { label: "Non-Compliant", value: "Non-Compliant" },
+                        ]}
+                        className="w-48"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Branch
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
-                        value={workforceFilters.branch}
-                        onChange={(e) =>
-                          handleWorkforceFilterChange("branch", e.target.value)
-                        }
-                      >
-                        <option value="All Branches">All Branches</option>
-                        <option value="Dubai Mall Pharmacy">
-                          Dubai Mall Pharmacy
-                        </option>
-                        <option value="Abu Dhabi Marina Pharmacy">
-                          Abu Dhabi Marina Pharmacy
-                        </option>
-                        <option value="Sharjah City Center Pharmacy">
-                          Sharjah City Center Pharmacy
-                        </option>
-                        <option value="Dubai Healthcare City Pharmacy">
-                          Dubai Healthcare City Pharmacy
-                        </option>
-                        <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
-                      </select>
+                      <TextInput
+                        name="regulationArea"
+                        label="Regulation Area"
+                        value={workforceFilters.regulationArea}
+                        onChange={handleWorkforceFilterChange}
+                        placeholder="Search or filter by specific Labor law areas"
+                        className="w-64"
+                      />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Category Type
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
+                      <SelectInputComponent
+                        name="branch"
+                        label="Branch"
+                        value={workforceFilters.branch}
+                        onChange={handleWorkforceFilterChange}
+                        options={[
+                          { label: "All Branches", value: "All Branches" },
+                          {
+                            label: "Dubai Mall Pharmacy",
+                            value: "Dubai Mall Pharmacy",
+                          },
+                          {
+                            label: "Abu Dhabi Marina Pharmacy",
+                            value: "Abu Dhabi Marina Pharmacy",
+                          },
+                          {
+                            label: "Sharjah City Center Pharmacy",
+                            value: "Sharjah City Center Pharmacy",
+                          },
+                          {
+                            label: "Dubai Healthcare City Pharmacy",
+                            value: "Dubai Healthcare City Pharmacy",
+                          },
+                          {
+                            label: "Al Ain Pharmacy",
+                            value: "Al Ain Pharmacy",
+                          },
+                        ]}
+                        className="w-48"
+                      />
+                    </div>
+                    <div>
+                      <SelectInputComponent
+                        name="categoryType"
+                        label="Category Type"
                         value={workforceFilters.categoryType}
-                        onChange={(e) =>
-                          handleWorkforceFilterChange(
-                            "categoryType",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="All Categories">All Categories</option>
-                        <option value="Leave">Leave</option>
-                        <option value="Working Hours">Working Hours</option>
-                        <option value="End of Service">End of Service</option>
-                        <option value="Wages">Wages</option>
-                        <option value="Employment">Employment</option>
-                      </select>
+                        onChange={handleWorkforceFilterChange}
+                        options={[
+                          { label: "All Categories", value: "All Categories" },
+                          { label: "Leave", value: "Leave" },
+                          { label: "Working Hours", value: "Working Hours" },
+                          { label: "End of Service", value: "End of Service" },
+                          { label: "Wages", value: "Wages" },
+                          { label: "Employment", value: "Employment" },
+                        ]}
+                        className="w-48"
+                      />
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
@@ -3779,15 +2232,17 @@ const Compliance = () => {
                 <div className="grid grid-cols-5 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Total Employees</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Total Employees
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Users className="w-5 h-5 text-blue-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <p className="text-3xl font-bold text-black">293</p>
                       <div className="flex items-center text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-gray-700">
                           Total number of active employees included in
                           attendance tracking
                         </span>
@@ -3797,13 +2252,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Under Contract</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Under Contract
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-green-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <p className="text-3xl font-bold text-black">293</p>
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           Total number of employees under valid employment
@@ -3815,13 +2272,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Compliance Rate</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Compliance Rate
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-purple-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">75%</p>
+                      <p className="text-3xl font-bold text-black">75%</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           % of branches within legal working hours
@@ -3832,7 +2291,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Average Working Hours (hrs/week)
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3840,7 +2299,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">46.8</p>
+                      <p className="text-3xl font-bold text-black">46.8</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Organization-wide average weekly hours
@@ -3851,7 +2310,7 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Labor Law Compliance
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3859,7 +2318,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">
+                      <p className="text-3xl font-bold text-black">
                         75% Compliant
                       </p>
                       <div className="flex items-center text-sm">
@@ -3875,7 +2334,7 @@ const Compliance = () => {
                 <div className="grid grid-cols-3 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">
+                      <h3 className="text-sm font-medium text-black">
                         Total Overtime Hours (This Month)
                       </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
@@ -3883,7 +2342,7 @@ const Compliance = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">1,247</p>
+                      <p className="text-3xl font-bold text-black">1,247</p>
                       <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Sum of all overtime hours logged across branches
@@ -3894,13 +2353,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Branches At Risk</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Branches At Risk
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">3</p>
+                      <p className="text-3xl font-bold text-black">3</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Count of branches nearing or exceeding the legal limit
@@ -3911,13 +2372,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Last Audit Date</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Last Audit Date
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Clock className="w-5 h-5 text-blue-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">25 Jan</p>
+                      <p className="text-3xl font-bold text-black">25 Jan</p>
                       <div className="flex items-center text-sm">
                         <span className="text-blue-500 font-medium">
                           Date when working hour data was last reviewed or
@@ -3932,68 +2395,51 @@ const Compliance = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center space-x-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Region
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
+                      <SelectInputComponent
+                        name="region"
+                        label="Region"
                         value={workingHoursFilters.region}
-                        onChange={(e) =>
-                          handleWorkingHoursFilterChange(
-                            "region",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="All Regions">All Regions</option>
-                        <option value="Dubai">Dubai</option>
-                        <option value="Abu Dhabi">Abu Dhabi</option>
-                        <option value="Sharjah">Sharjah</option>
-                        <option value="Al Ain">Al Ain</option>
-                        <option value="Fujairah">Fujairah</option>
-                        <option value="Ajman">Ajman</option>
-                        <option value="Ras Al Khaimah">Ras Al Khaimah</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Status
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
-                        value={workingHoursFilters.status}
-                        onChange={(e) =>
-                          handleWorkingHoursFilterChange(
-                            "status",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="All Statuses">All Statuses</option>
-                        <option value="Compliant">Compliant</option>
-                        <option value="At Risk">At Risk</option>
-                        <option value="Non-Compliant">Non-Compliant</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Branch
-                      </label>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                        placeholder="Search for a specific branch"
-                        value={workingHoursFilters.branch}
-                        onChange={(e) =>
-                          handleWorkingHoursFilterChange(
-                            "branch",
-                            e.target.value
-                          )
-                        }
+                        onChange={handleWorkingHoursFilterChange}
+                        options={[
+                          { label: "All Regions", value: "All Regions" },
+                          { label: "Dubai", value: "Dubai" },
+                          { label: "Abu Dhabi", value: "Abu Dhabi" },
+                          { label: "Sharjah", value: "Sharjah" },
+                          { label: "Al Ain", value: "Al Ain" },
+                          { label: "Fujairah", value: "Fujairah" },
+                          { label: "Ajman", value: "Ajman" },
+                          { label: "Ras Al Khaimah", value: "Ras Al Khaimah" },
+                        ]}
+                        className="w-48"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <SelectInputComponent
+                        name="status"
+                        label="Status"
+                        value={workingHoursFilters.status}
+                        onChange={handleWorkingHoursFilterChange}
+                        options={[
+                          { label: "All Statuses", value: "All Statuses" },
+                          { label: "Compliant", value: "Compliant" },
+                          { label: "At Risk", value: "At Risk" },
+                          { label: "Non-Compliant", value: "Non-Compliant" },
+                        ]}
+                        className="w-48"
+                      />
+                    </div>
+                    <div>
+                      <TextInput
+                        name="branch"
+                        label="Branch"
+                        value={workingHoursFilters.branch}
+                        onChange={handleWorkingHoursFilterChange}
+                        placeholder="Search for a specific branch"
+                        className="w-64"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-black-700 mb-1">
                         Date Range / Period
                       </label>
                       <DateRangeInput
@@ -4006,27 +2452,27 @@ const Compliance = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Department (optional)
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
+                      <SelectInputComponent
+                        name="department"
+                        label="Department (optional)"
                         value={workingHoursFilters.department}
-                        onChange={(e) =>
-                          handleWorkingHoursFilterChange(
-                            "department",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="All Departments">All Departments</option>
-                        <option value="Large Departments">
-                          Large Departments (30+ staff)
-                        </option>
-                        <option value="Small Departments">
-                          Small Departments {`(<30 staff)`}
-                        </option>
-                      </select>
+                        onChange={handleWorkingHoursFilterChange}
+                        options={[
+                          {
+                            label: "All Departments",
+                            value: "All Departments",
+                          },
+                          {
+                            label: "Large Departments (30+ staff)",
+                            value: "Large Departments",
+                          },
+                          {
+                            label: "Small Departments (<30 staff)",
+                            value: "Small Departments",
+                          },
+                        ]}
+                        className="w-48"
+                      />
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
@@ -4062,15 +2508,17 @@ const Compliance = () => {
                 <div className="grid grid-cols-5 gap-6 mb-8">
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Total Employees</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Total Employees
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Users className="w-5 h-5 text-blue-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">293</p>
+                      <p className="text-3xl font-bold text-black">293</p>
                       <div className="flex items-center text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-gray-700">
                           Total employees having contract records
                         </span>
                       </div>
@@ -4079,13 +2527,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Active Contracts</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Active Contracts
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <CheckCircle className="w-5 h-5 text-green-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">245</p>
+                      <p className="text-3xl font-bold text-black">245</p>
                       <div className="flex items-center text-sm">
                         <span className="text-green-500 font-medium">
                           Count of currently valid employee contracts
@@ -4096,13 +2546,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Expiring Soon</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Expiring Soon
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-orange-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">24</p>
+                      <p className="text-3xl font-bold text-black">24</p>
                       <div className="flex items-center text-sm">
                         <span className="text-orange-500 font-medium">
                           Count of contracts nearing expiration (e.g., within 30
@@ -4114,13 +2566,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Expired Contracts</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Expired Contracts
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-red-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">24</p>
+                      <p className="text-3xl font-bold text-black">24</p>
                       <div className="flex items-center text-sm">
                         <span className="text-red-500 font-medium">
                           Count of contracts that have passed their end date
@@ -4131,13 +2585,15 @@ const Compliance = () => {
 
                   <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium">Compliance Rate</h3>
+                      <h3 className="text-sm font-medium text-black">
+                        Compliance Rate
+                      </h3>
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <Scale className="w-5 h-5 text-purple-400" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-3xl font-bold text-gray-900">84%</p>
+                      <p className="text-3xl font-bold text-black">84%</p>
                       <div className="flex items-center text-sm">
                         <span className="text-purple-500 font-medium">
                           Percentage of employees with valid active contracts =
@@ -4152,66 +2608,66 @@ const Compliance = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center space-x-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Branch
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
+                      <SelectInputComponent
+                        name="branch"
+                        label="Branch"
                         value={contractFilters.branch}
-                        onChange={(e) =>
-                          handleContractFilterChange("branch", e.target.value)
-                        }
-                      >
-                        <option value="All Branches">All Branches</option>
-                        <option value="Dubai Mall Pharmacy">
-                          Dubai Mall Pharmacy
-                        </option>
-                        <option value="Abu Dhabi Marina Pharmacy">
-                          Abu Dhabi Marina Pharmacy
-                        </option>
-                        <option value="Dubai Healthcare City Pharmacy">
-                          Dubai Healthcare City Pharmacy
-                        </option>
-                        <option value="Sharjah City Center Pharmacy">
-                          Sharjah City Center Pharmacy
-                        </option>
-                        <option value="Al Ain Pharmacy">Al Ain Pharmacy</option>
-                        <option value="Fujairah Pharmacy">
-                          Fujairah Pharmacy
-                        </option>
-                        <option value="Ajman Pharmacy">Ajman Pharmacy</option>
-                      </select>
+                        onChange={handleContractFilterChange}
+                        options={[
+                          { label: "All Branches", value: "All Branches" },
+                          {
+                            label: "Dubai Mall Pharmacy",
+                            value: "Dubai Mall Pharmacy",
+                          },
+                          {
+                            label: "Abu Dhabi Marina Pharmacy",
+                            value: "Abu Dhabi Marina Pharmacy",
+                          },
+                          {
+                            label: "Dubai Healthcare City Pharmacy",
+                            value: "Dubai Healthcare City Pharmacy",
+                          },
+                          {
+                            label: "Sharjah City Center Pharmacy",
+                            value: "Sharjah City Center Pharmacy",
+                          },
+                          {
+                            label: "Al Ain Pharmacy",
+                            value: "Al Ain Pharmacy",
+                          },
+                          {
+                            label: "Fujairah Pharmacy",
+                            value: "Fujairah Pharmacy",
+                          },
+                          { label: "Ajman Pharmacy", value: "Ajman Pharmacy" },
+                        ]}
+                        className="w-48"
+                      />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Status
-                      </label>
-                      <select
-                        className="border border-gray-300 rounded-md px-3 py-2"
+                      <SelectInputComponent
+                        name="status"
+                        label="Status"
                         value={contractFilters.status}
-                        onChange={(e) =>
-                          handleContractFilterChange("status", e.target.value)
-                        }
-                      >
-                        <option value="All Statuses">All Statuses</option>
-                        <option value="Active">Active</option>
-                        <option value="Expiring Soon">Expiring Soon</option>
-                        <option value="Expired">Expired</option>
-                        <option value="Not Available">Not Available</option>
-                      </select>
+                        onChange={handleContractFilterChange}
+                        options={[
+                          { label: "All Statuses", value: "All Statuses" },
+                          { label: "Active", value: "Active" },
+                          { label: "Expiring Soon", value: "Expiring Soon" },
+                          { label: "Expired", value: "Expired" },
+                          { label: "Not Available", value: "Not Available" },
+                        ]}
+                        className="w-48"
+                      />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Search by Employee Name/ID
-                      </label>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded-md px-3 py-2 w-64"
-                        placeholder="Search by employee name or ID"
+                      <TextInput
+                        name="search"
+                        label="Search by Employee Name/ID"
                         value={contractFilters.search}
-                        onChange={(e) =>
-                          handleContractFilterChange("search", e.target.value)
-                        }
+                        onChange={handleContractFilterChange}
+                        placeholder="Search by employee name or ID"
+                        className="w-64"
                       />
                     </div>
                   </div>
