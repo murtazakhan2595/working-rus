@@ -12,7 +12,7 @@ import {
   ApplicantOffer,
   TalentSphereDashboard,
   ApplicantProfiles,
-  ResumeBankApplicants,
+  AllApplicants,
   ApplicantProfileDetails,
   ApplicantByRequisition,
   EmiratizationAllApplicants,
@@ -441,8 +441,8 @@ export const SidebarRoutes = [
         name: "TS_VIEW_APPLICANT_PROFILE",
       },
       Config.TS_RESUME_BANK && {
-        path: "/talent-sphere/resume-bank-applicants",
-        component: <ResumeBankApplicants />,
+        path: "/talent-sphere/applicant-management/resume-bank-applicants",
+        component: <AllApplicants variant='resume_bank' />,
         name: "TS_RESUME_BANK",
       },
 

@@ -174,6 +174,7 @@ const ViewApplicationDetail = ({
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
+            if (option.status === 'view-feedback' && (!data?.interview_feedbacks || !data?.interview_feedbacks?.length)) return <></>;
             if (!Permissions[option.permission]) return <></>
             return (
               <Button

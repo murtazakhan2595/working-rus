@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,7 +9,6 @@ import {
   AlertDialogTitle,
 } from "../../src/@/components/ui/alert-dialog";
 import { Button } from "./button";
-import { cn } from "src/@/lib/utils";
 
 const AlertDialogue = ({
   isOpen,
@@ -24,6 +22,15 @@ const AlertDialogue = ({
   className = "text-red-700",
   customStyles = {},
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const handleConfirm = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsLoading(true)
+    try {
+      await handleContinue();
+    } catch (error) { console.error(error); } finally { setIsLoading(false) }
+  };
   return (
     <AlertDialog className="z-[999]" open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
@@ -46,15 +53,14 @@ const AlertDialogue = ({
               {cancelText}
             </AlertDialogCancel>
           )}
-          
+
           <Button
             variant={buttonType}
             className={customStyles.continueButton}
-            onClick={() => {
-              handleContinue();
-            }}
+            onClick={handleConfirm}
+            disabled={isLoading}
           >
-            {continueText}
+            {isLoading ? 'Loading....' : continueText}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

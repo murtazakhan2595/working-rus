@@ -38,6 +38,9 @@ const statusVariants = cva("", {
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
       info: "bg-blue-50 text-blue-800",
+      danger: "bg-red-700 text-white", // for blacklisted
+      pending: "bg-yellow-100 text-yellow-700", // optional for future "pending" statuses
+      'neutral-dark': "bg-gray-200 text-gray-800", // softer neutral tone for inactive ones
       "dot-plum":
         "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
       "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
@@ -60,7 +63,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("acknowledge")) return "success";
   else if (status.includes("signed")) return "success";
   else if (status.includes("viewed")) return "warning";
-  else if (status.includes("screen")) return "warning";
+  else if (status.includes("screen")) return "info-secondary";
   else if (status.includes("late")) return "warning";
   else if (status.includes("draft")) return "warning";
   else if (status.includes("warning")) return "warning";
@@ -70,19 +73,21 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("alarming")) return "alarming";
-  else if (status.includes("blacklist")) return "alarming";
+  else if (status.includes("blacklist")) return "danger";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info-secondary";
   else if (status.includes("no")) return "error";
   else if (status.includes("yes")) return "success";
-  else if (status.includes("shortlist")) return "success";
+  else if (status.includes("shortlist")) return "plum";
   else if (status.includes("new")) return "info";
-  else if (status.includes("progress")) return "info";
+  else if (status.includes("progress")) return "warning";
   else if (status.includes("scheduled")) return "info-secondary";
   else if (status.includes("publish")) return "info-secondary";
   else if (status.includes("close")) return "disable";
-  else if (status.includes("resume")) return "plum";
+  else if (status.includes("resume")) return "neutral";
+  else if (status.includes("hire")) return "success";
+  else if (status.includes("hold")) return "alarming";
   else return "default";
 };
 

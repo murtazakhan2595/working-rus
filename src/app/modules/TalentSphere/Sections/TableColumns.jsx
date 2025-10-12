@@ -1168,6 +1168,22 @@ export const ApplicationColumns = (reloadData, variant) => [
         },
         minWidth: '250px',
     },
+    ...(variant === 'resume_bank' ? [
+        {
+            dataField: "resume_bank",
+            text: "Resum Bank Info",
+            formatter: (cell) => {
+                return (
+                    <div>
+                        <div><span className="font-bold">Recommended Designation: </span><DesignationName value={cell?.recommended_designation} /></div>
+                        <div><span className="font-bold">Recommended Department: </span><DepartmentName value={cell?.recommended_department} /></div>
+                        <div><span className="font-bold">Blacklisted By: </span><EmployeeName value={cell?.added_by} /></div>
+                        <div><span className="font-bold">Date: </span>{renderDate(cell?.added_on, "--")}</div>
+                    </div>
+                );
+            },
+        },
+    ] : []),
     ...(variant === 'blacklisted' ? [
         {
             dataField: "blacklist",
@@ -1271,11 +1287,11 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
-    {
+    ...(variant !== 'resume_bank' ? [{
         dataField: "ai_suggested",
         text: "AI Suggestion",
         formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_feedback_confidence}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
-    },
+    }] : []),
     {
         dataField: "status",
         text: "Status",
@@ -1323,6 +1339,7 @@ export const ResumeBankColumns = (reloadData) => [
         formatter: (cell, row) => {
             const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
             return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Source: </span>{source}</div>
                 <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date')}</div>
                 <div><span className="font-bold">Job Title: </span>{row?.job_title_applied_for}</div>

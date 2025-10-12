@@ -26,6 +26,9 @@ export const ApplicantStatusList = {
     hired: [
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline', permission: 'view-feedback' },
     ],
+    rejected: [
+        { status: 'view-feedback', label: 'View Feedback', variant: 'outline', permission: 'view-feedback' },
+    ],
     'in progress': [ // status when applicant and interview status is in progress 
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline', permission: 'view-feedback' },
         { status: 'reschedule-interview', label: 'Reschedule Interview', variant: 'default',permission: 'schedule-interview' },
