@@ -37,7 +37,7 @@ const Emplist = () => {
   const [refreshRequests, setRefreshRequests] = useState(0);
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(30);
+  const [itemsPerPage] = useState(60);
   const [totalCount, setTotalCount] = useState(0);
 
   const handleSelect = async (memberId) => {

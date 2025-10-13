@@ -5,22 +5,11 @@ import { getShiftById, employeeData } from "app/hooks/attendance";
 import { parseShiftTime } from "../Section/getEmployeeActiveShift";
 
 export const filterOverlappingSchedules = (schedules) => {
-  console.log("🔍 DEBUG: filterOverlappingSchedules called with", schedules.length, "schedules");
-  
   if (!schedules || schedules.length === 0) return [];
 
   // Sort schedules by created_at (newest first) to prioritize newer schedules
   const sortedSchedules = [...schedules].sort((a, b) => 
     moment(b.created_at).diff(moment(a.created_at))
-  );
-  
-  console.log("📅 DEBUG: Sorted schedules (newest first):", 
-    sortedSchedules.map(s => ({
-      id: s.id,
-      is_org_based: s.is_org_based,
-      start_date: s.start_date,
-      end_date: s.end_date
-    }))
   );
 
   const filteredSchedules = [];
@@ -45,7 +34,6 @@ export const filterOverlappingSchedules = (schedules) => {
 
     // Only add if there are unprocessed dates
     if (hasUnprocessedDates) {
-      console.log(`✅ DEBUG: Adding schedule ${schedule.id} (${schedule.is_org_based ? 'org' : 'custom'})`);
       filteredSchedules.push(schedule);
       
       // Mark all dates in this schedule as processed
@@ -55,8 +43,6 @@ export const filterOverlappingSchedules = (schedules) => {
         processedDates.add(dateKey);
         currentDate.add(1, 'day');
       }
-    } else {
-      console.log(`❌ DEBUG: Skipping schedule ${schedule.id} - dates already covered`);
     }
   });
 
