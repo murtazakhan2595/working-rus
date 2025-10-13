@@ -279,6 +279,7 @@ export const getEmployeeDropdownList = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
       const employeeResponse = response?.data?.results ?? [];
+      const count = response?.data?.count ?? 0;
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
@@ -296,7 +297,9 @@ export const getEmployeeDropdownList = async (payload) => {
         name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
           }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
-      return { results: employeeList, count: response?.count };
+
+      console.log("Employee Dropdown List:", { filterData, URL, response, employeeList });
+      return { results: employeeList, count };
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -314,7 +317,9 @@ const getEmployeeListWithDetail = async () => {
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         contact_no: `+${employee.country_code}${employee.mobile_no}`,

@@ -78,7 +78,7 @@ const EventWithTooltip = ({ eventInfo }) => {
   );
 };
 
-const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
+const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChangeRequests }) => {
   console.log("Shift Calendar Props:", {
     shift,
     scheduleShifts,
@@ -490,6 +490,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
           setIsOpen={setIsRequestModalOpen}
           employee={selectedEmployee}
           reload={reload}
+          refreshShiftChangeRequests={refreshShiftChangeRequests}
           shift_requested="Manager"
         />
       )}

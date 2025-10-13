@@ -24,7 +24,7 @@ const AssignShift2 = ({ }) => {
   const [selectedDepartment, setSelectedDepartment] = useState([]);
   // Track selected employee to preserve during filtering
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+  console.log("Employees from getdispatch:", employees);
   const baseEmpOptions = employees?.map((emp) => ({
     value: emp.id,
     label: emp.label,
@@ -243,6 +243,7 @@ const AssignShift2 = ({ }) => {
                       {selectedEmployee && ` • 1 selected`}
                     </div>
                   ),
+                  // colsSpan: 2,
                 },
               ],
             },
