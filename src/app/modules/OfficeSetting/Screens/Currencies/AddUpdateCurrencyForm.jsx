@@ -4,14 +4,16 @@ import { SheetUI } from "components";
 import { SelectInputComponent } from "components/FormControl";
 import { TextInput, TextAreaInput, RadioGroupInput } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
-import { countriesList ,CurrencyList} from "data/Data";
-
+import { countriesList, CurrencyList } from "data/Data";
+import { useDispatch } from "react-redux";
+import {  fetchCurrencies,} from "state/slices/CommonSlice";
 const AddUpdateCurrencyForm = ({
   id = false,
   reloadData = () => { },
   isOpen = false,
   setIsOpen = () => { },
 }) => {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [FormData, setFormData] = useState(Currency);
   const [CurrencyListData, setCurrencyListData] = useState(null);
@@ -83,6 +85,7 @@ const AddUpdateCurrencyForm = ({
       setIsSubmittingForm(true);
       const response = await saveUpdateCurrency(values, id);
       if (response) {
+        dispatch(fetchCurrencies());
         return {
           status: true,
           messageType: "SUCCESS",
@@ -130,7 +133,7 @@ const AddUpdateCurrencyForm = ({
                 onFieldUpdate: async (_, value, __, handleChange) => {
                   debugger;
                   const currency = CurrencyList.find(obj => obj.country === value);
-                  handleChange('code',currency?.currency)
+                  handleChange('code', currency?.currency)
                 },
               },
               {

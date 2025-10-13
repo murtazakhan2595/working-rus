@@ -229,3 +229,4 @@ const HiringTrendsWidget = ({ data, loading }) => {
 
 export default HiringTrendsWidget;
 
+

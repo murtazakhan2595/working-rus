@@ -626,7 +626,10 @@ export async function mapApplicantsData(data) {
                 RecordDetails[key] = value?.trim?.() || "";
                 break;
             case "ai_match_score":
-                RecordDetails[key] = `${parseFloat(value || 0) * 100}%`;
+                RecordDetails[key] = `${parseFloat(value || 0) * 100}`;
+                break;
+            case "ai_feedback_confidence":
+                RecordDetails[key] = `${parseInt(value || 0)}%`;
                 break;
             case "status":
                 RecordDetails.status = value === "resume_bank" ? "Resume Bank" : value === "in_progress" ? "In Progress" : value;
@@ -648,6 +651,9 @@ export async function mapApplicantsData(data) {
 
             case "offers_tracking":
                 RecordDetails.offers_tracking = value?.[0] ? mapOfferTrackingData(value[0]) : null;
+                break;
+            case "resume_bank":
+                RecordDetails.resume_bank = value ? mapResumeBankApplicantsData(value) : null;
                 break;
             case "offer_letters":
                 const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value) : null;

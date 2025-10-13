@@ -4,6 +4,7 @@ import { renderRange, renderDate } from "utils/renderValues";
 import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
+import { RequisitionGenderOptions } from 'data/Data';
 
 export const RequisitionViewFields = [
   {
@@ -106,7 +107,9 @@ export const RequisitionViewFields = [
       {
         key: "gender_preference",
         label: "Gender Preference",
-        formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+        formatter: (cell) => {
+          return (RequisitionGenderOptions.find(obj => obj.value === cell) || {}).label || '--';
+        },
       },
       {
         key: "min_age",

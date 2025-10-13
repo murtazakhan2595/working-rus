@@ -1,4 +1,4 @@
-import { FormatID, BranchName, DepartmentName, EmployeeName } from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, Currency } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import {
     ManpowerPlanningActions,
@@ -819,24 +819,17 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         dataSort: true,
     },
     {
-        dataField: "department",
-        text: "Department",
-        formatter: (cell) => <DepartmentName value={cell} />,
-    },
-    {
-        dataField: "requested_by",
-        text: "Requested By",
-        formatter: (cell) => <><EmployeeName value={cell} /></>,
-    },
-    {
         dataField: "job_title",
-        text: "Job Title",
-        dataSort: true,
-    },
-    {
-        dataField: "job_type_name",
-        text: "Job Type",
-        dataSort: true,
+        text: "Requisition Details",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
+                <div><span className="font-bold">Job Type: </span>{row?.job_type_name}</div>
+                <div><span className="font-bold">Department: </span><DepartmentName value={row?.department} /></div>
+                <div><span className="font-bold capitalize">Budget/Salary Range: </span>{renderRange(row?.salary_min, row?.salary_max, 'Not Defined')} <Currency value={row.currency} /> ({row?.payment_frequency || ''})</div>
+            </div>
+        ),
+        minWidth:'250px',
     },
     {
         dataField: "number_of_positions",
@@ -844,23 +837,14 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         dataSort: true,
     },
     {
-        dataField: "salary_min",
-        text: "Budget/Salary Range",
-        formatter: (cell, row) => renderRange(cell, row?.salary_max, 'Not Defined'),
-        dataSort: true,
-    },
-
-    {
         dataField: "created_at",
-        text: "Created Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
-        dataSort: true,
-    },
-    {
-        dataField: "status",
-        text: "Status",
-        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
-        dataSort: true,
+        text: "Request Info",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
+                <div><span className="font-bold">Requested Date: </span>{renderDate(cell, '--', 'date-time')}</div>
+            </div>
+        ),
     },
     {
         dataField: "is_emiratization_role",
@@ -874,6 +858,12 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>,
         dataSort: true,
     },] : []),
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+        dataSort: true,
+    },
     {
         dataField: "",
         text: "",
@@ -1168,6 +1158,22 @@ export const ApplicationColumns = (reloadData, variant) => [
         },
         minWidth: '250px',
     },
+    ...(variant === 'resume_bank' ? [
+        {
+            dataField: "resume_bank",
+            text: "Resum Bank Info",
+            formatter: (cell) => {
+                return (
+                    <div>
+                        <div><span className="font-bold">Recommended Designation: </span><DesignationName value={cell?.recommended_designation} /></div>
+                        <div><span className="font-bold">Recommended Department: </span><DepartmentName value={cell?.recommended_department} /></div>
+                        <div><span className="font-bold">Blacklisted By: </span><EmployeeName value={cell?.added_by} /></div>
+                        <div><span className="font-bold">Date: </span>{renderDate(cell?.added_on, "--")}</div>
+                    </div>
+                );
+            },
+        },
+    ] : []),
     ...(variant === 'blacklisted' ? [
         {
             dataField: "blacklist",
@@ -1271,11 +1277,11 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
-    {
+    ...(variant !== 'resume_bank' ? [{
         dataField: "ai_suggested",
         text: "AI Suggestion",
-        formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_match_score}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
-    },
+        formatter: (cell, row) => <StatusLabel status={cell ? 'yes' : 'no'} topLabel={row?.ai_feedback_confidence}>{cell ? 'AI Suggested' : 'AI Not Suggested'}</StatusLabel>,
+    }] : []),
     {
         dataField: "status",
         text: "Status",
@@ -1323,6 +1329,7 @@ export const ResumeBankColumns = (reloadData) => [
         formatter: (cell, row) => {
             const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
             return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Source: </span>{source}</div>
                 <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date')}</div>
                 <div><span className="font-bold">Job Title: </span>{row?.job_title_applied_for}</div>

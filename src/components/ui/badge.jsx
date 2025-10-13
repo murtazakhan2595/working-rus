@@ -56,7 +56,7 @@ const Badge = React.forwardRef(
       >
         {dot && <span className={`w-2 h-2 rounded-full ${dot}`} />}
         {props.children}
-        {topLabel && <span className={`absolute top-[-0.5rem] right-[-0.5rem] rounded-full rounded shadow p-0.5 text-[12px]`}>{topLabel}</span>}
+        {topLabel && <span className={`absolute top-[-0.75rem] right-[-0.5rem] rounded-full rounded shadow p-0.5 text-[12px]`}>{topLabel}</span>}
       </div>
     );
   }

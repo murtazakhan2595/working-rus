@@ -85,6 +85,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
         ...filterData,
         ...(variant === "all" ? { status: "new" } : {}),
         ...(variant === "rejected" ? { status: "rejected" } : {}),
+        ...(variant === "resume_bank" ? { status: "resume_bank" } : {}),
         ...(variant === "shortlisted" ? { status: "shortlisted" } : {}),
         ...(variant === "blacklisted" ? { status: "blacklisted" } : {}),
         ...(variant === "screened" ? { status: "screened" } : {}),
@@ -169,6 +170,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       emiratization_all : { title: 'Emiratization', description: ', that have applied for requisition with emiratization role.', navigationLink: '/talent-sphere/dashboard' },
       ai_picks: { title: 'AI Pick', description: '. The system automatically analyzes job descriptions and applicants’ resumes using AI, helping you quickly identify the most suitable candidates without the need for manual review.' },
       in_progress: { title: 'In Progress', description: ' whose interviews have been scheduled.' },
+      resume_bank: { title: 'Resume Bank', description: ' who were moved to resume bank.' },
     };
   }, [variant]);
 

@@ -16,7 +16,7 @@ export const ApplicantStatusList = {
         { status: 'schedule-interview', label: 'Schedule Interview', variant: 'default',permission: 'schedule-interview'  },
     ],
     blacklisted: [
-        { status: 'view-feedback', label: 'View Feedback', variant: 'outline' },
+        { status: 'view-feedback', label: 'View Feedback', variant: 'outline' ,permission: 'view-feedback'},
         { status: 'remove_blacklist', label: 'Remove from Blacklist', variant: 'default', permission: 'update-status' },
     ],
     shortlisted: [
@@ -26,10 +26,13 @@ export const ApplicantStatusList = {
     hired: [
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline', permission: 'view-feedback' },
     ],
+    rejected: [
+        { status: 'view-feedback', label: 'View Feedback', variant: 'outline', permission: 'view-feedback' },
+    ],
     'in progress': [ // status when applicant and interview status is in progress 
         { status: 'view-feedback', label: 'View Feedback', variant: 'outline', permission: 'view-feedback' },
         { status: 'reschedule-interview', label: 'Reschedule Interview', variant: 'default',permission: 'schedule-interview' },
-        { status: 'hold', label: 'Hold', variant: 'continue', permission: 'update-status' , permission: 'update-status'},
+        { status: 'hold', label: 'Hold', variant: 'continue',  permission: 'update-status'},
         { status: 'shortlisted', label: 'Shortlisted Application', variant: 'success', permission: 'update-status' },
         { status: 'rejected', label: 'Reject Application', variant: 'destructive', permission: 'update-status' },
         { status: 'blacklisted', label: 'Blacklist Application', variant: 'default', permission: 'update-status' },

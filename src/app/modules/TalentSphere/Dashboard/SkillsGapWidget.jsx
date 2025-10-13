@@ -240,3 +240,4 @@ const SkillsGapWidget = ({ data, loading }) => {
 
 export default SkillsGapWidget;
 
+
