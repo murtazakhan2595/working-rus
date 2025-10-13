@@ -373,9 +373,6 @@ export const GetEmployeeFilteredList = (
 ) => {
   // const Employees = useSelector((state) => state.emp.employees);
   const Employees = GetDispatchStateList("employees", "emp");
-  console.log("Employees in filter", Employees);
-  console.log("First employee structure:", Employees?.[0]);
-  console.log("Filter params:", { isTeamView, adminView, isBranchView, isDepartmentView });
   const {
     branch_id: user_branch,
     department_name: user_department,
@@ -386,7 +383,6 @@ export const GetEmployeeFilteredList = (
 
   // Admin view returns all employees
   if (adminView) {
-    console.log("Returning all employees for admin view");
     return Employees;
   }
 
@@ -410,9 +406,7 @@ export const GetEmployeeFilteredList = (
     });
   }
 
-  console.log("Filters applied:", filters);
   if (filters?.length === 0) {
-    console.log("No filters applied, returning empty array");
     return [];
   }
   
@@ -420,21 +414,39 @@ export const GetEmployeeFilteredList = (
     return filters.some(({ keys, value }) => {
       return keys.some((key) => {
         const empVal = employee[key];
-        console.log(`Checking employee ${employee.id} - ${employee.name}: ${key} = ${empVal} (looking for ${value})`);
-        if (Array.isArray(empVal)) {
-          const result = empVal.includes(value);
-          console.log(`Array check result: ${result}`);
-          return result;
+        
+        // Handle different data types for different fields
+        if (key === 'direct_report') {
+          // direct_report is a string/number, so check direct equality
+          if (empVal === null || empVal === undefined) {
+            return false;
+          }
+          return empVal === value || empVal === value.toString() || empVal.toString() === value.toString();
+        } else if (key === 'indirect_report') {
+          // indirect_report is a comma-separated string, so split and check if it includes the value
+          if (empVal && typeof empVal === 'string') {
+            const indirectReports = empVal.split(',').map(id => id.trim());
+            return indirectReports.includes(value.toString()) || indirectReports.includes(value);
+          } else if (Array.isArray(empVal)) {
+            // Fallback for if it's actually an array
+            return empVal.includes(value) || empVal.includes(value.toString());
+          }
+          // If empVal is null, undefined, or empty string, return false
+          return false;
+        } else {
+          // For other fields, use the original logic
+          if (empVal === null || empVal === undefined) {
+            return false;
+          }
+          if (Array.isArray(empVal)) {
+            return empVal.includes(value);
+          }
+          return empVal === value;
         }
-
-        const result = empVal === value;
-        console.log(`Direct check result: ${result}`);
-        return result;
       });
     });
   });
   
-  console.log("Filtered employees result:", filteredEmployees);
   return filteredEmployees;
 };
 
