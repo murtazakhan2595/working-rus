@@ -35,7 +35,6 @@ const ScheduleShiftModal = ({
     Array.isArray(userProfile.role) && !userProfile.role.includes(1),
     Array.isArray(userProfile.role) && userProfile.role.includes(1),
   );
-  
   const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shifts, setShifts] = useState([]);

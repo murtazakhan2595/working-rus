@@ -279,20 +279,29 @@ export const getEmployeeDropdownList = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
       const employeeResponse = response?.data?.results ?? [];
+      const count = response?.data?.count ?? 0;
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name} - ${employee.serial_number}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
-        department_name: employee.department_name,
-        department_position: employee.department_position,
+        department_name: parseInt(employee.department_name),
+        department_position: parseInt(employee.department_position),
         branch_id: employee.branch_id,
+        direct_report: parseInt(employee.direct_report),
+        indirect_report: employee.indirect_report,
         serial_number: employee.serial_number,
+        direct_report: employee.direct_report,
+        indirect_report: employee.indirect_report,
         name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
           }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
-      return { results: employeeList, count: response?.count };
+
+      console.log("Employee Dropdown List:", { filterData, URL, response, employeeList });
+      return { results: employeeList, count };
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -310,13 +319,15 @@ const getEmployeeListWithDetail = async () => {
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
-        direct_report: employee.direct_report,
+        direct_report: parseInt(employee.direct_report),
         indirect_report: employee.indirect_report,
         joining_date: employee.joining_date,
         last_name: employee.last_name,

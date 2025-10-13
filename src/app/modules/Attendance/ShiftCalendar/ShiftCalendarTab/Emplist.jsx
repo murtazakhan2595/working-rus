@@ -12,6 +12,7 @@ import { HasAccess } from "utils/PermissionUtils";
 import { useSelector } from "react-redux";
 import { FilterInput } from "components/FormControl";
 import { PageLoader } from "components";
+import { getEmployeeDropdownList } from "app/hooks/general";
 
 const ShiftStatusOptions = [
   { value: "assigned", label: "Assigned" },
@@ -28,6 +29,7 @@ const Emplist = () => {
   const [TeamMembers, setTeamMembers] = useState("");
   const [scheduleShifts, setScheduleShifts] = useState({ results: [], count: 0, });
   const [filterData, setFilterData] = useState({});
+  const [refreshRequests, setRefreshRequests] = useState(0);
 
   const handleSelect = async (memberId) => {
     setActiveMember(memberId);
@@ -54,10 +56,11 @@ const Emplist = () => {
         setIsLoading(true);
         setActiveMember(null);
         const filters = { ...filterData, ...(userProfile.role.includes(1) ? {} : { reporting_employee: userProfile.id }) }
-        const response = await getEmployeeCustomList({
+        const response = await getEmployeeDropdownList({
           filterData: filters,
           employee_status: "Active,Probation,Notice Period",
         });
+        console.log("filters", filters, response);
         if (response) {
           if (filterData.shift_status) {
             if (filterData.shift_status === 'assigned') {
@@ -83,6 +86,9 @@ const Emplist = () => {
     };
   }, [filterData, userProfile]);
 
+  const refreshShiftChangeRequests = () => {
+    setRefreshRequests(prev => prev + 1);
+  };
 
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
@@ -106,7 +112,7 @@ const Emplist = () => {
                 options: ShiftStatusOptions,
                 name: "shift_status",
                 placeholder: "Shift Status",
-                className: 'w-[150px]'
+                className: "w-[150px]",
               },
             ]}
             onChange={handleFilterChange}
@@ -116,7 +122,7 @@ const Emplist = () => {
           filters={[
             {
               type: "search",
-              placeholder: 'Search by ID and Name',
+              placeholder: "Search by ID and Name",
               name: "emp_search",
             },
             {
@@ -130,7 +136,6 @@ const Emplist = () => {
         />
       </div>
       <div className="flex gap-2">
-
         <Card className="min-w-[25%]">
           <CardHeader>
             <CardTitle>
@@ -140,9 +145,9 @@ const Emplist = () => {
               </div>
             </CardTitle>
           </CardHeader>
-          {isLoading ?
+          {isLoading ? (
             <PageLoader />
-            :
+          ) : (
             <CardContent className="max-h-[550px] overflow-auto">
               {TeamMembers?.count > 0 &&
                 TeamMembers?.results?.map((member, index) => (
@@ -153,24 +158,26 @@ const Emplist = () => {
                     activeMember={activeMember}
                   />
                 ))}
-              {(!TeamMembers?.results || TeamMembers.results.length === 0) && (
+              {(!TeamMembers?.results ||
+                TeamMembers.results?.length === 0) && (
                 <div className="text-center py-4 text-gray-500">
                   No employees match the selected filters
                 </div>
               )}
             </CardContent>
-          }
+          )}
         </Card>
         <Calendar
           shift={employeeShift}
           scheduleShifts={scheduleShifts}
           employeeId={activeMember}
           reload={setEmployeeShiftDetails}
+          refreshShiftChangeRequests={refreshShiftChangeRequests}
         />
       </div>
 
       {isViewShiftChangeRequestsPermitted && (
-        <ViewShiftChangeRequests />
+        <ViewShiftChangeRequests refreshTrigger={refreshRequests} />
       )}
     </div>
   );
