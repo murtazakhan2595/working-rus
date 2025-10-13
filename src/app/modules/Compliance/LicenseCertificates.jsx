@@ -70,7 +70,7 @@ const LicenseCertificates = () => {
       <div className="grid grid-cols-4 gap-6 mb-8">
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Total Employees</h3>
+            <div className="text-sm text-black">Total Employees</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-blue-400" />
             </div>
@@ -78,16 +78,14 @@ const LicenseCertificates = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">245</p>
             <div className="flex items-center text-sm">
-              <span className="text-gray-700">with licenses/certificates</span>
+              <span className="text-black">with licenses/certificates</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Expiring within 60 Days
-            </h3>
+            <div className="text-sm text-black">Expiring within 60 Days</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-orange-400" />
             </div>
@@ -95,18 +93,14 @@ const LicenseCertificates = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">18</p>
             <div className="flex items-center text-sm">
-              <span className="text-orange-500 font-medium">
-                Require attention
-              </span>
+              <span className="text-black">Require attention</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Renewal in Progress
-            </h3>
+            <div className="text-sm text-black">Renewal in Progress</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <RefreshCw className="w-5 h-5 text-blue-400" />
             </div>
@@ -114,16 +108,14 @@ const LicenseCertificates = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">12</p>
             <div className="flex items-center text-sm">
-              <span className="text-blue-500 font-medium">
-                Applications submitted
-              </span>
+              <span className="text-black">Applications submitted</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Compliance Ratio</h3>
+            <div className="text-sm text-black">Compliance Ratio</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-green-400" />
             </div>
@@ -132,7 +124,7 @@ const LicenseCertificates = () => {
             <p className="text-3xl font-bold text-black">94%</p>
             <div className="flex items-center text-sm">
               <span className="text-green-500 font-medium mr-1">↑ 2%</span>
-              <span className="text-gray-700">from last quarter</span>
+              <span className="text-black">from last quarter</span>
             </div>
           </div>
         </Card>

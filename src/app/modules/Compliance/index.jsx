@@ -16,7 +16,7 @@ import {
 import { AlertTriangle } from "lucide-react";
 import { complianceStats, facilityLicensesData, stats } from "./dummyData";
 
-import FacilityLicensing from "./FacilityLicensing";
+import FacilityLicensing from "./BranchLicensing";
 import LicenseCertificates from "./LicenseCertificates";
 import MandatoryTraining from "./MandatoryTraining";
 import ComplianceRatio from "./ComplianceRatio";

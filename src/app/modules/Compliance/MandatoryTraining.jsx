@@ -79,9 +79,7 @@ const MandatoryTraining = () => {
       <div className="grid grid-cols-5 gap-6 mb-8">
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Total Assigned Trainings
-            </h3>
+            <div className="text-sm text-black">Total Assigned Trainings</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <GraduationCap className="w-5 h-5 text-blue-400" />
             </div>
@@ -89,7 +87,7 @@ const MandatoryTraining = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">8</p>
             <div className="flex items-center text-sm">
-              <span className="text-gray-700">
+              <span className="text-black">
                 All mandatory trainings assigned
               </span>
             </div>
@@ -98,9 +96,7 @@ const MandatoryTraining = () => {
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Completed Trainings
-            </h3>
+            <div className="text-sm text-black">Completed Trainings</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-green-400" />
             </div>
@@ -108,18 +104,14 @@ const MandatoryTraining = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">3</p>
             <div className="flex items-center text-sm">
-              <span className="text-green-500 font-medium">
-                Successfully completed
-              </span>
+              <span className="text-black">Successfully completed</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              In Progress Trainings
-            </h3>
+            <div className="text-sm text-black">In Progress Trainings</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Clock className="w-5 h-5 text-blue-400" />
             </div>
@@ -127,18 +119,16 @@ const MandatoryTraining = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">3</p>
             <div className="flex items-center text-sm">
-              <span className="text-blue-500 font-medium">
-                Currently being completed
-              </span>
+              <span className="text-black">Currently being completed</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
+            <div className="text-sm text-black">
               Pending / Overdue Trainings
-            </h3>
+            </div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-orange-400" />
             </div>
@@ -146,16 +136,14 @@ const MandatoryTraining = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">2</p>
             <div className="flex items-center text-sm">
-              <span className="text-orange-500 font-medium">
-                Due or not started
-              </span>
+              <span className="text-black">Due or not started</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Compliance %</h3>
+            <div className="text-sm text-black">Compliance %</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Scale className="w-5 h-5 text-purple-400" />
             </div>
@@ -163,9 +151,7 @@ const MandatoryTraining = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">37.5%</p>
             <div className="flex items-center text-sm">
-              <span className="text-purple-500 font-medium">
-                Training completion rate
-              </span>
+              <span className="text-black">Training completion rate</span>
             </div>
           </div>
         </Card>

@@ -66,9 +66,7 @@ const ComplianceRatio = () => {
       <div className="grid grid-cols-4 gap-6 mb-8">
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Total Locations (Cities)
-            </h3>
+            <div className="text-sm text-black">Total Locations (Cities)</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Building className="w-5 h-5 text-blue-400" />
             </div>
@@ -76,14 +74,14 @@ const ComplianceRatio = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">7</p>
             <div className="flex items-center text-sm">
-              <span className="text-gray-700">Unique cities with branches</span>
+              <span className="text-black">Unique cities with branches</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Total Branches</h3>
+            <div className="text-sm text-black">Total Branches</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Building className="w-5 h-5 text-green-400" />
             </div>
@@ -91,16 +89,14 @@ const ComplianceRatio = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">8</p>
             <div className="flex items-center text-sm">
-              <span className="text-gray-700">All branches</span>
+              <span className="text-black">All branches</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Non-Compliant Count
-            </h3>
+            <div className="text-sm text-black">Non-Compliant Count</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-red-400" />
             </div>
@@ -108,7 +104,7 @@ const ComplianceRatio = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">2</p>
             <div className="flex items-center text-sm">
-              <span className="text-red-500 font-medium mr-1">
+              <span className="text-black">
                 Branches marked as Non-Compliant
               </span>
             </div>
@@ -117,9 +113,7 @@ const ComplianceRatio = () => {
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Average Compliance %
-            </h3>
+            <div className="text-sm text-black">Average Compliance %</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Scale className="w-5 h-5 text-orange-400" />
             </div>
@@ -127,9 +121,7 @@ const ComplianceRatio = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">92.5%</p>
             <div className="flex items-center text-sm">
-              <span className="text-orange-500 font-medium mr-1">
-                Across all branches
-              </span>
+              <span className="text-black">Across all branches</span>
             </div>
           </div>
         </Card>

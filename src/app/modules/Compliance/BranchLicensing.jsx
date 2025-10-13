@@ -9,12 +9,6 @@ import {
 } from "src/@/components/ui/tabs";
 import TableCustom from "components/CustomTable";
 import { Badge } from "components/ui/badge";
-import {
-  AddLicenseModal,
-  ViewLicenseModal,
-  EditLicenseModal,
-  DeleteLicenseModal,
-} from "components/Compliance";
 import { DateRangeInput, SelectInputComponent } from "components/FormControl";
 import {
   Building,
@@ -29,7 +23,7 @@ import {
 } from "lucide-react";
 import { facilityLicensesData } from "./dummyData";
 
-const FacilityLicensing = ({
+const BranchLicensing = ({
   isAddLicenseModalOpen,
   setIsAddLicenseModalOpen,
   isViewLicenseModalOpen,
@@ -338,9 +332,7 @@ const FacilityLicensing = ({
               <>
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-black">
-                      Total Facilities
-                    </h3>
+                    <div className="text-sm text-black">Total Facilities</div>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <Building className="w-5 h-5 text-purple-400" />
                     </div>
@@ -353,16 +345,14 @@ const FacilityLicensing = ({
                       <span className="text-green-500 font-medium mr-1">
                         ↑ {Math.floor(metrics.totalFacilities * 0.05)}
                       </span>
-                      <span className="text-gray-700">from last year</span>
+                      <span className="text-black">from last year</span>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-black">
-                      Licenses Expiring
-                    </h3>
+                    <div className="text-sm text-black">Licenses Expiring</div>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <AlertTriangle className="w-5 h-5 text-orange-400" />
                     </div>
@@ -372,18 +362,16 @@ const FacilityLicensing = ({
                       {metrics.expiringSoon}
                     </p>
                     <div className="flex items-center text-sm">
-                      <span className="text-yellow-500 font-medium">
-                        Within 60 days
-                      </span>
+                      <span className="text-black">Within 60 days</span>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-black">
+                    <div className="text-sm text-black">
                       Renewal In Progress
-                    </h3>
+                    </div>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <RefreshCw className="w-5 h-5 text-blue-400" />
                     </div>
@@ -393,18 +381,14 @@ const FacilityLicensing = ({
                       {metrics.renewalInProgress}
                     </p>
                     <div className="flex items-center text-sm">
-                      <span className="text-blue-500 font-medium">
-                        Applications submitted
-                      </span>
+                      <span className="text-black">Applications submitted</span>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-black">
-                      Compliance Rate
-                    </h3>
+                    <div className="text-sm text-black">Compliance Rate</div>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <CheckCircle className="w-5 h-5 text-green-400" />
                     </div>
@@ -417,7 +401,7 @@ const FacilityLicensing = ({
                       <span className="text-green-500 font-medium mr-1">
                         ↑ {Math.floor(metrics.complianceRate * 0.02)}%
                       </span>
-                      <span className="text-gray-700">from last quarter</span>
+                      <span className="text-black">from last quarter</span>
                     </div>
                   </div>
                 </Card>
@@ -549,4 +533,4 @@ const FacilityLicensing = ({
   );
 };
 
-export default FacilityLicensing;
+export default BranchLicensing;

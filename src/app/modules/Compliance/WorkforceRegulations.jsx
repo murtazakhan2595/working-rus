@@ -19,11 +19,7 @@ import {
   AlertTriangle,
   Clock,
   Users,
-  Building,
   Eye,
-  Edit,
-  Plus,
-  RefreshCw,
 } from "lucide-react";
 import {
   workforceRegulationsColumns,
@@ -225,9 +221,9 @@ const WorkforceRegulations = () => {
           <div className="grid grid-cols-5 gap-6 mb-8">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
+                <div className="text-sm text-black">
                   Total Regulations Tracked
-                </h3>
+                </div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Scale className="w-5 h-5 text-blue-400" />
                 </div>
@@ -235,7 +231,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">25</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-gray-700">
+                  <span className="text-black">
                     Total number of UAE Labour Law regulations monitored
                   </span>
                 </div>
@@ -244,9 +240,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Fully Compliant Areas
-                </h3>
+                <div className="text-sm text-black">Fully Compliant Areas</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <CheckCircle className="w-5 h-5 text-green-400" />
                 </div>
@@ -254,7 +248,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">18</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-green-500 font-medium">
+                  <span className="text-black">
                     Number of regulation areas marked as "Compliant"
                   </span>
                 </div>
@@ -263,9 +257,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  At Risk Areas
-                </h3>
+                <div className="text-sm text-black">At Risk Areas</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
                 </div>
@@ -273,7 +265,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">5</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-orange-500 font-medium">
+                  <span className="text-black">
                     Regulation areas nearing non-compliance
                   </span>
                 </div>
@@ -282,9 +274,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Non-Compliant Areas
-                </h3>
+                <div className="text-sm text-black">Non-Compliant Areas</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-red-400" />
                 </div>
@@ -292,7 +282,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">2</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-red-500 font-medium">
+                  <span className="text-black">
                     Number of areas currently failing compliance
                   </span>
                 </div>
@@ -301,9 +291,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Last Verification Date
-                </h3>
+                <div className="text-sm text-black">Last Verification Date</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Clock className="w-5 h-5 text-purple-400" />
                 </div>
@@ -311,7 +299,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">28 Jan</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-purple-500 font-medium">
+                  <span className="text-black">
                     Date of last successful full compliance audit
                   </span>
                 </div>
@@ -427,9 +415,7 @@ const WorkforceRegulations = () => {
           <div className="grid grid-cols-5 gap-6 mb-8">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Total Employees
-                </h3>
+                <div className="text-sm text-black">Total Employees</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Users className="w-5 h-5 text-blue-400" />
                 </div>
@@ -437,7 +423,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">293</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-gray-700">
+                  <span className="text-black">
                     Total number of active employees included in attendance
                     tracking
                   </span>
@@ -447,9 +433,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Under Contract
-                </h3>
+                <div className="text-sm text-black">Under Contract</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <CheckCircle className="w-5 h-5 text-green-400" />
                 </div>
@@ -457,7 +441,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">293</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-green-500 font-medium">
+                  <span className="text-black">
                     Total number of employees under valid employment contracts
                   </span>
                 </div>
@@ -466,9 +450,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Compliance Rate
-                </h3>
+                <div className="text-sm text-black">Compliance Rate</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Scale className="w-5 h-5 text-purple-400" />
                 </div>
@@ -476,7 +458,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">75%</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-purple-500 font-medium">
+                  <span className="text-black">
                     % of branches within legal working hours
                   </span>
                 </div>
@@ -485,9 +467,9 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
+                <div className="text-sm text-black">
                   Average Working Hours (hrs/week)
-                </h3>
+                </div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Clock className="w-5 h-5 text-orange-400" />
                 </div>
@@ -495,7 +477,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">46.8</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-orange-500 font-medium">
+                  <span className="text-black">
                     Organization-wide average weekly hours
                   </span>
                 </div>
@@ -504,9 +486,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Labor Law Compliance
-                </h3>
+                <div className="text-sm text-black">Labor Law Compliance</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <CheckCircle className="w-5 h-5 text-green-400" />
                 </div>
@@ -514,9 +494,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">75% Compliant</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-green-500 font-medium">
-                    High-level summary
-                  </span>
+                  <span className="text-black">High-level summary</span>
                 </div>
               </div>
             </Card>
@@ -526,9 +504,9 @@ const WorkforceRegulations = () => {
           <div className="grid grid-cols-3 gap-6 mb-8">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
+                <div className="text-sm text-black">
                   Total Overtime Hours (This Month)
-                </h3>
+                </div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Clock className="w-5 h-5 text-red-400" />
                 </div>
@@ -536,7 +514,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">1,247</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-red-500 font-medium">
+                  <span className="text-black">
                     Sum of all overtime hours logged across branches
                   </span>
                 </div>
@@ -545,9 +523,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Branches At Risk
-                </h3>
+                <div className="text-sm text-black">Branches At Risk</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
                 </div>
@@ -555,7 +531,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">3</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-orange-500 font-medium">
+                  <span className="text-black">
                     Count of branches nearing or exceeding the legal limit
                   </span>
                 </div>
@@ -564,9 +540,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Last Audit Date
-                </h3>
+                <div className="text-sm text-black">Last Audit Date</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Clock className="w-5 h-5 text-blue-400" />
                 </div>
@@ -574,7 +548,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">25 Jan</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-blue-500 font-medium">
+                  <span className="text-black">
                     Date when working hour data was last reviewed or verified
                   </span>
                 </div>
@@ -696,9 +670,7 @@ const WorkforceRegulations = () => {
           <div className="grid grid-cols-5 gap-6 mb-8">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Total Employees
-                </h3>
+                <div className="text-sm text-black">Total Employees</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Users className="w-5 h-5 text-blue-400" />
                 </div>
@@ -706,7 +678,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">293</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-gray-700">
+                  <span className="text-black">
                     Total employees having contract records
                   </span>
                 </div>
@@ -715,9 +687,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Active Contracts
-                </h3>
+                <div className="text-sm text-black">Active Contracts</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <CheckCircle className="w-5 h-5 text-green-400" />
                 </div>
@@ -725,7 +695,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">245</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-green-500 font-medium">
+                  <span className="text-black">
                     Count of currently valid employee contracts
                   </span>
                 </div>
@@ -734,9 +704,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Expiring Soon
-                </h3>
+                <div className="text-sm text-black">Expiring Soon</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
                 </div>
@@ -744,7 +712,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">24</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-orange-500 font-medium">
+                  <span className="text-black">
                     Count of contracts nearing expiration (e.g., within 30 days)
                   </span>
                 </div>
@@ -753,9 +721,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Expired Contracts
-                </h3>
+                <div className="text-sm text-black">Expired Contracts</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-red-400" />
                 </div>
@@ -763,7 +729,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">24</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-red-500 font-medium">
+                  <span className="text-black">
                     Count of contracts that have passed their end date
                   </span>
                 </div>
@@ -772,9 +738,7 @@ const WorkforceRegulations = () => {
 
             <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-black">
-                  Compliance Rate
-                </h3>
+                <div className="text-sm text-black">Compliance Rate</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   <Scale className="w-5 h-5 text-purple-400" />
                 </div>
@@ -782,7 +746,7 @@ const WorkforceRegulations = () => {
               <div className="space-y-2">
                 <p className="text-3xl font-bold text-black">84%</p>
                 <div className="flex items-center text-sm">
-                  <span className="text-purple-500 font-medium">
+                  <span className="text-black">
                     Percentage of employees with valid active contracts =
                     (Active Contracts / Total Employees) × 100
                   </span>

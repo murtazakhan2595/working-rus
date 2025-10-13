@@ -89,7 +89,7 @@ const SopPolicy = () => {
       <div className="grid grid-cols-5 gap-6 mb-8">
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Total Policies</h3>
+            <div className="text-sm text-black">Total Policies</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-blue-400" />
             </div>
@@ -97,7 +97,7 @@ const SopPolicy = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">8</p>
             <div className="flex items-center text-sm">
-              <span className="text-gray-700">
+              <span className="text-black">
                 Total number of policies/SOPs added
               </span>
             </div>
@@ -106,7 +106,7 @@ const SopPolicy = () => {
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Active Documents</h3>
+            <div className="text-sm text-black">Active Documents</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-green-400" />
             </div>
@@ -114,18 +114,14 @@ const SopPolicy = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">8</p>
             <div className="flex items-center text-sm">
-              <span className="text-green-500 font-medium">
-                Currently active or published
-              </span>
+              <span className="text-black">Currently active or published</span>
             </div>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">
-              Staff Acknowledged
-            </h3>
+            <div className="text-sm text-black">Staff Acknowledged</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-purple-400" />
             </div>
@@ -133,7 +129,7 @@ const SopPolicy = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">93%</p>
             <div className="flex items-center text-sm">
-              <span className="text-purple-500 font-medium">
+              <span className="text-black">
                 Overall acknowledgment compliance rate
               </span>
             </div>
@@ -142,7 +138,7 @@ const SopPolicy = () => {
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Pending Reviews</h3>
+            <div className="text-sm text-black">Pending Reviews</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-orange-400" />
             </div>
@@ -150,7 +146,7 @@ const SopPolicy = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">142</p>
             <div className="flex items-center text-sm">
-              <span className="text-orange-500 font-medium">
+              <span className="text-black">
                 Policies with incomplete acknowledgment
               </span>
             </div>
@@ -159,7 +155,7 @@ const SopPolicy = () => {
 
         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-black">Due This Month</h3>
+            <div className="text-sm text-black">Due This Month</div>
             <div className="w-10 h-10 rounded-lg flex items-center justify-center">
               <Clock className="w-5 h-5 text-red-400" />
             </div>
@@ -167,7 +163,7 @@ const SopPolicy = () => {
           <div className="space-y-2">
             <p className="text-3xl font-bold text-black">2</p>
             <div className="flex items-center text-sm">
-              <span className="text-red-500 font-medium">
+              <span className="text-black">
                 Policies reaching acknowledgment deadline
               </span>
             </div>
