@@ -392,7 +392,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 name: "gender_preference",
                                 required: true,
                                 label: "Gender Preference",
-                                options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'None', value: 'none' },],
+                                options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'No Preference', value: 'none' },],
                             },
 
                             {
