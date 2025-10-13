@@ -82,11 +82,6 @@ const EventWithTooltip = ({ eventInfo }) => {
 };
 
 const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChangeRequests }) => {
-  console.log("Shift Calendar Props:", {
-    shift,
-    scheduleShifts,
-    employeeId,
-  });
 
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -143,11 +138,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
   }, [shift, scheduleShifts, employeeId]);
 
   const generateCalendarEvents = () => {
-    console.log("🎯 DEBUG: generateCalendarEvents called with:", {
-      employeeId,
-      shift: shift?.name,
-      scheduleCount: scheduleShifts?.count,
-    });
     
     try {
       const events = [];
@@ -178,7 +168,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
           } else if (schedule.custom_schedule) {
             // Custom scheduled shift
             const scheduleEvents = generateCustomScheduleEvents(schedule);
-            console.log(`🟣 DEBUG: Generated ${scheduleEvents.length} custom events for schedule ${schedule.id}`);
             events.push(...scheduleEvents);
             
             // Track dates covered by this schedule
@@ -189,16 +178,11 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
         });
       }
 
-      console.log(`📊 DEBUG: Covered dates:`, Array.from(coveredDates));
-
       // 2. FALLBACK: Add direct shift assignment for dates NOT covered by schedules
       if (shift) {
         const directShiftEvents = generateDirectShiftEvents(shift, coveredDates);
-        console.log(`🔵 DEBUG: Generated ${directShiftEvents.length} direct shift events`);
         events.push(...directShiftEvents);
       }
-
-      console.log(`🎯 DEBUG: Total events: ${events.length}`);
       
       setEvents(events);
     } catch (error) {
@@ -216,7 +200,13 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
     // Parse weekdays from JSON string
     let weekdays = [];
     try {
-      weekdays = JSON.parse(shiftDetails.weekdays);
+      if (shiftDetails.weekdays && shiftDetails.weekdays !== null) {
+        weekdays = JSON.parse(shiftDetails.weekdays);
+      }
+      // Ensure weekdays is an array
+      if (!Array.isArray(weekdays) || weekdays.length === 0) {
+        weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+      }
     } catch (e) {
       weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     }
@@ -236,7 +226,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
 
       // Skip this date if it's already covered by a newer schedule
       if (coveredDates.has(dateKey)) {
-        console.log(`⏭️  DEBUG: Skipping org schedule event for ${dateKey} - already covered by newer schedule`);
         currentDate.add(1, "day");
         continue;
       }
@@ -360,12 +349,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
     return events;
   };
 
-  const generateDirectShiftEvents = (shift, coveredDates = new Set()) => {
-    console.log("=== DEBUG: generateDirectShiftEvents ===");
-    console.log("shift object:", shift);
-    console.log("shift.starttime:", shift.starttime);
-    console.log("shift.endtime:", shift.endtime);
-    console.log("coveredDates:", Array.from(coveredDates));
+  const generateDirectShiftEvents = (shift, coveredDates) => {
 
     const events = [];
 
@@ -389,19 +373,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
       shiftEnd = moment(shift.endtime);
     }
 
-    console.log("Parsed times:", {
-      startValid: shiftStart.isValid(),
-      endValid: shiftEnd.isValid(),
-      startTime: shiftStart.isValid() ? shiftStart.format("HH:mm") : "Invalid",
-      endTime: shiftEnd.isValid() ? shiftEnd.format("HH:mm") : "Invalid",
-    });
-
     // Only proceed if both times are valid
     if (!shiftStart.isValid() || !shiftEnd.isValid()) {
-      console.error("Invalid time formats:", {
-        starttime: shift.starttime,
-        endtime: shift.endtime,
-      });
       return events;
     }
 
@@ -437,7 +410,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
       currentDate.add(1, "day");
     }
 
-    console.log("Generated direct shift events for uncovered dates:", events.length);
     return events;
   };
 

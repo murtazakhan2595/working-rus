@@ -5,22 +5,11 @@ import { getShiftById, employeeData } from "app/hooks/attendance";
 import { parseShiftTime } from "../Section/getEmployeeActiveShift";
 
 export const filterOverlappingSchedules = (schedules) => {
-  console.log("🔍 DEBUG: filterOverlappingSchedules called with", schedules.length, "schedules");
-  
   if (!schedules || schedules.length === 0) return [];
 
   // Sort schedules by created_at (newest first) to prioritize newer schedules
   const sortedSchedules = [...schedules].sort((a, b) => 
     moment(b.created_at).diff(moment(a.created_at))
-  );
-  
-  console.log("📅 DEBUG: Sorted schedules (newest first):", 
-    sortedSchedules.map(s => ({
-      id: s.id,
-      is_org_based: s.is_org_based,
-      start_date: s.start_date,
-      end_date: s.end_date
-    }))
   );
 
   const filteredSchedules = [];
@@ -45,7 +34,6 @@ export const filterOverlappingSchedules = (schedules) => {
 
     // Only add if there are unprocessed dates
     if (hasUnprocessedDates) {
-      console.log(`✅ DEBUG: Adding schedule ${schedule.id} (${schedule.is_org_based ? 'org' : 'custom'})`);
       filteredSchedules.push(schedule);
       
       // Mark all dates in this schedule as processed
@@ -55,21 +43,9 @@ export const filterOverlappingSchedules = (schedules) => {
         processedDates.add(dateKey);
         currentDate.add(1, 'day');
       }
-    } else {
-      console.log(`❌ DEBUG: Skipping schedule ${schedule.id} - dates already covered`);
     }
   });
 
-  console.log("🎯 DEBUG: Final filtered schedules:", 
-    filteredSchedules.map(s => ({
-      id: s.id,
-      start_date: s.start_date,
-      end_date: s.end_date,
-      created_at: s.created_at,
-      is_org_based: s.is_org_based
-    }))
-  );
-  
   return filteredSchedules;
 };
 
@@ -266,16 +242,9 @@ export const getChangeRequestComparison = async (
 
 
 export const fetchEmployeeShiftData = async (employeeId) => {
-  console.log(`🚀 DEBUG: fetchEmployeeShiftData called for employee ${employeeId}`);
-  
   try {
     // Fetch employee data
     const empData = await employeeData(employeeId);
-    console.log(`👤 DEBUG: Employee data:`, {
-      id: empData?.id,
-      name: empData?.first_name + " " + empData?.last_name,
-      shift_assignment: empData?.shift_assignment
-    });
 
     // Fetch approved scheduled shifts
     const empScheduleShift = await getShiftSchedule({
@@ -285,19 +254,6 @@ export const fetchEmployeeShiftData = async (employeeId) => {
         is_change_request: "true,false", 
       },
       ordering: "-created_at", 
-    });
-    
-    console.log(`📋 DEBUG: Raw schedule shifts from API:`, {
-      count: empScheduleShift?.count,
-      results: empScheduleShift?.results?.map(s => ({
-        id: s.id,
-        start_date: s.start_date,
-        end_date: s.end_date,
-        is_org_based: s.is_org_based,
-        status: s.status,
-        created_at: s.created_at,
-        is_change_request: s.is_change_request
-      }))
     });
 
     let employeeShift = null;
@@ -318,13 +274,9 @@ export const fetchEmployeeShiftData = async (employeeId) => {
 
     // Filter schedules to remove older overlapping ones
     if (empScheduleShift && empScheduleShift.results.length > 0) {
-      console.log(`🔄 DEBUG: Before filtering - ${empScheduleShift.results.length} schedules`);
-      
       const filteredSchedules = filterOverlappingSchedules(
         empScheduleShift.results
       );
-      
-      console.log(`✅ DEBUG: After filtering - ${filteredSchedules.length} schedules`);
 
       scheduleShifts = {
         results: filteredSchedules,
@@ -332,11 +284,6 @@ export const fetchEmployeeShiftData = async (employeeId) => {
       };
     }
 
-    console.log(`🎉 DEBUG: Final result:`, {
-      employeeShift: employeeShift?.name || "None",
-      scheduleShiftsCount: scheduleShifts.count
-    });
-    
     return { employeeShift, scheduleShifts };
   } catch (error) {
     console.error("Error fetching employee shift data:", error);
