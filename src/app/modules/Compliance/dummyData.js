@@ -25,8 +25,8 @@ export const stats = [
     label: "Licensing",
     fullName: "Branch & Licensing",
     value: "98%",
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
+    color: "text-primary-1100",
+    bgColor: "bg-primary-200",
   },
   {
     id: "license-certificates",
@@ -71,8 +71,8 @@ export const stats = [
     label: "Workforce",
     fullName: "Workforce Regulations",
     value: "100%",
-    color: "text-slate-600",
-    bgColor: "bg-slate-50",
+    color: "text-slate-900",
+    bgColor: "bg-slate-100",
   },
 ];
 
