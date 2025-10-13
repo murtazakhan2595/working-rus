@@ -37,9 +37,10 @@ const CompanyAttendanceOverview = () => {
     try {
       const response = await getAttendanceStats({ filterData: {} });
       if (response) {
+        const { Present, Absent, Late, on_leave } = response?.daily_stats || {};
         setAttendanceStats({
           total_employees: response?.valid_employee_count || 0,
-          daily_stats: response?.daily_stats,
+          daily_stats: { Present: Present, Absent: Absent, Late: Late, "On Leave": on_leave, },
         });
       }
     } catch (error) {

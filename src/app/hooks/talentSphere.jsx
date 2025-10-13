@@ -67,6 +67,7 @@ import {
   mapRejectedApplicationPayloadData,
   mapResumeBankApplicantsList,
   mapInterviewData,
+  mapInterviewPayloadData,
   mapShortlistedApplicantPayloadData,
   mapBlacklistApplicantPayloadData,
 } from "app/utils/MappingObjects/mapTalentSphere";
@@ -1237,7 +1238,6 @@ export const getApplicantsList = async (payload = {}) => {
     const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
     if (response.status === 200) {
       const ResponseData = response.data;
-      console.log(ResponseData)
       const ResponseDataList = await mapApplicantsList(ResponseData.results);
       return { results: ResponseDataList, count: ResponseData.count };
     }
@@ -1260,14 +1260,10 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const Response = response.data;
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
-      const ResumeBankData = await getResumeBankApplicantById(Response.id);
-      const OfferLetterData = await getOfferLetterByApplicantId(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
       const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
       return {
         interview_feedbacks: Feedbacks.results || [],
-        offer_letter: OfferLetterData,
-        resume_bank: ResumeBankData,
         ...ResponseData,
       };
     }
@@ -1666,8 +1662,7 @@ export const getInterviewById = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
-      const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: Response.id } });
-      return { interview_feedbacks: Feedbacks.results || [], ...ResponseData };
+      return { ...ResponseData };
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1686,10 +1681,9 @@ export const saveUpdateInterview = async (payload, id) => {
       : `${baseUrl}/interviews/`;
     const method = id ? "PATCH" : "POST";
     const expectedStatus = id ? 200 : 201;
-
-    const response = await axios({ method, url, data: payload, headers: headers() });
+    const finalPayload = mapInterviewPayloadData(payload);
+    const response = await axios({ method, url, data: finalPayload, headers: headers() });
     if (response.status === expectedStatus) return response.data;
-
     renderErrorMessages(response?.data);
     return false;
   } catch (error) {
@@ -1844,7 +1838,7 @@ export const getFeedBackFormList = async (payload) => {
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {
-    
+
     console.error("Error getting regions list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
@@ -2243,6 +2237,7 @@ export const getOfferLetterData = async (id, approvalDetails = true) => {
       const Response = response.data;
       const currentapprover = approvalDetails && Response.request ? await getCurrentRequestApprover(Response.request) : {};
       const ResponseData = await mapOfferLetterData({ ...Response, ...currentapprover, }, approvalDetails);
+      // const OfferLetterPreview = await getApplicantOfferLetterPreview({ template_id: Response.template, applicant_id: Response.applicant })
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -2457,6 +2452,59 @@ export const getTalentSphereSummary = async () => {
   }
 };
 
+// ==================== Predictive Analytics APIs ====================
+
+export const getHiringPrediction = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/analytics/hiring-prediction/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting hiring prediction:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
+export const getHiringTrends = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/analytics/hiring-trends/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting hiring trends:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
+export const getSkillsGap = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/skills-gap`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting skills gap:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
+  }
+};
+
 export const getApplicantOfferDetails = async (uuid) => {
   try {
     const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`, {
@@ -2552,5 +2600,35 @@ export const getDemographicResponsesByApplicant = async (applicantId) => {
       HandleLogout();
     }
     return false;
+  }
+};
+
+export const getApplicantOfferLetterPreview = async (payload, id) => {
+  try {
+    const url = `${baseUrl}/offerletters/preview/`;
+
+    const method = "POST"; // Determine method based on existence of id
+    const expectedStatus = 201;
+    const finalPayload = payload;
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };

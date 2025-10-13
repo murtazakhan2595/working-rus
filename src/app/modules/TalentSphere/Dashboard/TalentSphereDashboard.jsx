@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import moment from "moment";
 import {
   Card,
   CardContent,
@@ -20,6 +21,9 @@ import OfferTrackerWidget from "./OfferTrackerWidget";
 import ApplicantSources from "./ApplicantSources";
 import EmiratizationWidget from "./EmiratizationWidget";
 import OpenRequisitions from "./OpenRequisitions";
+import HiringPredictionWidget from "./HiringPredictionWidget";
+import HiringTrendsWidget from "./HiringTrendsWidget";
+import SkillsGapWidget from "./SkillsGapWidget";
 import { useTalentSphereDashboard } from "./useTalentSphereDashboard";
 
 const TalentSphereDashboard = () => {
@@ -42,6 +46,10 @@ const TalentSphereDashboard = () => {
     requisitionsData,
     fetchAISuggestedCandidates,
     refetch,
+    // Predictive Analytics
+    hiringPredictionData,
+    hiringTrendsData,
+    skillsGapData,
   } = useTalentSphereDashboard(filterData);
 
   // Handle filter changes
@@ -67,10 +75,10 @@ const TalentSphereDashboard = () => {
     setFilterData({});
   }, []);
 
-  // Dashboard filters
+  // Dashboard filters (linked to filterData for hook)
   const dashboardFilters = [
     {
-      type: "date-range",
+      type: "date-range-filter",
       name: "date_range",
       placeholder: "Select Date Range",
       values: filterData.date_range,
@@ -81,6 +89,59 @@ const TalentSphereDashboard = () => {
       name: "department",
       placeholder: "Department",
       values: filterData.department,
+    },
+    {
+      type: "search",
+      name: "job_title",
+      placeholder: "Job Title",
+      values: filterData.job_title,
+      width: "w-[220px]",
+    },
+    {
+      type: "select-two",
+      option: [
+        { value: "internal", label: "Internal" },
+        { value: "external", label: "External" },
+        { value: "both", label: "Both" },
+      ],
+      name: "requisition_type",
+      placeholder: "Requisition Type",
+      values: filterData.requisition_type,
+    },
+    {
+      type: "select-three",
+      option: [
+        { value: "draft", label: "Draft" },
+        { value: "pending", label: "Pending" },
+        { value: "approved", label: "Approved" },
+        { value: "published", label: "Published" },
+      ],
+      name: "requisition_status",
+      placeholder: "Requisition Status",
+      values: filterData.requisition_status,
+    },
+    {
+      type: "select-four",
+      option: [
+        { value: "screened", label: "Screened" },
+        { value: "interviewed", label: "Interviewed" },
+        { value: "offered", label: "Offered" },
+        { value: "hired", label: "Hired" },
+        { value: "rejected", label: "Rejected" },
+      ],
+      name: "applicant_status",
+      placeholder: "Applicant Status",
+      values: filterData.applicant_status,
+    },
+    {
+      type: "select-five",
+      option: [
+        { value: true, label: "Emiratization" },
+        { value: false, label: "Non-Emiratization" },
+      ],
+      name: "is_emiratization",
+      placeholder: "Emiratization",
+      values: filterData.is_emiratization,
     },
   ];
 
@@ -105,6 +166,7 @@ const TalentSphereDashboard = () => {
             filters={dashboardFilters}
             filterValues={filterData}
             onChange={handleFilterChange}
+            defaultDateRangeTab="None"
             className="justify-end"
           />
         </CardContent>
@@ -147,6 +209,25 @@ const TalentSphereDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ApplicantSources data={sourceData} loading={loading} />
             <EmiratizationWidget data={emiratizationData} loading={loading} />
+          </div>
+
+          {/* Charts Row 5: Predictive Analytics */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-1">
+              <HiringPredictionWidget
+                data={hiringPredictionData}
+                loading={loading}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <HiringTrendsWidget
+                data={hiringTrendsData}
+                loading={loading}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <SkillsGapWidget data={skillsGapData} loading={loading} />
+            </div>
           </div>
         </>
       )}

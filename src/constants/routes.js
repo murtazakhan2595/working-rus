@@ -12,8 +12,14 @@ import {
   ApplicantOffer,
   TalentSphereDashboard,
   ApplicantProfiles,
-  ResumeBankApplicants,
+  AllApplicants,
   ApplicantProfileDetails,
+  ApplicantByRequisition,
+  EmiratizationAllApplicants,
+  EmiratizationScreenedApplicants,
+  EmiratizationShortlistedApplicants,
+  EmiratizationHiredApplicants,
+  EmiratizationRequisitions,
 } from 'app/modules/TalentSphere';
 import {
   LeaveTracker,
@@ -119,6 +125,7 @@ import { HRDocumentsReports } from "app/modules/Reports";
 import { TransferAndRotationReports } from "app/modules/Reports";
 import { AttendanceAndShiftReports } from "app/modules/Reports";
 import DemographicsForm from "app/modules/TalentSphere/OfferTracking/DemographicsForm";
+import Compliance from "app/modules/Compliance";
 
 export const SidebarRoutes = [
   {
@@ -203,12 +210,6 @@ export const SidebarRoutes = [
         component: <MyClearanceTab />,
         name: "MY_CLEARANCE",
       },
-      Config.MANAGER_CLEARANCE_DASHBOARD && {
-        path: "/manager-clearance-dashboard",
-        component: <ManagerClearanceDashboard />,
-        name: "MANAGER_CLEARANCE_DASHBOARD",
-      },
-
       Config.MY_PERFORMANCE && {
         path: "/my-performance",
         component: <MyPerformance />,
@@ -248,10 +249,19 @@ export const SidebarRoutes = [
         component: <TeamTalentSphere />,
         name: "TEAM_TALENT_SPHERE",
       },
+        Config.MANAGER_CLEARANCE_DASHBOARD && {
+        path: "/manager-clearance-dashboard",
+        component: <ManagerClearanceDashboard />,
+        name: "MANAGER_CLEARANCE_DASHBOARD",
+      },
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PEOPLE_TEAM
-    ? [
+    ? [{
+      path: "/compliance",
+      component: <Compliance />,
+      name: "COMPLIANCE",
+    },
       Config.PROFILE_MANAGEMENT && {
         path: "/profile-management",
         component: <Employee />,
@@ -370,9 +380,39 @@ export const SidebarRoutes = [
         component: <ApplicantManagement />,
         name: "APPLICANTS",
       },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/requisition-applicants",
+        component: <ApplicantByRequisition />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/emiratization-applicants",
+        component: <EmiratizationAllApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/emiratization-screened",
+        component: <EmiratizationScreenedApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/emiratization-shortlisted",
+        component: <EmiratizationShortlistedApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/emiratization-hired",
+        component: <EmiratizationHiredApplicants />,
+        name: "APPLICANTS",
+      },
       Config.REQUISITION_PLANNING && {
         path: "/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,
+        name: "REQUISITION_PLANNING",
+      },
+      Config.REQUISITION_PLANNING && {
+        path: "/talent-sphere/emiratization-requisitions",
+        component: <EmiratizationRequisitions />,
         name: "REQUISITION_PLANNING",
       },
       Config.APPLICANT_INTERVIEW_TRACKER && {
@@ -401,8 +441,8 @@ export const SidebarRoutes = [
         name: "TS_VIEW_APPLICANT_PROFILE",
       },
       Config.TS_RESUME_BANK && {
-        path: "/talent-sphere/resume-bank-applicants",
-        component: <ResumeBankApplicants />,
+        path: "/talent-sphere/applicant-management/resume-bank-applicants",
+        component: <AllApplicants variant='resume_bank' />,
         name: "TS_RESUME_BANK",
       },
 

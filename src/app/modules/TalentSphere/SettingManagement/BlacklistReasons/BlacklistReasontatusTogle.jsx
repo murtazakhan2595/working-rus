@@ -5,7 +5,7 @@ import { saveUpdateBlacklistReason } from "app/hooks/talentSphere";
 import { HasAccess } from "utils/PermissionUtils";
 
 const BlacklistReasonStatusTogle = ({ status, data, reloadData }) => {
-  const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
+  const isEditPermitted = HasAccess("EDIT_BLACKLIST_REASON");
 
   const onCheckedChange = useCallback(
     async (value, data) => {

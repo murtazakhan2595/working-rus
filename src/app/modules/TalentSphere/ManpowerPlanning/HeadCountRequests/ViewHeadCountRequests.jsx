@@ -36,7 +36,7 @@ const ViewHeadCountRequests = ({
                 fiscal_year: fiscal_year,
                 branch,
                 department,
-                planned_headcount: parseInt(consumed_headcount) + parseInt(requested_headcount),
+                planned_headcount: parseInt(ManpowerPlanData.planned_headcount) + parseInt(requested_headcount),
                 total_allocated_budget: ManpowerPlanData?.total_allocated_budget || 1,
                 justification: ManpowerPlanData?.justifications || reason,
             }
@@ -100,21 +100,21 @@ const ViewHeadCountRequests = ({
         {
             title: `Attachment`,
             field: [
-              {
-                key: 'attachment_url',
-                formatter: (cell, data) =>
-                  cell ? (
-                    <AttachmentUI
-                      attachment={cell}
-                      name={`Headcount Request Document`}
-                      viewOnly={true}
-                    />
-                  ) : (
-                    <div className="text-neutral-1000 text-sm">No document attached</div>
-                  ),
-              },
+                {
+                    key: 'attachment_url',
+                    formatter: (cell, data) =>
+                        cell ? (
+                            <AttachmentUI
+                                attachment={cell}
+                                name={`Headcount Request Document`}
+                                viewOnly={true}
+                            />
+                        ) : (
+                            <div className="text-neutral-1000 text-sm">No document attached</div>
+                        ),
+                },
             ],
-          },
+        },
         {
             title: "Headcount Details",
             field: [

@@ -8,10 +8,11 @@ import {
 } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { Badge } from "components/ui/badge";
-import { TableCustom } from "components";
+import { TableCustom, StatusLabel } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { DepartmentName } from "utils/getValuesFromTables";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const OpenRequisitions = ({ data, loading }) => {
   const navigate = useNavigate();
@@ -27,9 +28,6 @@ const OpenRequisitions = ({ data, loading }) => {
   };
 
   // Filter for open requisitions (approved or pending)
-  // "Open" means requisitions that are active and need action:
-  // - Pending: Need approval in "Requisition Requests" tab
-  // - Approved: Ready to publish in "Generate Requisition" tab
   const openRequisitions = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
@@ -39,9 +37,6 @@ const OpenRequisitions = ({ data, loading }) => {
   }, [data]);
 
   const handleViewDetails = (row) => {
-    // Navigate based on STATUS, not approval_required:
-    // - Pending requisitions → Requisition Requests tab (for approval)
-    // - Approved requisitions → Generate Requisition tab (to view/publish)
     const targetTab =
       row.status === "pending"
         ? "requisition-requests"
@@ -57,7 +52,6 @@ const OpenRequisitions = ({ data, loading }) => {
   };
 
   const handlePublishVacancy = (row) => {
-    // Navigate to Generate Requisition tab to publish a new vacancy
     navigate(`/talent-sphere/requisition-planning`, {
       state: {
         filterRequisition: row.id,
@@ -69,7 +63,6 @@ const OpenRequisitions = ({ data, loading }) => {
   };
 
   const handleViewVacancy = (row) => {
-    // Navigate to Published Vacancies tab to view published vacancy
     navigate(`/talent-sphere/requisition-planning`, {
       state: {
         filterRequisition: row.id,
@@ -81,9 +74,8 @@ const OpenRequisitions = ({ data, loading }) => {
   };
 
   const handleViewApplicants = (row) => {
-    // Backend now supports 'recruitment_requisition' filter! ✅
     navigate(
-      `/talent-sphere/applicant-management?recruitment_requisition=${row.id}`
+      `/talent-sphere/requisition-applicants?recruitment_requisition=${row.id}`
     );
   };
 
@@ -136,51 +128,49 @@ const OpenRequisitions = ({ data, loading }) => {
       dataField: "status",
       text: "Status",
       formatter: (cell) => (
-        <Badge
-          variant={cell === "approved" ? "default" : "secondary"}
-          className="text-xs"
-        >
+        <StatusLabel status={cell}>
           {cell.charAt(0).toUpperCase() + cell.slice(1)}
-        </Badge>
+        </StatusLabel>
       ),
       style: { width: "100px" },
     },
     {
       dataField: "actions",
       text: "Actions",
-      formatter: (cell, row) => (
-        <div className="flex gap-1 flex-wrap">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleViewDetails(row)}
-            className="text-xs px-2 py-1"
-          >
-            View Details
-          </Button>
-          {row.status === "approved" && !row.is_publish && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePublishVacancy(row)}
-              className="text-xs px-2 py-1"
-            >
-              Publish Vacancy
-            </Button>
-          )}
-          {row.is_publish && row.total_applicants > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleViewApplicants(row)}
-              className="text-xs px-2 py-1"
-            >
-              View Applicants ({row.total_applicants})
-            </Button>
-          )}
-        </div>
-      ),
-      style: { width: "250px" },
+      formatter: (cell, row) => {
+        // Build additional actions array based on row status
+        const additionalActions = [];
+
+        // Always show View Details
+        additionalActions.push({
+          text: "View Details",
+          action: () => handleViewDetails(row),
+        });
+
+        // Show Publish Vacancy if approved and not published
+        if (row.status === "approved" && !row.is_publish) {
+          additionalActions.push({
+            text: "Publish Vacancy",
+            action: () => handlePublishVacancy(row),
+          });
+        }
+
+        // Show View Applicants if published and has applicants
+        if (row.is_publish && row.total_applicants > 0) {
+          additionalActions.push({
+            text: `View Applicants (${row.total_applicants})`,
+            action: () => handleViewApplicants(row),
+          });
+        }
+
+        return (
+          <DropdownActionMenu
+            menuTooltip="Requisition Actions"
+            additionalOptionsConfig={additionalActions}
+          />
+        );
+      },
+      style: { width: "80px" },
     },
   ];
 

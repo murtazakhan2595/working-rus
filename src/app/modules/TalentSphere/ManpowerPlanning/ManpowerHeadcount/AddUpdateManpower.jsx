@@ -1,5 +1,5 @@
 import { saveManpowerPanning, getManpowerById, getManpowerPlanningList } from 'app/hooks/talentSphere';
-import { getEmployeeList } from 'app/hooks/general';
+import { getEmployeeCustomList } from 'app/hooks/general';
 import { ManpowerPlanning } from "app/utils/Types/TalentSphere";
 import {
     TextAreaInput,
@@ -87,8 +87,12 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const getExistingHeadCount = async (branch, department, handleChange) => {
         try {
             if (branch && department) {
-                const filterData = { ...(department ? { department_name: department } : {}), ...(branch ? { branch_id: branch } : {}) }
-                const response = await getEmployeeList({ filterData });
+                const filterData = {
+                     ...(department ? { department_name: department } : {}), 
+                     ...(branch ? { branch_id: branch } : {}),
+                     employee_status: "Active,Probation,Notice Period",
+                     }
+                const response = await getEmployeeCustomList({ filterData  });
                 if (response) {
                     handleChange("existing_headcount", response.count);
                     const consumed_budget = calculateTotal(response.results || [], 'basic_salary')

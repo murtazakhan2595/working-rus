@@ -185,6 +185,8 @@ export const GenderOptions = [
   { value: "MALE", label: "Male" },
   { value: "FEMALE", label: "Female" },
 ];
+export const RequisitionGenderOptions = [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'No Preference', value: 'none' },];
+                           
 
 export const BloodGroupOptions = [
   { value: "A+", label: "A+" },
@@ -813,8 +815,8 @@ export const handleUpdateProfile = async (dispatch, data) => {
   const MyPermissions = await dispatch(fetchMyPermissions());
   await dispatch(fetchUser(userprofile.id));
   await dispatch(fetchUserPermittedModules({ modules: ModuleList.payload, permissions: MyPermissions.payload, }));
-  await dispatch(fetchEmployees());
   await dispatch(fetchEmployeesDetail());
+  dispatch(fetchEmployees());
   dispatch(fetchBranches());
   dispatch(fetchCountries());
   dispatch(fetchCurrencies());

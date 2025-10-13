@@ -6,7 +6,7 @@ import {
   getEmailTemplateList,
 } from "app/hooks/talentSphere";
 
-import {getEmployeeList} from "app/hooks/general"
+import {getEmployeeDropdownList} from "app/hooks/general"
 
 export const fetchInterviewOptions = createAsyncThunk(
   "interview/fetchOptions",
@@ -15,7 +15,7 @@ export const fetchInterviewOptions = createAsyncThunk(
       await Promise.all([
         getApplicantsList(),
         getInterviewTypesList(),
-        getEmployeeList(),
+        getEmployeeDropdownList(),
         getEmailTemplateList(),
       ]);
 

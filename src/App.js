@@ -22,6 +22,35 @@ import {fetchInterviewOptions} from "./state/slices/ScreenedInterview";
 import ChatbrixWidget from "./components/ChatbrixWidget";
 
 function App() {
+  // Prevent body scroll while inside the dropdown
+  useEffect(() => {
+    const handleWheel = (e) => {
+      const scrollable = e.target.closest(
+        '[data-radix-popper-content], [data-radix-popper-content-wrapper], [role="listbox"]'
+      );
+      if (!scrollable) return;
+
+      // Ensure the element can scroll
+      if (scrollable.scrollHeight <= scrollable.clientHeight) return;
+
+      const delta = e.deltaY;
+      const atTop = scrollable.scrollTop === 0;
+      const atBottom =
+        scrollable.scrollTop + scrollable.clientHeight >=
+        scrollable.scrollHeight - 1;
+
+      // Prevent body scroll while inside the dropdown
+      if ((delta < 0 && !atTop) || (delta > 0 && !atBottom)) {
+        e.stopPropagation();
+        e.preventDefault();
+        scrollable.scrollTop += delta;
+      }
+    };
+
+    document.addEventListener("wheel", handleWheel, { passive: false });
+    return () => document.removeEventListener("wheel", handleWheel);
+  }, []);
+
   const isLogin = useSelector((state) => state.user.isLogin);
   const ModuleList = useSelector(
     (state) => state.roles_permissions.user_permitted_modules

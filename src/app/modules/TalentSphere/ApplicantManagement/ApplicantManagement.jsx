@@ -4,7 +4,7 @@ import { Header } from "components";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
 import Error from "app/modules/Error";
-import {APPLICANT_TAB_CONFIG} from 'app/modules/TalentSphere/Sections';
+import { APPLICANT_TAB_CONFIG } from 'app/modules/TalentSphere/Sections';
 import { useSearchParams, useLocation } from "react-router-dom";
 import ViewApplicationDetail from "./ViewApplicationDetail";
 
@@ -50,14 +50,14 @@ export default function ApplicantManagement() {
   useEffect(() => {
     if (location.state?.filterData || location.state?.tab) {
       const { tab, filterData } = location.state;
-      
+
       if (filterData) setDeepLinkFilterData(filterData);
-      
+
       // Set the correct tab based on state
       if (tab && availableTabs.some(t => t.label === tab)) {
         setActiveTab(tab);
       }
-      
+
       // Clear location state after reading
       window.history.replaceState({}, document.title);
     }
@@ -83,13 +83,11 @@ export default function ApplicantManagement() {
           </TabsList>
         </div>
 
-        <Card>
-          {availableTabs.map((tab) => (
-            <TabsContent key={tab.label} value={tab.label}>
-              {tab.component(reloadData, deepLinkFilterData)}
-            </TabsContent>
-          ))}
-        </Card>
+        {availableTabs.map((tab) => (
+          <TabsContent key={tab.label} value={tab.label}>
+            {tab.component(reloadData, deepLinkFilterData)}
+          </TabsContent>
+        ))}
       </Tabs>
 
       {openDetail && deepLinkApplicant && (

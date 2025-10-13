@@ -65,43 +65,23 @@ const EmiratizationWidget = ({ data, loading }) => {
   const handleCardClick = (metricTitle) => {
     switch (metricTitle) {
       case "Total Emiratization Roles":
-        // Navigate to Generate Requisition tab with is_emiratization_role filter
-        navigate("/talent-sphere/requisition-planning", {
-          state: {
-            tab: "generate-requisition",
-            filterData: { is_emiratization_role: true },
-          },
-        });
+        // Navigate to dedicated emiratization requisitions page
+        navigate("/talent-sphere/applicant-management/emiratization-requisitions");
         break;
 
       case "Applicants for Emiratization Roles":
-        // Navigate to "All Applicants" tab with emiratization filter
-        navigate("/talent-sphere/applicant-management", {
-          state: {
-            tab: "All Applicants",
-            filterData: { emiratization_flag: true },
-          },
-        });
+        // Navigate to dedicated emiratization applicants page
+        navigate("/talent-sphere/applicant-management/emiratization-applicants?emiratization_flag=required");
         break;
 
       case "Shortlisted Emirati Applicants":
-        // Navigate to "Screened" tab with emiratization filter
-        navigate("/talent-sphere/applicant-management", {
-          state: {
-            tab: "Screened",
-            filterData: { emiratization_flag: true },
-          },
-        });
+        // Navigate to dedicated emiratization shortlisted page
+        navigate("/talent-sphere/applicant-management/emiratization-shortlisted?emiratization_flag=required");
         break;
 
       case "Hired Emirati Applicants":
-        // Navigate to "Hired" tab with emiratization filter
-        navigate("/talent-sphere/applicant-management", {
-          state: {
-            tab: "Hired",
-            filterData: { emiratization_flag: true },
-          },
-        });
+        // Navigate to dedicated emiratization hired page
+        navigate("/talent-sphere/applicant-management/emiratization-hired?emiratization_flag=required");
         break;
 
       default:

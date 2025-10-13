@@ -108,6 +108,7 @@ const pathNames = () => {
     "job-rotation-calendar": "Job Rotation Calendar",
     "clearance-requests": "Clearance & Handover Management",
     "my-letter-request": "My Letter Requests",
+    "compliance": "Compliance",
   };
 };
 

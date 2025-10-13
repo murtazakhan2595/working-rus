@@ -20,7 +20,7 @@ const ViewFinalOffer = ({
     reloadData = () => { },
     DataList = [],
 }) => {
-    const UpdatePermitted = HasAccess("MANAGE_ATTENDANCE_ADJ_REQUESTS");
+    const UpdatePermitted = HasAccess("UPDATE_OFFER_SEND_TO_APPLICANT");
     const [forceLoad, setForceLoad] = useState(false);
     const handleSubmit = async (event, status, data) => {
         event.preventDefault();
@@ -153,39 +153,38 @@ const ViewFinalOffer = ({
         {
             customContent: true,
             renderContent: (data) => {
-                if (!data || !data.status) return null;
+                if (!data || !data.status || !UpdatePermitted) return null;
                 const joining_date_passed = moment(data.joining_date).startOf('day').isSameOrBefore(moment().startOf('day'))
                 const validity_date_passed = moment(data.validity_date).startOf('day').isSameOrBefore(moment().startOf('day'))
                 const status = data?.status?.toLowerCase();
-                if (UpdatePermitted)
-                    return (
-                        <div className="flex flex-wrap justify-end gap-2 my-5">
-                            {validity_date_passed && status === 'pending' &&
+                return (
+                    <div className="flex flex-wrap justify-end gap-2 my-5">
+                        {validity_date_passed && status === 'pending' &&
+                            <Button
+                                variant="continue"
+                                onClick={(event) => handleSubmit(event, "withdrawn", data)}
+                            >
+                                Withdraw
+                            </Button>
+                        }
+                        {joining_date_passed && status === 'accepted' &&
+                            <>
                                 <Button
-                                    variant="continue"
-                                    onClick={(event) => handleSubmit(event, "withdrawn", data)}
+                                    variant="default"
+                                    onClick={(event) => handleSubmit(event, "hired", data)}
                                 >
-                                    Withdraw
+                                    Hired
                                 </Button>
-                            }
-                            {joining_date_passed && status === 'accepted' &&
-                                <>
-                                    <Button
-                                        variant="default"
-                                        onClick={(event) => handleSubmit(event, "hired", data)}
-                                    >
-                                        Hired
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        onClick={(event) => handleSubmit(event, "not_joined", data)}
-                                    >
-                                        Not Joined
-                                    </Button>
-                                </>
-                            }
-                        </div>
-                    );
+                                <Button
+                                    variant="destructive"
+                                    onClick={(event) => handleSubmit(event, "not_joined", data)}
+                                >
+                                    Not Joined
+                                </Button>
+                            </>
+                        }
+                    </div>
+                );
             },
         },
     ];

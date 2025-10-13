@@ -19,7 +19,6 @@ const Config = {
   EXIT: true,
   MY_JOB_ROTATIONS: true,
   MY_CLEARANCE: true,
-  MANAGER_CLEARANCE_DASHBOARD: true,
   MY_LETTER_REQUEST: true,
 
   //----------------TEAM_MANAGEMENT------------
@@ -32,6 +31,8 @@ const Config = {
   TEAM_EXIT_CLEARANCE: true,
   TEAM_PERFORMANCE_EVALUATION: true,
   TEAM_TALENT_SPHERE: true,
+  MANAGER_CLEARANCE_DASHBOARD: true,
+
 
   //-------------PROFIL_MANAGMENT-----------
   PEOPLE_TEAM: true,
@@ -40,6 +41,7 @@ const Config = {
   EXIT_CLEARANCE: true,
   EMPLOYEE_CREATION: true,
   HR_DOCUMENTS: true,
+  COMPLIANCE: true,
   EMPLOYEE_TRANSFER: true,
   CLEARANCE_AND_HANDOVER: true,
 

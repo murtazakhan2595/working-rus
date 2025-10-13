@@ -260,6 +260,7 @@ export const Applicants = {
     resume: null,
     offers_tracking: null,
     publish_vacancy: null,
+    offer_letters:null,
     ai_match_score: null,
     ai_matched_skills: null,
     ai_missing_skills: null,
@@ -267,6 +268,7 @@ export const Applicants = {
     ai_feedback_confidence: null,
     ai_feedback_recommendation: null,
     ai_feedback_summary: null,
+    resume_bank: null,
 }
 
 export const RejectedApplication = {
@@ -299,6 +301,8 @@ export const Interview = {
     interview_type: null,
     interview_type_name: null,
     scheduled_datetime: null,
+    interview_form: null,
+    interview_form_name: null,
     panel: null,
     panel_name: null,
     email_template: null,
@@ -306,16 +310,16 @@ export const Interview = {
     require_demographics: null,
     created_by: null,
     created_at: null,
-    status: null,
-    job_title: null,
-    candidate_name: null,
-    candidate_id: null,
-    contact_number: null,
-    email: null,
-    ai_match_score: null,
-    ai_matched_skills: null,
-    ai_missing_skills: null,
-    ai_suggested: null,
+    status: 'scheduled',
+    // job_title: null,
+    // candidate_name: null,
+    // candidate_id: null,
+    // contact_number: null,
+    // email: null,
+    // ai_match_score: null,
+    // ai_matched_skills: null,
+    // ai_missing_skills: null,
+    // ai_suggested: null,
 }
 
 export const InterviewFeedback = {

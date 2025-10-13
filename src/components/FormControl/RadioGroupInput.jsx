@@ -33,7 +33,7 @@ const RadioGroupInput = React.memo(
     className = "w-full",
     variant = "one_line",
   }) => {
-    const defaultValue = (value === null || value === undefined || value === '') ? (options.length > 0 ? options[0].value : "") : value;
+    const defaultValue = (value === null || value === undefined || value === '') ? 'Null Values 000-9999' : value;
     return (
       <FormField
         name={name}

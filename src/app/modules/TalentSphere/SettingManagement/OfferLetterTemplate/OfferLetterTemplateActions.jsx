@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import {AddUpdateOfferLetterTemplateForm} from "app/modules/TalentSphere";
+import { AddUpdateOfferLetterTemplateForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
-    const isEditPermitted = HasAccess("EDIT_TS_BENEFITS");
-    const isDeletePermitted = HasAccess("DELETE_TS_BENEFITS");
+    const isEditPermitted = HasAccess("EDIT_TS_OFFER_LETTER_TEMPLATES");
+    const isDeletePermitted = HasAccess("DELETE_TS_OFFER_LETTER_TEMPLATES");
     // const isViewPermitted = HasAccess("VIEW_MANPOWER");
-    // const [view, setView] = useState(null);
+    const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
     const [deleteForm, setDeleteForm] = useState(null);
 
@@ -19,6 +20,9 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
 
     const handleDelete = () => {
         setDeleteForm(true);
+    };
+    const handleView = () => {
+        setView(true);
     };
 
     const confirmDelete = async () => {
@@ -34,10 +38,10 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
     return (
         <>
             <DropdownActionMenu
-                // onView={isViewPermitted ? handleView : null}
                 onEdit={isEditPermitted ? handleEdit : null}
+                // onView={handleView}
                 onDelete={isDeletePermitted ? handleDelete : null}
-                viewText="View Template"
+                viewText="Preview Template"
                 editText="Edit Template"
                 deleteText="Delete Template"
                 menuTooltip="Template Actions"
@@ -68,6 +72,14 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
                     id={data.id}
                 />
             )}
+            {/* {view && (
+                <AttachmentUI
+                    attachment={data?.letterhead}
+                    viewOnly={true}
+                    variant={'preview-only'}
+                    fallBackText='--'
+                />
+            )} */}
         </>
     );
 };

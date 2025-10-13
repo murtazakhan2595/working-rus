@@ -20,6 +20,7 @@ import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 import { validateRequisitionRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 import { DateInput } from "components/FormControl";
+import {RequisitionGenderOptions} from 'data/Data';
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -285,6 +286,7 @@ const AddUpdateRequisitionRequestForm = ({
                                     onFieldUpdate: async (_, value, __, handleChange) => {
                                         if (value) getCitiesDropdown("United Arab Emirates");
                                         handleChange("countries", value ? "United Arab Emirates" : "");
+                                        handleChange('city', null);
                                     },
                                 },
                             ]),
@@ -355,25 +357,21 @@ const AddUpdateRequisitionRequestForm = ({
                             {
                                 InputField: NumberInput,
                                 name: "experience_min",
-                                required: true,
                                 label: "Minimum Experiance (Year)",
                             },
                             {
                                 InputField: NumberInput,
                                 name: "experience_max",
-                                required: true,
                                 label: "Maximum Experiance (Year)",
                             },
                             {
                                 InputField: NumberInput,
                                 name: "salary_min",
-                                required: true,
                                 label: "Minimum Salary",
                             },
                             {
                                 InputField: NumberInput,
                                 name: "salary_max",
-                                required: true,
                                 label: "Maximum Salary",
                             },
                             {
@@ -395,13 +393,12 @@ const AddUpdateRequisitionRequestForm = ({
                                 name: "gender_preference",
                                 required: true,
                                 label: "Gender Preference",
-                                options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'None', value: 'none' },],
-                            },
+                                options: RequisitionGenderOptions
+                             },
 
                             {
                                 InputField: DateInput,
                                 name: "recommended_posting_date",
-                                // required: true,
                                 label: "Recommended Posting Date",
                             },
                             {

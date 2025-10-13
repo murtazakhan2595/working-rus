@@ -8,7 +8,7 @@ import {
 } from "src/@/components/ui/tabs";
 import { Header } from "components";
 import { useSelector } from "react-redux";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import Emplist from "./ShiftCalendarTab/Emplist";
 import ShiftRequest from "./ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
@@ -21,6 +21,7 @@ import EmployeeShiftCalendar from "./MyShiftCalendar/EmployeeShiftCalendar";
 import HistoryAndLogs from "./HistoryAndLogs";
 import { HasAccess } from "utils/PermissionUtils";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
+import AssignShift from "./Section/AssignShift";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
@@ -39,9 +40,11 @@ const ShiftCalendar = () => {
 
   const isViewLogsPermitted = HasAccess("VIEW_SHIFT_HISTORY_LOGS");
   const isViewShiftCalendarPermitted = HasAccess("VIEW_SHIFT_CALENDAR");
+  const isTeamViewCalendarPermitted = HasAccess("VIEW_TEAM_SHIFT_CALENDAR");
   const isScheduleShiftPermitted = HasAccess("SCHEDULE_EMPLOYEE_SHIFT");
   const isViewPendingSchedulesPermitted = HasAccess("VIEW_PENDING_SCHEDULES");
   const isEditPendingSchedulesPermitted = HasAccess("EDIT_PENDING_SCHEDULES");
+  const isAssignShiftPermitted = HasAccess("ASSIGN_SHIFT");
 
   // Handle tab change and reset filters
   const handleTabChange = (newTab) => {
@@ -66,9 +69,10 @@ const ShiftCalendar = () => {
         if (!isEditPendingSchedulesPermitted && userProfile?.id) {
           filterDataToSend.direct_report = userProfile.id;
         }
-        const response = await getEmployeeList({
+        const response = await getEmployeeCustomList({
           filterData: {
-            ...filterDataToSend
+            ...filterDataToSend,
+             employee_status: "Active,Probation,Notice Period",
           },
         });
         if (response) {
@@ -191,7 +195,7 @@ const ShiftCalendar = () => {
         },
       ]
       : []),
-    ...(isViewShiftCalendarPermitted
+    ...(isViewShiftCalendarPermitted || isTeamViewCalendarPermitted
       ? [
         {
           value: "shift-calendar",
@@ -219,9 +223,9 @@ const ShiftCalendar = () => {
 
   const headerContent = (
     <div className="flex gap-2">
-      {/* {activeTab === "shift-calendar" && (
+      {activeTab === "shift-calendar" && isAssignShiftPermitted && (
         <AssignShift employees={displayData.results} />
-      )} */}
+      )}
       {activeTab === "schedule-shift" && isScheduleShiftPermitted && (
         <Button onClick={() => setIsScheduleModalOpen(true)}>
           Schedule Shift

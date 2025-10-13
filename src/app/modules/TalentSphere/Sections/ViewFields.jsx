@@ -1,10 +1,10 @@
 import React from "react";
-import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName ,Currency} from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName, Currency } from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI} from "components";
+import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
-import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import { RequisitionGenderOptions } from 'data/Data';
 
 export const RequisitionViewFields = [
   {
@@ -107,7 +107,9 @@ export const RequisitionViewFields = [
       {
         key: "gender_preference",
         label: "Gender Preference",
-        formatter: (cell) => <div className="text-capitalize">{cell}</div>,
+        formatter: (cell) => {
+          return (RequisitionGenderOptions.find(obj => obj.value === cell) || {}).label || '--';
+        },
       },
       {
         key: "min_age",
@@ -130,9 +132,9 @@ export const RequisitionViewFields = [
       {
         key: "salary_min",
         label: "Salary Range",
-        formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined',Currency({value:row.currency}))} (${row?.payment_frequency})`,
+        formatter: (cell, row) => `${renderRange(cell, row.salary_max, 'Not Defined', Currency({ value: row.currency }))} (${row?.payment_frequency || ''})`,
       },
-       {
+      {
         key: "recommended_posting_date",
         label: "Recommended Posting Date",
         formatter: (cell) => renderDate(cell),
@@ -295,7 +297,7 @@ export const VacancyDetails = [
       {
         key: "requisition_id",
         label: "Requisition ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"RR-"} />,
+        formatter: (cell) => <FormatID value={cell} prefix={"RR-"} />,
       },
       {
         key: "job_title",
@@ -305,6 +307,7 @@ export const VacancyDetails = [
       {
         key: "department",
         label: "Department",
+        formatter: (cell) => <DepartmentName value={cell} />,
       },
       {
         key: "job_type_name",
@@ -413,7 +416,7 @@ export const ResumeBankInformation = [
 ]
 export const InterviewDetails = [
   {
-    title: "Interview Information",
+    title: (data) => `${data.index + 1} - Interview Information`,
     field: [
       {
         key: "interview_type_name",
@@ -437,7 +440,7 @@ export const InterviewDetails = [
       {
         key: "require_demographics",
         label: "Required Demographics",
-        formatter: (cell) => cell?'Yes':'No',
+        formatter: (cell) => cell ? 'Yes' : 'No',
       },
       {
         key: "status",
@@ -449,7 +452,7 @@ export const InterviewDetails = [
 ];
 export const OfferDetails = [
   {
-    title: "Offer Information",
+    title: (data) => `${data.index + 1} - Offer Information`,
     field: [
       {
         key: "generated_on",
@@ -464,20 +467,16 @@ export const OfferDetails = [
       {
         key: "offered_salary",
         label: "Offered Salary",
-        formatter: (cell) => `${cell || '0'}`
+        formatter: (cell, row) => `${cell || '0'} ${row.currency || ''}`
       },
       {
         key: "status",
         label: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
       },
-    ],
-  },
-  {
-    title: `Offer Letter`,
-    field: [
       {
-        key: 'final_letter_pdf',
+        key: "final_letter_pdf",
+        label: "Offer Letter",
         formatter: (cell, data) =>
           cell ? (
             <AttachmentUI
@@ -667,6 +666,7 @@ export const ApplicantDetails = [
       </>
     }),
   },
+  ...(AIGeneratedDetails),
   {
     customContent: true,
     renderSectionCondition: (data) => {
@@ -685,14 +685,14 @@ export const ApplicantDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
-      if (data.offer_letter && Array.isArray(data.offer_letter) && data.offer_letter.length > 0) return true;
+      if (data.offer_letters && Array.isArray(data.offer_letters) && data.offer_letters.length > 0) return true;
       return false;
     },
-    renderContent: ({ offer_letter }) => (offer_letter || []).map((letter, index) => {
+    renderContent: ({ offer_letters, publish_vacancy }) => (offer_letters || []).map((letter, index) => {
       return <>
         <DetailContent
           fields={OfferDetails}
-          currentItem={{ ...letter, index } || {}}
+          currentItem={{ ...letter, index, currency: Currency({ value: publish_vacancy?.currency }) } || {}}
         />
       </>
     }),
@@ -781,14 +781,14 @@ export const AllOfferDetails = [
   {
     customContent: true,
     renderSectionCondition: (data) => {
-      if (data.offer_letter && Array.isArray(data.offer_letter) && data.offer_letter.length > 0) return true;
+      if (data.offer_letters && Array.isArray(data.offer_letters) && data.offer_letters.length > 0) return true;
       return false;
     },
-    renderContent: ({ offer_letter, }) => (offer_letter || []).map((letter, index) => {
+    renderContent: ({ offer_letters, publish_vacancy }) => (offer_letters || []).map((letter, index) => {
       return <>
         <DetailContent
           fields={OfferDetails}
-          currentItem={{ ...letter, index } || {}}
+          currentItem={{ ...letter, index, currency: Currency({ value: publish_vacancy?.currency }) } || {}}
         />
       </>
     }),

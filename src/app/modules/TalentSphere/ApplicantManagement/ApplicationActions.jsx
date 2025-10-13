@@ -6,7 +6,7 @@ import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplica
 import { useDispatch } from "react-redux";
 
 const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
-    const isEditPermitted = HasAccess("MARK_ATTENDANCE");
+    const scheduleInterviewPermitted = HasAccess("MARK_ATTENDANCE");
 
 
     const [view, setView] = useState(null);
@@ -32,7 +32,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
             <DropdownActionMenu
                 onView={handleView}
                 // onEdit={handleEdit}
-                onDelete={data.status === 'screened' ? handleDelete : null}
+                onDelete={data.status === 'screened' && scheduleInterviewPermitted ? handleDelete : null}
                 viewText="View Application"
                 editText="Edit Application"
                 deleteText="Schedule Interview"

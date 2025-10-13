@@ -44,18 +44,17 @@ const getSubModuleMenuList = (currentNodeTree) => {
       return createMenu(route?.path || "#", name);
     });
 
-  // Add nested children
-  const nestedChildren = (currentNodeTree?.childrens || [])
-    .flatMap((parent) =>
-      (parent.childrens || [])
-        .filter(({ code_name }) => Config[code_name])
-        .map(({ code_name, name }) => {
-          const route = findRouteByCodeName(code_name);
-          return createMenu(route?.path || "#", name);
-        })
-    );
-
-  return [...directChildren, ...nestedChildren];
+  // // Add nested children
+  // const nestedChildren = (currentNodeTree?.childrens || [])
+  //   .flatMap((parent) =>
+  //     (parent.childrens || [])
+  //       .filter(({ code_name }) => Config[code_name])
+  //       .map(({ code_name, name }) => {
+  //         const route = findRouteByCodeName(code_name);
+  //         return createMenu(route?.path || "#", name);
+  //       })
+  //   );
+  return [...directChildren, { active: false, icon: undefined, label: "My Letter Request", submenus: [], to: "/my-letter-requests", }];
 };
 
 // Function to generate menu items
@@ -75,6 +74,7 @@ const generateMenuItems = (moduleName, icon, moduleTree) => {
         createMenu("/organizational-tree", "Organizational Chart", Network),
       ],
     };
+
   return {
     groupLabel: "",
     menus: [
@@ -118,6 +118,7 @@ export function getMenuList(pathname, userRole) {
         Config[name] && generateMenuItems(name, icon, moduleTree)
     )
     .filter(Boolean);
+
   return [...commonMenus, ...configMenus];
 }
 

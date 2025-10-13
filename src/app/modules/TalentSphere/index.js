@@ -61,6 +61,7 @@ import {
     GenerateRequisitionActions,
     PublishVacancyActions,
     ViewPublishedVacancies,
+    EmiratizationRequisitions,
 } from './RequisitionPlanning';
 import {
     TeamTalentSphere,
@@ -79,6 +80,12 @@ import {
     ApplicationActions,
     ViewApplicationDetail,
     UpdateApplicantStatus,
+} from './ApplicantManagement';
+import {
+    EmiratizationAllApplicants,
+    EmiratizationScreenedApplicants,
+    EmiratizationShortlistedApplicants,
+    EmiratizationHiredApplicants,
 } from './ApplicantManagement';
 
 import {
@@ -108,6 +115,7 @@ import {
     ApplicantProfileDetails, ExportProfile
 } from './ApplicantProfiles';
 import { ScheduleInterviewSheet } from './ScreenedApplicants';
+import ApplicantByRequisition from './ApplicantManagement/ApplicantByRequisition';
 export {
     TalentSphereDashboard,
     ScheduleInterviewSheet,
@@ -121,6 +129,11 @@ export {
     SentOfferForm,
     ViewOfferGenerated,
     AllApplicants,
+    ApplicantByRequisition,
+    EmiratizationAllApplicants,
+    EmiratizationScreenedApplicants,
+    EmiratizationShortlistedApplicants,
+    EmiratizationHiredApplicants,
     GenerateOffer,
     Skills,
     ApplicantProfileDetails,
@@ -177,6 +190,7 @@ export {
     AddUpdateVacancyForm,
     PublishVacancyActions,
     ViewPublishedVacancies,
+    EmiratizationRequisitions,
     ResumeBankApplicants,
     InterviewTypes,
     AddUpdateInterviewTypeForm,

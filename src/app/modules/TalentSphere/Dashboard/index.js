@@ -7,6 +7,9 @@ import UpcomingInterviews from "./UpcomingInterviews";
 import OfferTrackerWidget from "./OfferTrackerWidget";
 import ApplicantSources from "./ApplicantSources";
 import EmiratizationWidget from "./EmiratizationWidget";
+import HiringPredictionWidget from "./HiringPredictionWidget";
+import HiringTrendsWidget from "./HiringTrendsWidget";
+import SkillsGapWidget from "./SkillsGapWidget";
 
 export {
   TalentSphereDashboard,
@@ -18,4 +21,7 @@ export {
   OfferTrackerWidget,
   ApplicantSources,
   EmiratizationWidget,
+  HiringPredictionWidget,
+  HiringTrendsWidget,
+  SkillsGapWidget,
 };
