@@ -40,6 +40,7 @@ const ShiftCalendar = () => {
 
   const isViewLogsPermitted = HasAccess("VIEW_SHIFT_HISTORY_LOGS");
   const isViewShiftCalendarPermitted = HasAccess("VIEW_SHIFT_CALENDAR");
+  const isTeamViewCalendarPermitted = HasAccess("VIEW_TEAM_SHIFT_CALENDAR");
   const isScheduleShiftPermitted = HasAccess("SCHEDULE_EMPLOYEE_SHIFT");
   const isViewPendingSchedulesPermitted = HasAccess("VIEW_PENDING_SCHEDULES");
   const isEditPendingSchedulesPermitted = HasAccess("EDIT_PENDING_SCHEDULES");
@@ -194,7 +195,7 @@ const ShiftCalendar = () => {
         },
       ]
       : []),
-    ...(isViewShiftCalendarPermitted
+    ...(isViewShiftCalendarPermitted || isTeamViewCalendarPermitted
       ? [
         {
           value: "shift-calendar",

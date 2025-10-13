@@ -22,8 +22,8 @@ const AssignShift2 = ({ }) => {
   // Filter states for branch and department
   const [selectedBranch, setSelectedBranch] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
-  // Track selected employee to preserve during filtering
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  // Track selected employees to preserve during filtering
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
   console.log("Employees from getdispatch:", employees);
   const baseEmpOptions = employees?.map((emp) => ({
     value: emp.id,
@@ -33,7 +33,7 @@ const AssignShift2 = ({ }) => {
   }));
 
   // Create filtered employee list based on branch and department filters
-  // Also preserve already selected employee even if they don't match filters
+  // Also preserve already selected employees even if they don't match filters
   const empOptions = useMemo(() => {
     let filteredEmployees = baseEmpOptions || [];
 
@@ -47,17 +47,16 @@ const AssignShift2 = ({ }) => {
       filteredEmployees = filteredEmployees.filter(emp => selectedDepartment.includes(emp.department_name));
     }
 
-    // Find already selected employee that might not be in filtered list
-    const selectedButNotInFilter = selectedEmployee &&
-      !filteredEmployees.find(emp => emp.value === selectedEmployee.value)
-      ? [selectedEmployee]
-      : [];
+    // Find already selected employees that might not be in filtered list
+    const selectedButNotInFilter = selectedEmployees.filter(selectedEmp =>
+      !filteredEmployees.find(emp => emp.value === selectedEmp.value)
+    );
 
-    // Combine filtered employees with selected employee (remove duplicates)
+    // Combine filtered employees with selected employees (remove duplicates)
     const allEmployees = [...filteredEmployees, ...selectedButNotInFilter];
 
     return allEmployees;
-  }, [baseEmpOptions, selectedBranch, selectedDepartment, selectedEmployee]);
+  }, [baseEmpOptions, selectedBranch, selectedDepartment, selectedEmployees]);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
@@ -143,31 +142,57 @@ const AssignShift2 = ({ }) => {
 
   const handleSubmit = async (data) => {
     try {
-      // Save shift assignment to employee
-      const response = await saveEmployeeWorkInformationData(data.employee, {
-        shift_assignment: data.shift_assignment,
-      });
+      const selectedEmployeeIds = data.employees || [];
+      let successCount = 0;
+      let errorCount = 0;
 
-      if (response) {
-        // Save custom shift schedule if configured
-        if (customShiftData && data.employee) {
-          await saveCustomShiftSchedule(data.employee, customShiftData);
+      // Process each selected employee
+      for (const employeeId of selectedEmployeeIds) {
+        try {
+          // Save shift assignment to employee
+          const response = await saveEmployeeWorkInformationData(employeeId, {
+            shift_assignment: data.shift_assignment,
+          });
+
+          if (response) {
+            // Save custom shift schedule if configured
+            if (customShiftData) {
+              await saveCustomShiftSchedule(employeeId, customShiftData);
+            }
+            successCount++;
+          }
+        } catch (error) {
+          console.error(`Error assigning shift to employee ${employeeId}:`, error);
+          errorCount++;
         }
+      }
 
-        toast.success("Shift assigned successfully!", {
+      // Show appropriate success/error messages
+      if (successCount > 0 && errorCount === 0) {
+        toast.success(`Shift assigned successfully to ${successCount} employee(s)!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
-
-        setIsOpen(false);
-        setCustomShiftData(null);
-
-        return {
-          status: true,
-          messageType: "SUCCESS",
-          title: "Shift Assigned Successfully",
-          description: "Shift has been assigned to the employee successfully.",
-        };
+      } else if (successCount > 0 && errorCount > 0) {
+        toast.warning(`Shift assigned to ${successCount} employee(s). ${errorCount} failed.`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        toast.error("Failed to assign shift to any employee", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
+
+      setIsOpen(false);
+      setCustomShiftData(null);
+
+      return {
+        status: successCount > 0,
+        messageType: successCount > 0 ? "SUCCESS" : "ERROR",
+        title: successCount > 0 ? "Shift Assigned Successfully" : "Assignment Failed",
+        description: successCount > 0 
+          ? `Shift has been assigned to ${successCount} employee(s) successfully.`
+          : "Failed to assign shift to employees.",
+      };
     } catch (error) {
       console.error("API Error:", error);
       toast.error(error.message || "An error occurred", {
@@ -181,7 +206,7 @@ const AssignShift2 = ({ }) => {
     setCustomShiftData(null);
     setSelectedBranch("");
     setSelectedDepartment("");
-    setSelectedEmployee(null);
+    setSelectedEmployees([]);
   };
 
   return (
@@ -202,7 +227,7 @@ const AssignShift2 = ({ }) => {
         }}
         formConfig={{
           initialValues: {
-            employee: "",
+            employees: [], // Changed from single employee to multiple employees
             shift_assignment: "",
           },
           enableReinitialize: true,
@@ -240,7 +265,7 @@ const AssignShift2 = ({ }) => {
                     <div className="text-xs text-muted-900 col-span-2">
                       Showing {empOptions?.length || 0} employees
                       {selectedBranch || selectedDepartment ? ' (filtered)' : ' (all)'}
-                      {selectedEmployee && ` • 1 selected`}
+                      {selectedEmployees.length > 0 && ` • ${selectedEmployees.length} selected`}
                     </div>
                   ),
                   // colsSpan: 2,
@@ -252,15 +277,18 @@ const AssignShift2 = ({ }) => {
               sheetCardTitle: `Employee & Shift Selection`,
               InputFields: [
                 {
-                  InputField: SelectInputComponent,
-                  name: "employee",
+                  InputField: SelectMultiInputComponent,
+                  name: "employees",
                   options: empOptions || [],
                   required: true,
-                  label: "Employee",
+                  label: "Select Employees",
+                  showSelectedValuesBelow: true,
                   onFieldUpdate: async (field, value, formValues, setFieldValue) => {
-                    // Track selected employee for filter preservation
-                    const selected = baseEmpOptions?.find(emp => emp.value === value);
-                    setSelectedEmployee(selected || null);
+                    // Track selected employees for filter preservation
+                    const selectedEmps = baseEmpOptions?.filter(emp => 
+                      value.includes(emp.value)
+                    ) || [];
+                    setSelectedEmployees(selectedEmps);
                   },
                 },
                 {

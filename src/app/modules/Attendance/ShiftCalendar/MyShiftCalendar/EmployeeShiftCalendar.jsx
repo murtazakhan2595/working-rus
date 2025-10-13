@@ -358,10 +358,18 @@ const EmployeeShiftCalendar = () => {
     const shiftDetails = schedule.shift_details;
     if (!shiftDetails) return events;
 
-    // Parse weekdays
+    // Parse weekdays with additional null checks
     let weekdays = [];
     try {
-      weekdays = JSON.parse(shiftDetails.weekdays);
+      if (shiftDetails.weekdays && shiftDetails.weekdays !== null) {
+        weekdays = JSON.parse(shiftDetails.weekdays);
+        // Extra safety: ensure it's an array
+        if (!Array.isArray(weekdays)) {
+          weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+        }
+      } else {
+        weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+      }
     } catch (e) {
       weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     }

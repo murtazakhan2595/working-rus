@@ -2,6 +2,7 @@ import axios from "axios";
 import { HandleLogout, baseUrl, getCurrentRequestApprover, headers } from "./general";
 import moment from "moment";
 import { getEmployeeInfoData } from "app/hooks/use-store";
+import { renderErrorMessages } from "utils/renderErrors";
 import {
   mapCustomShiftData,
   mapActiveShiftData,
@@ -33,11 +34,11 @@ const saveShift = async (payload) => {
       }
     }
   } catch (error) {
-    console.error("Error updating asset request:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    throw error;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -67,11 +68,11 @@ const saveShiftSchedule = async (payload) => {
       }
     }
   } catch (error) {
-    console.error("Error updating asset request:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -87,11 +88,11 @@ const deleteShiftSchedule = async (scheduleId) => {
       return true;
     }
   } catch (error) {
-    console.error("Error deleting shift schedule:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -138,7 +139,10 @@ const getShiftSchedule = async (payload) => {
                   return { ...mappedItem, ...currentapprover };
                 }
               } catch (error) {
-                console.error("Error getting current approver:", error);
+                if (error?.response?.status === 401) {
+                  HandleLogout(); // Assuming this logs out the user properly
+                }
+                renderErrorMessages(error?.response?.data);
               }
             }
 
@@ -164,7 +168,10 @@ const getShiftSchedule = async (payload) => {
               return { ...ResponseData, ...currentapprover };
             }
           } catch (error) {
-            console.error("Error getting current approver:", error);
+            if (error?.response?.status === 401) {
+              HandleLogout(); // Assuming this logs out the user properly
+            }
+            renderErrorMessages(error?.response?.data);
           }
         }
 
@@ -174,11 +181,11 @@ const getShiftSchedule = async (payload) => {
 
     return false;
   } catch (error) {
-    console.error("Error fetching shift schedule:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -207,11 +214,11 @@ export const getCustomShiftByEmployeeID = async (
     }
     return false;
   } catch (error) {
-    console.error("Error fetching asset list:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 export const getCustomShiftListEmployeeID = async (
@@ -244,11 +251,11 @@ export const getCustomShiftListEmployeeID = async (
     );
     return ResponseList;
   } catch (error) {
-    console.error("Error fetching custom shift list:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -269,11 +276,11 @@ const getShiftChangeRequests = async (payload) => {
       return response.data;
     }
   } catch (error) {
-    console.error("Error fetching shift change requests:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -289,11 +296,11 @@ const getShiftChangeRequestById = async (requestId) => {
       return response.data;
     }
   } catch (error) {
-    console.error("Error fetching shift change request:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -316,11 +323,11 @@ const getEmployeeShiftCalendar = async (payload) => {
       return response.data;
     }
   } catch (error) {
-    console.error("Error fetching employee shift calendar:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -337,11 +344,11 @@ const saveShiftSchedulesLogs = async (payload) => {
       return response.data;
     }
   } catch (error) {
-    console.error("Error saving shift schedules logs:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -362,11 +369,11 @@ const getShiftSchedulesLogs = async (payload) => {
       return response.data;
     }
   } catch (error) {
-    console.error("Error fetching shift schedules logs:", error);
     if (error?.response?.status === 401) {
-      HandleLogout();
+      HandleLogout(); // Assuming this logs out the user properly
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -402,8 +409,11 @@ export const getActiveShiftList = async (
     );
     return active_shift_details;
   } catch (error) {
-    console.error("Error in getEmployeeActiveShift:", error);
-    return null;
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
@@ -432,8 +442,11 @@ export async function getActiveShiftData(
     );
     return active_shift_details;
   } catch (error) {
-    console.error("Error in getEmployeeActiveShift:", error);
-    return null;
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 }
 
@@ -606,8 +619,11 @@ export const saveCustomShift = async (
       return false;
     }
   } catch (error) {
-    console.error("Error in saveCustomShift:", error);
-    return false;
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 
