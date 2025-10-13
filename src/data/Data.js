@@ -185,6 +185,8 @@ export const GenderOptions = [
   { value: "MALE", label: "Male" },
   { value: "FEMALE", label: "Female" },
 ];
+export const RequisitionGenderOptions = [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'No Preference', value: 'none' },];
+                           
 
 export const BloodGroupOptions = [
   { value: "A+", label: "A+" },

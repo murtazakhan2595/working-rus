@@ -20,6 +20,7 @@ import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 import { validateRequisitionRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 import { DateInput } from "components/FormControl";
+import {RequisitionGenderOptions} from 'data/Data';
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -392,8 +393,8 @@ const AddUpdateRequisitionRequestForm = ({
                                 name: "gender_preference",
                                 required: true,
                                 label: "Gender Preference",
-                                options: [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'No Preference', value: 'none' },],
-                            },
+                                options: RequisitionGenderOptions
+                             },
 
                             {
                                 InputField: DateInput,
