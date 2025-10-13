@@ -6,21 +6,22 @@ import { getShift } from "app/hooks/attendance";
 import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 import { saveShiftSchedule } from "app/hooks/shiftManagement";
 import { SheetUI } from "components";
-import { SelectInputComponent } from "components/FormControl";
+import { SelectInputComponent, SelectMultiInputComponent } from "components/FormControl";
 import AddCustomShift from "app/modules/Employees/Screens/EmployeeForm/AddCustomShift";
 import { Button } from "components/ui/button";
+import { GetDispatchStateList } from 'utils/Lists';
 
-const AssignShift2 = ({ employees }) => {
+const AssignShift2 = ({ }) => {
+  const employees = GetDispatchStateList('employees', 'emp');
   const [isOpen, setIsOpen] = useState(false);
   const [shiftList, setShiftList] = useState([]);
   const [customShiftData, setCustomShiftData] = useState(null);
   const userProfile = useSelector((state) => state.user.userProfile);
   const Branches = useSelector((state) => state.common.branches);
   const Departments = useSelector((state) => state.common.departments);
-  
   // Filter states for branch and department
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
   // Track selected employee to preserve during filtering
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
@@ -35,35 +36,26 @@ const AssignShift2 = ({ employees }) => {
   // Also preserve already selected employee even if they don't match filters
   const empOptions = useMemo(() => {
     let filteredEmployees = baseEmpOptions || [];
-    
+
     // Apply branch filter
-    if (selectedBranch) {
-      filteredEmployees = filteredEmployees.filter(emp => emp.branch_id === selectedBranch);
+    if (selectedBranch && Array.isArray(selectedBranch) && selectedBranch.length) {
+      filteredEmployees = filteredEmployees.filter(emp => selectedBranch.includes(emp.branch_id));
     }
-    
+
     // Apply department filter
-    if (selectedDepartment) {
-      filteredEmployees = filteredEmployees.filter(emp => emp.department_name === selectedDepartment);
+    if (selectedDepartment && Array.isArray(selectedDepartment) && selectedDepartment.length) {
+      filteredEmployees = filteredEmployees.filter(emp => selectedDepartment.includes(emp.department_name));
     }
-    
+
     // Find already selected employee that might not be in filtered list
-    const selectedButNotInFilter = selectedEmployee && 
+    const selectedButNotInFilter = selectedEmployee &&
       !filteredEmployees.find(emp => emp.value === selectedEmployee.value)
       ? [selectedEmployee]
       : [];
-    
+
     // Combine filtered employees with selected employee (remove duplicates)
     const allEmployees = [...filteredEmployees, ...selectedButNotInFilter];
-    
-    console.log('Employee filtering debug:', {
-      selectedBranch,
-      selectedDepartment,
-      baseEmployeesCount: baseEmpOptions?.length,
-      filteredEmployeesCount: filteredEmployees?.length,
-      selectedEmployee,
-      finalEmployeesCount: allEmployees?.length
-    });
-    
+
     return allEmployees;
   }, [baseEmpOptions, selectedBranch, selectedDepartment, selectedEmployee]);
 
@@ -204,8 +196,8 @@ const AssignShift2 = ({ employees }) => {
         isOpen={isOpen}
         setIsOpen={handleClose}
         variant="sheet"
-        sheetConfig={{ 
-          title: 'Assign Shift',
+        sheetConfig={{
+          title: 'Assign Shift ghgjgjhgj',
           description: 'Assign shifts to employees'
         }}
         formConfig={{
@@ -224,7 +216,7 @@ const AssignShift2 = ({ employees }) => {
               sheetCardTitle: `Employee Filtering`,
               InputFields: [
                 {
-                  InputField: SelectInputComponent,
+                  InputField: SelectMultiInputComponent,
                   name: "branch_filter",
                   label: "Filter by Branch",
                   options: Branches || [],
@@ -234,7 +226,7 @@ const AssignShift2 = ({ employees }) => {
                   required: false,
                 },
                 {
-                  InputField: SelectInputComponent,
+                  InputField: SelectMultiInputComponent,
                   name: "department_filter",
                   label: "Filter by Department",
                   options: Departments || [],
@@ -251,7 +243,6 @@ const AssignShift2 = ({ employees }) => {
                       {selectedEmployee && ` • 1 selected`}
                     </div>
                   ),
-                  colsSpan: 2,
                 },
               ],
             },
