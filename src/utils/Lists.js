@@ -421,15 +421,46 @@ export const GetEmployeeFilteredList = (
       return keys.some((key) => {
         const empVal = employee[key];
         console.log(`Checking employee ${employee.id} - ${employee.name}: ${key} = ${empVal} (looking for ${value})`);
-        if (Array.isArray(empVal)) {
-          const result = empVal.includes(value);
-          console.log(`Array check result: ${result}`);
+        
+        // Handle different data types for different fields
+        if (key === 'direct_report') {
+          // direct_report is a string/number, so check direct equality
+          if (empVal === null || empVal === undefined) {
+            return false;
+          }
+          const result = empVal === value || empVal === value.toString() || empVal.toString() === value.toString();
+          console.log(`Direct report check result: ${result}`);
+          return result;
+        } else if (key === 'indirect_report') {
+          // indirect_report is a comma-separated string, so split and check if it includes the value
+          if (empVal && typeof empVal === 'string') {
+            const indirectReports = empVal.split(',').map(id => id.trim());
+            const result = indirectReports.includes(value.toString()) || indirectReports.includes(value);
+            console.log(`Indirect report string check result: ${result} (split: [${indirectReports.join(', ')}])`);
+            return result;
+          } else if (Array.isArray(empVal)) {
+            // Fallback for if it's actually an array
+            const result = empVal.includes(value) || empVal.includes(value.toString());
+            console.log(`Indirect report array check result: ${result}`);
+            return result;
+          }
+          // If empVal is null, undefined, or empty string, return false
+          return false;
+        } else {
+          // For other fields, use the original logic
+          if (empVal === null || empVal === undefined) {
+            return false;
+          }
+          if (Array.isArray(empVal)) {
+            const result = empVal.includes(value);
+            console.log(`Array check result: ${result}`);
+            return result;
+          }
+          const result = empVal === value;
+          console.log(`Direct check result: ${result}`);
           return result;
         }
-
-        const result = empVal === value;
-        console.log(`Direct check result: ${result}`);
-        return result;
+        return false;
       });
     });
   });
