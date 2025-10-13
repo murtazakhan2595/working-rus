@@ -70,7 +70,10 @@ const EventWithTooltip = ({ eventInfo }) => {
             </div>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
+        <TooltipContent 
+          side="top" 
+          className="max-w-xs bg-popover text-popover-foreground border border-border shadow-md rounded-md p-3"
+        >
           {getTooltipContent()}
         </TooltipContent>
       </Tooltip>
@@ -140,26 +143,42 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
   }, [shift, scheduleShifts, employeeId]);
 
   const generateCalendarEvents = () => {
+    console.log("🎯 DEBUG: generateCalendarEvents called with:", {
+      employeeId,
+      shift: shift?.name,
+      scheduleCount: scheduleShifts?.count,
+    });
+    
     try {
       const events = [];
       const coveredDates = new Set(); // Track dates covered by schedules
 
       // 1. PRIORITY: Add approved schedule shifts first and track covered dates
       if (scheduleShifts?.results && scheduleShifts.results.length > 0) {
-        scheduleShifts.results.forEach((schedule) => {
+        scheduleShifts.results.forEach((schedule, index) => {
+          console.log(`📅 DEBUG: Processing schedule ${index + 1}: ${schedule.id} (${schedule.is_org_based ? 'org' : 'custom'})`);
+          
           if (schedule.is_org_based && schedule.shift_details) {
             // Organization-based scheduled shift
-            const scheduleEvents = generateOrgScheduleEvents(schedule);
+            const scheduleEvents = generateOrgScheduleEvents(schedule, coveredDates);
+            console.log(`🟢 DEBUG: Generated ${scheduleEvents.length} org events for schedule ${schedule.id}`);
             events.push(...scheduleEvents);
             
-            // Track dates covered by this schedule
-            scheduleEvents.forEach(event => {
-              const eventDate = moment(event.start).format('YYYY-MM-DD');
-              coveredDates.add(eventDate);
-            });
+            // Track dates covered by this schedule - for org schedules, track the entire date range
+            const startDate = moment(schedule.start_date);
+            const endDate = moment(schedule.end_date);
+            let currentDate = startDate.clone();
+            while (currentDate.isSameOrBefore(endDate)) {
+              const dateKey = currentDate.format('YYYY-MM-DD');
+              if (!coveredDates.has(dateKey)) {
+                coveredDates.add(dateKey);
+              }
+              currentDate.add(1, 'day');
+            }
           } else if (schedule.custom_schedule) {
             // Custom scheduled shift
             const scheduleEvents = generateCustomScheduleEvents(schedule);
+            console.log(`🟣 DEBUG: Generated ${scheduleEvents.length} custom events for schedule ${schedule.id}`);
             events.push(...scheduleEvents);
             
             // Track dates covered by this schedule
@@ -170,12 +189,17 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
         });
       }
 
+      console.log(`📊 DEBUG: Covered dates:`, Array.from(coveredDates));
+
       // 2. FALLBACK: Add direct shift assignment for dates NOT covered by schedules
       if (shift) {
         const directShiftEvents = generateDirectShiftEvents(shift, coveredDates);
+        console.log(`🔵 DEBUG: Generated ${directShiftEvents.length} direct shift events`);
         events.push(...directShiftEvents);
       }
 
+      console.log(`🎯 DEBUG: Total events: ${events.length}`);
+      
       setEvents(events);
     } catch (error) {
       console.error("Error generating calendar events:", error);
@@ -183,7 +207,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
     }
   };
 
-  const generateOrgScheduleEvents = (schedule) => {
+  const generateOrgScheduleEvents = (schedule, coveredDates = new Set()) => {
     const events = [];
     const shiftDetails = schedule.shift_details;
 
@@ -208,6 +232,14 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
     let currentDate = startDate.clone();
     while (currentDate.isSameOrBefore(endDate)) {
       const dayName = currentDate.format("ddd").toLowerCase();
+      const dateKey = currentDate.format("YYYY-MM-DD");
+
+      // Skip this date if it's already covered by a newer schedule
+      if (coveredDates.has(dateKey)) {
+        console.log(`⏭️  DEBUG: Skipping org schedule event for ${dateKey} - already covered by newer schedule`);
+        currentDate.add(1, "day");
+        continue;
+      }
 
       if (shortWeekdays.includes(dayName)) {
         const startTime = moment(
