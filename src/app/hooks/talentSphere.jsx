@@ -1254,12 +1254,10 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
       const Response = response.data;
       const ResponseData = await mapApplicantsData(Response);
       if (applicant_details_only) return ResponseData;
-      const ResumeBankData = await getResumeBankApplicantById(Response.id);
       const interview_ids = (Response.interviews || []).map(interview => interview.id);
       const Feedbacks = await getInterviewFeedbackList({ filterData: { interview: interview_ids } });
       return {
         interview_feedbacks: Feedbacks.results || [],
-        resume_bank: ResumeBankData,
         ...ResponseData,
       };
     }
