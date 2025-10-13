@@ -68,7 +68,7 @@ const RemoteWorkChecklist = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                if (['created_at'].includes(filterName))
+                if (['created_at'].includes(filterName) && filterValue && filterValue.includes(","))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else
                     updatedFilters[filterName] = filterValue;
@@ -96,7 +96,7 @@ const RemoteWorkChecklist = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options: [{ value: true, label: 'Available' }, { value: false, label: 'Unvailable' },]
+                                options: [{ value: 'Available', label: 'Available' }, { value: 'Unvailable', label: 'Unvailable' },]
                             },
                             {
                                 type: "date-range",
