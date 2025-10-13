@@ -17,8 +17,9 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import ScheduleShiftModal from "../Modals/ScheduleShiftModal";
 import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
+import { Loader2 } from "lucide-react";
 
-const DraftSchedule = ({ draftSchedules, reload, employees }) => {
+const DraftSchedule = ({ draftSchedules, reload, employees, isLoading = false }) => {
   const [activeSchedule, setActiveSchedule] = useState(null);
   const [proceedState, setProceedState] = useState(null);
   const [deleteState, setDeleteState] = useState(null);
@@ -177,20 +178,29 @@ const DraftSchedule = ({ draftSchedules, reload, employees }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="max-h-[700px] overflow-auto">
-          {draftSchedules?.count > 0 &&
-            draftSchedules?.results?.map((schedule, index) => (
-              <ListView
-                pendingShift={schedule}
-                key={index}
-                handleSelect={handleScheduleSelect}
-                active={activeSchedule}
-                getShiftName={getShiftName}
-                isDraft={true}
-              />
-            ))}
-          {(!draftSchedules?.results ||
-            draftSchedules.results.length === 0) && (
-            <div className="text-center py-4">No draft schedule found</div>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-plum-600" />
+              <p className="mt-2 text-sm text-muted-foreground">Loading draft schedules...</p>
+            </div>
+          ) : (
+            <>
+              {draftSchedules?.count > 0 &&
+                draftSchedules?.results?.map((schedule, index) => (
+                  <ListView
+                    pendingShift={schedule}
+                    key={index}
+                    handleSelect={handleScheduleSelect}
+                    active={activeSchedule}
+                    getShiftName={getShiftName}
+                    isDraft={true}
+                  />
+                ))}
+              {(!draftSchedules?.results ||
+                draftSchedules.results.length === 0) && (
+                <div className="text-center py-4">No draft schedule found</div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
