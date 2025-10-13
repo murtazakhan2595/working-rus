@@ -26,6 +26,7 @@ const ShiftChangeRequestModal = ({
   setIsOpen,
   employee,
   reload,
+  refreshShiftChangeRequests,
   shift_requested, // Manager, Employee
 }) => {
   const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
@@ -631,6 +632,10 @@ const ShiftChangeRequestModal = ({
       if (response) {
         toast.success("Shift change request submitted successfully!");
         reload();
+        // Refresh the shift change requests table
+        if (refreshShiftChangeRequests) {
+          refreshShiftChangeRequests();
+        }
         setIsOpen(false);
         setCloseSheet(false);
         // Reset form data

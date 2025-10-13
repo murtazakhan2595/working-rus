@@ -9,8 +9,10 @@ import { SheetUI } from "components";
 import { SelectInputComponent } from "components/FormControl";
 import AddCustomShift from "app/modules/Employees/Screens/EmployeeForm/AddCustomShift";
 import { Button } from "components/ui/button";
+import { GetDispatchStateList } from "../../../../../utils/Lists";
 
-const AssignShift2 = ({ employees }) => {
+const AssignShift2 = () => {
+    const employees = GetDispatchStateList("employees", "emp");
   const [isOpen, setIsOpen] = useState(false);
   const [shiftList, setShiftList] = useState([]);
   const [customShiftData, setCustomShiftData] = useState(null);
@@ -23,7 +25,7 @@ const AssignShift2 = ({ employees }) => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   // Track selected employee to preserve during filtering
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+  console.log("Employees from getdispatch:", employees);
   const baseEmpOptions = employees?.map((emp) => ({
     value: emp.id,
     label: emp.label,
@@ -251,7 +253,7 @@ const AssignShift2 = ({ employees }) => {
                       {selectedEmployee && ` • 1 selected`}
                     </div>
                   ),
-                  colsSpan: 2,
+                  // colsSpan: 2,
                 },
               ],
             },
