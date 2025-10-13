@@ -79,6 +79,8 @@ const Emplist = () => {
         const response = await getEmployeeDropdownList({
           filterData: filters,
           employee_status: "Active,Probation,Notice Period",
+          options:{ page: 1, sizePerPage: 100
+           },
         });
         console.log("filters", filters, response);
         if (response) {
