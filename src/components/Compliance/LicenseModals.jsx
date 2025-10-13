@@ -386,53 +386,69 @@ const EditLicenseModal = ({
               />
             </FormField>
 
-            {/* License Type */}
-            <FormField
-              name="licenseType"
-              label="License Type"
-              required={true}
-              error={errors.licenseType}
-              touched={!!errors.licenseType}
-            >
-              <SelectInputComponent
+            {/* License Type and License Number */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* License Type */}
+              <FormField
                 name="licenseType"
-                value={formData.licenseType}
-                onChange={handleInputChange}
-                options={licenseTypeOptions}
-                placeholder="Select License Type"
+                label="License Type"
+                required={true}
                 error={errors.licenseType}
-                touch={!!errors.licenseType}
-              />
-            </FormField>
+                touched={!!errors.licenseType}
+              >
+                <SelectInputComponent
+                  name="licenseType"
+                  value={formData.licenseType}
+                  onChange={handleInputChange}
+                  options={licenseTypeOptions}
+                  placeholder="Select License Type"
+                  error={errors.licenseType}
+                  touch={!!errors.licenseType}
+                />
+              </FormField>
 
-            {/* License Number */}
-            <FormField
-              name="licenseNumber"
-              label="License Number"
-              required={true}
-              error={errors.licenseNumber}
-              touched={!!errors.licenseNumber}
-            >
-              <TextInput
+              {/* License Number */}
+              <FormField
                 name="licenseNumber"
-                value={formData.licenseNumber}
-                onChange={handleInputChange}
-                placeholder="Enter License Number"
+                label="License Number"
+                required={true}
                 error={errors.licenseNumber}
-                touch={!!errors.licenseNumber}
-              />
-            </FormField>
+                touched={!!errors.licenseNumber}
+              >
+                <TextInput
+                  name="licenseNumber"
+                  value={formData.licenseNumber}
+                  onChange={handleInputChange}
+                  placeholder="Enter License Number"
+                  error={errors.licenseNumber}
+                  touch={!!errors.licenseNumber}
+                />
+              </FormField>
+            </div>
 
-            {/* Issuing Authority */}
-            <FormField name="issuingAuthority" label="Issuing Authority">
-              <SelectInputComponent
-                name="issuingAuthority"
-                value={formData.issuingAuthority}
-                onChange={handleInputChange}
-                options={issuingAuthorityOptions}
-                placeholder="Select Issuing Authority"
-              />
-            </FormField>
+            {/* Issuing Authority and Location */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Issuing Authority */}
+              <FormField name="issuingAuthority" label="Issuing Authority">
+                <SelectInputComponent
+                  name="issuingAuthority"
+                  value={formData.issuingAuthority}
+                  onChange={handleInputChange}
+                  options={issuingAuthorityOptions}
+                  placeholder="Select Issuing Authority"
+                />
+              </FormField>
+
+              {/* Location */}
+              <FormField name="location" label="Location">
+                <TextInput
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="Enter Location"
+                />
+              </FormField>
+            </div>
 
             {/* Date Fields */}
             <div className="grid grid-cols-2 gap-4">
@@ -472,16 +488,6 @@ const EditLicenseModal = ({
                 />
               </FormField>
             </div>
-
-            {/* Location */}
-            <FormField name="location" label="Location">
-              <TextInput
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Enter Location"
-              />
-            </FormField>
 
             {/* Description */}
             <FormField name="description" label="Description">
