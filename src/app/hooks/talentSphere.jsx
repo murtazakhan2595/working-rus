@@ -2231,6 +2231,7 @@ export const getOfferLetterData = async (id, approvalDetails = true) => {
       const Response = response.data;
       const currentapprover = approvalDetails && Response.request ? await getCurrentRequestApprover(Response.request) : {};
       const ResponseData = await mapOfferLetterData({ ...Response, ...currentapprover, }, approvalDetails);
+      // const OfferLetterPreview = await getApplicantOfferLetterPreview({ template_id: Response.template, applicant_id: Response.applicant })
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -2593,5 +2594,35 @@ export const getDemographicResponsesByApplicant = async (applicantId) => {
       HandleLogout();
     }
     return false;
+  }
+};
+
+export const getApplicantOfferLetterPreview = async (payload, id) => {
+  try {
+    const url = `${baseUrl}/offerletters/preview/`;
+
+    const method = "POST"; // Determine method based on existence of id
+    const expectedStatus = 201;
+    const finalPayload = payload;
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
