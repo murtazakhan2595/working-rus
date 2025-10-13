@@ -332,7 +332,7 @@ const BranchLicensing = ({
               <>
                 <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm text-black">Total Facilities</div>
+                    <div className="text-sm text-black">Total Branches</div>
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                       <Building className="w-5 h-5 text-purple-400" />
                     </div>

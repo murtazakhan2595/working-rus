@@ -31,8 +31,8 @@ export const stats = [
   {
     id: "license-certificates",
     icon: UserCheck,
-    label: "License & Certificates",
-    fullName: "License & Certificates",
+    label: "Employee Certificates",
+    fullName: "Employee Certificates",
     value: "99%",
     color: "text-teal-600",
     bgColor: "bg-teal-50",
@@ -1215,7 +1215,7 @@ export const complianceStats = [
   },
   {
     id: "license-certificates",
-    title: "License & Certificates",
+    title: "Employee Certificates",
     percentage: 99,
     status: "valid",
     icon: User,
