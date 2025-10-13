@@ -372,13 +372,12 @@ export const GetEmployeeFilteredList = (
   isDepartmentView = false
 ) => {
   // const Employees = useSelector((state) => state.emp.employees);
-  const Employees = GetDispatchStateList("employees", "emp");
+  const Employees = GetDispatchStateList("employees_detail", "emp");
   const {
     branch_id: user_branch,
     department_name: user_department,
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
-
   if (!Array.isArray(Employees) || Employees?.length === 0) return [];
 
   // Admin view returns all employees
