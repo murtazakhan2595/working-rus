@@ -92,8 +92,11 @@ const StatusConfig = {
     screened: {
         successMessage: "Application Screened Successfully!",
         saveStatusAuditLogs: saveUpdateApplication,
-        sheet: { title: "Add to Screen" },
         isDefault: true,
+        confirmationConfig: {
+            title: "Confirm screen application?",
+            description: `The applicant will be screened for futher assessment and interview scheduling.`,
+        }
     },
     blacklisted: {
         successMessage: "Application Blacklisted Successfully!",
