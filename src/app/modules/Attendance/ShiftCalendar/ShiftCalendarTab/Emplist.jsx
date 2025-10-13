@@ -22,7 +22,11 @@ const ShiftStatusOptions = [
 const Emplist = () => {
   const Departments = useSelector((state) => state.common.departments);
   const userProfile = useSelector((state) => state.user.userProfile);
+  // const isTeamViewCalendarPermitted = true;
+  // const isViewOrganizationCalendarPermitted = true
   const isViewShiftChangeRequestsPermitted = HasAccess("VIEW_SHIFT_CHANGE_REQUESTS")
+  const isViewOrganizationCalendarPermitted = HasAccess("VIEW_SHIFT_CALENDAR")
+  const isTeamViewCalendarPermitted = HasAccess("VIEW_TEAM_SHIFT_CALENDAR")
   const [isLoading, setIsLoading] = useState(false);
   const [activeMember, setActiveMember] = useState(null);
   const [employeeShift, setEmployeeShift] = useState(null);
@@ -55,7 +59,23 @@ const Emplist = () => {
       try {
         setIsLoading(true);
         setActiveMember(null);
-        const filters = { ...filterData, ...(userProfile.role.includes(1) ? {} : { reporting_employee: userProfile.id }) }
+        
+        // Check if user has any permission to view calendars
+        if (!userProfile.role.includes(1) && !isViewOrganizationCalendarPermitted && !isTeamViewCalendarPermitted) {
+          setTeamMembers({ results: [], count: 0 });
+          setIsLoading(false);
+          return;
+        }
+        
+        const filters = { 
+          ...filterData, 
+          ...(userProfile.role.includes(1) || isViewOrganizationCalendarPermitted 
+              ? {} 
+              : isTeamViewCalendarPermitted 
+                ? { reporting_employee: userProfile.id }
+                : {}
+          ) 
+        }
         const response = await getEmployeeDropdownList({
           filterData: filters,
           employee_status: "Active,Probation,Notice Period",
@@ -84,7 +104,7 @@ const Emplist = () => {
     return () => {
       isMounted = false;
     };
-  }, [filterData, userProfile]);
+  }, [filterData, userProfile, isTeamViewCalendarPermitted, isViewOrganizationCalendarPermitted]);
 
   const refreshShiftChangeRequests = () => {
     setRefreshRequests(prev => prev + 1);
@@ -158,10 +178,12 @@ const Emplist = () => {
                     activeMember={activeMember}
                   />
                 ))}
-              {(!TeamMembers?.results ||
-                TeamMembers.results?.length === 0) && (
+              {(!TeamMembers?.results || TeamMembers.results?.length === 0) && (
                 <div className="text-center py-4 text-gray-500">
-                  No employees match the selected filters
+                  {!userProfile.role.includes(1) && !isViewOrganizationCalendarPermitted && !isTeamViewCalendarPermitted
+                    ? "You don't have permission to view shift calendars. Please contact your administrator."
+                    : "No employees match the selected filters"
+                  }
                 </div>
               )}
             </CardContent>
