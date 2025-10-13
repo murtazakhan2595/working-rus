@@ -208,13 +208,11 @@ const ViewRequisitionRequest = ({
                                     {
                                         InputField: NumberInput,
                                         name: "salary_min",
-                                        required: true,
                                         label: "Minimum Salary",
                                     },
                                     {
                                         InputField: NumberInput,
                                         name: "salary_max",
-                                        required: true,
                                         label: "Maximum Salary",
                                     },
                                 ].filter(Boolean),

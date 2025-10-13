@@ -128,6 +128,10 @@ const StatusConfig = {
         successMessage: "Application Holded Successfully!",
         saveStatusAuditLogs: saveUpdateApplication,
         isDefault: true,
+        confirmationConfig: {
+            title: "Confirm hold application?",
+            description: `The applicant will be holded untill further assessment.`,
+        }
     },
     revert_hold: {
         successMessage: "Application Removed from Hold Successfully!",
@@ -135,7 +139,7 @@ const StatusConfig = {
         isDefault: true,
         confirmationConfig: {
             title: "Confirm revert from hold?",
-            description: `This action can't be undone. The applicant will be reverted fron hold and marked as in progress for further assessment i.e. interview scheduling.`,
+            description: `The applicant will be reverted fron hold and marked as in progress for further assessment i.e. interview scheduling.`,
         }
     },
     remove_resume_bank: {
@@ -196,14 +200,15 @@ const UpdateApplicantStatus = ({
     }, [confirmationConfig]);
 
     const handleConfirmationSubmit = async () => {
+        debugger
         if (status_variant === "remove_blacklist") {
-            handleSubmit({ ...initialData, remove: true })
+            return await handleSubmit({ ...initialData, remove: true })
         } else if (status_variant === 'screened') {
-            handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
+            return await handleSubmit({ id: applicant, status: status, screened_by: user_id, screened_date: moment().format('YYYY-MM-DD') })
         } else if (status_variant === 'default' || status_variant === 'revert_hold') {
-            handleSubmit({ id: applicant, status: status })
+            return await handleSubmit({ id: applicant, status: status })
         } else if (status_variant === 'remove_resume_bank') {
-            handleSubmit({ rejection_reason: 'Removed from resume bank.' })
+            return await handleSubmit({ rejection_reason: 'Removed from resume bank.' })
         }
     };
     const handleSubmit = async (values) => {

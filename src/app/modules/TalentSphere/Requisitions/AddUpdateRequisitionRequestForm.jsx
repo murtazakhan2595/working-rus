@@ -356,25 +356,21 @@ const AddUpdateRequisitionRequestForm = ({
                             {
                                 InputField: NumberInput,
                                 name: "experience_min",
-                                required: true,
                                 label: "Minimum Experiance (Year)",
                             },
                             {
                                 InputField: NumberInput,
                                 name: "experience_max",
-                                required: true,
                                 label: "Maximum Experiance (Year)",
                             },
                             {
                                 InputField: NumberInput,
                                 name: "salary_min",
-                                required: true,
                                 label: "Minimum Salary",
                             },
                             {
                                 InputField: NumberInput,
                                 name: "salary_max",
-                                required: true,
                                 label: "Maximum Salary",
                             },
                             {
@@ -402,7 +398,6 @@ const AddUpdateRequisitionRequestForm = ({
                             {
                                 InputField: DateInput,
                                 name: "recommended_posting_date",
-                                // required: true,
                                 label: "Recommended Posting Date",
                             },
                             {

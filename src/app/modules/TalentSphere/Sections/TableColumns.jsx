@@ -1,4 +1,4 @@
-import { FormatID, BranchName, DepartmentName, EmployeeName } from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, Currency } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import {
     ManpowerPlanningActions,
@@ -819,24 +819,17 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         dataSort: true,
     },
     {
-        dataField: "department",
-        text: "Department",
-        formatter: (cell) => <DepartmentName value={cell} />,
-    },
-    {
-        dataField: "requested_by",
-        text: "Requested By",
-        formatter: (cell) => <><EmployeeName value={cell} /></>,
-    },
-    {
         dataField: "job_title",
-        text: "Job Title",
-        dataSort: true,
-    },
-    {
-        dataField: "job_type_name",
-        text: "Job Type",
-        dataSort: true,
+        text: "Requisition Details",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
+                <div><span className="font-bold">Job Type: </span>{row?.job_type_name}</div>
+                <div><span className="font-bold">Department: </span><DepartmentName value={row?.department} /></div>
+                <div><span className="font-bold capitalize">Budget/Salary Range: </span>{renderRange(row?.salary_min, row?.salary_max, 'Not Defined')} <Currency value={row.currency} /> ({row?.payment_frequency || ''})</div>
+            </div>
+        ),
+        minWidth:'250px',
     },
     {
         dataField: "number_of_positions",
@@ -844,23 +837,14 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         dataSort: true,
     },
     {
-        dataField: "salary_min",
-        text: "Budget/Salary Range",
-        formatter: (cell, row) => renderRange(cell, row?.salary_max, 'Not Defined'),
-        dataSort: true,
-    },
-
-    {
         dataField: "created_at",
-        text: "Created Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
-        dataSort: true,
-    },
-    {
-        dataField: "status",
-        text: "Status",
-        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
-        dataSort: true,
+        text: "Request Info",
+        formatter: (cell, row) => (
+            <div>
+                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
+                <div><span className="font-bold">Requested Date: </span>{renderDate(cell, '--', 'date-time')}</div>
+            </div>
+        ),
     },
     {
         dataField: "is_emiratization_role",
@@ -874,6 +858,12 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>,
         dataSort: true,
     },] : []),
+    {
+        dataField: "status",
+        text: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+        dataSort: true,
+    },
     {
         dataField: "",
         text: "",
