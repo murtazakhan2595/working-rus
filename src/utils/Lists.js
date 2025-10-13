@@ -371,7 +371,11 @@ export const GetEmployeeFilteredList = (
   isBranchView = false,
   isDepartmentView = false
 ) => {
-  const Employees = useSelector((state) => state.emp.employees_detail);
+  // const Employees = useSelector((state) => state.emp.employees);
+  const Employees = GetDispatchStateList("employees", "emp");
+  console.log("Employees in filter", Employees);
+  console.log("First employee structure:", Employees?.[0]);
+  console.log("Filter params:", { isTeamView, adminView, isBranchView, isDepartmentView });
   const {
     branch_id: user_branch,
     department_name: user_department,
@@ -381,7 +385,8 @@ export const GetEmployeeFilteredList = (
   if (!Array.isArray(Employees) || Employees?.length === 0) return [];
 
   // Admin view returns all employees
-  if (adminView && !isTeamView) {
+  if (adminView) {
+    console.log("Returning all employees for admin view");
     return Employees;
   }
 
@@ -405,19 +410,32 @@ export const GetEmployeeFilteredList = (
     });
   }
 
-  if (filters?.length === 0) return [];
-  return Employees.filter((employee) => {
+  console.log("Filters applied:", filters);
+  if (filters?.length === 0) {
+    console.log("No filters applied, returning empty array");
+    return [];
+  }
+  
+  const filteredEmployees = Employees.filter((employee) => {
     return filters.some(({ keys, value }) => {
       return keys.some((key) => {
         const empVal = employee[key];
+        console.log(`Checking employee ${employee.id} - ${employee.name}: ${key} = ${empVal} (looking for ${value})`);
         if (Array.isArray(empVal)) {
-          return empVal.includes(value);
+          const result = empVal.includes(value);
+          console.log(`Array check result: ${result}`);
+          return result;
         }
 
-        return empVal === value;
+        const result = empVal === value;
+        console.log(`Direct check result: ${result}`);
+        return result;
       });
     });
   });
+  
+  console.log("Filtered employees result:", filteredEmployees);
+  return filteredEmployees;
 };
 
 

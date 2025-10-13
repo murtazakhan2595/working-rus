@@ -294,6 +294,8 @@ export const getEmployeeDropdownList = async (payload) => {
         direct_report: parseInt(employee.direct_report),
         indirect_report: employee.indirect_report,
         serial_number: employee.serial_number,
+        direct_report: employee.direct_report,
+        indirect_report: employee.indirect_report,
         name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
           }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
