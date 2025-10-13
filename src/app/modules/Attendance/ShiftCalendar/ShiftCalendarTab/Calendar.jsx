@@ -81,7 +81,7 @@ const EventWithTooltip = ({ eventInfo }) => {
   );
 };
 
-const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChangeRequests }) => {
+const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChangeRequests, isLoading = false }) => {
 
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -434,20 +434,47 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
         </div>
       )}
 
-      <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        height="auto"
-        contentHeight="auto"
-        aspectRatio={
-          typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
-        }
-        initialView="dayGridMonth"
-        nowIndicator={true}
-        headerToolbar={{
-          left: "prev,next",
-          center: "title",
-          right: "today",
-        }}
+      {!employeeId && (
+        <div className="flex items-center justify-center h-96 bg-white rounded-lg shadow-sm">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">
+              <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4l6 6m0 0l6-6m-6 6V11" />
+              </svg>
+            </div>
+            <p className="text-muted-1200 text-lg font-medium">Select an employee</p>
+            <p className="text-muted-1100 text-sm">Choose an employee from the list to view their shift calendar</p>
+          </div>
+        </div>
+      )}
+
+      {/* Calendar Container with Loading Overlay */}
+      {employeeId && (
+        <div className="relative">
+          {/* Loading Overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 bg-white bg-opacity-90 z-10 flex items-center justify-center rounded-lg">
+              <div className="flex flex-col items-center gap-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="text-sm text-gray-600 font-medium">Loading shift schedule...</p>
+              </div>
+            </div>
+          )}
+
+          <FullCalendar
+          plugins={[dayGridPlugin, interactionPlugin]}
+          height="auto"
+          contentHeight="auto"
+          aspectRatio={
+            typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
+          }
+          initialView="dayGridMonth"
+          nowIndicator={true}
+          headerToolbar={{
+            left: "prev,next",
+            center: "title",
+            right: "today",
+          }}
         dayMaxEvents={
           typeof window !== "undefined" && window.innerWidth < 768 ? 2 : 3
         }
@@ -465,6 +492,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChang
           };
         }}
       />
+        </div>
+      )}
 
       {/* Request Shift Change Button */}
       {employeeId && (

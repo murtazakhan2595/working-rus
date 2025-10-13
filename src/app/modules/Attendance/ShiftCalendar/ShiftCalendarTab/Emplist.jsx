@@ -35,6 +35,7 @@ const Emplist = () => {
   const [scheduleShifts, setScheduleShifts] = useState({ results: [], count: 0, });
   const [filterData, setFilterData] = useState({});
   const [refreshRequests, setRefreshRequests] = useState(0);
+  const [isLoadingShiftData, setIsLoadingShiftData] = useState(false);
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(60);
@@ -47,6 +48,7 @@ const Emplist = () => {
 
   const setEmployeeShiftDetails = async (memberId) => {
     try {
+      setIsLoadingShiftData(true);
       const { employeeShift: shift, scheduleShifts: schedules } = await fetchEmployeeShiftData(memberId ?? activeMember);
       setEmployeeShift(shift);
       setScheduleShifts(schedules);
@@ -56,6 +58,8 @@ const Emplist = () => {
         results: [],
         count: 0,
       });
+    } finally {
+      setIsLoadingShiftData(false);
     }
   }
 
@@ -89,7 +93,6 @@ const Emplist = () => {
             sizePerPage: itemsPerPage
           },
         });
-        console.log("filters", filters, response);
         if (response) {
           // Set total count for pagination
           setTotalCount(response.count);
@@ -299,6 +302,7 @@ const Emplist = () => {
           employeeId={activeMember}
           reload={setEmployeeShiftDetails}
           refreshShiftChangeRequests={refreshShiftChangeRequests}
+          isLoading={isLoadingShiftData}
         />
       </div>
 
