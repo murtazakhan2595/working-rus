@@ -65,7 +65,6 @@ const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, rel
                             return true;
                         return false;
                     });
-                    console.log(filtered_applicant, applicants.results);
                     const applicant_dropdown = getDropdownListWithExtraKeys(
                         filtered_applicant,
                         'serial_id',
