@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -15,11 +15,57 @@ const AssignShift2 = ({ employees }) => {
   const [shiftList, setShiftList] = useState([]);
   const [customShiftData, setCustomShiftData] = useState(null);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const Branches = useSelector((state) => state.common.branches);
+  const Departments = useSelector((state) => state.common.departments);
+  
+  // Filter states for branch and department
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  // Track selected employee to preserve during filtering
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  const empOptions = employees?.map((emp) => ({
+  const baseEmpOptions = employees?.map((emp) => ({
     value: emp.id,
     label: emp.label,
+    branch_id: emp.branch_id,
+    department_name: emp.department_name,
   }));
+
+  // Create filtered employee list based on branch and department filters
+  // Also preserve already selected employee even if they don't match filters
+  const empOptions = useMemo(() => {
+    let filteredEmployees = baseEmpOptions || [];
+    
+    // Apply branch filter
+    if (selectedBranch) {
+      filteredEmployees = filteredEmployees.filter(emp => emp.branch_id === selectedBranch);
+    }
+    
+    // Apply department filter
+    if (selectedDepartment) {
+      filteredEmployees = filteredEmployees.filter(emp => emp.department_name === selectedDepartment);
+    }
+    
+    // Find already selected employee that might not be in filtered list
+    const selectedButNotInFilter = selectedEmployee && 
+      !filteredEmployees.find(emp => emp.value === selectedEmployee.value)
+      ? [selectedEmployee]
+      : [];
+    
+    // Combine filtered employees with selected employee (remove duplicates)
+    const allEmployees = [...filteredEmployees, ...selectedButNotInFilter];
+    
+    console.log('Employee filtering debug:', {
+      selectedBranch,
+      selectedDepartment,
+      baseEmployeesCount: baseEmpOptions?.length,
+      filteredEmployeesCount: filteredEmployees?.length,
+      selectedEmployee,
+      finalEmployeesCount: allEmployees?.length
+    });
+    
+    return allEmployees;
+  }, [baseEmpOptions, selectedBranch, selectedDepartment, selectedEmployee]);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
@@ -141,6 +187,9 @@ const AssignShift2 = ({ employees }) => {
   const handleClose = () => {
     setIsOpen(false);
     setCustomShiftData(null);
+    setSelectedBranch("");
+    setSelectedDepartment("");
+    setSelectedEmployee(null);
   };
 
   return (
@@ -172,6 +221,42 @@ const AssignShift2 = ({ employees }) => {
           formFields: [
             {
               sheetCardExtension: true,
+              sheetCardTitle: `Employee Filtering`,
+              InputFields: [
+                {
+                  InputField: SelectInputComponent,
+                  name: "branch_filter",
+                  label: "Filter by Branch",
+                  options: Branches || [],
+                  value: selectedBranch,
+                  onChange: (field, value) => setSelectedBranch(value),
+                  placeholder: "All Branches",
+                  required: false,
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "department_filter",
+                  label: "Filter by Department",
+                  options: Departments || [],
+                  value: selectedDepartment,
+                  onChange: (field, value) => setSelectedDepartment(value),
+                  placeholder: "All Departments",
+                  required: false,
+                },
+                {
+                  InputField: ({ name, value, ...props }) => (
+                    <div className="text-xs text-muted-900 col-span-2">
+                      Showing {empOptions?.length || 0} employees
+                      {selectedBranch || selectedDepartment ? ' (filtered)' : ' (all)'}
+                      {selectedEmployee && ` • 1 selected`}
+                    </div>
+                  ),
+                  colsSpan: 2,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
               sheetCardTitle: `Employee & Shift Selection`,
               InputFields: [
                 {
@@ -180,6 +265,11 @@ const AssignShift2 = ({ employees }) => {
                   options: empOptions || [],
                   required: true,
                   label: "Employee",
+                  onFieldUpdate: async (field, value, formValues, setFieldValue) => {
+                    // Track selected employee for filter preservation
+                    const selected = baseEmpOptions?.find(emp => emp.value === value);
+                    setSelectedEmployee(selected || null);
+                  },
                 },
                 {
                   InputField: SelectInputComponent,

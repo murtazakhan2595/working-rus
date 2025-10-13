@@ -203,3 +203,4 @@ const HiringPredictionWidget = ({ data, loading }) => {
 
 export default HiringPredictionWidget;
 
+

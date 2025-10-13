@@ -29,61 +29,12 @@ const ScheduleShiftModal = ({
   isDraft = false, // New prop to indicate if this is for draft schedules
 }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
-  const Branches = useSelector((state) => state.common.branches);
-  const Departments = useSelector((state) => state.common.departments);
   
-  // Filter states for branch and department
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  // Track selected employees to preserve them during filtering
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
-  
-  // Get base employee list
-  const baseEmployees = GetEmployeeFilteredList(
+  // Get employee list
+  const Employees = GetEmployeeFilteredList(
     Array.isArray(userProfile.role) && !userProfile.role.includes(1),
     Array.isArray(userProfile.role) && userProfile.role.includes(1),
   );
-  
-  // Create filtered employee list based on branch and department filters
-  // Also preserve already selected employees even if they don't match filters
-  const Employees = React.useMemo(() => {
-    let filteredEmployees = baseEmployees;
-    
-    // Apply branch filter
-    if (selectedBranch) {
-      filteredEmployees = filteredEmployees.filter(emp => emp.branch_id === selectedBranch);
-    }
-    
-    // Apply department filter
-    if (selectedDepartment) {
-      filteredEmployees = filteredEmployees.filter(emp => emp.department_name === selectedDepartment);
-    }
-    
-    // Get IDs of currently selected employees
-    const selectedEmployeeIds = selectedEmployees.map(emp => emp?.value).filter(Boolean);
-    
-    // Find already selected employees that might not be in filtered list
-    const selectedButNotInFilter = baseEmployees.filter(emp => 
-      selectedEmployeeIds.includes(emp.value) && 
-      !filteredEmployees.find(fe => fe.value === emp.value)
-    );
-    
-    // Combine filtered employees with selected employees (remove duplicates)
-    const allEmployees = [...filteredEmployees, ...selectedButNotInFilter];
-    
-    console.log('Employee filtering debug:', {
-      selectedBranch,
-      selectedDepartment,
-      baseEmployeesCount: baseEmployees?.length,
-      filteredEmployeesCount: filteredEmployees?.length,
-      selectedEmployeesCount: selectedEmployees?.length,
-      selectedButNotInFilterCount: selectedButNotInFilter?.length,
-      finalEmployeesCount: allEmployees?.length,
-      selectedEmployeeIds: selectedEmployees.map(emp => emp?.value)
-    });
-    
-    return allEmployees;
-  }, [baseEmployees, selectedBranch, selectedDepartment, selectedEmployees]);
   
   const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
@@ -270,9 +221,6 @@ const ScheduleShiftModal = ({
         editSchedule.custom_schedule &&
         Object.values(editSchedule.custom_schedule).some((day) => day.is_split);
       setIsSplitShift(hasSplitShift);
-      
-      // Initialize selected employees for filter preservation
-      setSelectedEmployees(editSchedule.employee ? [editSchedule.employee] : []);
     } else {
       // Create mode: Use default values
       setFormData({
@@ -284,9 +232,6 @@ const ScheduleShiftModal = ({
         dailySchedule: generateDailySchedule(getInitialDateRange()),
         totalHours: { daily: {}, weekly: 0 },
       });
-      
-      // Reset selected employees for new form
-      setSelectedEmployees([]);
     }
   }, [isOpen, isEditMode, editSchedule]);
 
@@ -745,17 +690,7 @@ const ScheduleShiftModal = ({
           enableReinitialize={true}
           onSubmit={handleFormSubmit}
         >
-          {(props) => {
-            // Debug logging
-            console.log('Form render - Current values:', {
-              employees: props.values.employees,
-              employeesLength: props.values.employees?.length,
-              selectedEmployeesState: selectedEmployees,
-              availableEmployees: Employees?.length,
-              formData: formData
-            });
-            
-            return (
+          {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               <SheetCardExtension title="Date Range & Employee Selection">
                 <div className="flex-1 space-y-2 mb-6">
@@ -772,33 +707,6 @@ const ScheduleShiftModal = ({
                     }}
                     required={true}
                   />
-                </div>
-
-                {/* Employee Filtering Section */}
-                <div className="flex-1 space-y-2 mb-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <SelectInputComponent
-                      name="branch_filter"
-                      label="Filter by Branch"
-                      options={Branches || []}
-                      value={selectedBranch}
-                      onChange={(field, value) => setSelectedBranch(value)}
-                      placeholder="All Branches"
-                    />
-                    <SelectInputComponent
-                      name="department_filter"
-                      label="Filter by Department"
-                      options={Departments || []}
-                      value={selectedDepartment}
-                      onChange={(field, value) => setSelectedDepartment(value)}
-                      placeholder="All Departments"
-                    />
-                  </div>
-                  <div className="text-xs text-muted-900">
-                    Showing {Employees?.length || 0} employees
-                    {selectedBranch || selectedDepartment ? ' (filtered)' : ' (all)'}
-                    {selectedEmployees.length > 0 && ` • ${selectedEmployees.length} selected`}
-                  </div>
                 </div>
 
                 {isEditMode ? (
@@ -821,22 +729,7 @@ const ScheduleShiftModal = ({
                       value={props.values.employees || []}
                       error={props.errors.employees}
                       touch={props.touched.employees}
-                      onChange={(field, value) => {
-                        console.log('Employee selection changed:', { field, value, currentFormValue: props.values.employees });
-                        // Update form field
-                        props.setFieldValue(field, value || []);
-                        // Track selected employees for filter preservation  
-                        if (value && Array.isArray(value)) {
-                          // Convert value IDs back to full employee objects for tracking
-                          const selectedEmployeeObjects = baseEmployees.filter(emp => 
-                            value.includes(emp.value)
-                          );
-                          setSelectedEmployees(selectedEmployeeObjects);
-                          console.log('Updated selectedEmployees:', selectedEmployeeObjects);
-                        } else {
-                          setSelectedEmployees([]);
-                        }
-                      }}
+                      onChange={props.setFieldValue}
                       required={true}
                       showSelectedValuesBelow={true}
                     />
@@ -1187,8 +1080,7 @@ const ScheduleShiftModal = ({
                 </Button>
               </div>
             </form>
-            );
-          }}
+          )}
         </Formik>
       </SheetComponent>
     </>
