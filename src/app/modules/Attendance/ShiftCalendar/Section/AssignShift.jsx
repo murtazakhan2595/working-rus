@@ -197,7 +197,7 @@ const AssignShift2 = ({ }) => {
         setIsOpen={handleClose}
         variant="sheet"
         sheetConfig={{
-          title: 'Assign Shift ghgjgjhgj',
+          title: 'Assign Shift',
           description: 'Assign shifts to employees'
         }}
         formConfig={{
