@@ -170,7 +170,7 @@ const ViewApplicationDetail = ({
             const feedback_submitted = (data.interview_feedbacks || []).find(obj => (obj.panel_member === user_id && obj.interview === latest_interview.id));
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';
           }
-          const isOfferGenerated = data?.offer_tracking || (data?.offer_letter?.[data?.offer_letter?.length - 1] || {}).status !== 'rejected';
+          const isOfferGenerated = data?.offer_tracking && (data?.offer_letter?.[data?.offer_letter?.length - 1])?.status !== 'rejected';
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
