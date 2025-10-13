@@ -371,7 +371,7 @@ export const GetEmployeeFilteredList = (
   isBranchView = false,
   isDepartmentView = false
 ) => {
-  const Employees = useSelector((state) => state.emp.employees);
+  const Employees = useSelector((state) => state.emp.employees_detail);
   const {
     branch_id: user_branch,
     department_name: user_department,

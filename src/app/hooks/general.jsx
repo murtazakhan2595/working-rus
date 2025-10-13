@@ -282,12 +282,16 @@ export const getEmployeeDropdownList = async (payload) => {
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name} - ${employee.serial_number}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
-        department_name: employee.department_name,
-        department_position: employee.department_position,
+        department_name: parseInt(employee.department_name),
+        department_position: parseInt(employee.department_position),
         branch_id: employee.branch_id,
+        direct_report: parseInt(employee.direct_report),
+        indirect_report: employee.indirect_report,
         serial_number: employee.serial_number,
         name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
           }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
@@ -316,7 +320,7 @@ const getEmployeeListWithDetail = async () => {
         contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
-        direct_report: employee.direct_report,
+        direct_report: parseInt(employee.direct_report),
         indirect_report: employee.indirect_report,
         joining_date: employee.joining_date,
         last_name: employee.last_name,
