@@ -151,6 +151,9 @@ export const getBenefitList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
+  if(filterData?.status){
+    filterData.status = filterData.status==="Active"
+  }
   const ordering = payload?.ordering ?? "id";
   const URL = `/recruitment-benefits/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -383,6 +386,9 @@ export const getRemoteWorkChecklistList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
+  if(filterData.status){
+    filterData.status = filterData.status==="Available"
+  }
   const ordering = payload?.ordering ?? "id";
   const URL = `/remote-work-checklist/?${ordering ? `ordering=${ordering}&` : ""}${pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
