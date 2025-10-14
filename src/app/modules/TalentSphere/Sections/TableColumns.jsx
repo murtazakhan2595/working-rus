@@ -829,7 +829,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
                 <div><span className="font-bold capitalize">Budget/Salary Range: </span>{renderRange(row?.salary_min, row?.salary_max, 'Not Defined')} <Currency value={row.currency} /> ({row?.payment_frequency || ''})</div>
             </div>
         ),
-        minWidth:'250px',
+        minWidth: '250px',
     },
     {
         dataField: "number_of_positions",
@@ -1374,8 +1374,15 @@ export const ResumeBankColumns = (reloadData) => [
  */
 export const InProgressInterviewColumns = (reloadData) => [
     {
-        dataField: "candidate_name",
-        text: "Candidate Name",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "job_title",
@@ -1394,10 +1401,6 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "panel_name",
         text: "Interview Panel",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
-    },
-    {
-        dataField: "ai_match_score",
-        text: "AI Match Score",
     },
     {
         dataField: "status",

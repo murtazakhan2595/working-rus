@@ -68,6 +68,7 @@ import {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
+    ScheduledInterviews,
 } from './TeamTalentSphere';
 import {
     AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest, RequisitionActions,
@@ -117,6 +118,7 @@ import {
 import { ScheduleInterviewSheet } from './ScreenedApplicants';
 import ApplicantByRequisition from './ApplicantManagement/ApplicantByRequisition';
 export {
+    ScheduledInterviews,
     TalentSphereDashboard,
     ScheduleInterviewSheet,
     ApplicantProfileActions,

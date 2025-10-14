@@ -1,4 +1,4 @@
-import { Header } from "components";
+import { Header,TabListComponent } from "components";
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
 import { Card } from "components/ui/card";
@@ -17,6 +17,7 @@ import {
     AddUpdateRemoteWorkChecklistForm,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
+import { TEAM_TALENT_SPHERE_TAB_CONFIG } from "app/modules/TalentSphere/Sections";
 
 export default function TeamTalentSphere() {
     const isViewManpowerHeadcountPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
@@ -92,13 +93,11 @@ export default function TeamTalentSphere() {
             )
         }
     }
-    if (!isViewManpowerHeadcountPermitted && !isViewCareerLevelsPermitted && !isViewEducationsPermitted && !isViewRequisitionRequestsPermitted && !isViewHeadcountRequestPermitted)
-        return <Error errorType={401} />
     return (
         <div className="flex flex-col gap-4">
-            <Header content={<HeaderButton />} />
-
-            <Tabs
+            {/* <Header content={<HeaderButton />} /> */}
+            <TabListComponent TAB_CONFIG={TEAM_TALENT_SPHERE_TAB_CONFIG} />
+            {/* <Tabs
                 value={activeTab || TabListArray[0]}
                 onValueChange={setActiveTab}
                 defaultValue="Manpower Headcount"
@@ -130,78 +129,7 @@ export default function TeamTalentSphere() {
                         <RemoteWorkChecklist reload={reloadData['checklist']} />
                     </TabsContent>
                 </Card>
-            </Tabs>
-            {OpenHeadcountRequest && (
-                <AddUpdateManpowerHeadcountRequest
-                    isOpen={OpenHeadcountRequest}
-                    setIsOpen={() => {
-                        setOpenBenefitForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'headcount-request': !prev["headcount-request"],
-                            };
-                        })
-                    }}
-                />
-            )}
-            {OpenCareerLevelForm && (
-                <AddUpdateCareerLevelForm
-                    isOpen={OpenCareerLevelForm}
-                    setIsOpen={() => {
-                        setOpenCareerLevelForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'career-level': !prev["career-level"],
-                            };
-                        })
-                    }}
-                />
-            )}
-            {OpenEducationForm && (
-                <AddUpdateEducationForm
-                    isOpen={OpenEducationForm}
-                    setIsOpen={() => {
-                        setOpenEducationForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'education': !prev["education"],
-                            };
-                        })
-                    }}
-                />
-            )}
-            {OpenRequisitionRequestsForm && (
-                <AddUpdateRequisitionRequestForm
-                    approvalRequired={true}
-                    isOpen={OpenRequisitionRequestsForm}
-                    setIsOpen={() => {
-                        setOpenRequisitionRequestsForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'requisition-request': !prev["requisition-request"],
-                            };
-                        })
-                    }}
-                />
-            )}
-            {OpenRWChecklistForm && (
-                <AddUpdateRemoteWorkChecklistForm
-                    isOpen={OpenRWChecklistForm}
-                    setIsOpen={() => {
-                        setOpenRWChecklistForm(false);
-                        setReloadData((prev) => {
-                            return {
-                                ...prev,
-                                'checklist': !prev["checklist"],
-                            };
-                        })
-                    }}
-                />
-            )}
+            </Tabs> */}
         </div>
     );
 }
