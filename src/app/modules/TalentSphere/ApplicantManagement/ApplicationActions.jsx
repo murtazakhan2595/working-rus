@@ -72,6 +72,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                     setIsOpen={() => setInterview(false)}
                     // id={data.id}
                     applicant={data.id}
+                    vacancyId={data?.published_vacancy || data?.publish_vacancy?.id}
                     mode="add"
                     reloadData={reloadData}
                 />

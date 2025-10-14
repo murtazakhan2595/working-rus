@@ -70,6 +70,7 @@ const ViewApplicationDetail = ({
       if (status === 'schedule-interview') {
         setFormData({
           applicant: data.id,
+          vacancyId: data?.published_vacancy || data?.publish_vacancy?.id,
         });
         setOpenInterviewForm(true);
         return null;
@@ -252,6 +253,8 @@ const ViewApplicationDetail = ({
           setIsOpen={() => setOpenInterviewForm(false)}
           id={FormData.id}
           applicant={FormData.applicant}
+          // vacancyId={FormData.vacancyId}
+          vacancyId={FormData.vacancyId}
           mode="add"
           reloadData={reloadData}
         />
