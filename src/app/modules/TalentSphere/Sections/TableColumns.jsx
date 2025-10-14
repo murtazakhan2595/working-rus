@@ -141,6 +141,7 @@ export const BenefitsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
@@ -204,6 +205,7 @@ export const SkillsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
@@ -242,6 +244,7 @@ export const BlacklistReasonsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
@@ -363,6 +366,7 @@ export const EmailTemplatesColumns = (reloadData) => [
         dataField: "subject",
         text: "Email Subject",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "template_type",
@@ -487,6 +491,7 @@ export const InterviewTypesColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
@@ -599,6 +604,7 @@ export const JobTypesColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
@@ -643,6 +649,7 @@ export const EducationsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
@@ -687,6 +694,7 @@ export const CareerLevelsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={500} />,
     },
     {
         dataField: "created_at",
