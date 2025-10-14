@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 import { validateRequisitionRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 import { DateInput } from "components/FormControl";
-import {RequisitionGenderOptions} from 'data/Data';
+import { RequisitionGenderOptions } from 'data/Data';
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -56,14 +56,14 @@ const AddUpdateRequisitionRequestForm = ({
 
     useEffect(() => {
         const fetchBenefitData = async (isMounted) => {
+            setIsLoading(true);
             try {
-                setIsLoading(true);
-                const filterData = { status: true };
-                const benefits = await getBenefitList({ filterData });
-                const education = await getEducationList({ filterData });
-                const career_level = await getCareerLevelList({ filterData });
-                const remote_work_checklist = await getRemoteWorkChecklistList({ filterData });
-                const job_type = await getJobTypeList({ filterData });
+                const filter = { status: true };
+                const benefits = await getBenefitList({ filterData: filter });
+                const education = await getEducationList();
+                const career_level = await getCareerLevelList({ filterData: filter });
+                const remote_work_checklist = await getRemoteWorkChecklistList({ filterData: filter });
+                const job_type = await getJobTypeList({ filterData: filter });
                 const requisition = await getRequisitionRequestList();
                 const skills = await getSkillList();
                 if (isMounted) {
@@ -394,7 +394,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 required: true,
                                 label: "Gender Preference",
                                 options: RequisitionGenderOptions
-                             },
+                            },
 
                             {
                                 InputField: DateInput,
