@@ -85,14 +85,15 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     };
 
     const getExistingHeadCount = async (branch, department, handleChange) => {
+        setIsLoading(true);
         try {
             if (branch && department) {
                 const filterData = {
-                     ...(department ? { department_name: department } : {}), 
-                     ...(branch ? { branch_id: branch } : {}),
-                     employee_status: "Active,Probation,Notice Period",
-                     }
-                const response = await getEmployeeCustomList({ filterData  });
+                    ...(department ? { department_name: department } : {}),
+                    ...(branch ? { branch_id: branch } : {}),
+                    employee_status: "Active,Probation,Notice Period",
+                }
+                const response = await getEmployeeCustomList({ filterData });
                 if (response) {
                     handleChange("existing_headcount", response.count);
                     const consumed_budget = calculateTotal(response.results || [], 'basic_salary')
@@ -105,13 +106,14 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
         } catch (error) {
             // Show error message
             console.error(error)
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const renderConsumedBudgetStatus = async (consumed_budget, total_budget) => {
         try {
             if ((consumed_budget !== null || consumed_budget !== undefined) && (total_budget !== null || total_budget !== undefined)) {
-                debugger
                 const percentage = calculatePercentage(consumed_budget, total_budget);
                 const consumed_budget_status = getConsumedBudgetStatus(percentage || 0)
                 setBudgetStatus(consumed_budget_status);
@@ -168,7 +170,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                     renderConsumedBudgetStatus(values.consumed_budget, values.total_allocated_budget)
                 },
                 disableSubmit: isLoading || isSubmittingForm,
-                loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+                loadingMessage: isLoading ? "Loading Data..." : isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
                     {
                         sheetCardExtension: true,
