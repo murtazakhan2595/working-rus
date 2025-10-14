@@ -84,9 +84,9 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
           updatedFilters[filterName] = ["in_progress", "shortlisted", "hired", "screened", 'rejected', 'blacklisted']
         else delete updatedFilters[filterName];
       } else {
-        if (filterName === "emiratization_flag")
-          updatedFilters[filterName] =
-            filterValue === "required" ? true : false;
+        if (['application_date_range'].includes(filterName)){
+          updatedFilters[filterName] = filterValue?.split(',')
+        }
         else updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
@@ -100,7 +100,7 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
         <CardHeader>
           <CardTitle>Applicants</CardTitle>
           <CardDescription>
-            Here you can view application of all applicants who were screened.
+            Here you can view application of all applicants who followed the screened stage.
           </CardDescription>
           <div className="flex justify-end">
             <FilterInput
@@ -112,7 +112,7 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
                 },
                 {
                   type: "search",
-                  name: "candidate_name_or_id",
+                  name: "candidate",
                   placeholder: "Candidate Name/Id",
                 },
                 {
@@ -124,11 +124,13 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
                     { value: "shortlisted", label: "Shortlisted" },
                     { value: "hired", label: "Hired" },
                     { value: "screened", label: "Screened" },
+                    { value: "rejected", label: "Rejected" },
+                    { value: "blacklisted", label: "Blacklisted" },
                   ],
                 },
                 {
                   type: "date-range",
-                  name: "application_date",
+                  name: "application_date_range",
                   placeholder: "Application Date",
                 },
               ]}

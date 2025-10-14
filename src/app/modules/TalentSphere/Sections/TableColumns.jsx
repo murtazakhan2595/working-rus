@@ -767,7 +767,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
             </>
         ),
     },
-      {
+    {
         dataField: "reason",
         text: "Reason for Request",
         formatter: (cell) => <TextUI text={cell} maxLength={100} />
@@ -1065,37 +1065,40 @@ export const PublishedVacancyColumns = (reloadData) => [
 export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "id",
-        text: "Sr. No.",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"APP-"} />,
-    },
-    {
-        dataField: "candidate_id",
-        text: "Candidate",
+        text: "Applicant",
         formatter: (cell, row) => (
             <div>
-                <div><span className="font-bold">ID: </span>{row?.candidate_id}</div>
+                <div><span className="font-bold">ID: </span><FormatID value={cell} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
-                <div><span className="font-bold">Email: </span>{row?.email}</div>
-                <div><span className="font-bold">Contact No.: </span>{row?.contact_number}</div>
+                {/* <div><span className="font-bold">Email: </span>{row?.email}</div>
+                <div><span className="font-bold">Contact No.: </span>{row?.contact_number}</div> */}
             </div>
         ),
         minWidth: '250px',
     },
     {
-        dataField: "vacancy_department",
-        text: "Department",
-        // formatter: (cell) => <DepartmentName value={cell} />,
+        dataField: "publish_vacancy",
+        text: "Requisition Details",
+        formatter: (cell) => (
+            <div>
+                <div><span className="font-bold">ID: </span><FormatID value={cell?.id} prefix={"RR-"} /></div>
+                <div><span className="font-bold">Job Title: </span>{cell?.job_title}</div>
+                <div><span className="font-bold">Department: </span><DepartmentName value={cell?.department} /></div>
+                <div><span className="font-bold">Branch: </span><DepartmentName value={cell?.branch} /></div>
+            </div>
+        ),
+        minWidth: '250px',
     },
-    {
-        dataField: "application_source",
-        text: "Application Source",
-        dataSort: true,
-    },
-    {
-        dataField: "emiratization_flag",
-        text: "Emiratization",
-        formatter: (cell) => (cell ? "Yes" : "No"),
-    },
+    // {
+    //     dataField: "application_source",
+    //     text: "Application Source",
+    //     dataSort: true,
+    // },
+    // {
+    //     dataField: "emiratization_flag",
+    //     text: "Emiratization",
+    //     formatter: (cell) => (cell ? "Yes" : "No"),
+    // },
     {
         dataField: "application_date",
         text: "Application Date",
