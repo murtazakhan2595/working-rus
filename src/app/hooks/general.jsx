@@ -10,6 +10,7 @@ import {
 } from "app/utils/MappingObjects/mapOfficeSettingData";
 import { renderErrorMessages } from "utils/renderErrors";
 import { mapCountriesList, mapCitiesList } from "app/utils/MappingObjects/mapGeneralData";
+import { mapEmployeeCustomInformationList } from "app/utils/MappingObjects/mapEmployeeData";
 
 export const baseUrl = initialState.baseUrl;
 export const headers = () => ({
@@ -453,9 +454,10 @@ const getEmployeeCustomList = async (payload) => {
     });
     if (response.status === 200) {
       const employeeDataResponse = response.data.results;
+      const ResponseResults = await mapEmployeeCustomInformationList(employeeDataResponse.employees)
       const employeeData = {
         count: employeeDataResponse.total_count,
-        results: employeeDataResponse.employees,
+        results: ResponseResults,
         ActiveEmployee: employeeDataResponse.active_employees,
         TotalEmployee: employeeDataResponse.total_employees,
         TotalManager: employeeDataResponse.total_managers,
@@ -495,7 +497,7 @@ function flattenEmployees(employees) {
       branch_id: emp.branch_id || "",
       work_email: emp.work_email || "",
       serial_number: emp.serial_number || "",
-      basic_salary: emp.ctc || "",
+      basic_salary: parseFloat(emp.ctc || 0),
       salary_type: emp.salary_type || "",
       is_eos_applicable: emp.is_eos_applicable,
       is_new: emp.is_new,

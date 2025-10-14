@@ -91,38 +91,35 @@ const SheetUI = forwardRef(
       }
     };
 
-    const validateFieldValue = useCallback(
-      async (value, label, id) => {
-        if (!value) {
-          setValidateFieldErrors((prevErrors) => {
-            const updated = { ...prevErrors };
-            delete updated[label];
-            return updated;
-          });
-          return 0;
-        }
+    const validateFieldValue = useCallback((value, label, id) => {
+      if (!value) {
+        setValidateFieldErrors((prevErrors) => {
+          const updated = { ...prevErrors };
+          delete updated[label];
+          return updated;
+        });
+        return 0;
+      }
 
-        const filtered = DataList.filter(
-          (obj) =>
-            obj[label]?.toLowerCase() === value.trim().toLowerCase() &&
-            parseInt(obj.id) !== parseInt(id)
-        );
+      const filtered = DataList.filter(
+        (obj) =>
+          obj[label]?.toLowerCase() === value.trim().toLowerCase() &&
+          parseInt(obj.id) !== parseInt(id)
+      );
 
-        if (filtered.length > 0) {
-          setValidateFieldErrors((prevErrors) => ({
-            ...prevErrors,
-            [label]: `Already exists. Please choose a different value`,
-          }));
-        } else {
-          setValidateFieldErrors((prevErrors) => {
-            const updated = { ...prevErrors };
-            delete updated[label];
-            return updated;
-          });
-        }
-      },
-      [DataList, setValidateFieldErrors]
-    );
+      if (filtered.length > 0) {
+        setValidateFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [label]: `Already exists. Please choose a different value`,
+        }));
+      } else {
+        setValidateFieldErrors((prevErrors) => {
+          const updated = { ...prevErrors };
+          delete updated[label];
+          return updated;
+        });
+      }
+    }, [DataList, setValidateFieldErrors]);
 
     return (
       <>
@@ -316,14 +313,9 @@ const SheetUI = forwardRef(
                                   }
                                   onChange={async (field, value) => {
                                     if (onFieldUpdate && typeof onFieldUpdate === "function")
-                                      await onFieldUpdate(
-                                        field,
-                                        value,
-                                        props.values,
-                                        props.setFieldValue
-                                      );
+                                      onFieldUpdate(field, value, props.values, props.setFieldValue);
                                     if (validateDuplicate)
-                                      await validateFieldValue(value, name, props.values.id);
+                                      validateFieldValue(value, name, props.values.id);
                                     props?.setFieldValue(field, value);
                                   }}
                                   columns={subColumns}

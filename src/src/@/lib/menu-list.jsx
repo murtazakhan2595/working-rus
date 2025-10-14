@@ -54,7 +54,7 @@ const getSubModuleMenuList = (currentNodeTree) => {
   //         return createMenu(route?.path || "#", name);
   //       })
   //   );
-  return [...directChildren, { active: false, icon: undefined, label: "My Letter Request", submenus: [], to: "/my-letter-requests", }];
+  return [...directChildren,];
 };
 
 // Function to generate menu items
