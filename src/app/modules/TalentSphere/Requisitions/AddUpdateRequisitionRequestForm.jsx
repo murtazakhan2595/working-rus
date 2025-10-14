@@ -268,8 +268,8 @@ const AddUpdateRequisitionRequestForm = ({
                                     options: Countries,
                                     disabled: FormValues.is_emiratization_role,
                                     onFieldUpdate: async (_, value, __, handleChange) => {
-                                        getCitiesDropdown(value);
                                         handleChange('city', null);
+                                        getCitiesDropdown(value);
                                     },
                                 },
                                 {
@@ -284,9 +284,9 @@ const AddUpdateRequisitionRequestForm = ({
                                     name: "is_emiratization_role",
                                     label: "Emiratization Role",
                                     onFieldUpdate: async (_, value, __, handleChange) => {
+                                        handleChange('city', null);
                                         if (value) getCitiesDropdown("United Arab Emirates");
                                         handleChange("countries", value ? "United Arab Emirates" : "");
-                                        handleChange('city', null);
                                     },
                                 },
                             ]),
