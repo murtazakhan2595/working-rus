@@ -60,7 +60,7 @@ const AddUpdateRequisitionRequestForm = ({
             try {
                 const filter = { status: true };
                 const benefits = await getBenefitList({ filterData: filter });
-                const education = await getEducationList();
+                const education = await getEducationList({ filterData: filter });
                 const career_level = await getCareerLevelList({ filterData: filter });
                 const remote_work_checklist = await getRemoteWorkChecklistList({ filterData: filter });
                 const job_type = await getJobTypeList({ filterData: filter });
@@ -268,7 +268,7 @@ const AddUpdateRequisitionRequestForm = ({
                                     options: Countries,
                                     disabled: FormValues.is_emiratization_role,
                                     onFieldUpdate: async (_, value, __, handleChange) => {
-                                        handleChange('city', null);
+                                        handleChange('cities', null);
                                         getCitiesDropdown(value);
                                     },
                                 },
@@ -284,7 +284,7 @@ const AddUpdateRequisitionRequestForm = ({
                                     name: "is_emiratization_role",
                                     label: "Emiratization Role",
                                     onFieldUpdate: async (_, value, __, handleChange) => {
-                                        handleChange('city', null);
+                                        handleChange('cities', null);
                                         if (value) getCitiesDropdown("United Arab Emirates");
                                         handleChange("countries", value ? "United Arab Emirates" : "");
                                     },
