@@ -728,39 +728,31 @@ export const CareerLevelsColumns = (reloadData) => [
 export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
     {
         dataField: "id",
-        text: "ID",
-        formatter: (cell) => <FormatID value={cell} prefix={"HCR-"} />,
-    },
-    {
-        dataField: "branch",
-        text: "Branch",
-        formatter: (cell) => <BranchName value={cell} />,
-    },
-    {
-        dataField: "department_name",
-        text: "Department",
+        text: "Request Info",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.id} prefix={"HCR-"} /></div>
+                <div><span className="font-bold">Branch: </span><BranchName value={row.branch} /></div>
+                <div><span className="font-bold">Department: </span>{row?.department_name}</div>
+            </div>
+        ),
     },
     {
         dataField: "allocated_headcount",
-        text: "Current Allocated Headcount",
+        text: "Headcount",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Allocated: </span>{row?.allocated_headcount}</div>
+                <div><span className="font-bold">Consumed: </span>{row?.consumed_headcount}</div>
+                <div><span className="font-bold">Remaining: </span>{row?.remaining_headcount}</div>
+                <div><span className="font-bold">Requested: </span>{row?.requested_headcount}</div>
+            </div>
+        ),
     },
-    {
-        dataField: "consumed_headcount",
-        text: "Consumed Headcount",
-    },
-    {
-        dataField: "remaining_headcount",
-        text: "Remaining Headcount",
-    },
-    {
-        dataField: "requested_headcount",
-        text: "Requested Additional Headcount",
-    },
-    {
-        dataField: "reason",
-        text: "Reason for Request",
-        formatter: (cell) => <TextUI text={cell} maxLength={100} />
-    },
+    // {
+    //     dataField: "requested_headcount",
+    //     text: "Requested Additional Headcount",
+    // },
     {
         dataField: "attachment_url",
         text: "Attachment",
@@ -775,27 +767,37 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
             </>
         ),
     },
-    {
-        dataField: "requested_by",
-        text: "Requested By",
-        formatter: (cell) => <EmployeeName value={cell} />,
+      {
+        dataField: "reason",
+        text: "Reason for Request",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} />
     },
     {
         dataField: "requested_on",
-        text: "Requested Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        text: "Request Log",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on)}</div>
+            </div>
+        ),
     },
     ...(isView ?
         [{
-            dataField: "approved_by",
-            text: "Approved By",
-            formatter: (cell) => <EmployeeName value={cell} />,
-        },
-        {
-            dataField: "approved_on",
-            text: "Approved On",
-            formatter: (cell) => renderDate(cell, '--', 'date-time'),
-        }] : []),
+            dataField: "status",
+            text: "Decision Info",
+            formatter: (cell, row) => cell === 'approved' ? (
+                <div>
+                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on)}</div>
+                </div>
+            ) : (
+                <div>
+                    <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
+                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on)}</div>
+                </div>
+            ),
+        },] : []),
     {
         dataField: "status",
         text: "Status",
@@ -837,7 +839,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
                 <div><span className="font-bold capitalize">Budget/Salary Range: </span>{renderRange(row?.salary_min, row?.salary_max, 'Not Defined')} <Currency value={row.currency} /> ({row?.payment_frequency || ''})</div>
             </div>
         ),
-        minWidth:'250px',
+        minWidth: '250px',
     },
     {
         dataField: "number_of_positions",

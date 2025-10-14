@@ -51,8 +51,8 @@ export default function ExportProfile({ filterData }) {
                                 'AI Match Skills': row.ai_matched_skills,
                                 'AI Missing Skills': row.ai_missing_skills,
                                 'AI Suggested': row.ai_suggested ? 'Yes' : 'No',
-                                'Joining Date': renderDate(row.offers_tracking?.[0].joining_date),
-                                'Offered Salary': `${Currency({ value: row?.publish_vacancy?.currency })} (${row?.publish_vacancy?.payment_frequency || ""})`
+                                'Joining Date': renderDate(row.offers_tracking?.[0]?.joining_date),
+                                // 'Offered Salary': `${Currency({ value: row?.publish_vacancy?.currency })} (${row?.publish_vacancy?.payment_frequency || ""})`
                             };
                         })
                     );

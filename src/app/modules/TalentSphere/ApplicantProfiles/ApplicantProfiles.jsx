@@ -19,7 +19,7 @@ import { RecruitmentApplicationSource } from "data/Data";
 
 const ApplicantProfiles = ({ reload, variant = "all" }) => {
   const [ResumeBankList, setResumeBankList] = useState({});
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({ status: ["in_progress", "shortlisted", "hired", "screened", 'rejected', 'blacklisted'] });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +80,9 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
-        delete updatedFilters[filterName];
+        if (filterName === 'status')
+          updatedFilters[filterName] = ["in_progress", "shortlisted", "hired", "screened", 'rejected', 'blacklisted']
+        else delete updatedFilters[filterName];
       } else {
         if (filterName === "emiratization_flag")
           updatedFilters[filterName] =

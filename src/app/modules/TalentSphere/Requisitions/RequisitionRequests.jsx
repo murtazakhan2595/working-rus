@@ -13,18 +13,20 @@ import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GlobalStatusOptions } from "data/Data";
 import { ViewRequisitionRequest } from "app/modules/TalentSphere";
+import { GetDispatchStateList } from "utils/Lists";
 
 const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition, deepLinkAction }) => {
+    const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
-    const [HeadCountRequestList, setHeadCountRequestList] = useState({});
+    const [RequisitionList, setRequisitionList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
     const [statsData, setStatsData] = useState({});
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
-    
+
     // State for auto-opening detail sheet
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
     const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
@@ -39,11 +41,11 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
             }));
         }
     }, [deepLinkRequisition]);
-    
+
     // Auto-open sheet when data is loaded with deep link (only once)
     useEffect(() => {
-        if (deepLinkRequisition && HeadCountRequestList?.results?.length > 0 && !isLoading && !hasAutoOpened) {
-            const requisition = HeadCountRequestList.results.find(
+        if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading && !hasAutoOpened) {
+            const requisition = RequisitionList.results.find(
                 req => req.id === parseInt(deepLinkRequisition)
             );
             if (requisition) {
@@ -52,8 +54,8 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                 setHasAutoOpened(true); // Mark as opened to prevent re-opening
             }
         }
-    }, [deepLinkRequisition, HeadCountRequestList, isLoading, hasAutoOpened]);
-    
+    }, [deepLinkRequisition, RequisitionList, isLoading, hasAutoOpened]);
+
     const OuterTabList = useMemo(() => {
         return ["Requests", "Records"];
     }, []);
@@ -97,10 +99,14 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     const fetchData = async (isMounted) => {
         try {
             setIsLoading(true);
-            const filters = { ...filterData, approval_required: true }
-            const HeadCountRequestList = await getRequisitionRequestList({ filterData: filters, options, ordering, });
-            if (HeadCountRequestList && isMounted) {
-                setHeadCountRequestList(HeadCountRequestList);
+            const filters = {
+                ...filterData,
+                ...(isTeamView ? { requested_by: user_id } : {}),
+                approval_required: true
+            }
+            const RequisitionList = await getRequisitionRequestList({ filterData: filters, options, ordering, });
+            if (RequisitionList && isMounted) {
+                setRequisitionList(RequisitionList);
             }
         } catch (error) {
             console.log(error);
@@ -116,9 +122,15 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
             isMounted = false;
         };
     }, [filterData, options, ordering]);
+    
     const fetchStatData = async () => {
         try {
-            const response = await getRequisitionStats({ filterData: { approval_required: true } });
+            const response = await getRequisitionStats({
+                filterData: {
+                    approval_required: true,
+                    ...(isTeamView ? { requested_by: user_id } : {}),
+                }
+            });
             if (response) {
                 setStatsData(response);
             }
@@ -307,17 +319,17 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                             <PageLoader />
                         ) : (
                             <TableCustom
-                                data={HeadCountRequestList?.results || []}
+                                data={RequisitionList?.results || []}
                                 columns={RequisitionRequestColumns(fetchData, activeTab === 'Records', isTeamView)}
                                 pagination={true}
-                                dataTotalSize={HeadCountRequestList?.count || 0}
+                                dataTotalSize={RequisitionList?.count || 0}
                                 tableOptions={tableOptions}
                             />
                         )}
                     </CardContent>
                 </Tabs>
             </Card>
-            
+
             {/* Auto-opened detail sheet when navigating from dashboard */}
             {viewSheetOpen && selectedRequisitionId && (
                 <ViewRequisitionRequest
@@ -331,7 +343,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                         setSelectedRequisitionId(null);
                     }}
                     currentId={selectedRequisitionId}
-                    DataList={HeadCountRequestList?.results || []}
+                    DataList={RequisitionList?.results || []}
                     isTeamView={isTeamView}
                 />
             )}
