@@ -11,7 +11,7 @@ const BlacklistReasonStatusTogle = ({ status, data, reloadData }) => {
     async (value, data) => {
       try {
         const response = await saveUpdateBlacklistReason(
-          { is_active: value ? 'active' : 'inactive' },
+          { is_active: value ? true : false },
           data.id
         );
 

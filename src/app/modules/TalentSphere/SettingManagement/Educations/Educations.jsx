@@ -70,7 +70,7 @@ const Educations = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                if (['created_at'].includes(filterName))
+                if (['created_at'].includes(filterName) && filterValue && filterValue.includes(","))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else
                 updatedFilters[filterName] = filterValue;
@@ -84,7 +84,7 @@ const Educations = ({ reload }) => {
             <CardHeader>
                 <CardTitle >Educations</CardTitle>
                 <CardDescription>
-                    Here you can add, update, and delete company-provided benefits
+                    Here you can add, update, and delete Education levels
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
