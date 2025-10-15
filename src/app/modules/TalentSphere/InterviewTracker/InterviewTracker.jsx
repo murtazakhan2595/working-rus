@@ -1,32 +1,20 @@
 import { Header } from "components";
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent, } from "src/@/components/ui/tabs";
-import { Card } from "components/ui/card";
 import { HasAccess } from "utils/PermissionUtils";
 import {
     AllApplicants,
-    CareerLevels,
-    InProgressInterviews,
-    ResumeBankApplicants,
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
 
 export default function InterviewTracker() {
     const isViewInProgressPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
-    const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
-    const isViewScreenedPermitted = HasAccess("VIEW_TS_EDUCATION");
-    const isViewResumedPermitted = HasAccess("VIEW_TS_JOB_TYPE");
     const isViewHoldPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
     const [activeTab, setActiveTab] = useState(null);
-    const [reloadData, setReloadData] = useState({});
 
     const TabListArray = React.useMemo(() => [
         ...(isViewInProgressPermitted ? ["In Progress"] : []),
         ...(isViewHoldPermitted ? ["Hold Applications"] : []),
-        // ...(isViewResumedPermitted ? ["Resume Bank Application"] : []),
-        // ...(isViewScreenedPermitted ? ["Screened Application"] : []),
-        // // ...(isViewCareerLevelsPermitted ? ["Career Level"] : []),
-
     ], [isViewInProgressPermitted, isViewHoldPermitted]);
 
     if (!isViewInProgressPermitted && !isViewHoldPermitted)

@@ -8,7 +8,7 @@ import { deleteRecord } from "app/hooks/general";
 const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
     const isEditPermitted = HasAccess("EDIT_REQUISITION_REQUEST");
     const isPublishPermitted = HasAccess("PUBLISH_VACANCY");
-    const isDeletePermitted = HasAccess("DELETE_MANPOWER");
+    const isDeletePermitted = HasAccess("DELETE_REQUISITION_REQUEST");
     const [deleteForm, setDeleteForm] = useState(null);
 
     const [view, setView] = useState(null);

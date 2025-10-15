@@ -119,7 +119,7 @@ export const SETTING_TAB_CONFIG = [
     {
         key: "email-template",
         label: "Email Templates",
-        viewPerm: "VIEW_TS_BENEFITS",
+        viewPerm: "VIEW_TS_EMAIL_TEMPLATES",
         addPerm: "ADD_TS_EMAIL_TEMPLATE",
         list: (reload) => <EmailTemplates reload={reload} />,
         form: AddUpdateEmailTemplateForm,
@@ -186,7 +186,7 @@ export const OFFER_TAB_CONFIG = [
         key: "offer-request",
         label: "Offer Letter Requests",
         viewPerm: "VIEW_TS_BENEFITS",
-        addPerm: "ADD_TS_BENEFITS",
+        addPerm: "GENERATE_OFFER_LETTER",
         list: (reload, deepLinkFilterData, deepLinkSubTab) => <OfferRequests reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
         form: GenerateOffer,
         addLabel: 'Generate Offer'

@@ -6,7 +6,7 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
 const OfferRequestActions = ({ data, DataList = [], reloadData = () => { }, isOfferSent = false }) => {
-    const isEditPermitted = HasAccess("ADD_TS_BENEFITS");
+    const isEditPermitted = HasAccess("EDIT_OFFER_LETEER");
     // const isDeletePermitted = HasAccess("ADD_TS_BENEFITS");
     const isViewPermitted = HasAccess("VIEW_MANPOWER");
     const [view, setView] = useState(null);
