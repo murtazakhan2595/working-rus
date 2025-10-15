@@ -31,13 +31,12 @@ const ViewHeadCountRequests = ({
         try {
             const fiscal_year = new Date(requested_on).getFullYear();
             const response = await getManpowerPlanningList({ filterData: { branch, department, fiscal_year } });
-          debugger
             const ManpowerPlanData = response?.results?.[0];
             const payload = {
                 fiscal_year: fiscal_year,
                 branch,
                 department,
-                planned_headcount: parseInt(ManpowerPlanData?.planned_headcount) + parseInt(requested_headcount),
+                planned_headcount: parseInt(ManpowerPlanData?.planned_headcount || 0) + parseInt(requested_headcount),
                 total_allocated_budget: ManpowerPlanData?.total_allocated_budget || 1,
                 justification: ManpowerPlanData?.justifications || reason,
             }
