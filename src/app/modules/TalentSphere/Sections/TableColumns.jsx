@@ -1412,7 +1412,7 @@ export const InProgressInterviewColumns = (reloadData) => [
     },
     {
         dataField: "panel_name",
-        text: "Interview Panel",
+        text: "Panelist",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
     },
     {

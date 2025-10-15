@@ -1656,7 +1656,8 @@ export const getInterviewById = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
-      return { ...ResponseData };
+      const ApplicantData = await getApplicantsData(Response.applicant, true);
+      return { ...ResponseData, applicant: ApplicantData };
     }
   } catch (error) {
     if (error?.response?.status === 401) {

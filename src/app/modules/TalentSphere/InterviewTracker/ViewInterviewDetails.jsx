@@ -5,7 +5,7 @@ import {
   NavigationSheetComponent,
   DetailContent,
 } from "components";
-import { InterviewDetails } from "app/modules/TalentSphere/Sections";
+import { InterviewDetails, ApplicantInformation } from "app/modules/TalentSphere/Sections";
 import { AddInterviewFeedback, ViewInterviewFeedback, ViewApplicationDetail } from "app/modules/TalentSphere";
 import { useSelector } from "react-redux";
 import { HasAccess } from "utils/PermissionUtils";
@@ -79,13 +79,26 @@ const ViewInterviewDetails = ({
 
   const fields = React.useMemo(
     () => [
+      {
+        customContent: true,
+        renderSectionCondition: (data) => {
+          console.log(data);
+          if (data.applicant) return true;
+          return false;
+        },
+        renderContent: ({ applicant }) => <DetailContent
+          fields={ApplicantInformation}
+          currentItem={applicant || {}}
+        />
+
+      },
       ...(InterviewDetails || []),
       {
         customContent: true,
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
           if (!data) return null;
-          const isInterViewDone = moment(data.scheduled_datetime).startOf('day').isSameOrBefore(moment().startOf('day'));
+          const isInterViewDone = moment(data.scheduled_datetime).isSameOrBefore(moment());
           if (!isInterViewDone) return null;
           const panelist_included = (data.panel || []).includes(user_id);
           const feedback_submitted = (data.interview_feedbacks || []).find(obj => obj.panel_member === user_id);
