@@ -16,8 +16,9 @@ import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 import { GetDispatchStateList } from "utils/Lists";
 
 const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition, deepLinkAction }) => {
+    const Employees = GetDispatchStateList("employees", "emp");
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
-    const Currencies = GetDispatchStateList("currencies", "common") || {};
+    const Currencies = GetDispatchStateList("currencies", "common");
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
@@ -175,8 +176,8 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
             } else {
                 if (filterName === "status")
                     updatedFilters[filterName] = filterValue.toLowerCase();
-                else if (filterName === 'is_emiratization_role')
-                    updatedFilters[filterName] = filterValue === 'required' ? true : false;
+                else if (['created_at'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
 
@@ -308,12 +309,23 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                                 {
                                     type: "select",
                                     options: [
-                                        { value: 'required', label: 'Required' },
-                                        { value: 'not_required', label: "Not Reqiured" },
+                                        { value: true, label: 'Required' },
+                                        { value: false, label: "Not Reqiured" },
                                     ],
                                     name: "is_emiratization_role",
                                     placeholder: "Emiratization Role",
                                 },
+                                ...(!isTeamView ? [{
+                                    type: "select",
+                                    name: "requested_by",
+                                    options: Employees,
+                                    placeholder: "Requested By",
+                                },
+                                {
+                                    type: "date-range",
+                                    placeholder: "Request Date",
+                                    name: "created_at",
+                                },] : []),
                                 ...(activeTab === "Records"
                                     ? [
                                         {

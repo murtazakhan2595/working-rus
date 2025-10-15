@@ -7,31 +7,33 @@ import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
 import { GlobalStatusOptions } from "data/Data";
 import { ViewRequisitionRequest } from "app/modules/TalentSphere";
+import { GetDispatchStateList } from "utils/Lists";
 
 const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deepLinkFilterData }) => {
+    const Employees = GetDispatchStateList("employees", "emp");
     const [RequisitionList, setRequisitionList] = useState({});
-    
+
     // Initialize filterData with deep link data if it exists (lazy initializer)
     const [filterData, setFilterData] = useState(() => {
         if (deepLinkFilterData) {
             const convertedFilters = { ...deepLinkFilterData };
-            
+
             // Convert is_emiratization_role: true/false to "required"/"not_required" for dropdown
             if (typeof convertedFilters.is_emiratization_role === 'boolean') {
                 convertedFilters.is_emiratization_role = convertedFilters.is_emiratization_role ? 'required' : 'not_required';
             }
-            
+
             return convertedFilters;
         }
         return {};
     });
-    
+
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [isLoading, setIsLoading] = useState(false);
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
-    
+
     // State for auto-opening detail sheet
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
     const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
@@ -41,12 +43,12 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
     useEffect(() => {
         if (deepLinkFilterData) {
             const convertedFilters = { ...deepLinkFilterData };
-            
+
             // Convert is_emiratization_role: true/false to "required"/"not_required" for dropdown
             if (typeof convertedFilters.is_emiratization_role === 'boolean') {
                 convertedFilters.is_emiratization_role = convertedFilters.is_emiratization_role ? 'required' : 'not_required';
             }
-            
+
             setFilterData(convertedFilters);
             // Reset page to 1 when applying deep link filters
             onPageChange("page", 1);
@@ -62,7 +64,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
             }));
         }
     }, [deepLinkRequisition]);
-    
+
     // Auto-open sheet when data is loaded with deep link (only once)
     useEffect(() => {
         if (deepLinkRequisition && RequisitionList?.results?.length > 0 && !isLoading && !hasAutoOpened) {
@@ -76,7 +78,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
             }
         }
     }, [deepLinkRequisition, RequisitionList, isLoading, hasAutoOpened]);
-    
+
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
     };
@@ -117,12 +119,12 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
         try {
             // Convert UI filter values to API format
             const filters = { ...filterData, approval_required: false };
-            
+
             // Convert is_emiratization_role from "required"/"not_required" string to boolean for API
             if (filters.is_emiratization_role) {
                 filters.is_emiratization_role = filters.is_emiratization_role === 'required' ? true : false;
             }
-            
+
             const response = await getRequisitionRequestList({
                 filterData: filters,
                 options,
@@ -165,7 +167,9 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
             } else {
                 // Store UI values as-is (strings for dropdowns)
                 // Conversion to API format happens in fetchData
-                updatedFilters[filterName] = filterValue;
+                if (['created_at'].includes(filterName))
+                    updatedFilters[filterName] = filterValue?.split(',');
+                else updatedFilters[filterName] = filterValue;
             }
             return updatedFilters;
         });
@@ -185,35 +189,30 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
                                 type: "search",
                                 name: "job_title",
                                 placeholder: "Job Title",
-                                values: filterData.job_title,
                             },
                             {
                                 type: "select",
                                 options: "Departments",
                                 name: "department",
                                 placeholder: "Department",
-                                values: filterData.department,
                             },
                             {
                                 type: "select",
                                 options: "Branches",
                                 name: "branch",
                                 placeholder: "Branch",
-                                values: filterData.branch,
                             },
                             {
                                 type: "select",
                                 options: JobTypeList,
                                 name: "job_type",
                                 placeholder: "Job Type",
-                                values: filterData.job_type,
                             },
                             {
                                 type: "select",
                                 options: CareerLevelList,
                                 name: "career_level",
                                 placeholder: "Career Level",
-                                values: filterData.career_level,
                             },
                             {
                                 type: "select",
@@ -224,36 +223,45 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
                                 ],
                                 name: "work_mode",
                                 placeholder: "Work Mode",
-                                values: filterData.work_mode,
                             },
                             {
                                 type: "numeric-range",
                                 name: "salary_range",
                                 placeholder: "Salary Range",
-                                values: filterData.salary_range,
                             },
+
                             {
                                 type: "select",
                                 options: [
-                                    { value: 'required', label: 'Required' },
-                                    { value: 'not_required', label: "Not Reqiured" },
+                                    { value: true, label: 'Required' },
+                                    { value: false, label: "Not Reqiured" },
                                 ],
                                 name: "is_emiratization_role",
                                 placeholder: "Emiratization Role",
-                                values: filterData.is_emiratization_role,
                             },
                             {
                                 type: "select",
-                                options: [...GlobalStatusOptions(false),],
-                                name: "status",
-                                placeholder: "Status",
-                                values: filterData.status,
+                                name: "requested_by",
+                                options: Employees,
+                                placeholder: "Requested By",
                             },
+                            {
+                                type: "date-range",
+                                placeholder: "Request Date",
+                                name: "created_at",
+                            },
+                            // {
+                            //     type: "select",
+                            //     options: [...GlobalStatusOptions(false),],
+                            //     name: "status",
+                            //     placeholder: "Status",
+                            //     values: filterData.status,
+                            // },
 
                         ]}
                         className="justify-end"
                         onChange={handleFilterChange}
-                        filterValues={filterData}
+                        // filterValues={filterData}
                     />
                 </div>
             </CardHeader>
@@ -270,7 +278,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
                     />
                 )}
             </CardContent>
-            
+
             {/* Auto-opened detail sheet when navigating from dashboard */}
             {viewSheetOpen && selectedRequisitionId && (
                 <ViewRequisitionRequest

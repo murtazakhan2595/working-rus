@@ -105,7 +105,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
     {
         dataField: "created_on",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
         dataSort: true,
     },
     {
@@ -146,7 +146,7 @@ export const BenefitsColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -158,7 +158,7 @@ export const BenefitsColumns = (reloadData) => [
     {
         dataField: "updated_at",
         text: "Last Updated On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "updated_by",
@@ -210,7 +210,7 @@ export const SkillsColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "",
@@ -249,7 +249,7 @@ export const BlacklistReasonsColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -311,7 +311,7 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
     {
         dataField: "updated_on",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -323,7 +323,7 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
     {
         dataField: "updated_on",
         text: "Last Updated On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "is_active",
@@ -378,7 +378,7 @@ export const EmailTemplatesColumns = (reloadData) => [
     {
         dataField: "created_on",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -390,7 +390,7 @@ export const EmailTemplatesColumns = (reloadData) => [
     {
         dataField: "updated_on",
         text: "Last Modified",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "is_active",
@@ -441,7 +441,7 @@ export const FeedBackFormsColumns = (reloadData) => [
     {
         dataField: "created_on",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -496,7 +496,7 @@ export const InterviewTypesColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by_name",
@@ -508,7 +508,7 @@ export const InterviewTypesColumns = (reloadData) => [
     {
         dataField: "updated_at",
         text: "Last Updated On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "updated_by_name",
@@ -555,7 +555,7 @@ export const RemoteWorkChecklistsColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -609,7 +609,7 @@ export const JobTypesColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -654,7 +654,7 @@ export const EducationsColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -699,7 +699,7 @@ export const CareerLevelsColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "created_by",
@@ -743,8 +743,8 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
         formatter: (_, row) => (
             <div>
                 <div><span className="font-bold">Allocated: </span>{row?.allocated_headcount}</div>
-                <div><span className="font-bold">Consumed: </span>{row?.consumed_headcount}</div>
-                <div><span className="font-bold">Remaining: </span>{row?.remaining_headcount}</div>
+                {!isView && <div><span className="font-bold">Consumed: </span>{row?.consumed_headcount}</div>}
+                {/* <div><span className="font-bold">Remaining: </span>{row?.remaining_headcount}</div> */}
                 <div><span className="font-bold">Requested: </span>{row?.requested_headcount}</div>
             </div>
         ),
@@ -777,7 +777,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
         text: "Request Log",
         formatter: (_, row) => (
             <div>
-                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
+                <div><span className="font-bold">Requested By: </span>{row?.requested_by_name} - {row?.requested_by_designation}</div>
                 <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on, '--', 'date-time')}</div>
             </div>
         ),
@@ -795,6 +795,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
                     <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Reason: </span><TextUI text={row?.rejection_reason} maxLength={100} /></div>
                 </div>
             ),
         },] : []),
@@ -939,12 +940,12 @@ export const DemographicsFormColumns = (reloadData) => [
     {
         dataField: "created_at",
         text: "Created Date",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
         dataSort: true,
     }, {
         dataField: "updated_at",
         text: "Updated Date",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
         dataSort: true,
     },
     {
@@ -1103,7 +1104,7 @@ export const ApplicantsColumns = (reloadData) => [
     {
         dataField: "application_date",
         text: "Application Date",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
         dataSort: true,
     },
     {
@@ -1162,7 +1163,7 @@ export const ApplicationColumns = (reloadData, variant) => [
             return (<div>
                 <div><span className="font-bold">ID: </span><FormatID value={row?.id} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Source: </span>{source}</div>
-                <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date-time')}</div>
                 <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
                 <div><span className="font-bold">Department: </span>{row?.vacancy_department}</div>
                 <div><span className="font-bold">Location: </span>{row?.location}</div>
@@ -1182,7 +1183,7 @@ export const ApplicationColumns = (reloadData, variant) => [
                         <div><span className="font-bold">Recommended Designation: </span><DesignationName value={cell?.recommended_designation} /></div>
                         <div><span className="font-bold">Recommended Department: </span><DepartmentName value={cell?.recommended_department} /></div>
                         <div><span className="font-bold">Blacklisted By: </span><EmployeeName value={cell?.added_by} /></div>
-                        <div><span className="font-bold">Date: </span>{renderDate(cell?.added_on, "--")}</div>
+                        <div><span className="font-bold">Date: </span>{renderDate(cell?.added_on, "--",'date-time')}</div>
                     </div>
                 );
             },
@@ -1196,7 +1197,7 @@ export const ApplicationColumns = (reloadData, variant) => [
                 return (
                     <div>
                         <div><span className="font-bold">Blacklisted By: </span><EmployeeName value={cell?.blacklisted_by} /></div>
-                        <div><span className="font-bold">Date: </span>{renderDate(cell?.blacklisted_on, "--")}</div>
+                        <div><span className="font-bold">Date: </span>{renderDate(cell?.blacklisted_on, "--",'date-time')}</div>
                         <div className="flex gap-1"><span className="font-bold">Reasons: </span><MultiStatusLabel statusList={cell?.reasons} variant="info" /></div>
                     </div>
                 );
@@ -1214,7 +1215,7 @@ export const ApplicationColumns = (reloadData, variant) => [
                     <div><span className="font-bold">Desired Salary: </span>{cell?.desired_salary}</div>
                     <div><span className="font-bold">Expected Joining Date: </span>{renderDate(cell?.expected_joining_date, '--', 'date')}</div>
                     <div><span className="font-bold">Shortlisted By: </span><EmployeeName value={cell?.shortlisted_by} /></div>
-                    <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--")}</div>
+                    <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--",'date-time')}</div>
                 </div>
                 );
             },
@@ -1227,7 +1228,7 @@ export const ApplicationColumns = (reloadData, variant) => [
             formatter: (cell, row) => {
                 return (<div>
                     <div><span className="font-bold">Screened By: </span><EmployeeName value={cell} /></div>
-                    <div><span className="font-bold">Date: </span>{renderDate(row?.screened_date, "--")}</div>
+                    <div><span className="font-bold">Date: </span>{renderDate(row?.screened_date,'--','date-time')}</div>
                 </div>
                 );
             },
@@ -1243,7 +1244,7 @@ export const ApplicationColumns = (reloadData, variant) => [
                 return (<div>
                     <div><span className="font-bold">Joining Date: </span>{renderDate(cell?.joining_date, '--', 'date')}</div>
                     <div><span className="font-bold">Sent By: </span><EmployeeName value={cell?.sent_by} /></div>
-                    <div><span className="font-bold">Sent Date: </span>{renderDate(cell?.sent_on, "--")}</div>
+                    <div><span className="font-bold">Sent Date: </span>{renderDate(cell?.sent_on,'--','date-time')}</div>
                 </div>
                 );
             },
@@ -1272,7 +1273,7 @@ export const ApplicationColumns = (reloadData, variant) => [
             formatter: (cell) => {
                 return (<div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={cell?.rejected_by} /></div>
-                    <div><span className="font-bold">Date: </span>{renderDate(cell?.rejected_on, '--', 'date')}</div>
+                    <div><span className="font-bold">Date: </span>{renderDate(cell?.rejected_on, '--', 'date-time')}</div>
                     <div className='flex gap-1'><span className="font-bold">Reason: </span><TextUI text={cell?.rejection_reason} maxLength={50} /></div>
                 </div>
                 );
@@ -1345,7 +1346,7 @@ export const ResumeBankColumns = (reloadData) => [
             return (<div>
                 <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Source: </span>{source}</div>
-                <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date')}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.application_date, '--', 'date-time')}</div>
                 <div><span className="font-bold">Job Title: </span>{row?.job_title_applied_for}</div>
                 <div><span className="font-bold">Emiratization Flag: </span>{cell ? 'Yes' : 'No'}</div>
             </div>
@@ -1366,7 +1367,7 @@ export const ResumeBankColumns = (reloadData) => [
     {
         dataField: "added_on",
         text: "Added On",
-        formatter: (cell) => renderDate(cell, '--', 'date'),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
     },
     {
         dataField: "",
@@ -1463,12 +1464,12 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
             formatter: (cell, row) => cell === 'approved' ? (
                 <div>
                     <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
-                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on)}</div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on,'--','date-time')}</div>
                 </div>
             ) : (
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
-                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on)}</div>
+                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on,'--','date-time')}</div>
                     <div><span className="font-bold">Reason: </span>{row?.rejection_remarks}</div>
                 </div>
             ),
@@ -1482,7 +1483,7 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
         {
             dataField: "generated_on",
             text: "Generated On",
-            formatter: (cell) => renderDate(cell, '--', 'date'),
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
         }
     ]),
     {
@@ -1543,12 +1544,12 @@ export const OfferTrackingColumns = (reloadData, isRecord = false) => [
     {
         dataField: "sent_on",
         text: "Send Date",
-        formatter: (cell) => renderDate(cell, '--', 'date'),
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
     {
         dataField: "updated_on",
         text: "Last Updated Date",
-        formatter: (cell) => renderDate(cell, '--', 'date'),
+        formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
     {
         dataField: "updated_by",

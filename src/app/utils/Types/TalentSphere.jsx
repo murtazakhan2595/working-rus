@@ -140,6 +140,7 @@ export const HeadcountRequest = {
     department_name: null,
     attachment_url: null,
     requested_by_name: null,
+    requested_by_designation: null,
     approved_by_name: null,
     approval_details: null,
     allocated_headcount: null,
