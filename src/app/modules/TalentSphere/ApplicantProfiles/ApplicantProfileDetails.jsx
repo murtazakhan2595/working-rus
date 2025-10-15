@@ -21,6 +21,7 @@ import { getApplicantsData } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
 import EmployeeForm from "app/modules/Employees/Screens/EmployeeForm";
 import DemographicsTab from "./DemographicsTab"; // Import the new component
+import { ExportProfile } from "app/modules/TalentSphere";
 
 export default function ApplicantProfileDetails() {
   const { hasAccess } = usePermissions();
@@ -77,9 +78,12 @@ export default function ApplicantProfileDetails() {
         showBackButton={true}
         navigationLink={"/talent-sphere/applicants-profile"}
         content={
-          ApplicantData.status === "hired" && createPermitted && (
-            <Button onClick={handleCreateEmployee}>Create Employee</Button>
-          )
+          <>
+            {ApplicantData.status === "hired" && createPermitted && (
+              <Button onClick={handleCreateEmployee}>Create Employee</Button>
+            )}
+            <ExportProfile applicant_id={ApplicantData.id} variant={'one-profile'} />
+          </>
         }
       />
       <Card>

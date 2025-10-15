@@ -35,6 +35,7 @@ import {
     AllInterviewDetails,
     RejectedInformation,
     AllOfferDetails,
+    ExportApplicantsRecord,
 } from './ViewFields';
 import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
 import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG, OFFER_TAB_CONFIG,APPLICANT_PROFILE_TAB_CONFIG,TEAM_TALENT_SPHERE_TAB_CONFIG } from './TabsList';
@@ -46,6 +47,7 @@ export {
     ScreeningInfomation,
     BlacklistedInformation,
     SkillsColumns,
+    ExportApplicantsRecord,
     TEAM_TALENT_SPHERE_TAB_CONFIG,
     RejectedInformation,
     AllInterviewDetails,

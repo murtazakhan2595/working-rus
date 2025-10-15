@@ -555,7 +555,11 @@ const RenderDateRangeInputField = React.memo(
           value={inputValue || ""}
           onChange={(field, value) => {
             setInputValue(value);
-            handleInputChange(field, value);
+            if (!value)
+              handleInputChange(field, "");
+            else if (value.includes(','))
+              handleInputChange(field, value);
+
           }}
         />
       </div>

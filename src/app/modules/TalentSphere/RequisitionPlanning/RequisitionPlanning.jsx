@@ -17,7 +17,7 @@ export default function RequisitionPlanning() {
     const isViewRequisitionPermitted = HasAccess("VIEW_GENERATED_REQUISITION");
     const isAddRequisitionPermitted = HasAccess("GENERATE_REQUISITION");
     const isViewPublishedVacanciesPermitted = HasAccess("VIEW_PUBLISHED_VACANCIES");
-    const isViewRequisitionRequestPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
+    const isViewRequisitionRequestPermitted = HasAccess("VIEW_REQUISITION_REQUEST");
     const [activeTab, setActiveTab] = useState(null);
     const [OpenRequisitionForm, setOpenRequisitionForm] = useState(false);
     const [reloadData, setReloadData] = useState({});

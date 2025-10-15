@@ -808,4 +808,31 @@ export const AllOfferDetails = [
   },
 ];
 
+export const ExportApplicantsRecord = (row, Currencies) => {
+  console.log(row);
+  const currency = ((Currencies || []).find((option) => option.value === parseInt(row?.publish_vacancy?.currency)))?.code;
+  return {
+    ID: row.serial_id,
+    'Candidate Name': row.candidate_id,
+    'Candidate Name': row.candidate_name,
+    Status: row.status,
+    Email: row.email,
+    'Contact Number': row.contact_number,
+    'Application Source': row.application_source,
+    'Emiratization Flag': row.emiratization_flag,
+    'Job Position': row.job_title,
+    Department: row.vacancy_department,
+    'Application Date': renderDate(row.application_date),
+    Location: row.location,
+    'Screened By': row.screened_by,
+    'Screened Date': renderDate(row.screened_date),
+    'AI Match Score': row.ai_match_score,
+    'AI Match Skills': row.ai_matched_skills,
+    'AI Missing Skills': row.ai_missing_skills,
+    'AI Suggested': row.ai_suggested ? 'Yes' : 'No',
+    'Joining Date': renderDate(row.offers_tracking?.joining_date),
+    'Offered Salary': row?.offer_letters && row?.offer_letters.length > 0 ? `${row?.offer_letters[row?.offer_letters.length - 1]?.offered_salary} ${currency || ''} (${row?.publish_vacancy?.payment_frequency || ""})` : "",
+  };
+}
+
 

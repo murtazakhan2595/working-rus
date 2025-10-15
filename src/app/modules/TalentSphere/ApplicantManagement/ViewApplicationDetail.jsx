@@ -25,8 +25,8 @@ const ViewApplicationDetail = ({
   const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
   const viewFeedBackPermitted = hasAccess("VIEW_INTERVIEW_FEEDBACK");
   const updateStatusPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
-  const generateOfferPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
-  const scheduleInterviewPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const generateOfferPermitted = hasAccess("GENERATE_OFFER_LETTER");
+  const scheduleInterviewPermitted = hasAccess("SCHEDULE_APPLICANT_INTERVIEW");
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
