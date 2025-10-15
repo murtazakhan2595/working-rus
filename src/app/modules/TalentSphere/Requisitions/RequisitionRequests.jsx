@@ -17,6 +17,7 @@ import { GetDispatchStateList } from "utils/Lists";
 
 const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition, deepLinkAction }) => {
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
+    const Currencies = GetDispatchStateList("currencies", "common") || {};
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
@@ -122,7 +123,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
             isMounted = false;
         };
     }, [filterData, options, ordering]);
-    
+
     const fetchStatData = async () => {
         try {
             const response = await getRequisitionStats({
@@ -281,6 +282,18 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                                     options: CareerLevelList,
                                     name: "career_level",
                                     placeholder: "Career Level",
+                                },
+                                {
+                                    type: "select",
+                                    options: Currencies,
+                                    name: "currency",
+                                    placeholder: "Currency",
+                                },
+                                {
+                                    type: "select",
+                                    options: [{ label: 'Monthly', value: 'monthly' }, { label: 'Bi-Weekly', value: 'bi-weekly' }, { label: 'Weekly', value: 'weekly' }, { label: 'Annually', value: 'annually' },],
+                                    name: "payment_frequency",
+                                    placeholder: "Payment Frequency",
                                 },
                                 {
                                     type: "select",
