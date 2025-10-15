@@ -36,7 +36,7 @@ const ViewHeadCountRequests = ({
                 fiscal_year: fiscal_year,
                 branch,
                 department,
-                planned_headcount: parseInt(ManpowerPlanData.planned_headcount) + parseInt(requested_headcount),
+                planned_headcount: parseInt(ManpowerPlanData?.planned_headcount) + parseInt(requested_headcount),
                 total_allocated_budget: ManpowerPlanData?.total_allocated_budget || 1,
                 justification: ManpowerPlanData?.justifications || reason,
             }
