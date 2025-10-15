@@ -743,8 +743,8 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
         formatter: (_, row) => (
             <div>
                 <div><span className="font-bold">Allocated: </span>{row?.allocated_headcount}</div>
-                <div><span className="font-bold">Consumed: </span>{row?.consumed_headcount}</div>
-                <div><span className="font-bold">Remaining: </span>{row?.remaining_headcount}</div>
+                {!isView && <div><span className="font-bold">Consumed: </span>{row?.consumed_headcount}</div>}
+                {/* <div><span className="font-bold">Remaining: </span>{row?.remaining_headcount}</div> */}
                 <div><span className="font-bold">Requested: </span>{row?.requested_headcount}</div>
             </div>
         ),
