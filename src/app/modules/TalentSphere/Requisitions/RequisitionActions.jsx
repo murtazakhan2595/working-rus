@@ -41,7 +41,7 @@ const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTea
         <>
             <DropdownActionMenu
                 onView={handleView}
-                onEdit={isEditPermitted && ['pending', 'draft'].includes(data.status.toLowerCase()) ? handleEdit : null}
+                onEdit={isEditPermitted && ['draft'].includes(data.status.toLowerCase()) ? handleEdit : null}
                 onDelete={isDeletePermitted && ['pending', 'draft'].includes(data.status.toLowerCase()) ? handleDelete : null}
                 viewText="View Requisition"
                 editText="Edit Requisition"

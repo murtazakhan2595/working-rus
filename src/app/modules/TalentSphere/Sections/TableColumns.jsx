@@ -778,7 +778,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
         formatter: (_, row) => (
             <div>
                 <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
-                <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on,'--','date-time')}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on, '--', 'date-time')}</div>
             </div>
         ),
     },
@@ -789,12 +789,12 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
             formatter: (cell, row) => cell === 'approved' ? (
                 <div>
                     <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
-                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on,'--','date-time')}</div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on, '--', 'date-time')}</div>
                 </div>
             ) : (
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
-                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on,'--','date-time')}</div>
+                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on, '--', 'date-time')}</div>
                 </div>
             ),
         },] : []),
@@ -836,6 +836,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
                 <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
                 <div><span className="font-bold">Job Type: </span>{row?.job_type_name}</div>
                 <div><span className="font-bold">Department: </span><DepartmentName value={row?.department} /></div>
+                <div><span className="font-bold">Branch: </span><BranchName value={row?.branch} /></div>
                 <div><span className="font-bold capitalize">Budget/Salary Range: </span>{renderRange(row?.salary_min, row?.salary_max, 'Not Defined')} <Currency value={row.currency} /> ({row?.payment_frequency || ''})</div>
             </div>
         ),
