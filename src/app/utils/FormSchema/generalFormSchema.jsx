@@ -10,15 +10,21 @@ export const validateRequiredFields = (Fields = [], values) => {
 
   for (const Field of Fields) {
     if (!Field || typeof Field !== "object") continue;
+    const { name, required, label, renderCondition, shouldRender, value, InputField } = Field;
+    // const componentName = InputField?.displayName || InputField?.name || "Unknown";
+    // console.log(InputField?.displayName,InputField?.name,InputField?.type, name, values[name], value, 'FIELDS')
 
-    const { name, required, label, renderCondition, shouldRender, value } = Field;
-    
     // Skip validation if field should not be rendered
     if (renderCondition === false || shouldRender === false) continue;
-    
+
     // Ensure name exists and is a string
     if (required && typeof name === "string" && typeof label === "string") {
       if (!values[name] && !value) errors[name] = `${label} is required`;
+      else if ((Array.isArray(value) && value?.length === 0)) {
+        errors[name] = `${label} is required`;
+      } else if (Array.isArray(values[name]) && values[name]?.length === 0) {
+        errors[name] = `${label} is required`;
+      }
     }
   }
 

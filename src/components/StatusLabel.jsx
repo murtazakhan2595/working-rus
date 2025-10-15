@@ -292,7 +292,6 @@ export const StatusButtons = ({
   if (!managePermitted) return null;
   if (!status || status?.toLowerCase() !== "pending") return null;
   if (!current_approver && !user_role.includes(1)) return null;
-
   if ((current_approver || []).includes(user_id) || user_role.includes(1) || (final_approver || []).includes(user_id)) {
     // 🚀 UPDATED: Default API-based approval flow
     const handleDefaultSubmit = async (status, data = {}) => {
