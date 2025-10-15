@@ -68,6 +68,7 @@ const ApplicantProfileActions = ({ data, DataList = [], reloadData = () => { }, 
                     isOpen={interview}
                     setIsOpen={() => setInterview(false)}
                     id={data.id}
+                    vacancyId={data?.published_vacancy || data?.publish_vacancy?.id}
                     mode="add"
                     reloadData={reloadData}
 
