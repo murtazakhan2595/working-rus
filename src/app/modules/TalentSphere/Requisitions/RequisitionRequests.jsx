@@ -274,6 +274,12 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                                 },
                                 {
                                     type: "select",
+                                    options: "Branches",
+                                    name: "branch",
+                                    placeholder: "Branch",
+                                },
+                                {
+                                    type: "select",
                                     options: JobTypeList,
                                     name: "job_type",
                                     placeholder: "Job Type",
