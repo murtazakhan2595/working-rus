@@ -200,6 +200,7 @@ const ViewInterviewDetails = ({
             setOpenScheduleInterview(false);
           }}
           id={CurrentData?.applicant}
+          vacancyId={CurrentData?.published_vacancy || CurrentData?.publish_vacancy?.id}
           mode="add"
         />
       }
