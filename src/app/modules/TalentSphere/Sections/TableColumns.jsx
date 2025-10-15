@@ -778,7 +778,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
         formatter: (_, row) => (
             <div>
                 <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
-                <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on)}</div>
+                <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on,'--','date-time')}</div>
             </div>
         ),
     },
@@ -789,12 +789,12 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
             formatter: (cell, row) => cell === 'approved' ? (
                 <div>
                     <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
-                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on)}</div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on,'--','date-time')}</div>
                 </div>
             ) : (
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
-                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on)}</div>
+                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on,'--','date-time')}</div>
                 </div>
             ),
         },] : []),
