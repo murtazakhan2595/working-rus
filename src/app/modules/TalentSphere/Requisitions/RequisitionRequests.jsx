@@ -17,7 +17,7 @@ import { GetDispatchStateList } from "utils/Lists";
 
 const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition, deepLinkAction }) => {
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
-    const Currencies = GetDispatchStateList("currencies", "common") || {};
+    const Currencies = GetDispatchStateList("currencies", "common");
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);

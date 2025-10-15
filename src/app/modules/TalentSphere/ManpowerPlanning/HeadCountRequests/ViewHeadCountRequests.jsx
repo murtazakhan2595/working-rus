@@ -89,7 +89,7 @@ const ViewHeadCountRequests = ({
                 },
                 {
                     key: "rejection_reason",
-                    label: "Rehection Reason",
+                    label: "Rejection Reason",
                     renderCondition: (_, data) => {
                         if (data?.status?.toLowerCase() === 'rejected') return true;
                         else return false;

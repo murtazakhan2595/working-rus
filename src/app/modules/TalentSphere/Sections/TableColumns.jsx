@@ -777,7 +777,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
         text: "Request Log",
         formatter: (_, row) => (
             <div>
-                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
+                <div><span className="font-bold">Requested By: </span>{row?.requested_by_name} - {row?.requested_by_designation}</div>
                 <div><span className="font-bold">Date: </span>{renderDate(row?.requested_on, '--', 'date-time')}</div>
             </div>
         ),
@@ -795,6 +795,7 @@ export const HeadcountRequestColumns = (reloadData, isView, isTeamView) => [
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
                     <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Reason: </span><TextUI text={row?.rejection_reason} maxLength={100} /></div>
                 </div>
             ),
         },] : []),
