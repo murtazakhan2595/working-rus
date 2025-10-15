@@ -105,7 +105,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
     {
         dataField: "created_on",
         text: "Created On",
-        formatter: (cell) => renderDate(cell),
+        formatter: (cell) => renderDate(cell,'--','date-time'),
         dataSort: true,
     },
     {
