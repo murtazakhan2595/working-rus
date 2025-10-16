@@ -12,6 +12,12 @@ export const Notification = {
   user: null,
 };
 
+export const NotificationTitle = {
+  REQUISTION_REQUEST: 'requisition request',
+  OFFER_LETTER: 'offer letter',
+  HEADCOUNT_REQUEST: 'headcount request',
+}
+
 export const Notifications_Action_URL = [
   {
     module: "Reimbursement",

@@ -1,8 +1,17 @@
 import {
   Notification,
   Notifications_Action_URL,
+  NotificationTitle,
 } from "app/utils/Types/Notification";
-import moment from "moment";
+
+const replaceNotificationKeys = (text) => {
+  let result = text;
+  Object.entries(NotificationTitle).forEach(([key, value]) => {
+    const regex = new RegExp(`\\b${key}\\b`, 'g'); // match exact word globally
+    result = result.replace(regex, value);
+  });
+  return result;
+};
 
 export function getNotificationActionURL(module, notification_type) {
   if (!module || !notification_type) return null;
@@ -16,15 +25,20 @@ export function getNotificationActionURL(module, notification_type) {
 export function mapNotificationData(data) {
   const NotificationData = Object.keys(Notification).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      if (key === "notification_type") {
-        const action_url =
-          getNotificationActionURL(data.module, data[key]) || "#";
-        acc["action_url"] = action_url.replace(
-          "{related_id}",
-          data.related_id || ""
-        );
+      if (['title', 'message'].includes(key)) {
+        // Replace using the mapping
+        acc[key] = replaceNotificationKeys(data[key]);
+      } else {
+        if (key === "notification_type") {
+          const action_url =
+            getNotificationActionURL(data.module, data[key]) || "#";
+          acc["action_url"] = action_url.replace(
+            "{related_id}",
+            data.related_id || ""
+          );
+        }
+        acc[key] = data[key];
       }
-      acc[key] = data[key];
     }
     return acc;
   }, {});

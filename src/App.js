@@ -107,7 +107,7 @@ function App() {
           "/applicant-offer",
           "/forgot-password",
           "/confirm-password",
-          "/access-denied"
+          "/access-denied",
         ];
         const isProtectedRoute = protectedRoutes.some((route) =>
           pathname.startsWith(route)
@@ -187,7 +187,7 @@ function App() {
 
         <Route path="*" element={<Err404 />} />
       </Routes>
-      <ChatbrixWidget />
+      {/* <ChatbrixWidget />/ */}
     </>
   );
 }
