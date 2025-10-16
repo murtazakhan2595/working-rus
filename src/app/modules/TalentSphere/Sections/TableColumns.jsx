@@ -1,4 +1,4 @@
-import { FormatID, BranchName, DepartmentName, EmployeeName, Currency } from "utils/getValuesFromTables";
+import { FormatID, BranchName, DepartmentName, EmployeeName, Currency, EmployeeInfo } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import {
     ManpowerPlanningActions,
@@ -857,7 +857,7 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         text: "Request Info",
         formatter: (cell, row) => (
             <div>
-                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} /></div>
+                <div><span className="font-bold">Requested By: </span><EmployeeName value={row?.requested_by} />-<EmployeeInfo value={row?.requested_by} label={"department_position"} /></div>
                 <div><span className="font-bold">Requested Date: </span>{renderDate(cell, '--', 'date-time')}</div>
             </div>
         ),
@@ -874,6 +874,23 @@ export const RequisitionRequestColumns = (reloadData, viewMode, isTeamView) => [
         formatter: (cell) => <StatusLabel status={cell ? 'yes' : 'no'}>{cell ? 'yes' : 'no'}</StatusLabel>,
         dataSort: true,
     },] : []),
+    ...(viewMode ?
+        [{
+            dataField: "status",
+            text: "Decision Info",
+            formatter: (cell, row) => cell === 'approved' ? (
+                <div>
+                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} />-<EmployeeInfo value={row?.requested_by} label={"department_position"} /></div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on, '--', 'date-time')}</div>
+                </div>
+            ) : (
+                <div>
+                    <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} />-<EmployeeInfo value={row?.requested_by} label={"department_position"} /></div>
+                    <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Reason: </span><TextUI text={row?.rejection_reason} maxLength={100} /></div>
+                </div>
+            ),
+        },] : []),
     {
         dataField: "status",
         text: "Status",

@@ -503,6 +503,16 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails = tru
             }
         }
     }
+    if (['approved', 'rejected'].includes(data['status']?.toLowerCase())) {
+        const logs = data['approval_logs']?.[0];
+        if (logs?.action_type?.toUpperCase() === 'APPROVED') {
+            RecordDetails['approved_by'] = logs.changed_by;
+            RecordDetails['approved_on'] = logs.timestamp;
+        } else if (logs?.action_type?.toUpperCase() === 'REJECTED') {
+            RecordDetails['rejected_by'] = logs.changed_by;
+            RecordDetails['rejected_on'] = logs.timestamp;
+        }
+    }
     return RecordDetails;
 }
 export async function mapRequisitionRequestList(data) {
