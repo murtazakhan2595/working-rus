@@ -119,12 +119,6 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
         try {
             // Convert UI filter values to API format
             const filters = { ...filterData, approval_required: false };
-
-            // Convert is_emiratization_role from "required"/"not_required" string to boolean for API
-            if (filters.is_emiratization_role) {
-                filters.is_emiratization_role = filters.is_emiratization_role === 'required' ? true : false;
-            }
-
             const response = await getRequisitionRequestList({
                 filterData: filters,
                 options,
