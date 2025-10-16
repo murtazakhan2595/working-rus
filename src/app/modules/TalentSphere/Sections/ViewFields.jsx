@@ -8,7 +8,7 @@ import { RequisitionGenderOptions } from 'data/Data';
 
 export const RequisitionViewFields = [
   {
-    title: "Requisition Details",
+    title: "Job Details",
     footerTitle: "Request At",
     footerField: "created_at",
     field: [

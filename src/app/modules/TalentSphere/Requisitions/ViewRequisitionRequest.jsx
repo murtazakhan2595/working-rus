@@ -105,7 +105,7 @@ const ViewRequisitionRequest = ({
                 {
                     key: "requested_by",
                     label: "",
-                    formatter: (cell) => (<EmployeeDetailUI id={cell} InformationKeys={["name", "department", "position", "branch",]} ViewVariant={"vertical"} />),
+                    formatter: (cell) => (<EmployeeDetailUI id={cell} InformationKeys={["id","name", "department", "position", "branch",]} ViewVariant={"vertical"} />),
                 },
             ],
         },
