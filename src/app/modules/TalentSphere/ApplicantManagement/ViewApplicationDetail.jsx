@@ -24,7 +24,7 @@ const ViewApplicationDetail = ({
   const { hasAccess } = usePermissions();
   const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
   const viewFeedBackPermitted = hasAccess("VIEW_INTERVIEW_FEEDBACK");
-  const updateStatusPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const updateStatusPermitted = hasAccess("MANAGE_APPLICANTS");
   const generateOfferPermitted = hasAccess("GENERATE_OFFER_LETTER");
   const scheduleInterviewPermitted = hasAccess("SCHEDULE_APPLICANT_INTERVIEW");
   const { id: user_id } = useSelector((state) => state.user.userProfile);

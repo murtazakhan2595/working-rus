@@ -348,13 +348,33 @@ const SheetUI = forwardRef(
                           {cancelButtonText}
                         </Button>
                       )}
-                      {additionalButtonConfig.map(({ buttonText, variant, onButtonClick, disabled, loadingText }, index) =>
+                      {additionalButtonConfig.map(({ buttonText, variant, onButtonClick, disabled, loadingText, validateForm }, index) =>
                         <Button
                           size="lg"
                           variant={variant}
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
+                            if (validateForm) {
+                              if (
+                                validateFieldErrors &&
+                                typeof validateFieldErrors === "object" &&
+                                !Array.isArray(validateFieldErrors)
+                              ) {
+                                // Mark all fields as touched
+                                Object.keys(validateFieldErrors).forEach(field => {
+                                  props.setFieldTouched(field, true, false);
+                                });
+
+                                // Clone and set errors
+                                props.setErrors({ ...validateFieldErrors });
+
+                                // Force validation (optional but safe)
+                                props.validateForm();
+
+                                return;
+                              }
+                            }
                             HandleSubmit(props.values, () => { }, onButtonClick);
                           }}
                           key={`${buttonText}-${index}`}

@@ -5,6 +5,7 @@ import {
 } from "app/utils/Types/Notification";
 
 const replaceNotificationKeys = (text) => {
+  if (!text) return '';
   let result = text;
   Object.entries(NotificationTitle).forEach(([key, value]) => {
     const regex = new RegExp(`\\b${key}\\b`, 'g'); // match exact word globally

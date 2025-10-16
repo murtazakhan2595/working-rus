@@ -64,7 +64,7 @@ const AddUpdateRequisitionRequestForm = ({
                 const career_level = await getCareerLevelList({ filterData: filter });
                 const remote_work_checklist = await getRemoteWorkChecklistList({ filterData: filter });
                 const job_type = await getJobTypeList({ filterData: filter });
-                const requisition = await getRequisitionRequestList();
+                const requisition = await getRequisitionRequestList({ filterData: { status: ['pending', 'approved'] } });
                 const skills = await getSkillList();
                 if (isMounted) {
                     setBenefitList(benefits.results);
@@ -172,7 +172,14 @@ const AddUpdateRequisitionRequestForm = ({
                 cancelButtonText: "Cancel",
                 columns: 2,
                 additionalButtonConfig: [
-                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, true), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
+                    {
+                        buttonText: 'Save as Draft',
+                        variant: 'continue',
+                        onButtonClick: (values) => handleSubmit(values, true),
+                        disabled: isLoading || isSubmittingForm,
+                        loadingText: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
+                        validateForm:true,
+                    },
                 ],
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
