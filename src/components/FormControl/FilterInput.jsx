@@ -22,6 +22,7 @@ import {
   DateRangeInput,
   DateRangeFilter,
   TextInput,
+  RangeInputField,
 } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { GetDispatchStateList } from "utils/Lists";
@@ -330,32 +331,16 @@ const RenderNumericRangeField = React.memo(
     }, [value]);
 
     const handleChange = (_, value) => {
-      let newValue = value;
-      if (!newValue.includes("-")) {
-        const lastValue = inputValue;
-        if (!lastValue) {
-          newValue = newValue + "-";
-        } else {
-          const cursorWasBeforeDash =
-            lastValue.indexOf("-") >= 0 &&
-            value.length < lastValue.length &&
-            lastValue.indexOf("-") >= value.length;
-          if (cursorWasBeforeDash) newValue = "-" + newValue;
-          else newValue = newValue + "-";
-        }
-      }
-      newValue = newValue.replace(/[^0-9-]/g, "");
-      const parts = newValue.split("-");
-      if (parts.length > 2) newValue = parts[0] + "-" + parts[1];
-      if (newValue === "") newValue = "-";
-      setInputValue(newValue);
-      handleInputChange?.(name, parts);
+      setInputValue(value);
+      if (!value)
+        handleInputChange(name, "");
+      else if (value.includes(','))
+        handleInputChange(name, value);
     };
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
-        <TextInput
-          type={"text"}
+        <RangeInputField
           placeholder={placeholder}
           className={`rounded-sm text-neutral-1000`}
           name={name}

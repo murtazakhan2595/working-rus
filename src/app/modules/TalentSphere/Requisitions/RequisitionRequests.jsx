@@ -176,7 +176,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
             } else {
                 if (filterName === "status")
                     updatedFilters[filterName] = filterValue.toLowerCase();
-                else if (['created_at'].includes(filterName))
+                else if (['created_at', 'salary_range'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -320,6 +320,11 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                                     ],
                                     name: "is_emiratization_role",
                                     placeholder: "Emiratization Role",
+                                },
+                                {
+                                    type: "numeric-range",
+                                    name: "salary_range",
+                                    placeholder: "Salary Range",
                                 },
                                 ...(!isTeamView ? [{
                                     type: "select",

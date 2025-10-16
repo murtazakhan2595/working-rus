@@ -167,7 +167,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
             } else {
                 // Store UI values as-is (strings for dropdowns)
                 // Conversion to API format happens in fetchData
-                if (['created_at'].includes(filterName))
+                if (['created_at', 'salary_range'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -261,7 +261,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
                         ]}
                         className="justify-end"
                         onChange={handleFilterChange}
-                        // filterValues={filterData}
+                    // filterValues={filterData}
                     />
                 </div>
             </CardHeader>
