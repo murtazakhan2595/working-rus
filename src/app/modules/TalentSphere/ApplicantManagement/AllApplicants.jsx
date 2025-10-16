@@ -257,6 +257,15 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                     },
                   ]
                   : []),
+                ...(variant === "resume_bank"
+                  ? [
+                    {
+                      type: "date-range",
+                      name: "added_on",
+                      placeholder: "Added On",
+                    },
+                  ]
+                  : []),
                 ...(variant === "blacklisted"
                   ? [
                     {
