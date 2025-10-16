@@ -66,9 +66,9 @@ const Config = {
   EMPLOYEES_PAYROLL: true,
   SALARY_SETUP: true,
   CLAIM_REQUEST: true,
-  PAY_RUN: false,
-  ON_HOLD_SALARIES: false,
-  END_OF_SERVICE: false,
+  PAY_RUN: true,
+  ON_HOLD_SALARIES: true,
+  END_OF_SERVICE: true,
 
   //-------------TASK_MANAGEMENT-----------
   TASK_MANAGEMENT: true,
