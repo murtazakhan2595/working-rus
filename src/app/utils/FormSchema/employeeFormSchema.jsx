@@ -5,8 +5,7 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (!values.country_code)
     errors.country_code = "Phone Country Code name is required";
   if (!values.mobile_no) errors.mobile_no = "Phone number is required";
-  if (!values.probation_end_date) errors.probation_date_range = "Probation end date is required";
-  if (!values.probation_start_date) errors.probation_date_range = "Probation start date is required";
+  if (!values.probation_date_range) errors.probation_date_range = "Probation range date is required";
   const work_email_error = validateEmailField(values.work_email, "Email");
   if (work_email_error) errors.work_email = work_email_error;
   if (values.residential_address && values.residential_address.length > 200) {
@@ -22,29 +21,45 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
         "Direct reporting manager cannot be assigned as an indirect reporting manager.";
   }
   // Validate probation dates in relation to joining date
-  if (values.joining_date && values.probation_start_date) {
-    const joiningDate = new Date(values.joining_date);
-    const probationStartDate = new Date(values.probation_start_date);
 
-    if (probationStartDate < joiningDate) {
-      errors.probation_date_range =
-        "Probation start date cannot be before joining date";
+  if (values.probation_date_range) {
+    const [start_date, end_date] = values.probation_date_range?.split(",") || "";
+    if (!end_date) errors.probation_date_range = "Probation end date is required";
+    if (!start_date) errors.probation_date_range = "Probation start date is required";
+
+    if (values.joining_date) {
+      if (start_date) {
+        const probationStartDate = new Date(start_date);
+        const joiningDate = new Date(values.joining_date);
+        if (probationStartDate < joiningDate) {
+          errors.probation_date_range = "Probation start date cannot be before joining date";
+        }
+      }
+    }
+    // Validate probation end date is after start date
+    if (start_date && end_date) {
+      const startDate = new Date(start_date);
+      const endDate = new Date(end_date);
+
+      if (endDate < startDate) {
+        errors.probation_date_range = "Probation end date must be after the start date";
+      }
     }
   }
+  else {
 
-  // Validate probation end date is after start date
-  if (values.probation_date_range && values.probation_end_date) {
-    const startDate = new Date(values.probation_start_date);
-    const endDate = new Date(values.probation_end_date);
-
-    if (endDate < startDate) {
-      errors.probation_date_range =
-        "Probation end date must be after the start date";
-    }
   }
+
   // Optional validations for PO Box (if provided, ensure it's in correct format)
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
+  }
+  if (
+    values.nationality === "United Arab Emirates" &&
+    !values.national_service_status
+  ) {
+    errors.national_service_status =
+      "National Service Status is required for UAE Nationals";
   }
   return errors;
 };

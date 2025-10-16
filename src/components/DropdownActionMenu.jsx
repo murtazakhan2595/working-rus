@@ -26,94 +26,96 @@ const DropdownActionMenu = ({
   menuTooltip = "Actions",
   additionalOptionsConfig = [],
 }) => {
-  return (
-    <DropdownMenu>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{menuTooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DropdownMenuContent align="end">
-        {onView && (
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onView(e);
-            }}
-            tabIndex="0"
-            className="cursor-pointer"
-          >
-            {viewText}
-          </DropdownMenuItem>
-        )}
-        {onCustom && (
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onCustom(e);
-            }}
-            tabIndex="0"
-            className="cursor-pointer"
-          >
-            {customText}
-          </DropdownMenuItem>
-        )}
-        {onEdit && (
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onEdit(e);
-            }}
-            tabIndex="0"
-            className="cursor-pointer"
-          >
-            {editText}
-          </DropdownMenuItem>
-        )}
-        {onDelete && (
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDelete(e);
-            }}
-            tabIndex="0"
-            className="cursor-pointer"
-          >
-            {deleteText}
-          </DropdownMenuItem>
-        )}
-        {additionalOptionsConfig &&
-          additionalOptionsConfig.map(({action=()=>{},text}, index) => (
+  if (!onView && !onEdit && !onDelete && !onCustom && ((Array.isArray(additionalOptionsConfig) && additionalOptionsConfig.length === 0) || !additionalOptionsConfig))
+    return <></>
+    return (
+      <DropdownMenu>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{menuTooltip}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <DropdownMenuContent align="end">
+          {onView && (
             <DropdownMenuItem
-              key={index}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                action(e);
+                onView(e);
               }}
               tabIndex="0"
               className="cursor-pointer"
             >
-              {text}
+              {viewText}
             </DropdownMenuItem>
-          ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+          )}
+          {onCustom && (
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onCustom(e);
+              }}
+              tabIndex="0"
+              className="cursor-pointer"
+            >
+              {customText}
+            </DropdownMenuItem>
+          )}
+          {onEdit && (
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit(e);
+              }}
+              tabIndex="0"
+              className="cursor-pointer"
+            >
+              {editText}
+            </DropdownMenuItem>
+          )}
+          {onDelete && (
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(e);
+              }}
+              tabIndex="0"
+              className="cursor-pointer"
+            >
+              {deleteText}
+            </DropdownMenuItem>
+          )}
+          {additionalOptionsConfig &&
+            additionalOptionsConfig.map(({ action = () => { }, text }, index) => (
+              <DropdownMenuItem
+                key={`${text}-${index}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  action(e);
+                }}
+                tabIndex="0"
+                className="cursor-pointer"
+              >
+                {text}
+              </DropdownMenuItem>
+            ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
 };
 
 export default DropdownActionMenu;

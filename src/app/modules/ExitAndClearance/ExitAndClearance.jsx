@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getEmployeeExitStats } from "app/hooks/employeeExitAndClearance";
-import RequestTerminationCard from "./RequestTerminationCard";
 import {
   CircleCheckBig,
   CircleX,
@@ -23,33 +22,40 @@ import { Header } from "components";
 import Stats from "components/ui/Stats";
 import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
-import { TerminationReasons } from "app/modules/ExitAndClearance";
+import { TerminationReasons, RequestTerminationCard } from "app/modules/ExitAndClearance";
 import EOSSettlementList from "../SelfService/Exit/EOSSettlementList";
 import useEOSSettlement from "../../hooks/useEOSSettlement";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { AddUpdateTerminationReasons } from "./TerminationReasons";
-import { GetDispatchStateList } from "utils/Lists";
+import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
 
 const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
   const isAdminView = HasAccess("VIEW_EXIT");
   const isBranchView = HasAccess("VIEW_BRANCH_EXIT");
   const isDepartmentView = HasAccess("VIEW_DPT_EXIT");
+  const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
   const {
     id: user_id,
     branch_id: user_branch,
     department_name: user_department,
-  } = GetDispatchStateList("user_details", "emp") || {}
+  } = GetDispatchStateList("user_details", "emp") || {};
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    isAdminView,
+    isBranchView,
+    isDepartmentView
+  );
   const Managers = GetDispatchStateList("reportingManagers", "emp") || []
   const Departments = GetDispatchStateList("departments", "common") || []
   const Branches = GetDispatchStateList("branches", "common") || []
-  const [activeTab, setActiveTab] = useState("Exit Requests");
+  const [activeTab, setActiveTab] = useState("Resons of Termination");
   const [ExitStats, setExitStats] = useState(0);
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [terminationReasonsReload, setTerminationReasonsReload] = useState(0);
   const [terminationReasons, setTerminationReasons] = useState(false);
+  const [openTerminationForm, setOpenTerminationForm] = useState(false);
   const [reloadData, setReloadData] = useState(false);
-  const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
 
   const { showEOSSettlement } = useEOSSettlement(
     { id: userProfile?.employeeId, status: userProfile?.status },
@@ -60,7 +66,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     let isMounted = true;
     if (isMounted)
       setPermittedViewFilterData(() => {
-        if (isTeamView) return { reporting_employees: [user_id] };
+        if (isTeamView) return { reporting_employee: [user_id] };
         else if (isAdminView) return {};
         else if (isBranchView) return { branch: user_branch };
         else if (isDepartmentView) return { department: user_department };
@@ -70,14 +76,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     };
   }, [isTeamView, isAdminView, isBranchView, isDepartmentView, user_branch, user_department, user_id]);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (isMounted) => {
     try {
       const filter = { ...permittedViewFilterData };
       const response = await getEmployeeExitStats({
         filterData: filter,
       });
 
-      if (response) {
+      if (response && isMounted) {
         setExitStats(response);
       }
     } catch (e) {
@@ -93,10 +99,6 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     };
   }, [permittedViewFilterData, fetchData]);
 
-  const closeRequestTerminationCard = () => {
-    fetchData();
-    setReloadData(!reloadData);
-  };
 
   const statsData = React.useMemo(() => [
     { label: "Total Exits", value: ExitStats.Total, icon: FolderInput },
@@ -152,21 +154,30 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
     return [...baseFilters, ...departmentFilter, ...branchFilter, ...managerFilter];
   }, [isAdminView, isBranchView]); // dependencies
 
+  const ExitPermitted = React.useMemo(() => {
+    if (isAdminView || isBranchView || isDepartmentView) {
+      setActiveTab("Exit Requests")
+      return true;
+    }
+  }, [isAdminView, isBranchView, isDepartmentView]); // dependencies
 
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
+    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}    >
       <Header
         content={
           <>
             {manageExitRequestsPermitted &&
               (activeTab === "Exit Requests" ||
                 activeTab === "Exit Records") && (
-                <RequestTerminationCard
-                  closeModel={closeRequestTerminationCard}
-                />
+                <Button
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setOpenTerminationForm(true);
+                  }}
+                >
+                  Request Termination
+                </Button>
               )}
             {activeTab === "Resons of Termination" && (
               <Button
@@ -176,13 +187,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
               >
                 Add Termination Reason
               </Button>
+
             )}
           </>
         }
       />
-      <Stats stats={statsData} />
+      {ExitPermitted && <Stats stats={statsData} />}
       <Tabs
-        defaultValue="Exit Requests"
+        defaultValue={ExitPermitted ? "Exit Requests" : 'Resons of Termination'}
         className="w-full"
         onValueChange={(tab) => {
           setActiveTab(tab);
@@ -190,7 +202,7 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
         value={activeTab}
       >
         <TabsList>
-          {["Exit Requests", "Exit Records", "Resons of Termination"].map(
+          {[...(ExitPermitted ? ["Exit Requests"] : []), ...(ExitPermitted ? ["Exit Records"] : []), "Resons of Termination"].map(
             (tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {tab}
@@ -224,9 +236,20 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
           isOpen={terminationReasons}
           setIsOpen={setTerminationReasons}
           reload={() => {
-            fetchData();
             setTerminationReasonsReload((prev) => prev + 1); // Trigger reload
           }}
+        />
+      )}
+      {openTerminationForm && (
+        <RequestTerminationCard
+          isOpen={openTerminationForm}
+          setIsOpen={setOpenTerminationForm}
+          reloadData={() => {
+            fetchData(true)
+            setReloadData(!reloadData)
+          }}
+          Employees={Employees}
+
         />
       )}
       {showEOSSettlement && (

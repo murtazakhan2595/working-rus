@@ -15,7 +15,7 @@ export const filterOverlappingSchedules = (schedules) => {
   const filteredSchedules = [];
   const processedDates = new Set(); // Track dates that have been processed
 
-  sortedSchedules.forEach((schedule) => {
+  sortedSchedules.forEach((schedule, index) => {
     const scheduleStart = moment(schedule.start_date);
     const scheduleEnd = moment(schedule.end_date);
     
@@ -60,9 +60,10 @@ export const getChangeRequestComparison = async (
       employee: changeRequest.employee,
       end_date_gte: changeRequest.start_date,
       start_date_lte: changeRequest.end_date,
-      status: "Approved",
+      status: "APPROVED",
       is_change_request: "true,false",
     },
+    ordering: "-created_at",
   });
 
   // Manually filter out the current request to avoid self-comparison

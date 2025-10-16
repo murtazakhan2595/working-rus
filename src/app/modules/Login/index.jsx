@@ -213,7 +213,7 @@ function Login() {
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Button type="submit" className="w-full">
+                    <Button onClick={handleSubmit} className="w-full">
                       {isLoading ? (
                         <span className="animate-pulse">Logging in...</span>
                       ) : (

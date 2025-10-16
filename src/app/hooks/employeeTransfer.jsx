@@ -3,12 +3,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { setUserLogout } from "state/actions/UserAction";
-import { EmployeeListData } from "app/utils/Types/General";
 
 import {
   mapEmployeeTransferData,
   mapEmployeeTransferPayloadData,
-} from "app/utils/MappingObjects/mapEmployeeTransferData";
+} from "app/utils/MappingObjects/mapTransferRotationData";
 import { HandleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;

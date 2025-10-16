@@ -190,6 +190,14 @@ export function mapFinalSettlementPayloadData(data) {
   const payload = {};
   // Iterate over the keys in the Task object
   for (const key in FinalSettlement) {
+    if (
+      [
+        "remaining_salary",
+        "earned_leave_encashment",
+        "total_deductions",
+        "gratuity_amount",
+        "final_amount",
+      ].includes(key)) payload[key] = Number(0);
     // Check if the key exists in the data object
     if (
       data.hasOwnProperty(key) &&

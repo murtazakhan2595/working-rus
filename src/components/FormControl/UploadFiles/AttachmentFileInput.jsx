@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { AiOutlinePaperClip } from "react-icons/ai";
 import { Button } from "components/ui/button";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -9,15 +9,15 @@ function AttachmentFileInput({
   acceptType,
   multiple,
   handleFile,
-  handleRemoveFile = () => { },
-  handleUpdateFileClick = () => { },
+  handleRemoveFile = () => {},
+  handleUpdateFileClick = () => {},
   allowUpdate = true,
   disabled = false,
   AccetpedFile = null,
   maxSize,
 }) {
   const [dragActive, setDragActive] = useState(false);
-  const AttachmentFileInputRef = useRef(null);
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -39,13 +39,33 @@ function AttachmentFileInput({
     }
   };
 
-  const handleChange = (e) => {
+  const handleUploadClick = (e) => {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      handleFile(file);
-    }
+    e.stopPropagation();
+
+    // Create temporary file input (same pattern as handleUpdateFileClick)
+    const tempFileInput = document.createElement("input");
+    tempFileInput.type = "file";
+    tempFileInput.accept = acceptType;
+    tempFileInput.style.display = "none";
+
+    // Add change event listener
+    tempFileInput.addEventListener("change", (event) => {
+      event.preventDefault();
+      if (event.target.files && event.target.files[0]) {
+        const file = event.target.files[0];
+        handleFile(file);
+      }
+      // Clean up
+      document.body.removeChild(tempFileInput);
+    });
+
+    // Add to body and trigger click
+    document.body.appendChild(tempFileInput);
+    tempFileInput.click();
   };
+
+  const shouldShowUploadArea = multiple || files.length === 0;
 
   return (
     <>
@@ -56,14 +76,15 @@ function AttachmentFileInput({
         removeFile={handleRemoveFile}
         handleUpdateFileClick={handleUpdateFileClick}
       />
-      {(multiple || files.length === 0) && (
+      {shouldShowUploadArea && (
         <div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          className={`border border-neutral-500 rounded-lg p-3 ${dragActive ? "border-purple-500 bg-purple-50" : "border-gray-300"
-            }`}
+          className={`border border-neutral-500 rounded-lg p-3 ${
+            dragActive ? "border-purple-500 bg-purple-50" : "border-gray-300"
+          }`}
         >
           <div className="flex items-center mb-2 justify-between">
             <div className="flex items-center gap-2">
@@ -80,32 +101,17 @@ function AttachmentFileInput({
             </div>
             <Button
               variant="continue"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                AttachmentFileInputRef.current.click();
-              }}
+              onClick={handleUploadClick}
               disabled={disabled}
               size={"sm"}
             >
               Upload
             </Button>
-            <input
-              ref={AttachmentFileInputRef}
-              type="file"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer hidden"
-              onChange={handleChange}
-              accept={acceptType}
-              title=""
-            />
           </div>
         </div>
       )}
     </>
   );
-  // ) : (
-  //   renderUploadedFiles()
-  // );
 }
 
 export default AttachmentFileInput;

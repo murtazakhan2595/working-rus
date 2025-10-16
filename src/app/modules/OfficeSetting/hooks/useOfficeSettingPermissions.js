@@ -88,6 +88,28 @@ export const useOfficeSettingPermissions = () => {
     orgChart: {
       canView: hasPermission(OFFICE_SETTING_PERMISSIONS.ORG_CHART.VIEW),
       canManage: hasPermission(OFFICE_SETTING_PERMISSIONS.ORG_CHART.MANAGE)
-    }
+    },
+
+
+    // Evaluation Type Permissions
+    evaluationType: {
+      canView: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW),
+      canCreate: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE),
+      canUpdate: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.UPDATE),
+      canDelete: hasPermission(OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.DELETE)
+    },
+
+    ratingScale: {
+      canView: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.VIEW),
+      canCreate: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.CREATE),
+      canUpdate: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.UPDATE),
+      canDelete: hasPermission(OFFICE_SETTING_PERMISSIONS.RATING_SCALE_SETUP.DELETE)
+    },
+    currency: {
+      canView: hasPermission(OFFICE_SETTING_PERMISSIONS.Currency.VIEW),
+      canCreate: hasPermission(OFFICE_SETTING_PERMISSIONS.Currency.CREATE),
+      canUpdate: hasPermission(OFFICE_SETTING_PERMISSIONS.Currency.UPDATE),
+      canDelete: hasPermission(OFFICE_SETTING_PERMISSIONS.Currency.DELETE)
+    },
   };
 }; 

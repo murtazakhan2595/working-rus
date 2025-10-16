@@ -1,0 +1,48 @@
+import React, { useState, useCallback } from "react";
+import { Switch } from "src/@/components/ui/switch";
+import { toast } from "react-toastify";
+import { saveUpdateEmailTemplate } from "app/hooks/talentSphere";
+import { HasAccess } from "utils/PermissionUtils";
+
+const EmailTemplateStatusTogle = ({ is_active, data, reloadData }) => {
+  const isEditPermitted = HasAccess("EDIT_TS_EMAIL_TEMPLATES");
+
+  const onCheckedChange = useCallback(
+    async (value, data) => {
+      try {
+        const response = await saveUpdateEmailTemplate(
+          { is_active: value },
+          data.id
+        );
+
+        if (response) {
+          toast.success(`Email Template Status Updated Successfully!`, {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          reloadData(true);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [reloadData] // ensure dependencies are listed
+  );
+
+  return (
+    <div
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
+      <Switch
+        id="Status"
+        checked={is_active}
+        disabled={!isEditPermitted}
+        onCheckedChange={(value) => onCheckedChange(value, data)}
+      />
+    </div>
+  );
+};
+
+
+export default EmailTemplateStatusTogle;

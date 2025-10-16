@@ -3,13 +3,15 @@ import {
   NavigationSheetComponent,
   DetailContent,
   StatusList,
-  EmployeeOverview, // Add this import
+  EmployeeOverview,
 } from "components";
 import { getLeaveOpeningBalanceById } from "app/hooks/leaveTracker";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { getLeaveTypes } from "app/hooks/leaveTracker";
 import AddUpdateLeaveBalance from "./AddUpdateLeaveBalance";
+import { getOpeningBalanceSummaryByEmpSerialNumber } from "app/hooks/leaveTracker";
+import { EmployeeID } from "utils/getValuesFromTables";
 
 const ViewOpeningBalanceDetail = ({
   isOpen,
@@ -18,8 +20,17 @@ const ViewOpeningBalanceDetail = ({
   reloadData = () => {},
   DataList = [],
 }) => {
-  const [leaveTypeOptions, setLeaveTypeOptions] = useState([]);
   const [currentItem, setCurrentItem] = useState(null);
+
+  // Transform DataList to ensure each item has an id field
+  const transformedDataList = DataList.map((item) => ({
+    ...item,
+    id: item.id || item.serial_number,
+  }));
+
+  // Add debugging
+  console.log("ViewOpeningBalanceDetail - currentId:", currentId);
+  console.log("ViewOpeningBalanceDetail - DataList length:", DataList.length);
 
   // Define the fields to display
   const fields = [
@@ -28,32 +39,35 @@ const ViewOpeningBalanceDetail = ({
       footerTitle: "Created At",
       footerField: "created_at",
       field: [
-        // Map leave type options to field
         {
-          key: "leave_type",
-          label: "Leave Type",
-          formatter: (value) => {
-            const leaveType = leaveTypeOptions.find(
-              (type) => type.id === value
-            );
-            return leaveType?.name || "N/A";
-          },
+          key: "serial_number",
+          label: "Employee ID",
+          formatter: (cell) => <EmployeeID value={cell} />,
         },
         {
-          key: "total_allotted",
-          label: "Total Allotted",
+          key: "employee",
+          label: "Employee",
         },
         {
-          key: "consumed",
-          label: "Consumed",
-        },
-        {
-          key: "remaining",
-          label: "Remaining",
-        },
-        {
-          key: "remarks",
-          label: "Remarks",
+          key: "leave_balances",
+          label: "Leave Balances",
+          formatter: (cell) => (
+            <div className="flex flex-col gap-1">
+              {cell && cell.length > 0 ? (
+                cell.map((balance, index) => (
+                  <div key={index}>
+                    <span className="text-sm">{balance.leave_type}: </span>
+                    <span className="text-blue-600 text-sm">
+                      Alloted: {balance.total_allotted}, Consumed:{" "}
+                      {balance.consumed}, Remaining: {balance.remaining}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <span className="text-gray-500 text-sm">No leave balances</span>
+              )}
+            </div>
+          ),
         },
       ],
     },
@@ -61,39 +75,22 @@ const ViewOpeningBalanceDetail = ({
 
   const fetchData = async (id, isMounted) => {
     try {
-      const response = await getLeaveOpeningBalanceById(id);
+      const response = await getOpeningBalanceSummaryByEmpSerialNumber(id);
+
       if (isMounted) {
-        setCurrentItem(response); // Store the fetched data
-        return response;
+        // Handle the response format - could be array or object
+        let transformedResponse ={
+          ...response[0],
+          id: response[0]?.serial_number
+        }
+        setCurrentItem(transformedResponse);
+        console.log("Transformed response:", transformedResponse);
+        return transformedResponse;
       }
     } catch (error) {
-      console.error("Error fetching leave opening balance:", error);
+      return null;
     }
   };
-
-  // Fetch leave types
-  useEffect(() => {
-    const fetchLeaveTypes = async () => {
-      try {
-        const response = await getLeaveTypes({});
-        console.log("Leave Types Response:", response);
-        if (response?.results) {
-          setLeaveTypeOptions(
-            response.results.map((type) => ({
-              value: type.id,
-              label: type.name,
-              leave_count: type.leave_count,
-              ...type,
-            }))
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching leave types:", error);
-        toast.error("Failed to load leave types");
-      }
-    };
-    fetchLeaveTypes();
-  }, []);
 
   return (
     <NavigationSheetComponent
@@ -101,30 +98,15 @@ const ViewOpeningBalanceDetail = ({
       setIsOpen={setIsOpen}
       title="Leave Opening Balance Details"
       currentItem_Id={currentId}
-      dataList={DataList}
+      dataList={transformedDataList}
       editComponent={AddUpdateLeaveBalance}
       apiEndpoint={`/leave-openingbalance/${currentId}/`}
       reloadData={reloadData}
       fetchCurrentItemDetails={fetchData}
-      deleteItemName="Leave Opening Balance"
       editTooltip="Edit Leave Opening Balance"
-      deleteTooltip="Delete Leave Opening Balance"
+      allowDelete={false}
     >
-      <div className="space-y-6">
-        {/* Employee Overview */}
-        {currentItem?.employee && (
-          <div className="flex items-center justify-between w-full gap-4 ">
-            <EmployeeOverview
-              id={currentItem?.employee?.id || currentItem?.employee}
-              showEmail={true}
-              showDepartment={true}
-              showPosition={true}
-              showId={true}
-              showBranchName={true}
-            />
-          </div>
-        )}
-
+      <div className="">
         {/* Leave Opening Balance Details */}
         <DetailContent currentItem={currentItem} fields={fields} />
       </div>

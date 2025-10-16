@@ -13,6 +13,8 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
+
+
 const formDataHeader = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   // Don't explicitly set 'Content-Type' for FormData
@@ -172,6 +174,7 @@ const getAllBoards = async (payload) => {
   return [];
 };
 
+// get all labels here----------------------------------------------------------------------
 export const getAllLabels = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -1054,6 +1057,7 @@ export const getTaskLabelById = async (id) => {
   }
 };
 
+// here you adding the labels-------------------------------------------------
 export const addTaskLabel = async (payload, id) => {
   try {
     // Create FormData object

@@ -112,7 +112,8 @@ export async function mapApproverDetails({
           </>
         );
       } else {
-        levelDetail.info = "Unknown - No eligible approver with the necessary permissions was found to perform this action.";
+        levelDetail.info = "Unknown";
+        levelDetail.description = "No eligible approver with the necessary permissions was found to perform this action.";
       }
     }
 
@@ -120,4 +121,42 @@ export async function mapApproverDetails({
   }
 
   return levelList.sort((a, b) => a.level_number - b.level_number);
+}
+
+export async function mapCountriesList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = {
+      value: Record.name,
+      label: Record.name,
+      id: Record.id,
+      name: Record.name,
+      name_ascii: Record.name_ascii,
+      slug: Record.slug,
+      geoname_id: Record.geoname_id,
+      alternate_names: Record.alternate_names,
+      code2: Record.code2,
+      code3: Record.code3,
+      continent: Record.continent,
+      tld: Record.tld,
+      phone: Record.phone,
+    };
+    return Details;
+  });
+
+  return DataList;
+}
+
+export async function mapCitiesList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = {
+      value: Record.name,
+      label: Record.name,
+      id: Record.id,
+      name: Record.name,
+    };
+
+    return Details;
+  });
+
+  return DataList;
 }

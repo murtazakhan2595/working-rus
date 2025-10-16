@@ -208,7 +208,7 @@ export function getEmployeeLeavesAgainsLeaveType(
 
 export const yearsDropdownList = (StartYear, EndYear) => {
   const years = [];
-  for (let year = EndYear; year >= StartYear; year--) {
+  for (let year = StartYear; year <= EndYear; year++) {
     years.push({ label: year, value: year });
   }
   return years;
@@ -371,17 +371,17 @@ export const GetEmployeeFilteredList = (
   isBranchView = false,
   isDepartmentView = false
 ) => {
-  const Employees = useSelector((state) => state.emp.employees);
+  // const Employees = useSelector((state) => state.emp.employees);
+  const Employees = GetDispatchStateList("employees_detail", "emp");
   const {
     branch_id: user_branch,
     department_name: user_department,
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
-
   if (!Array.isArray(Employees) || Employees?.length === 0) return [];
 
   // Admin view returns all employees
-  if (adminView && !isTeamView) {
+  if (adminView) {
     return Employees;
   }
 
@@ -405,19 +405,48 @@ export const GetEmployeeFilteredList = (
     });
   }
 
-  if (filters?.length === 0) return [];
-  return Employees.filter((employee) => {
+  if (filters?.length === 0) {
+    return [];
+  }
+  
+  const filteredEmployees = Employees.filter((employee) => {
     return filters.some(({ keys, value }) => {
       return keys.some((key) => {
         const empVal = employee[key];
-        if (Array.isArray(empVal)) {
-          return empVal.includes(value);
+        
+        // Handle different data types for different fields
+        if (key === 'direct_report') {
+          // direct_report is a string/number, so check direct equality
+          if (empVal === null || empVal === undefined) {
+            return false;
+          }
+          return empVal === value || empVal === value.toString() || empVal.toString() === value.toString();
+        } else if (key === 'indirect_report') {
+          // indirect_report is a comma-separated string, so split and check if it includes the value
+          if (empVal && typeof empVal === 'string') {
+            const indirectReports = empVal.split(',').map(id => id.trim());
+            return indirectReports.includes(value.toString()) || indirectReports.includes(value);
+          } else if (Array.isArray(empVal)) {
+            // Fallback for if it's actually an array
+            return empVal.includes(value) || empVal.includes(value.toString());
+          }
+          // If empVal is null, undefined, or empty string, return false
+          return false;
+        } else {
+          // For other fields, use the original logic
+          if (empVal === null || empVal === undefined) {
+            return false;
+          }
+          if (Array.isArray(empVal)) {
+            return empVal.includes(value);
+          }
+          return empVal === value;
         }
-
-        return empVal === value;
       });
     });
   });
+  
+  return filteredEmployees;
 };
 
 

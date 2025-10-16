@@ -38,3 +38,47 @@ export const validationDocumentCategoryFormSchema = (values) => {
   if (!values.name) errors.name = "Name is required";
   return errors;
 };
+
+
+// Original validation for letter request creation
+export const validationLetterRequestFormSchema = (values) => {
+  const errors = {};
+  if (!values.name) errors.name = "Name is required";
+  if (!values.description) errors.description = "Description is required";
+  return errors;
+};
+
+// New validation for HR Accept/Reject form
+export const validationLetterRequestStatusSchema = (values, actionType) => {
+  const errors = {};
+
+  // Only validate attachment requirements when accepting
+  if (actionType === "accept") {
+    // Validate attachment method selection
+    if (!values.attachment_type) {
+      errors.attachment_type = "Please select an attachment method";
+    }
+    
+    // Validate based on selected attachment method
+    if (values.attachment_type === "upload" && !values.attachments) {
+      errors.attachments = "Please upload a document";
+    }
+    
+    if (values.attachment_type === "existing" && !values.selected_document_id) {
+      errors.selected_document_id = "Please select an HR document";
+    }
+  }
+
+  // No validation needed for reject action
+  return errors;
+};
+
+// Alternative comprehensive validation that can be used in the form
+export const validationAcceptRejectFormSchema = (values) => {
+  const errors = {};
+  
+  // This would be used if you want to validate everything at once
+  // But with custom buttons, validation is handled per action
+  
+  return errors;
+};

@@ -22,6 +22,7 @@ export const LeaveRecordColumns = [
     dataField: "id",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
+    width:'110px',
   },
   {
     dataField: "id",
@@ -394,38 +395,45 @@ export const PublicHolidaydsColumn = (reload, data) => [
 ];
 export const OpeningLeaveBalanceColumn = (reload, data) => [
   {
-    dataField: "employee",
+    dataField: "serial_number",
     text: "Employee ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
-
   {
     dataField: "employee",
     text: "Employee",
-    formatter: (cell) => (
-      <EmployeeOverview
-        id={cell}
-        showDepartment={true}
-        showBranchName={true}
-        showPosition={true}
-        showEmail={true}
-      />
-    ),
   },
-
   {
-    dataField: "remarks",
-    text: "Remarks",
-    formatter: (cell, row) => <div className="">{cell || "N/A"}</div>,
-    minWidth: "120px",
-    dataSort: true,
+    dataField: "leave_balances",
+    text: "Leave Balances",
+    formatter: (cell) => (
+      <div className="flex flex-col gap-1">
+        {cell && cell.length > 0 ? (
+          cell.map((balance, index) => (
+            <div key={index}>
+              <span className="text-sm">{balance.leave_type}: </span>
+              <span className="text-blue-600 text-sm">
+                Alloted: {balance.total_allotted}, Consumed: {balance.consumed}, Remaining:{" "}
+                {balance.remaining}
+              </span>
+            </div>
+          ))
+        ) : (
+          <span className="text-gray-500 text-sm">No leave balances</span>
+        )}
+      </div>
+    ),
   },
   {
     dataField: "",
     text: "Actions",
     isDummyField: true,
     formatter: (_, row, dataList) => (
-      <OpeningBalanceAction data={row} reloadData={reload} DataList={dataList} />
+      <OpeningBalanceAction
+        data={row}
+        reloadData={reload}
+        DataList={dataList}
+      />
     ),
     headerStyle: { width: "8%" },
     style: { textAlign: "center" },

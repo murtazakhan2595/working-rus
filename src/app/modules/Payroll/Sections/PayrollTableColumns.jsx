@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
-import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, DateUI } from "components";
 import moment from "moment";

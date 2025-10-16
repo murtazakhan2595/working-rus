@@ -16,7 +16,7 @@ const SheetUI = forwardRef(
   (
     {
       isOpen = true,
-      setIsOpen = () => {},
+      setIsOpen = () => { },
       children,
       className,
       variant = "modal", // Determines if the component is a 'modal' or 'sheet'
@@ -44,31 +44,46 @@ const SheetUI = forwardRef(
       initialValues,
       enableReinitialize,
       handleSubmit,
-      validateFormSchema,
+      validateFormSchema = () => { },
       submitButtonText = "Submit",
+      additionalButtonConfig = [],
       cancelButtonText,
       formFields,
-      renderUpdatedFormValues = () => {},
+      renderUpdatedFormValues = () => { },
       columns,
       onFormChange,
       disableSubmit = false,
       loadingMessage,
-      onSubmitClick = () => {},
+      onSubmitClick = () => { },
       DataList = [],
+      customFooter = null, // NEW: Custom footer function
     } = formConfig;
 
-    const handleClose = () => {
+    const handleClose = (event) => {
+
+      event.preventDefault();
+      event.stopPropagation();
       setIsCloseConfirmationOpen(true);
     };
 
-    const HandleSubmit = async (values, resetForm) => {
+    const HandleSubmit = async (values, resetForm, CustomClick) => {
       try {
         setIsSubmittingForm(true);
-        const response = await handleSubmit(values, resetForm);
-        if (response?.status) {
-          setMessageConfig(response);
-          setOpenActionMessage(true);
+        if (CustomClick && typeof CustomClick === "function") {
+          const response = await CustomClick(values, resetForm);
+          if (response?.status) {
+            setMessageConfig(response);
+            setOpenActionMessage(true);
+          }
+        } else {
+          const response = await handleSubmit(values, resetForm);
+          if (response?.status) {
+            setMessageConfig(response);
+            setOpenActionMessage(true);
+          }
         }
+
+
       } catch (error) {
         console.error(error);
       } finally {
@@ -76,38 +91,35 @@ const SheetUI = forwardRef(
       }
     };
 
-    const validateFieldValue = useCallback(
-      async (value, label, id) => {
-        if (!value) {
-          setValidateFieldErrors((prevErrors) => {
-            const updated = { ...prevErrors };
-            delete updated[label];
-            return updated;
-          });
-          return 0;
-        }
+    const validateFieldValue = useCallback((value, label, id) => {
+      if (!value) {
+        setValidateFieldErrors((prevErrors) => {
+          const updated = { ...prevErrors };
+          delete updated[label];
+          return updated;
+        });
+        return 0;
+      }
 
-        const filtered = DataList.filter(
-          (obj) =>
-            obj[label]?.toLowerCase() === value.trim().toLowerCase() &&
-            parseInt(obj.id) !== parseInt(id)
-        );
+      const filtered = DataList.filter(
+        (obj) =>
+          obj[label]?.toLowerCase() === value.trim().toLowerCase() &&
+          parseInt(obj.id) !== parseInt(id)
+      );
 
-        if (filtered.length > 0) {
-          setValidateFieldErrors((prevErrors) => ({
-            ...prevErrors,
-            [label]: `Already exists. Please choose a different value`,
-          }));
-        } else {
-          setValidateFieldErrors((prevErrors) => {
-            const updated = { ...prevErrors };
-            delete updated[label];
-            return updated;
-          });
-        }
-      },
-      [DataList, setValidateFieldErrors]
-    );
+      if (filtered.length > 0) {
+        setValidateFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [label]: `Already exists. Please choose a different value`,
+        }));
+      } else {
+        setValidateFieldErrors((prevErrors) => {
+          const updated = { ...prevErrors };
+          delete updated[label];
+          return updated;
+        });
+      }
+    }, [DataList, setValidateFieldErrors]);
 
     return (
       <>
@@ -172,17 +184,11 @@ const SheetUI = forwardRef(
               }
 
               // Merge with schema-based validations
-              const schemaErrors =
-                typeof validateFormSchema === "function"
-                  ? validateFormSchema(values || {})
-                  : {};
+              const schemaErrors = typeof validateFormSchema === "function" ? validateFormSchema(values || {}) : {};
 
               if (schemaErrors && typeof schemaErrors === "object") {
                 errors = { ...errors, ...schemaErrors };
               }
-
-              // Optional debugging
-              console.error("Form Errors:", errors, "Values:", values);
 
               // Notify form value update
               if (typeof renderUpdatedFormValues === "function") {
@@ -210,7 +216,7 @@ const SheetUI = forwardRef(
                   }
                 }
               }
-
+              console.log('Values', values, 'Error', errors)
               return errors;
             }}
           >
@@ -259,8 +265,8 @@ const SheetUI = forwardRef(
                               colsSpan,
                               InputField,
                               subColumns,
-                              shouldRender = true, // NEW: Default to true for backward compatibility
-                              renderCondition = true, // NEW: Alternative prop name for conditional rendering
+                              shouldRender = true,
+                              renderCondition = true,
                               customComponent,
                               validateDuplicate = false,
                             } = fieldsConfig;
@@ -269,39 +275,36 @@ const SheetUI = forwardRef(
                             if (customComponent) {
                               return (
                                 <div
-                                  className={`space-y-4 ${
-                                    colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                  }`}
+                                  className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""
+                                    }`}
                                   key={name || `custom-${index}`}
                                 >
                                   {typeof customComponent === "function"
                                     ? customComponent({
-                                        field: fieldsConfig,
-                                        form: props,
-                                      })
+                                      field: fieldsConfig,
+                                      form: props,
+                                    })
                                     : customComponent}
                                 </div>
                               );
                             }
 
-                            // NEW: Check if field should be rendered
-                            // Support both shouldRender and renderCondition props for flexibility
-                            const isFieldVisible =
-                              shouldRender && renderCondition;
+                            // Check if field should be rendered
+                            const isFieldVisible = (() => {
+                              if (typeof shouldRender === "function") {
+                                return shouldRender(props.values);
+                              }
+                              return shouldRender && renderCondition;
+                            })();
 
-                            // NEW: Skip rendering if field should not be visible
+                            // Skip rendering if field should not be visible
                             if (!isFieldVisible) {
                               return null;
                             }
 
                             const error = get(props.errors, name);
                             return (
-                              <div
-                                className={`space-y-4 ${
-                                  colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                }`}
-                                key={name || index}
-                              >
+                              <div className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""}`} key={`${name}-${index}`}>
                                 <InputField
                                   error={typeof error === "string" ? error : ""}
                                   touch={get(props?.touched, name)}
@@ -309,23 +312,10 @@ const SheetUI = forwardRef(
                                     value ? value : get(props?.values, name)
                                   }
                                   onChange={async (field, value) => {
-                                    if (
-                                      onFieldUpdate &&
-                                      typeof onFieldUpdate === "function"
-                                    )
-                                      await onFieldUpdate(
-                                        field,
-                                        value,
-                                        props.values,
-                                        props.setFieldValue
-                                      );
-                                    if (validateDuplicate) {
-                                      await validateFieldValue(
-                                        value,
-                                        name,
-                                        props.values.id
-                                      );
-                                    }
+                                    if (onFieldUpdate && typeof onFieldUpdate === "function")
+                                      onFieldUpdate(field, value, props.values, props.setFieldValue);
+                                    if (validateDuplicate)
+                                      validateFieldValue(value, name, props.values.id);
                                     props?.setFieldValue(field, value);
                                   }}
                                   columns={subColumns}
@@ -339,36 +329,89 @@ const SheetUI = forwardRef(
                     );
                   }
                 )}
+
+                {/* Footer Section */}
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
-                  <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                    {cancelButtonText && (
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={handleClose}
-                        type="button"
-                      >
-                        {cancelButtonText}
-                      </Button>
-                    )}
-                    <Button
-                      type="submit"
-                      size="lg"
-                      variant="default"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        onSubmitClick(props.values);
-                        props.handleSubmit();
-                      }}
-                      disabled={disableSubmit || isSubmittingForm}
-                    >
-                      {isSubmittingForm
-                        ? "Submitting Form..."
-                        : disableSubmit && loadingMessage
-                        ? loadingMessage
-                        : submitButtonText}
-                    </Button>
-                  </div>
+                  {customFooter && typeof customFooter === "function" ? (
+                    // Render custom footer if provided
+                    customFooter(props)
+                  ) : (
+                    // Render default footer buttons
+                    <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                      {cancelButtonText && (
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={handleClose}
+                          type="button"
+                        >
+                          {cancelButtonText}
+                        </Button>
+                      )}
+                      {additionalButtonConfig.map(({ buttonText, variant, onButtonClick, disabled, loadingText, validateForm }, index) =>
+                        <Button
+                          size="lg"
+                          variant={variant}
+                          onClick={(event) => {
+                            debugger
+                            event.preventDefault();
+                            event.stopPropagation();
+                            if (validateForm) {
+                              if (
+                                validateFieldErrors &&
+                                typeof validateFieldErrors === "object" &&
+                                !Array.isArray(validateFieldErrors) && Object.keys(validateFieldErrors).length > 0
+                              ) {
+                                // Mark all fields as touched
+                                Object.keys(validateFieldErrors).forEach(field => {
+                                  props.setFieldTouched(field, true, false);
+                                });
+
+                                // Clone and set errors
+                                props.setErrors({ ...validateFieldErrors });
+
+                                // Force validation (optional but safe)
+                                props.validateForm();
+
+                                return;
+                              }
+                            }
+                            HandleSubmit(props.values, () => { }, onButtonClick);
+                          }}
+                          key={`${buttonText}-${index}`}
+                          disabled={disableSubmit || isSubmittingForm || disabled}
+                        >
+                          {isSubmittingForm
+                            ? loadingText
+                            : (disableSubmit || disabled) && loadingMessage
+                              ? loadingText
+                              : buttonText}
+                        </Button>
+                      )}
+                      {submitButtonText && (
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="default"
+                          onClick={(event) => {
+
+                            event.preventDefault();
+                            event.stopPropagation();
+                            onSubmitClick(props.values);
+                            props.handleSubmit();
+                          }}
+                          disabled={disableSubmit || isSubmittingForm}
+                        >
+                          {isSubmittingForm
+                            ? "Submitting Form..."
+                            : disableSubmit && loadingMessage
+                              ? loadingMessage
+                              : submitButtonText}
+                        </Button>
+                      )}
+
+                    </div>
+                  )}
                 </div>
               </form>
             )}
@@ -387,9 +430,8 @@ const FormBody = ({
   columns,
   description,
 }) => {
-  const className = `grid grid-cols-1 gap-4 lg:grid-cols-${
-    columns || 1
-  } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
+  const className = `grid grid-cols-1 gap-4 lg:grid-cols-${columns || 1
+    } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
 
   return sheetCardExtension ? (
     <SheetCardExtension
@@ -413,8 +455,8 @@ const SheetVariant = ({
   children,
   isOpen = true,
   className,
-  setIsOpen = () => {},
-  setIsCloseConfirmationOpen = () => {},
+  setIsOpen = () => { },
+  setIsCloseConfirmationOpen = () => { },
   isCloseConfirmationOpen = false,
   variant = "modal", // Can be 'modal' or 'sheet'
   sheetConfig = {

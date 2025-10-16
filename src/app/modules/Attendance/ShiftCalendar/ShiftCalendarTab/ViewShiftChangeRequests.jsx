@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { FilterInput } from "components/FormControl";
 import { PageLoader } from "components";
 
-const ViewShiftChangeRequests = () => {
+const ViewShiftChangeRequests = ({ refreshTrigger }) => {
     const Branches = useSelector((state) => state.common.branches);
     const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
     const [filterData, setFilterData] = useState({ status: "", });
@@ -72,7 +72,7 @@ const ViewShiftChangeRequests = () => {
         return () => {
             isMounted = false;
         };
-    }, [ordering, options, filterData]);
+    }, [ordering, options, filterData, refreshTrigger]);
 
 
     const handleFilterChange = (filterName, filterValue) => {

@@ -1,0 +1,275 @@
+// ✅ Tab configuration (static, no hook calls here!)
+import {
+    Benefits,
+    AddUpdateBenefitForm,
+    Skills,
+    AddUpdateSkillForm,
+    BlacklistReasons,
+    AddUpdateBlacklistReasonForm,
+    OfferLetterTemplates,
+    AddUpdateOfferLetterTemplateForm,
+    FeedBackForms,
+    AddUpdateFeedBackForm,
+    InterviewTypes,
+    AddUpdateInterviewTypeForm,
+    CareerLevels,
+    AddUpdateCareerLevelForm,
+    Educations,
+    AddUpdateEducationForm,
+    JobTypes,
+    AddUpdateJobTypeForm,
+    RemoteWorkChecklist,
+    AddUpdateRemoteWorkChecklistForm,
+    EmailTemplates,
+    AddUpdateEmailTemplateForm,
+
+} from "app/modules/TalentSphere/SettingManagement";
+import Demographics from "app/modules/TalentSphere/DemographicsForm";
+import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
+import { AllApplicants, } from "app/modules/TalentSphere";
+import {
+    GenerateOffer,
+    OfferRequests,
+    OffersSend,
+} from 'app/modules/TalentSphere/OfferTracking';
+import {
+    ApplicantInformation,
+    ShortlistingInfomation,
+    ScreeningInfomation,
+    VacancyDetails,
+    AllInterviewDetails,
+    AllOfferDetails,
+    BlacklistedInformation,
+    RejectedInformation,
+} from 'app/modules/TalentSphere/Sections';
+
+// 🔹 Central config for all tabs
+export const SETTING_TAB_CONFIG = [
+    {
+        key: "benefits",
+        label: "Benefits",
+        viewPerm: "VIEW_TS_BENEFITS",
+        addPerm: "ADD_TS_BENEFITS",
+        list: (reload) => <Benefits reload={reload} />,
+        form: AddUpdateBenefitForm,
+    },
+    {
+        key: "career-level",
+        label: "Career Level",
+        viewPerm: "VIEW_TS_CAREER_LEVEL",
+        addPerm: "ADD_TS_CAREER_LEVEL",
+        list: (reload) => <CareerLevels reload={reload} />,
+        form: AddUpdateCareerLevelForm,
+    },
+    {
+        key: "skills",
+        label: "Skills",
+        viewPerm: "VIEW_TS_SKILLS",
+        addPerm: "ADD_TS_SKILLS",
+        list: (reload) => <Skills reload={reload} />,
+        form: AddUpdateSkillForm,
+    },
+    {
+        key: "education",
+        label: "Education",
+        viewPerm: "VIEW_TS_EDUCATION",
+        addPerm: "ADD_TS_EDUCATION",
+        list: (reload) => <Educations reload={reload} />,
+        form: AddUpdateEducationForm,
+    },
+    {
+        key: "job-type",
+        label: "Job Types",
+        viewPerm: "VIEW_TS_JOB_TYPE",
+        addPerm: "ADD_TS_JOB_TYPE",
+        list: (reload) => <JobTypes reload={reload} />,
+        form: AddUpdateJobTypeForm,
+    },
+    {
+        key: "checklist",
+        label: "Remote Work Checklist",
+        addLabel: "Add Checklist Item",
+        viewPerm: "VIEW_TS_REMOTE_WORK_CHECKLIST",
+        addPerm: "ADD_TS_REMOTE_WORK_CHECKLIST",
+        list: (reload) => <RemoteWorkChecklist reload={reload} />,
+        form: AddUpdateRemoteWorkChecklistForm,
+    },
+    {
+        key: "add-demographics",
+        label: "Add Demographics",
+        // no permissions required
+        list: () => <Demographics />,
+        form: null,
+    },
+    {
+        key: "feedback-form",
+        label: "Feedback Forms",
+        viewPerm: "VIEW_INTERVIEW_FEEDBACK_FORMS",
+        addPerm: "ADD_INTERVIEW_FEEDBACK_FORM",
+        list: (reload) => <FeedBackForms reload={reload} />,
+        form: AddUpdateFeedBackForm,
+    },
+    {
+        key: "interview-type",
+        label: "Interview Types",
+        viewPerm: "VIEW_INTERVIEW_TYPES",
+        addPerm: "ADD_INTERVIEW_TYPE",
+        list: (reload) => <InterviewTypes reload={reload} />,
+        form: AddUpdateInterviewTypeForm,
+    },
+    {
+        key: "email-template",
+        label: "Email Templates",
+        viewPerm: "VIEW_TS_EMAIL_TEMPLATES",
+        addPerm: "ADD_TS_EMAIL_TEMPLATE",
+        list: (reload) => <EmailTemplates reload={reload} />,
+        form: AddUpdateEmailTemplateForm,
+    },
+    {
+        key: "offer-letter-template",
+        label: "Offer Letter Templates",
+        viewPerm: "VIEW_TS_OFFER_LETTER_TEMPLATES",
+        addPerm: "ADD_TS_OFFER_LETTER_TEMPLATE",
+        list: (reload) => <OfferLetterTemplates reload={reload} />,
+        form: AddUpdateOfferLetterTemplateForm,
+    },
+    {
+        key: "blacklist-reason",
+        label: "Blacklist Reasons",
+        viewPerm: "VIEW_BLACKLIST_REASON",
+        addPerm: "ADD_BLACKLIST_REASON",
+        list: (reload) => <BlacklistReasons reload={reload} />,
+        form: AddUpdateBlacklistReasonForm,
+    },
+];
+
+export const APPLICANT_TAB_CONFIG = [
+    {
+        label: "All Applicants",
+        permission: "VIEW_TS_BENEFITS",
+        component: (reload, deepLinkFilterData) => <AllApplicants reload={reload} deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
+        label: "AI Talent Picks",
+        permission: "VIEW_TS_BENEFITS",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="ai_picks" deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
+        label: "Screened",
+        permission: "VIEW_TS_EDUCATION",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="screened" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
+        label: "Shortlisted",
+        permission: "VIEW_TS_CAREER_LEVEL",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="shortlisted" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
+        label: "Rejected",
+        permission: "VIEW_REJECTED_APPLICATION",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="rejected" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
+        label: "Blacklisted",
+        permission: "VIEW_REJECTED_APPLICATION",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="blacklisted" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
+    },
+    {
+        label: "Hired",
+        permission: "VIEW_HIRED_APPLICANTS",
+        component: (reload, deepLinkFilterData) => <AllApplicants variant="hired" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
+    },
+];
+
+
+export const OFFER_TAB_CONFIG = [
+    {
+        key: "offer-request",
+        label: "Offer Letter Requests",
+        viewPerm: "VIEW_TS_BENEFITS",
+        addPerm: "GENERATE_OFFER_LETTER",
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OfferRequests reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
+        form: GenerateOffer,
+        addLabel: 'Generate Offer'
+    },
+    {
+        key: "offer-send",
+        label: "Offer Send",
+        viewPerm: "VIEW_OFFER_SEND_TO_APPLICANT",
+        // addPerm: "ADD_TS_BENEFITS",
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OffersSend reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
+        // form: GenerateOffer,
+        // addLabel:'Generate Offer'
+    },
+];
+
+
+export const APPLICANT_PROFILE_TAB_CONFIG = [
+    {
+        label: "Requisition Info",
+        infoFields: VacancyDetails,
+        dataKey: "publish_vacancy",
+    },
+    {
+        label: "Applicant Info",
+        infoFields: ApplicantInformation,
+    },
+    {
+        label: "Screening Info",
+        infoFields: ScreeningInfomation,
+    },
+    {
+        label: "Interview Details",
+        infoFields: AllInterviewDetails,
+        // dataKey: 'interviews',
+    },
+    {
+        label: "Offer Details",
+        infoFields: AllOfferDetails,
+    },
+    {
+        label: "Shortlising Info",
+        infoFields: ShortlistingInfomation,
+        dataKey: "recruitment_shortlist",
+    },
+    {
+        label: "Rejection Details",
+        infoFields: RejectedInformation,
+        dataKey: "recruitment_rejected",
+    },
+    {
+        label: "Backlisting Info",
+        infoFields: BlacklistedInformation,
+        dataKey: "blacklist",
+    },
+    {
+        label: "Demographics",
+        dataKey: null,
+        customComponent: true, // Flag to indicate this uses a custom component
+    },
+    // {
+    //     label: "Rejected",
+    //     permission: "VIEW_REJECTED_APPLICATION",
+    //     component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
+    // },
+    // {
+    //     label: "Resume Bank",
+    //     permission: "VIEW_RESUME_BANK_APPLICATION",
+    //     component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
+    // },
+    // {
+    //     label: "Screened",
+    //     permission: "VIEW_TS_EDUCATION",
+    //     component: () => <Applicants />,
+    // },
+    // {
+    //     label: "Shortlisted",
+    //     permission: "VIEW_TS_CAREER_LEVEL",
+    //     component: () => <AllApplicants variant="shortlisted" />,
+    // },
+    // {
+    //     label: "Blacklisted",
+    //     permission: "VIEW_REJECTED_APPLICATION",
+    //     component: () => <AllApplicants variant="blacklisted" />,
+    // },
+];

@@ -9,7 +9,8 @@ import {
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
 import { renderErrorMessages } from "utils/renderErrors";
-import { fetchDepartments } from "state/slices/CommonSlice";
+import { mapCountriesList, mapCitiesList } from "app/utils/MappingObjects/mapGeneralData";
+import { mapEmployeeCustomInformationList } from "app/utils/MappingObjects/mapEmployeeData";
 
 export const baseUrl = initialState.baseUrl;
 export const headers = () => ({
@@ -261,7 +262,7 @@ const getManagersList = async () => {
   return [];
 };
 
-const getEmployeeList = async (payload) => {
+export const getEmployeeDropdownList = async (payload) => {
   try {
     const pageNo = payload?.options?.page ?? "";
     const ordering = payload?.ordering ?? "first_name";
@@ -272,42 +273,36 @@ const getEmployeeList = async (payload) => {
         employee_status: "Active,Probation,Notice Period",
       }
       : { employee_status: "Active,Probation,Notice Period" };
-    const URL = `/customemp/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+    const URL = `/timetracker/customemployees/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
       }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
         JSON.stringify(filterData)
       )}`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
-      const employeeResponse = response.data?.results?.employees ?? [];
+      const employeeResponse = response?.data?.results ?? [];
+      const count = response?.data?.count ?? 0;
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name} - ${employee.serial_number}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
-        department_name: employee.department_name,
-        department_position: employee.department_position,
-        employee_location: employee.employee_location,
-        direct_report: parseInt(employee.direct_report) || null,
-        indirect_report: employee.indirect_report,
+        department_name: parseInt(employee.department_name),
+        department_position: parseInt(employee.department_position),
         branch_id: employee.branch_id,
-        work_email: employee.work_email,
+        direct_report: parseInt(employee.direct_report),
+        indirect_report: employee.indirect_report,
         serial_number: employee.serial_number,
-        basic_salary: employee.salary,
-        salary_type: employee.salary_type,
-        is_eos_applicable: employee.is_eos_applicable,
-        is_new: employee.is_new,
-        joining_date: employee.joining_date,
-        employee_status: employee.employee_status,
-        default_shift: employee.shift_assignment,
-        user_role: employee.user_role,
-        user_role_name: employee.user_role_name,
+        direct_report: employee.direct_report,
+        indirect_report: employee.indirect_report,
         name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
           }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
-      return { results: employeeList, count: response.data?.count };
+
+      console.log("Employee Dropdown List:", { filterData, URL, response, employeeList });
+      return { results: employeeList, count };
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -325,13 +320,15 @@ const getEmployeeListWithDetail = async () => {
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
-        direct_report: employee.direct_report,
+        direct_report: parseInt(employee.direct_report),
         indirect_report: employee.indirect_report,
         joining_date: employee.joining_date,
         last_name: employee.last_name,
@@ -457,9 +454,10 @@ const getEmployeeCustomList = async (payload) => {
     });
     if (response.status === 200) {
       const employeeDataResponse = response.data.results;
+      const ResponseResults = await mapEmployeeCustomInformationList(employeeDataResponse.employees)
       const employeeData = {
         count: employeeDataResponse.total_count,
-        results: employeeDataResponse.employees,
+        results: ResponseResults,
         ActiveEmployee: employeeDataResponse.active_employees,
         TotalEmployee: employeeDataResponse.total_employees,
         TotalManager: employeeDataResponse.total_managers,
@@ -499,7 +497,7 @@ function flattenEmployees(employees) {
       branch_id: emp.branch_id || "",
       work_email: emp.work_email || "",
       serial_number: emp.serial_number || "",
-      basic_salary: emp.ctc || "",
+      basic_salary: parseFloat(emp.ctc || 0),
       salary_type: emp.salary_type || "",
       is_eos_applicable: emp.is_eos_applicable,
       is_new: emp.is_new,
@@ -607,30 +605,6 @@ export const getTimeZoneList = async (URL) => {
   return [];
 };
 
-const getCurrenciesList = async (URL) => {
-  try {
-    const response = await axios.get(`${baseUrl}/currencies/`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const currenciesResponse = response.data;
-      const currenciesList = currenciesResponse.map((currencies) => ({
-        value: currencies.code,
-        label: `${currencies.code} - ${currencies.name}`,
-      }));
-      return currenciesList;
-    } else {
-      return [];
-    }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching Personal Info data :", error);
-  }
-  return [];
-};
-
 const deleteRecord = async (URL, recordName) => {
   try {
     const response = await axios.delete(`${baseUrl}${URL}`, {
@@ -645,10 +619,11 @@ const deleteRecord = async (URL, recordName) => {
       toast.error(`Unexpected response status: ${response.status}`);
     }
   } catch (error) {
-    toast.error(error.message, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 1000,
-    });
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   } finally {
     return true;
   }
@@ -670,6 +645,66 @@ const getWorkingHours = async (payload) => {
     if (response.status === 200) {
       const workingHours = response.data;
       return workingHours;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+
+export const getCountriesList = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const URL = `/countries/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapCountriesList(Response.results);
+      return { count: Response.count, results: ResponseData };
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+export const getCitiesList = async (payload, country) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = {
+      ...(payload?.filterData ?? {}),
+      ...(country ? { country: country } : {}),
+    };
+    const URL = `/cities/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapCitiesList(Response.results);
+      return { count: Response.count, results: ResponseData };
     } else {
       return [];
     }
@@ -762,28 +797,30 @@ export const SubmitResetPassword = async (payload) => {
 
 export const getCurrentRequestApprover = async (request_id) => {
   try {
-    const URL = `/requests/${request_id}/`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const ResponseData = response.data;
-      const ReturnData = {
-        current_level: ResponseData.current_level,
-        level_status: ResponseData.status,
-        current_approver:
-          ResponseData.current_approvers &&
-            Array.isArray(ResponseData.current_approvers)
-            ? ResponseData.current_approvers
-            : [],
-        final_approvers:
-          ResponseData.final_approvers &&
-            Array.isArray(ResponseData.final_approvers)
-            ? ResponseData.final_approvers
-            : [],
-      };
-      return ReturnData;
-    } else return {};
+    if (request_id) {
+      const URL = `/requests/${request_id}/`;
+      const response = await axios.get(`${baseUrl}${URL}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        const ResponseData = response.data;
+        const ReturnData = {
+          current_level: ResponseData.current_level,
+          level_status: ResponseData.status,
+          current_approver:
+            ResponseData.current_approvers &&
+              Array.isArray(ResponseData.current_approvers)
+              ? ResponseData.current_approvers
+              : [],
+          final_approvers:
+            ResponseData.final_approvers &&
+              Array.isArray(ResponseData.final_approvers)
+              ? ResponseData.final_approvers
+              : [],
+        };
+        return ReturnData;
+      }
+    };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
   }
@@ -960,11 +997,9 @@ export {
   getList,
   deleteRecord,
   getOrganizationList,
-  getEmployeeList,
   getEmployeeCustomList,
   getNewEmployeeCustomList,
   getProjectsList,
-  getCurrenciesList,
   saveDepartment,
   saveDesignation,
   getWorkingHours,

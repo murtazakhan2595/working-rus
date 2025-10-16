@@ -40,7 +40,7 @@ const AddUpdateApprovalHierarchy = ({
   const location = useLocation();
   const { GOTO_URLS } = location.state || {};
   const [formValues, setFormValues] = useState(ApprovalHierarchy);
-  const [UserRoles, setUserRoles] = useState(null);
+  const [UserRoles, setUserRoles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [HierarchyNameExist, setHierarchyNameExist] = useState(false);
   const [HierarchyRequestTypeExist, setHierarchyRequestTypeExist] =
@@ -206,7 +206,7 @@ const AddUpdateApprovalHierarchy = ({
                     "Hierarchy Name already exists. Please choose a different name";
                 if (values.request_type && HierarchyRequestTypeExist)
                   errors.request_type =
-                    "Hierarchy with this request type already exists. Please choose a different type";
+                    "Manager approval hierarchy for this request type is not configured. Please contact your administrator";
                 return errors;
               },
               submitButtonText: "Submit",

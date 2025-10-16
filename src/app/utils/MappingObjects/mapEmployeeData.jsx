@@ -1,5 +1,5 @@
 import {
-  Employee,
+  EmployeeCustomInformation,
   EmployeeDepartmentInfo,
   EmployeeVisaDetails,
   EmployeeAcademicRecord,
@@ -13,8 +13,12 @@ import {
 } from "app/utils/Types/Employee";
 import { calculateTotalCount } from "utils/renderValues";
 import { mapDefaultShiftData } from 'app/utils/MappingObjects/mapShiftManagementData';
+import moment from 'moment';
+import { formatDaysDuration } from "utils/DateTimeUtils";
+import { workplaceTypes } from "data/Data";
 
-export function mapEmployeePayloadData(data, id) {
+
+export function mapEmployeePayloadData(data) {
   // Initialize an empty payload object
   const payload = {};
   // Iterate over the keys in the Task object
@@ -22,7 +26,15 @@ export function mapEmployeePayloadData(data, id) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      payload[key] = data[key];
+      if (key === 'probation_start_date' || key === 'probation_end_date') {
+        const [start_date, end_date] = data['probation_date_range']?.split(",") || "";
+        payload['probation_start_date'] = start_date;
+        payload['probation_end_date'] = end_date;
+        payload['probation_period'] = formatDaysDuration(start_date, end_date);
+      } else if (key === 'confirmation_date') {
+        payload[key] = moment(payload['probation_end_date']).add(1, "days").format("YYYY-MM-DD")
+      }
+      else payload[key] = data[key];
     }
   }
 
@@ -95,6 +107,33 @@ export async function mapEmployeeInfoData(data) {
       }`,
     default_shift_id: data.shift_assignment,
     default_shift: mapDefaultShiftData(data.default_shift),
+  };
+  return employee;
+}
+export async function mapEmployeeApplicantData(data, designations) {
+  const { candidate_name, contact_number, email, offers_tracking, location, publish_vacancy, offer_letter } = data || {};
+  const { branch, department, work_mode, job_description, job_title, job_type, payment_frequency } = publish_vacancy || {};
+  const { joining_date, } = offers_tracking || {};
+  const { offered_salary, } = offer_letter?.[offer_letter?.length - 1 || 0] || {};
+  const [first_name, last_name,] = candidate_name?.split(' ');
+  const designation = ((designations || []).find(obj => (obj?.label?.trim()?.toLowerCase() === job_title?.trim()?.toLowerCase())) || {})?.value;
+  const work_type = ((workplaceTypes || []).find(obj => (obj?.label?.trim()?.toLowerCase() === work_mode?.trim()?.toLowerCase())) || {})?.value;
+  const employee = {
+    first_name: first_name,
+    last_name: last_name,
+    mobile_no: contact_number,
+    other_email: email,
+    joining_date: joining_date,
+    employee_location: location,
+    nationality: location,
+    employee_work_type: work_type,
+    employee_type: job_type,
+    salary: offered_salary,
+    jd_file: job_description,
+    branch_id: branch,
+    department_position: designation,
+    department_name: department,
+    salary_type: payment_frequency,
   };
   return employee;
 }
@@ -312,6 +351,56 @@ export async function mapEmployeeStatsData(data) {
   )?.length || 0;
   const Exit = data.filter((item) => ['Terminated', 'Deceased', 'Resigned', 'Absconded', 'Exit'].includes(item.employee_status))?.length || 0;
   return { Active, Managers, Exit, Total };
+}
+
+//-------------EmployeeCustomInformations ---------------
+
+export function mapEmployeeGeneralData(data, keyList = {}) {
+  if (!data) return {};
+
+  const RecordDetails = {};
+  for (const key of Object.keys(keyList)) {
+    const value = data[key];
+    switch (key) {
+      case "label":
+        RecordDetails[key] = `${data['first_name'] || ''} ${data['last_name'] || ''} - ${data['serial_number'] || ""}`;
+        break;
+      case "name":
+        RecordDetails[key] = `${data['first_name'] || ''} ${data['last_name'] || ''}`;
+        break;
+      case "name_initials":
+        RecordDetails[key] = `${data['first_name']?.charAt(0)?.toUpperCase() || ""}${data['last_name']?.charAt(0)?.toUpperCase() || ""}`;
+        break;
+      case "value":
+      case "id":
+        RecordDetails[key] = data['id'];
+        break;
+      case "basic_salary":
+        RecordDetails[key] = parseFloat(data['ctc'] || 0);
+        break;
+      case "department_name":
+      case "department_position":
+      case "direct_report":
+        RecordDetails[key] = parseInt(data[key]);
+        break;
+      default:
+        RecordDetails[key] = value;
+        break;
+    }
+  }
+  return RecordDetails;
+}
+export function mapEmployeeCustomInformationData(data) {
+  const RecordDetails = mapEmployeeGeneralData(data, EmployeeCustomInformation)
+  return RecordDetails;
+}
+export async function mapEmployeeCustomInformationList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = mapEmployeeCustomInformationData(Record);
+    return { ...Details, };
+  });
+
+  return DataList;
 }
 
 export {

@@ -18,7 +18,7 @@ import { validateScheduleShiftFormSchema } from "app/utils/FormSchema/ShiftManag
 import { ScheduleFormValues } from "app/utils/Types/ShiftManagement";
 import { getShift } from "app/hooks/attendance";
 import { saveShiftSchedule } from "app/hooks/shiftManagement";
-import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
+import { GetEmployeeFilteredList } from "utils/Lists";
 
 const ScheduleShiftModal = ({
   isOpen,
@@ -29,6 +29,8 @@ const ScheduleShiftModal = ({
   isDraft = false, // New prop to indicate if this is for draft schedules
 }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
+  
+  // Get employee list
   const Employees = GetEmployeeFilteredList(
     Array.isArray(userProfile.role) && !userProfile.role.includes(1),
     Array.isArray(userProfile.role) && userProfile.role.includes(1),
@@ -723,7 +725,7 @@ const ScheduleShiftModal = ({
                       name="employees"
                       label="Select Employees"
                       options={Employees}
-                      value={props.values.employees}
+                      value={props.values.employees || []}
                       error={props.errors.employees}
                       touch={props.touched.employees}
                       onChange={props.setFieldValue}

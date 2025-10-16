@@ -179,6 +179,7 @@ const Labels = React.memo(
 
     const [LabelID, setLabelID] = useState(null);
     const labelsList = useSelector((state) => state.task_managment.task_labels);
+    console.log(labelsList)
     const TaskLabelListOptions = getLabelDropdownList(labelsList);
     useEffect(() => {
       if (projectId) {

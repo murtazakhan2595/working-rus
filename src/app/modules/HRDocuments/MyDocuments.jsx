@@ -7,6 +7,9 @@ import { MyDocumentDetails } from "app/modules/HRDocuments/Screens";
 import { useSelector } from "react-redux";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom, Header } from "components";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
 
 
 export default function MyDocuments() {
@@ -84,39 +87,32 @@ export default function MyDocuments() {
   };
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
+    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}    >
       <Header />
-
-      {/* Responsive filters container - original style on desktop */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-end">
-        <FilterInput
-          filters={[
-            {
-              type: "select-one",
-              option: Document_Category,
-              name: "document_category",
-              placeholder: "Category",
-              values: selectedCategory,
-              width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
-            },
-            {
-              type: "select-two",
-              option: HRDocumentsStatus,
-              name: "status",
-              placeholder: "Status",
-              values: selectedStatus,
-              width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
-            },
-          ]}
-          onChange={handleFilterChange}
-          className="w-full flex flex-col sm:flex-row gap-2"
-        />
-      </div>
-      
       <Card>
+        <CardHeader>
+          <CardTitle>HR Documents</CardTitle>
+          <CardDescription>Here you can view, acknowledged and sign the documents assigned to you.</CardDescription>
+        </CardHeader>
         <CardContent>
+          <FilterInput
+            filters={[
+              {
+                type: "select",
+                options: Document_Category,
+                name: "document_category",
+                placeholder: "Category",
+              },
+              {
+                type: "select",
+                options: HRDocumentsStatus,
+                name: "status",
+                placeholder: "Status",
+              },
+            ]}
+            onChange={handleFilterChange}
+            className="justify-end mb-4"
+          />
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -130,7 +126,7 @@ export default function MyDocuments() {
           )}
         </CardContent>
       </Card>
-      
+
       {OpenDocumentID && (
         <MyDocumentDetails
           documentID={OpenDocumentID}

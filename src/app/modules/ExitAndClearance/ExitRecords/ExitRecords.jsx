@@ -4,12 +4,14 @@ import { CardContent, CardHeader, CardTitle, CardDescription, } from "components
 import { TableCustom, PageLoader } from "components";
 import { FilterInput } from "components/FormControl";
 import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
+import { UploadClearanceReport } from "app/modules/ExitAndClearance";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
 const ExitRecords = ({ permittedViewFilterData, Filters }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Terminated");
   const [ExitRecordList, setExitRecordList] = useState(null);
+  const [openUploadClearanceReportForm, setOpenUploadClearanceReportForm] = useState(false);
   const [filterData, setFilterData] = useState({
     request_status: "APPROVED,REJECTED",
     exit_category: "TERMINATION",
@@ -37,7 +39,7 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
     },
   };
 
-  const fetchData = async () => {
+  const fetchData = async (isMounted) => {
     try {
       setLoading(true);
       const filter = { ...filterData, ...permittedViewFilterData, request_status: "APPROVED,REJECTED" };
@@ -46,7 +48,8 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
         options,
         ordering,
       });
-      setExitRecordList(response);
+      if (isMounted)
+        setExitRecordList(response);
     } catch (e) {
       console.error(e);
     } finally {
@@ -90,7 +93,11 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
     });
   };
 
-
+  const handleUploadClearanceReportClick = async (exit_id) => {
+    if (exit_id) {
+      setOpenUploadClearanceReportForm(exit_id)
+    }
+  };
   return (
     <Tabs
       className="w-full"
@@ -102,7 +109,7 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
     >
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
         <TabsList className="flex items-center justify-center">
-          {["Terminated","Resigned"].map((tab) => (
+          {["Terminated", "Resigned"].map((tab) => (
             <TabsTrigger key={tab} value={tab} variant={"inner-tab"}>
               {tab}
             </TabsTrigger>
@@ -127,10 +134,21 @@ const ExitRecords = ({ permittedViewFilterData, Filters }) => {
         ) : (
           <TableCustom
             data={ExitRecordList?.results || []}
-            columns={ExitRequestColumns(fetchData)}
+            columns={ExitRequestColumns(fetchData, handleUploadClearanceReportClick)}
             pagination={true}
             dataTotalSize={ExitRecordList?.count || 0}
             tableOptions={tableOptions}
+          />
+
+        )}
+        {openUploadClearanceReportForm && (
+          <UploadClearanceReport
+            isOpen={Boolean(openUploadClearanceReportForm)}
+            setIsOpen={() => {
+              setOpenUploadClearanceReportForm(null);
+              fetchData(true);
+            }}
+            exit_id={openUploadClearanceReportForm}
           />
         )}
       </CardContent>

@@ -9,6 +9,7 @@ import { StatusLabel, StatusButtons, EmployeeDetailUI } from "components";
 import { getLeaveData } from "app/hooks/leaveTracker";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 const ViewLeaveDetails = ({
   isOpen,
@@ -71,17 +72,7 @@ const ViewLeaveDetails = ({
           key: "leave_type_name",
           label: "Leave Type",
         },
-        {
-          key: "allotted_count",
-          label: "Alloted Leaves",
-          formatter: (cell) => cell || "0",
-        },
-        {
-          key: "consumed_count",
-          label: "Consumed Leave",
-          formatter: (cell) => cell || "0",
-        },
-        {
+       {
           key: "start_date",
           label: "Start Date",
           formatter: (cell) => renderDate(cell, "--"),
@@ -116,6 +107,39 @@ const ViewLeaveDetails = ({
         },
       ],
     },
+    {
+      title: "Leaves Summary",
+      field: [
+        {
+          key: "allotted_count",
+          label: "Alloted Leaves",
+          formatter: (cell) => cell || "0",
+        },
+        {
+          key: "consumed_count",
+          label: "Consumed Leave",
+          formatter: (cell) => cell || "0",
+        },
+      ],
+    },
+    {
+        title: `Attachment`,
+        field: [
+          {
+            key: "attachment",
+            formatter: (cell, data) =>
+              cell ? (
+                <AttachmentUI
+                  attachment={cell}
+                  name={`${data.employee_name} ${data.leave_type_name} Attachment`}
+                  viewOnly={true}
+                />
+              ) : (
+                <div className="text-neutral-1000 text-sm">No document attached</div>
+              ),
+          },
+        ],
+      },
     {
       title: "Approval Details",
       field: [
