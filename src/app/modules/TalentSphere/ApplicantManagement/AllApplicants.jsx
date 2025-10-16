@@ -204,6 +204,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   placeholder: "Candidate Name/Id",
                 },
                 {
+                  type: "search",
+                  name: "location",
+                  placeholder: "Search by location",
+                },
+                {
                   type: "select",
                   options: "Departments",
                   name: "department",
@@ -270,10 +275,6 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
               ]}
               className="justify-end"
               onChange={handleFilterChange}
-            // filterValues={{
-            //   ...filterData,
-            //   ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {}),
-            // }}
             />
           </div>
         </CardHeader>
