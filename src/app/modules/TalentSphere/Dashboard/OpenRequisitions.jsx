@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,67 +11,38 @@ import { Badge } from "components/ui/badge";
 import { TableCustom, StatusLabel } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { DepartmentName } from "utils/getValuesFromTables";
+import { DepartmentName, FormatID } from "utils/getValuesFromTables";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewRequisitionRequest, AddUpdateVacancyForm } from "app/modules/TalentSphere";
 
 const OpenRequisitions = ({ data, loading }) => {
   const navigate = useNavigate();
-
-  // Helper function to get approved date from approval logs
-  const getApprovedDate = (approval_logs) => {
-    const approvalLog = approval_logs?.find(
-      (log) => log.action_type === "APPROVED"
-    );
-    return approvalLog?.timestamp
-      ? moment(approvalLog.timestamp).format("DD-MMM-YYYY")
-      : "N/A";
-  };
+  const [viewOpen, setViewOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [publishOpen, setPublishOpen] = useState(false);
 
   // Filter for open requisitions (approved or pending)
   const openRequisitions = React.useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
-    return data.filter(
-      (req) => req.status === "approved" || req.status === "pending"
+    return data.filter((req) =>
+      req.status === "approved" ||
+      req.status === "pending" ||
+      req.status === "published" // include mapped published as approved
     );
   }, [data]);
 
   const handleViewDetails = (row) => {
-    const targetTab =
-      row.status === "pending"
-        ? "requisition-requests"
-        : "generate-requisition";
-
-    navigate(`/talent-sphere/requisition-planning`, {
-      state: {
-        filterRequisition: row.id,
-        tab: targetTab,
-        requisitionData: row,
-      },
-    });
+    setSelectedRow(row);
+    setViewOpen(true);
   };
 
   const handlePublishVacancy = (row) => {
-    navigate(`/talent-sphere/requisition-planning`, {
-      state: {
-        filterRequisition: row.id,
-        tab: "generate-requisition",
-        action: "publish",
-        requisitionData: row,
-      },
-    });
+    setSelectedRow(row);
+    setPublishOpen(true);
   };
 
-  const handleViewVacancy = (row) => {
-    navigate(`/talent-sphere/requisition-planning`, {
-      state: {
-        filterRequisition: row.id,
-        tab: "published-vacancies",
-        action: "view",
-        requisitionData: row,
-      },
-    });
-  };
+  // Note: view vacancy action is handled via navigation in other flows if needed
 
   const handleViewApplicants = (row) => {
     navigate(
@@ -83,7 +54,7 @@ const OpenRequisitions = ({ data, loading }) => {
     {
       dataField: "id",
       text: "Requisition ID",
-      formatter: (cell) => `REQ-${cell.toString().padStart(3, "0")}`,
+      formatter: (cell) => FormatID({ value: cell, prefix: "RR-" }),
       style: { width: "100px" },
     },
     {
@@ -103,35 +74,44 @@ const OpenRequisitions = ({ data, loading }) => {
       style: { width: "100px" },
     },
     {
-      dataField: "approval_logs",
+      dataField: "approved_on",
       text: "Approved On",
-      formatter: (cell) => getApprovedDate(cell),
-      style: { width: "100px" },
+      formatter: (cell) => (cell ? moment(cell).format("DD-MMM-YYYY") : "N/A"),
+      style: { width: "120px" },
     },
     {
       dataField: "is_publish",
       text: "Published",
-      formatter: (cell) => (
-        <Badge variant={cell ? "default" : "secondary"} className="text-xs">
-          {cell ? "Yes" : "No"}
-        </Badge>
-      ),
+      formatter: (cell, row) => {
+        const published = Boolean(cell) || row?.status === "published";
+        return (
+          <Badge variant={published ? "default" : "secondary"} className="text-xs">
+            {published ? "Yes" : "No"}
+          </Badge>
+        );
+      },
       style: { width: "80px" },
     },
     {
       dataField: "total_applicants",
       text: "Total Applicants",
-      formatter: (cell) => cell || 0,
+      formatter: (cell, row) => {
+        const count = row?.total_applicants ?? row?.total_applications ?? 0;
+        return count;
+      },
       style: { width: "120px" },
     },
     {
       dataField: "status",
       text: "Status",
-      formatter: (cell) => (
-        <StatusLabel status={cell}>
-          {cell.charAt(0).toUpperCase() + cell.slice(1)}
-        </StatusLabel>
-      ),
+      formatter: (cell, row) => {
+        const effective = cell === "published" ? "approved" : cell;
+        return (
+          <StatusLabel status={effective}>
+            {effective.charAt(0).toUpperCase() + effective.slice(1)}
+          </StatusLabel>
+        );
+      },
       style: { width: "100px" },
     },
     {
@@ -232,6 +212,24 @@ const OpenRequisitions = ({ data, loading }) => {
               }}
             />
           </div>
+        )}
+        {viewOpen && (
+          <ViewRequisitionRequest
+            isOpen={viewOpen}
+            setIsOpen={() => setViewOpen(false)}
+            reloadData={() => setViewOpen(false)}
+            currentId={selectedRow?.id}
+            DataList={openRequisitions}
+            isTeamView={false}
+          />
+        )}
+        {publishOpen && (
+          <AddUpdateVacancyForm
+            isOpen={publishOpen}
+            setIsOpen={() => setPublishOpen(false)}
+            reloadData={() => setPublishOpen(false)}
+            requisition_id={selectedRow?.id}
+          />
         )}
       </CardContent>
     </Card>
