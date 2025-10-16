@@ -117,7 +117,7 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   }
 
   // If not found and we want to show a meaningful fallback
-  return fallBackText;
+  return value||fallBackText;
 }
 
 export function DocCategoryName({ value, fallBackText = "N/A" }) {

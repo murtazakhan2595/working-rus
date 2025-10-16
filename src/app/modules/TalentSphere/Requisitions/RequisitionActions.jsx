@@ -47,7 +47,7 @@ const RequisitionActions = ({ data, DataList = [], reloadData = () => { }, isTea
                 editText="Edit Requisition"
                 deleteText="Delete Requisition"
                 menuTooltip="Requisition Actions"
-                additionalOptionsConfig={[...(data.status === 'approved' && isPublishPermitted ? [{ text: 'Publish Vacancy', action: handlePublish }] : []),]}
+                additionalOptionsConfig={[...(data.status === 'approved' && isPublishPermitted && !isTeamView ? [{ text: 'Publish Vacancy', action: handlePublish }] : []),]}
             />
 
             {deleteForm && (
