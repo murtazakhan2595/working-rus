@@ -88,6 +88,7 @@ export const SETTING_TAB_CONFIG = [
     {
         key: "checklist",
         label: "Remote Work Checklist",
+        addLabel: "Add Checklist Item",
         viewPerm: "VIEW_TS_REMOTE_WORK_CHECKLIST",
         addPerm: "ADD_TS_REMOTE_WORK_CHECKLIST",
         list: (reload) => <RemoteWorkChecklist reload={reload} />,

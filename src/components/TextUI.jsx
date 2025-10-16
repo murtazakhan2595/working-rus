@@ -6,9 +6,10 @@ const TextUI = React.memo(
     text = null,
     maxLength = null,
     isHTMLText = false,
-    className = "text-neutral-1000 text-sm",
+    className = "text-sm",
     style = {},
     height = "100%",
+    showReadmore=false // show readmore button if the manLength is defined
   }) => {
     return text ? (
       <ScrollArea className="[&>div>div[style]]:!block">
@@ -24,7 +25,7 @@ const TextUI = React.memo(
               }}
             ></div>
           ) : (
-            <TruncatedText text={text} maxLength={maxLength} />
+            <TruncatedText text={text} maxLength={maxLength} showReadmore={showReadmore} />
           )}
         </div>
       </ScrollArea>
@@ -32,26 +33,26 @@ const TextUI = React.memo(
   }
 );
 
-function TruncatedText({ text = "", maxLength }) {
+function TruncatedText({ text = "", maxLength ,showReadmore}) {
   const [expanded, setExpanded] = useState(false);
 
   // Remove HTML tags
   const plainText = text.replace(/<[^>]*>/g, "");
-  const limit = maxLength || 100;
+  const limit = maxLength;
 
   const shouldTruncate = plainText.length > limit;
   const displayText =
-    expanded || maxLength
+    expanded || !maxLength
       ? plainText
       : plainText.slice(0, limit) + (shouldTruncate ? "..." : "");
 
   return (
     <div className="break-words">
       {displayText}
-      {!maxLength && shouldTruncate && (
+      {showReadmore && shouldTruncate&& (
         <button
           type="button"
-          className="ml-1 text-blue-600 hover:underline text-sm font-medium"
+          className="ml-1 text-neutral-800 hover:underline text-sm font-medium"
           onClick={() => setExpanded(!expanded)}
         >
           {expanded ? "Read less" : "Read more"}

@@ -32,7 +32,7 @@ export default function SettingManagement() {
     if (currentTab.addPerm && hasAccess(currentTab.addPerm)) {
       return (
         <Button title={currentTab.key} onClick={() => setOpenForms({ [currentTab.key]: true })}>
-          Add {currentTab.label}
+          {currentTab?.addLabel ?? `Add ${currentTab.label}`}
         </Button>
       );
     }
