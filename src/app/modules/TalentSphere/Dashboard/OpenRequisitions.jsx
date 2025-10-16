@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,21 +11,14 @@ import { Badge } from "components/ui/badge";
 import { TableCustom, StatusLabel } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { DepartmentName } from "utils/getValuesFromTables";
+import { DepartmentName, FormatID } from "utils/getValuesFromTables";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 
 const OpenRequisitions = ({ data, loading }) => {
   const navigate = useNavigate();
-
-  // Helper function to get approved date from approval logs
-  const getApprovedDate = (approval_logs) => {
-    const approvalLog = approval_logs?.find(
-      (log) => log.action_type === "APPROVED"
-    );
-    return approvalLog?.timestamp
-      ? moment(approvalLog.timestamp).format("DD-MMM-YYYY")
-      : "N/A";
-  };
+  const [viewOpen, setViewOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   // Filter for open requisitions (approved or pending)
   const openRequisitions = React.useMemo(() => {
@@ -37,18 +30,8 @@ const OpenRequisitions = ({ data, loading }) => {
   }, [data]);
 
   const handleViewDetails = (row) => {
-    const targetTab =
-      row.status === "pending"
-        ? "requisition-requests"
-        : "generate-requisition";
-
-    navigate(`/talent-sphere/requisition-planning`, {
-      state: {
-        filterRequisition: row.id,
-        tab: targetTab,
-        requisitionData: row,
-      },
-    });
+    setSelectedRow(row);
+    setViewOpen(true);
   };
 
   const handlePublishVacancy = (row) => {
@@ -62,16 +45,7 @@ const OpenRequisitions = ({ data, loading }) => {
     });
   };
 
-  const handleViewVacancy = (row) => {
-    navigate(`/talent-sphere/requisition-planning`, {
-      state: {
-        filterRequisition: row.id,
-        tab: "published-vacancies",
-        action: "view",
-        requisitionData: row,
-      },
-    });
-  };
+  // Note: view vacancy action is handled via navigation in other flows if needed
 
   const handleViewApplicants = (row) => {
     navigate(
@@ -83,7 +57,7 @@ const OpenRequisitions = ({ data, loading }) => {
     {
       dataField: "id",
       text: "Requisition ID",
-      formatter: (cell) => `REQ-${cell.toString().padStart(3, "0")}`,
+      formatter: (cell) => FormatID({ value: cell, prefix: "RR-" }),
       style: { width: "100px" },
     },
     {
@@ -103,10 +77,10 @@ const OpenRequisitions = ({ data, loading }) => {
       style: { width: "100px" },
     },
     {
-      dataField: "approval_logs",
+      dataField: "approved_on",
       text: "Approved On",
-      formatter: (cell) => getApprovedDate(cell),
-      style: { width: "100px" },
+      formatter: (cell) => (cell ? moment(cell).format("DD-MMM-YYYY") : "N/A"),
+      style: { width: "120px" },
     },
     {
       dataField: "is_publish",
@@ -232,6 +206,16 @@ const OpenRequisitions = ({ data, loading }) => {
               }}
             />
           </div>
+        )}
+        {viewOpen && (
+          <ViewRequisitionRequest
+            isOpen={viewOpen}
+            setIsOpen={() => setViewOpen(false)}
+            reloadData={() => setViewOpen(false)}
+            currentId={selectedRow?.id}
+            DataList={openRequisitions}
+            isTeamView={false}
+          />
         )}
       </CardContent>
     </Card>

@@ -5,6 +5,7 @@ import {
   getHiringTrends,
   getSkillsGap
 } from "app/hooks/talentSphere";
+import { mapRequisitionRequestList } from "app/utils/MappingObjects/mapTalentSphere";
 import axios from "axios";
 import { baseUrl, headers } from "app/hooks/general";
 
@@ -113,7 +114,9 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       setBudgetWarnings(budget.data?.results || []);
       setHiringPredictions(predictions.data?.results || []);
       setAiFlaggedData(flagged.data || null);
-      setRequisitionsData(requisitions.data?.results || []);
+      const reqResults = requisitions.data?.results || [];
+      const mappedReqs = await mapRequisitionRequestList(reqResults);
+      setRequisitionsData(mappedReqs || []);
       
       // Set Predictive Analytics Data
       setHiringPredictionData(hiringPrediction || null);
