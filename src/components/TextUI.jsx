@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ScrollArea } from "src/@/components/ui/scroll-area";
 
 const TextUI = React.memo(
@@ -24,18 +24,41 @@ const TextUI = React.memo(
               }}
             ></div>
           ) : (
-            <div className="break-words">
-              {maxLength
-                ? `${text.replace(/<[^>]*>/g, "").slice(0, maxLength)}${
-                    text.length > maxLength ? "..." : ""
-                  }`
-                : text}
-            </div>
+            <TruncatedText text={text} maxLength={maxLength} />
           )}
         </div>
       </ScrollArea>
     ) : null;
   }
 );
+
+function TruncatedText({ text = "", maxLength }) {
+  const [expanded, setExpanded] = useState(false);
+
+  // Remove HTML tags
+  const plainText = text.replace(/<[^>]*>/g, "");
+  const limit = maxLength || 100;
+
+  const shouldTruncate = plainText.length > limit;
+  const displayText =
+    expanded || maxLength
+      ? plainText
+      : plainText.slice(0, limit) + (shouldTruncate ? "..." : "");
+
+  return (
+    <div className="break-words">
+      {displayText}
+      {!maxLength && shouldTruncate && (
+        <button
+          type="button"
+          className="ml-1 text-blue-600 hover:underline text-sm font-medium"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Read less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default TextUI;

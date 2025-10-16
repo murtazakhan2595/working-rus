@@ -353,13 +353,14 @@ const SheetUI = forwardRef(
                           size="lg"
                           variant={variant}
                           onClick={(event) => {
+                            debugger
                             event.preventDefault();
                             event.stopPropagation();
                             if (validateForm) {
                               if (
                                 validateFieldErrors &&
                                 typeof validateFieldErrors === "object" &&
-                                !Array.isArray(validateFieldErrors)
+                                !Array.isArray(validateFieldErrors) && Object.keys(validateFieldErrors).length > 0
                               ) {
                                 // Mark all fields as touched
                                 Object.keys(validateFieldErrors).forEach(field => {
