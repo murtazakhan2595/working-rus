@@ -503,6 +503,13 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails = tru
             }
         }
     }
+    // Preserve aggregate counts if provided by the API
+    if (Object.prototype.hasOwnProperty.call(data, 'total_applicants')) {
+        RecordDetails['total_applicants'] = data['total_applicants'] ?? 0;
+    }
+    if (Object.prototype.hasOwnProperty.call(data, 'total_applications')) {
+        RecordDetails['total_applications'] = data['total_applications'] ?? 0;
+    }
     if (['approved', 'rejected'].includes(data['status']?.toLowerCase())) {
         const logs = data['approval_logs']?.[0];
         if (logs?.action_type?.toUpperCase() === 'APPROVED') {
