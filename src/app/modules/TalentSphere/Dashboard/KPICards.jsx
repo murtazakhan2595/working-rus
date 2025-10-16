@@ -75,6 +75,7 @@ const KPICards = ({ data, loading }) => {
       description: "Successfully onboarded",
       color: "text-emerald-600",
       route: "/talent-sphere/applicant-management",
+      state: { tab: "Hired" },
     },
     {
       title: "Rejected Applicants",
@@ -92,10 +93,9 @@ const KPICards = ({ data, loading }) => {
     },
   ];
 
-  const handleCardClick = (route) => {
-    if (route) {
-      navigate(route);
-    }
+  const handleCardClick = (route, state) => {
+    if (!route) return;
+    navigate(route, state ? { state } : undefined);
   };
 
   return (
@@ -104,7 +104,7 @@ const KPICards = ({ data, loading }) => {
         <Card
           key={index}
           className="flex flex-col justify-center shadow-md border rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick(stat.route)}
+          onClick={() => handleCardClick(stat.route, stat.state)}
         >
           {loading ? (
             <div className="animate-pulse">
