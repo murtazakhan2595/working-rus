@@ -6,7 +6,7 @@ import {
 } from "app/utils/Types/ApprovalHierarchy";
 import { addSeconds, format } from "date-fns";
 import _ from "lodash";
-
+import moment from 'moment'
 export async function mapApprovalHierarchyData(data) {
   const approvalHierarchyData = {};
   for (const key of Object.keys(ApprovalHierarchy)) {
@@ -89,7 +89,7 @@ export function mapLevelPayloadData(data) {
           const threshold = parseFloat(data[key]);
           const totalSeconds = Math.floor(threshold * 3600);
 
-          const baseDate = new Date(0); // Epoch time
+          const baseDate = new Date(moment().startOf('day'));
           const targetDate = addSeconds(baseDate, totalSeconds);
 
           const days = Math.floor(totalSeconds / (24 * 3600));

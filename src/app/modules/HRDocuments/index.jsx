@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Documents from "app/modules/HRDocuments/Documents";
 import MyDocuments from "app/modules/HRDocuments/MyDocuments";
+import MyLetterRequests from "app/modules/HRDocuments/Screens/LetterRequest/MyLetterRequest";
+import LetterRequests from "app/modules/HRDocuments/Screens/LetterRequest/LetterRequests";
 import Category from "app/modules/HRDocuments/Category";
 import {
   UploadDocumentForm,
@@ -18,7 +20,7 @@ import { Header } from "components";
 import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
 
-const HRDocumentsTab = ["Documents", "Category"];
+const HRDocumentsTab = ["Documents", "Category", "Letter Requests"];
 
 function HRDocuments() {
   const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
@@ -27,28 +29,41 @@ function HRDocuments() {
   const [reloadData, setReloadData] = useState(false);
   const uploadHRDocumentPermitted = HasAccess("UPLOAD_HR_DOCUMENT");
   const addDocumentCategoryPermitted = HasAccess("ADD_DOCUMENT_CATEGORY");
+  const manageLetterRequestsPermitted = HasAccess("MANAGE_LETTER_REQUESTS");
+
+  const showHeaderButton = () => {
+    if (activeHRDocumentsTab === "Documents" && uploadHRDocumentPermitted) {
+      return true;
+    }
+    if (activeHRDocumentsTab === "Category" && addDocumentCategoryPermitted) {
+      return true;
+    }
+    // No button for Letter Requests tab
+    return false;
+  };
+
+  const getButtonText = () => {
+    if (activeHRDocumentsTab === "Documents") return "Add Document";
+    if (activeHRDocumentsTab === "Category") return "Add Category";
+    return "";
+  };
+
+  const handleButtonClick = () => {
+    if (activeHRDocumentsTab === "Documents") {
+      setOpenUploadDocumentForm(true);
+    } else if (activeHRDocumentsTab === "Category") {
+      setOpenCategoryForm(true);
+    }
+  };
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
         content={
-          ((activeHRDocumentsTab === "Documents" &&
-            uploadHRDocumentPermitted) ||
-            (activeHRDocumentsTab !== "Documents" &&
-              addDocumentCategoryPermitted)) && (
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                if (activeHRDocumentsTab === "Documents")
-                  setOpenUploadDocumentForm(true);
-                else setOpenCategoryForm(true);
-              }}
-            >
-              {activeHRDocumentsTab === "Documents"
-                ? "Add Document"
-                : "Add Category"}
-            </Button>
+          showHeaderButton() && (
+            <Button onClick={handleButtonClick}>{getButtonText()}</Button>
           )
         }
       />
@@ -62,10 +77,7 @@ function HRDocuments() {
       >
         <TabsList>
           {HRDocumentsTab.map((tab) => (
-            <TabsTrigger
-              key={tab}
-              value={tab}
-            >
+            <TabsTrigger key={tab} value={tab}>
               {tab}
             </TabsTrigger>
           ))}
@@ -77,6 +89,11 @@ function HRDocuments() {
           <TabsContent value="Category">
             <Category reload={reloadData} />
           </TabsContent>
+          {manageLetterRequestsPermitted && (
+            <TabsContent value="Letter Requests">
+              <LetterRequests reload={reloadData} />
+            </TabsContent>
+          )}
         </Card>
       </Tabs>
       {OpenUploadDocumentForm && (
@@ -106,5 +123,7 @@ export {
   UploadDocumentForm,
   MyDocuments,
   HRDocuments,
+  MyLetterRequests,
+  LetterRequests,
   DocumentDetails,
 };

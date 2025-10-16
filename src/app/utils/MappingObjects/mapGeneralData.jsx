@@ -65,18 +65,26 @@ export async function mapApproverDetails({
       level_number,
       time: null,
     };
+    const assignment_type = level.assignment_type.replace('_', ' ').toLowerCase();
     // If this is the current active level
     if (log) {
       levelDetail.status = log?.action_type || "UNKNOWN";
-      levelDetail.info = log?.changed_by ? (
-        <EmployeeDetailUI
-          id={log?.changed_by}
-          ViewVariant={"simple-text"}
-          InformationKeys={["name", "position"]}
-        />
-      ) : (
-        "Unknown"
-      );
+      if (log?.action_type.toUpperCase() === 'SKIPPED') {
+        levelDetail.info = (<>{level?.designation_name || assignment_type}</>)
+        levelDetail.infoPrefix = 'At'
+        levelDetail.description = 'No active approver was found';
+      } else {
+        levelDetail.info = log?.changed_by ? (
+          <EmployeeDetailUI
+            id={log?.changed_by}
+            ViewVariant={"simple-text"}
+            InformationKeys={["name", "position"]}
+          />
+        ) : (
+          "Unknown"
+        );
+      }
+
       levelDetail.time = log?.timestamp || null;
     } else if (parseInt(current_level) === level_number) {
       if (
@@ -98,14 +106,14 @@ export async function mapApproverDetails({
             );
           })
         );
-        const assignment_type = level.assignment_type.replace('_', ' ').toLowerCase();
         levelDetail.info = (
           <>
             {approverInfos} - {level?.designation_name || assignment_type}
           </>
         );
       } else {
-        levelDetail.info = "Unknown - No eligible approver with the necessary permissions was found to perform this action.";
+        levelDetail.info = "Unknown";
+        levelDetail.description = "No eligible approver with the necessary permissions was found to perform this action.";
       }
     }
 
@@ -113,4 +121,42 @@ export async function mapApproverDetails({
   }
 
   return levelList.sort((a, b) => a.level_number - b.level_number);
+}
+
+export async function mapCountriesList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = {
+      value: Record.name,
+      label: Record.name,
+      id: Record.id,
+      name: Record.name,
+      name_ascii: Record.name_ascii,
+      slug: Record.slug,
+      geoname_id: Record.geoname_id,
+      alternate_names: Record.alternate_names,
+      code2: Record.code2,
+      code3: Record.code3,
+      continent: Record.continent,
+      tld: Record.tld,
+      phone: Record.phone,
+    };
+    return Details;
+  });
+
+  return DataList;
+}
+
+export async function mapCitiesList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = {
+      value: Record.name,
+      label: Record.name,
+      id: Record.id,
+      name: Record.name,
+    };
+
+    return Details;
+  });
+
+  return DataList;
 }

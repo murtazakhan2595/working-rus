@@ -70,7 +70,10 @@ const EventWithTooltip = ({ eventInfo }) => {
             </div>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
+        <TooltipContent 
+          side="top" 
+          className="max-w-xs bg-popover text-popover-foreground border border-border shadow-md rounded-md p-3"
+        >
           {getTooltipContent()}
         </TooltipContent>
       </Tooltip>
@@ -78,12 +81,7 @@ const EventWithTooltip = ({ eventInfo }) => {
   );
 };
 
-const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
-  console.log("Shift Calendar Props:", {
-    shift,
-    scheduleShifts,
-    employeeId,
-  });
+const Calendar = ({ shift, scheduleShifts, employeeId, reload, refreshShiftChangeRequests, isLoading = false }) => {
 
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -140,23 +138,33 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
   }, [shift, scheduleShifts, employeeId]);
 
   const generateCalendarEvents = () => {
+    
     try {
       const events = [];
       const coveredDates = new Set(); // Track dates covered by schedules
 
       // 1. PRIORITY: Add approved schedule shifts first and track covered dates
       if (scheduleShifts?.results && scheduleShifts.results.length > 0) {
-        scheduleShifts.results.forEach((schedule) => {
+        scheduleShifts.results.forEach((schedule, index) => {
+          console.log(`📅 DEBUG: Processing schedule ${index + 1}: ${schedule.id} (${schedule.is_org_based ? 'org' : 'custom'})`);
+          
           if (schedule.is_org_based && schedule.shift_details) {
             // Organization-based scheduled shift
-            const scheduleEvents = generateOrgScheduleEvents(schedule);
+            const scheduleEvents = generateOrgScheduleEvents(schedule, coveredDates);
+            console.log(`🟢 DEBUG: Generated ${scheduleEvents.length} org events for schedule ${schedule.id}`);
             events.push(...scheduleEvents);
             
-            // Track dates covered by this schedule
-            scheduleEvents.forEach(event => {
-              const eventDate = moment(event.start).format('YYYY-MM-DD');
-              coveredDates.add(eventDate);
-            });
+            // Track dates covered by this schedule - for org schedules, track the entire date range
+            const startDate = moment(schedule.start_date);
+            const endDate = moment(schedule.end_date);
+            let currentDate = startDate.clone();
+            while (currentDate.isSameOrBefore(endDate)) {
+              const dateKey = currentDate.format('YYYY-MM-DD');
+              if (!coveredDates.has(dateKey)) {
+                coveredDates.add(dateKey);
+              }
+              currentDate.add(1, 'day');
+            }
           } else if (schedule.custom_schedule) {
             // Custom scheduled shift
             const scheduleEvents = generateCustomScheduleEvents(schedule);
@@ -175,7 +183,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
         const directShiftEvents = generateDirectShiftEvents(shift, coveredDates);
         events.push(...directShiftEvents);
       }
-
+      
       setEvents(events);
     } catch (error) {
       console.error("Error generating calendar events:", error);
@@ -183,7 +191,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
     }
   };
 
-  const generateOrgScheduleEvents = (schedule) => {
+  const generateOrgScheduleEvents = (schedule, coveredDates = new Set()) => {
     const events = [];
     const shiftDetails = schedule.shift_details;
 
@@ -192,7 +200,13 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
     // Parse weekdays from JSON string
     let weekdays = [];
     try {
-      weekdays = JSON.parse(shiftDetails.weekdays);
+      if (shiftDetails.weekdays && shiftDetails.weekdays !== null) {
+        weekdays = JSON.parse(shiftDetails.weekdays);
+      }
+      // Ensure weekdays is an array
+      if (!Array.isArray(weekdays) || weekdays.length === 0) {
+        weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+      }
     } catch (e) {
       weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     }
@@ -208,6 +222,13 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
     let currentDate = startDate.clone();
     while (currentDate.isSameOrBefore(endDate)) {
       const dayName = currentDate.format("ddd").toLowerCase();
+      const dateKey = currentDate.format("YYYY-MM-DD");
+
+      // Skip this date if it's already covered by a newer schedule
+      if (coveredDates.has(dateKey)) {
+        currentDate.add(1, "day");
+        continue;
+      }
 
       if (shortWeekdays.includes(dayName)) {
         const startTime = moment(
@@ -328,12 +349,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
     return events;
   };
 
-  const generateDirectShiftEvents = (shift, coveredDates = new Set()) => {
-    console.log("=== DEBUG: generateDirectShiftEvents ===");
-    console.log("shift object:", shift);
-    console.log("shift.starttime:", shift.starttime);
-    console.log("shift.endtime:", shift.endtime);
-    console.log("coveredDates:", Array.from(coveredDates));
+  const generateDirectShiftEvents = (shift, coveredDates) => {
 
     const events = [];
 
@@ -357,19 +373,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
       shiftEnd = moment(shift.endtime);
     }
 
-    console.log("Parsed times:", {
-      startValid: shiftStart.isValid(),
-      endValid: shiftEnd.isValid(),
-      startTime: shiftStart.isValid() ? shiftStart.format("HH:mm") : "Invalid",
-      endTime: shiftEnd.isValid() ? shiftEnd.format("HH:mm") : "Invalid",
-    });
-
     // Only proceed if both times are valid
     if (!shiftStart.isValid() || !shiftEnd.isValid()) {
-      console.error("Invalid time formats:", {
-        starttime: shift.starttime,
-        endtime: shift.endtime,
-      });
       return events;
     }
 
@@ -405,7 +410,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
       currentDate.add(1, "day");
     }
 
-    console.log("Generated direct shift events for uncovered dates:", events.length);
     return events;
   };
 
@@ -430,20 +434,47 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
         </div>
       )}
 
-      <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        height="auto"
-        contentHeight="auto"
-        aspectRatio={
-          typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
-        }
-        initialView="dayGridMonth"
-        nowIndicator={true}
-        headerToolbar={{
-          left: "prev,next",
-          center: "title",
-          right: "today",
-        }}
+      {!employeeId && (
+        <div className="flex items-center justify-center h-96 bg-white rounded-lg shadow-sm">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">
+              <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4l6 6m0 0l6-6m-6 6V11" />
+              </svg>
+            </div>
+            <p className="text-muted-1200 text-lg font-medium">Select an employee</p>
+            <p className="text-muted-1100 text-sm">Choose an employee from the list to view their shift calendar</p>
+          </div>
+        </div>
+      )}
+
+      {/* Calendar Container with Loading Overlay */}
+      {employeeId && (
+        <div className="relative">
+          {/* Loading Overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 bg-white bg-opacity-90 z-10 flex items-center justify-center rounded-lg">
+              <div className="flex flex-col items-center gap-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="text-sm text-gray-600 font-medium">Loading shift schedule...</p>
+              </div>
+            </div>
+          )}
+
+          <FullCalendar
+          plugins={[dayGridPlugin, interactionPlugin]}
+          height="auto"
+          contentHeight="auto"
+          aspectRatio={
+            typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
+          }
+          initialView="dayGridMonth"
+          nowIndicator={true}
+          headerToolbar={{
+            left: "prev,next",
+            center: "title",
+            right: "today",
+          }}
         dayMaxEvents={
           typeof window !== "undefined" && window.innerWidth < 768 ? 2 : 3
         }
@@ -461,6 +492,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
           };
         }}
       />
+        </div>
+      )}
 
       {/* Request Shift Change Button */}
       {employeeId && (
@@ -490,6 +523,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
           setIsOpen={setIsRequestModalOpen}
           employee={selectedEmployee}
           reload={reload}
+          refreshShiftChangeRequests={refreshShiftChangeRequests}
           shift_requested="Manager"
         />
       )}

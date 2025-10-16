@@ -1,138 +1,198 @@
-import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/CustomSheet";
-import React, { useEffect, useState } from "react";
-import { Formik, useFormikContext } from "formik";
-import { Button } from "components/ui/button";
-import { SelectInputComponent, CheckBoxInput } from "components/FormControl";
+import React, { useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
-import { getShiftById } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { getShift } from "app/hooks/attendance";
-import { AddShiftForm } from "app/modules/OfficeSetting";
 import { saveEmployeeWorkInformationData } from "app/hooks/employee";
-import { generateShiftScheduleLog } from "./getEmployeeActiveShift";
+import { saveShiftSchedule } from "app/hooks/shiftManagement";
+import { SheetUI } from "components";
+import { SelectInputComponent, SelectMultiInputComponent } from "components/FormControl";
+import AddCustomShift from "app/modules/Employees/Screens/EmployeeForm/AddCustomShift";
+import { Button } from "components/ui/button";
+import { GetDispatchStateList } from 'utils/Lists';
 
-// Form values updater component - helps us update form values when employee changes
-const FormUpdater = ({ employeeId, employees, setShiftSelect }) => {
-  const { setFieldValue } = useFormikContext();
-
-  useEffect(() => {
-    if (employeeId && employees && employees.length > 0) {
-      // Find the selected employee in the employees array
-      const selectedEmployee = employees.find(
-        (emp) => emp.id.toString() === employeeId.toString()
-      );
-
-      if (selectedEmployee && selectedEmployee.shift_assignment) {
-        // If employee has a shift assignment, update form values
-        setFieldValue("shift_assignment", selectedEmployee.shift_assignment);
-        setShiftSelect(true); // Check the "Choose Shift" checkbox
-      } else {
-        // If employee doesn't have a shift assignment, reset form values
-        setFieldValue("shift_assignment", "");
-        setShiftSelect(false);
-      }
-    }
-  }, [employeeId, employees, setFieldValue, setShiftSelect]);
-
-  return null; // This component doesn't render anything
-};
-
-const AssignShift = ({ employees }) => {
+const AssignShift2 = ({ }) => {
+  const employees = GetDispatchStateList('employees', 'emp');
   const [isOpen, setIsOpen] = useState(false);
-  const [shiftSelect, setShiftSelect] = useState(false);
   const [shiftList, setShiftList] = useState([]);
-  const [addShift, setAddShift] = useState(false);
-  const [closeSheet, setCloseSheet] = useState(false);
-  const [initialValues, setInitialValues] = useState({
-    shift_assignment: "",
-    employee: "",
-  });
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
-
+  const [customShiftData, setCustomShiftData] = useState(null);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const Branches = useSelector((state) => state.common.branches);
+  const Departments = useSelector((state) => state.common.departments);
+  // Filter states for branch and department
+  const [selectedBranch, setSelectedBranch] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
+  // Track selected employees to preserve during filtering
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  console.log("Employees from getdispatch:", employees);
+  const baseEmpOptions = employees?.map((emp) => ({
+    value: emp.id,
+    label: emp.label,
+    branch_id: emp.branch_id,
+    department_name: emp.department_name,
+  }));
 
-  const empOptions = employees?.map((emp) => {
-    return {
-      value: emp.id,
-      label: `${emp.first_name} ${emp.last_name}`,
-    };
-  });
+  // Create filtered employee list based on branch and department filters
+  // Also preserve already selected employees even if they don't match filters
+  const empOptions = useMemo(() => {
+    let filteredEmployees = baseEmpOptions || [];
+
+    // Apply branch filter
+    if (selectedBranch && Array.isArray(selectedBranch) && selectedBranch.length) {
+      filteredEmployees = filteredEmployees.filter(emp => selectedBranch.includes(emp.branch_id));
+    }
+
+    // Apply department filter
+    if (selectedDepartment && Array.isArray(selectedDepartment) && selectedDepartment.length) {
+      filteredEmployees = filteredEmployees.filter(emp => selectedDepartment.includes(emp.department_name));
+    }
+
+    // Find already selected employees that might not be in filtered list
+    const selectedButNotInFilter = selectedEmployees.filter(selectedEmp =>
+      !filteredEmployees.find(emp => emp.value === selectedEmp.value)
+    );
+
+    // Combine filtered employees with selected employees (remove duplicates)
+    const allEmployees = [...filteredEmployees, ...selectedButNotInFilter];
+
+    return allEmployees;
+  }, [baseEmpOptions, selectedBranch, selectedDepartment, selectedEmployees]);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
     if (shiftData) {
-      const shiftList = shiftData.results.map((shift) => {
-        return {
-          value: shift.id,
-          label: `${shift.name} (${moment(shift.starttime).format(
-            "h:mm a"
-          )} - ${moment(shift.endtime).format("h:mm a")})`,
-        };
-      });
+      const shiftList = shiftData.results.map((shift) => ({
+        value: shift.id,
+        label: `${shift.name} (${moment(shift.starttime).format(
+          "h:mm a"
+        )} - ${moment(shift.endtime).format("h:mm a")})`,
+      }));
       setShiftList(shiftList);
     }
   };
 
   useEffect(() => {
     getShiftList();
-  }, [employees]);
+  }, []);
 
-  const handleClose = () => {
-    setCloseSheet(true);
+  const formatTimeForBackend = (timeStr) => {
+    if (!timeStr) return null;
+    return moment(timeStr).format("HH:mm");
   };
 
-  const formSheetData = {
-    triggerText: "Assign Shift",
-    title: "Assign Shift",
-    description: null,
-    footer: null,
+  const formatDateForBackend = (dateStr) => {
+    return moment(dateStr).format("YYYY-MM-DD");
   };
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const saveCustomShiftSchedule = async (employeeId, shiftData) => {
     try {
-      // Save shift assignment
-      const response = await saveEmployeeWorkInformationData(values.employee, {
-        shift_assignment: values.shift_assignment,
-        employee: values.employee,
+      const [startDate, endDate] = shiftData.dateRange.split(",");
+
+      // Build custom_schedule object
+      const customSchedule = {};
+      shiftData.dailySchedule.forEach((day) => {
+        if (day.isOff) {
+          customSchedule[day.date] = {
+            is_off: true,
+          };
+        } else if (day.isSplit) {
+          customSchedule[day.date] = {
+            is_off: false,
+            is_split: true,
+            start_time_1: formatTimeForBackend(day.splitStartTime1),
+            end_time_1: formatTimeForBackend(day.splitEndTime1),
+            start_time_2: formatTimeForBackend(day.splitStartTime2),
+            end_time_2: formatTimeForBackend(day.splitEndTime2),
+          };
+        } else {
+          customSchedule[day.date] = {
+            is_off: false,
+            is_split: false,
+            start_time: formatTimeForBackend(day.startTime),
+            end_time: formatTimeForBackend(day.endTime),
+          };
+        }
       });
 
+      const payload = {
+        employee: employeeId,
+        shift: null,
+        schedule_name: shiftData.scheduleName,
+        start_date: formatDateForBackend(startDate),
+        end_date: formatDateForBackend(endDate),
+        is_org_based: false,
+        custom_schedule: customSchedule,
+        total_weekly_hours: shiftData.totalHours.weekly.toString(),
+        assigned_by: userProfile?.employee_id || userProfile?.id,
+        is_off_day: shiftData.dailySchedule.some((day) => day.isOff),
+        shift_requested: "HR",
+      };
+
+      const response = await saveShiftSchedule(payload);
       if (response) {
-        // Generate history log for direct shift assignment
-        if (values.shift_assignment) {
-          try {
-            // Get shift details for the log
-            const shiftDetails = await getShiftById(values.shift_assignment);
-
-            if (shiftDetails) {
-              // Create a schedule-like object for the log
-              const scheduleData = {
-                ...shiftDetails,
-                employee: values.employee,
-                start_date: moment().format("YYYY-MM-DD"), // Current date as start
-                end_date: moment().add(30, "days").format("YYYY-MM-DD"), // Default 30 days
-              };
-
-              await generateShiftScheduleLog({
-                scheduleData: scheduleData,
-                logType: "Manual Assignment",
-                userProfile: userProfile,
-                status: "Approved",
-              });
-            }
-          } catch (logError) {
-            console.error("Error generating shift log:", logError);
-            // Don't fail the main operation if logging fails
-          }
-        }
-
-        toast.success("Shift assigned successfully!", {
+        toast.success("Custom shift schedule assigned successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        resetForm();
-        setIsOpen(false);
       }
+    } catch (error) {
+      console.error("Error saving custom shift schedule:", error);
+      toast.error("Failed to save custom shift schedule");
+    }
+  };
+
+  const handleSubmit = async (data) => {
+    try {
+      const selectedEmployeeIds = data.employees || [];
+      let successCount = 0;
+      let errorCount = 0;
+
+      // Process each selected employee
+      for (const employeeId of selectedEmployeeIds) {
+        try {
+          // Save shift assignment to employee
+          const response = await saveEmployeeWorkInformationData(employeeId, {
+            shift_assignment: data.shift_assignment,
+          });
+
+          if (response) {
+            // Save custom shift schedule if configured
+            if (customShiftData) {
+              await saveCustomShiftSchedule(employeeId, customShiftData);
+            }
+            successCount++;
+          }
+        } catch (error) {
+          console.error(`Error assigning shift to employee ${employeeId}:`, error);
+          errorCount++;
+        }
+      }
+
+      // Show appropriate success/error messages
+      if (successCount > 0 && errorCount === 0) {
+        toast.success(`Shift assigned successfully to ${successCount} employee(s)!`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else if (successCount > 0 && errorCount > 0) {
+        toast.warning(`Shift assigned to ${successCount} employee(s). ${errorCount} failed.`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        toast.error("Failed to assign shift to any employee", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+
+      setIsOpen(false);
+      setCustomShiftData(null);
+
+      return {
+        status: successCount > 0,
+        messageType: successCount > 0 ? "SUCCESS" : "ERROR",
+        title: successCount > 0 ? "Shift Assigned Successfully" : "Assignment Failed",
+        description: successCount > 0 
+          ? `Shift has been assigned to ${successCount} employee(s) successfully.`
+          : "Failed to assign shift to employees.",
+      };
     } catch (error) {
       console.error("API Error:", error);
       toast.error(error.message || "An error occurred", {
@@ -141,164 +201,116 @@ const AssignShift = ({ employees }) => {
     }
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    setCustomShiftData(null);
+    setSelectedBranch("");
+    setSelectedDepartment("");
+    setSelectedEmployees([]);
+  };
+
   return (
     <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen,
-        discard: false,
-      })}
-
-      <SheetComponent
-        {...formSheetData}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        width="568px"
+      <Button
+        onClick={() => setIsOpen(true)}
       >
-        <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {(props) => (
-            <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-              {/* Add form updater component to update shift data when employee changes */}
-              <FormUpdater
-                employeeId={props.values.employee}
-                employees={employees}
-                setShiftSelect={setShiftSelect}
-              />
+        Assign Shift
+      </Button>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Shift Details</h3>
-
-                <div className="space-y-2">
-                  <SelectInputComponent
-                    name={"employee"}
-                    options={empOptions || []}
-                    error={props.errors?.employee}
-                    touch={props.touched.employee}
-                    value={props.values.employee}
-                    label={"Employee"}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                      setSelectedEmployeeId(value);
-                    }}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <CheckBoxInput
-                      label="Choose Shift"
-                      name="shift-select"
-                      value={shiftSelect}
-                      onChange={(name, value) => {
-                        setShiftSelect(value);
-                        if (!value) {
-                          props.setFieldValue("shift_assignment", "");
-                        }
-                      }}
-                    />
-                  </div>
-
-                  {shiftSelect && (
-                    <div className="space-y-2">
-                      <SelectInputComponent
-                        name={"shift_assignment"}
-                        options={shiftList}
-                        error={props.errors?.shift_assignment}
-                        touch={props.touched.shift_assignment}
-                        value={props.values.shift_assignment}
-                        label={"Shift"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
+      <SheetUI
+        isOpen={isOpen}
+        setIsOpen={handleClose}
+        variant="sheet"
+        sheetConfig={{
+          title: 'Assign Shift',
+          description: 'Assign shifts to employees'
+        }}
+        formConfig={{
+          initialValues: {
+            employees: [], // Changed from single employee to multiple employees
+            shift_assignment: "",
+          },
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          submitButtonText: "Assign Shift",
+          cancelButtonText: "Cancel",
+          columns: 1,
+          formFields: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Employee Filtering`,
+              InputFields: [
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "branch_filter",
+                  label: "Filter by Branch",
+                  options: Branches || [],
+                  value: selectedBranch,
+                  onChange: (field, value) => setSelectedBranch(value),
+                  placeholder: "All Branches",
+                  required: false,
+                },
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "department_filter",
+                  label: "Filter by Department",
+                  options: Departments || [],
+                  value: selectedDepartment,
+                  onChange: (field, value) => setSelectedDepartment(value),
+                  placeholder: "All Departments",
+                  required: false,
+                },
+                {
+                  InputField: ({ name, value, ...props }) => (
+                    <div className="text-xs text-muted-900 col-span-2">
+                      Showing {empOptions?.length || 0} employees
+                      {selectedBranch || selectedDepartment ? ' (filtered)' : ' (all)'}
+                      {selectedEmployees.length > 0 && ` • ${selectedEmployees.length} selected`}
                     </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <CheckBoxInput
-                      label="Custom Shift"
-                      name="custom-shift"
-                      value={addShift}
-                      onChange={(name, value) => {
-                        setAddShift(value);
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 border-t border-gray-200 bg-gray-50">
-                <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={handleClose}
-                    type="button"
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" size="lg" variant="default">
-                    Assign
-                  </Button>
-                </div>
-              </div>
-              {addShift && (
-                <ShiftAction
-                  isOpen={addShift}
-                  setIsOpen={setAddShift}
-                  reload={getShiftList}
-                  setEmployeeShift={(value) => {
-                    props.setFieldValue("shift_assignment", parseInt(value));
-                    setShiftSelect(true);
-                  }}
-                />
-              )}
-            </form>
-          )}
-        </Formik>
-      </SheetComponent>
+                  ),
+                  // colsSpan: 2,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Employee & Shift Selection`,
+              InputFields: [
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "employees",
+                  options: empOptions || [],
+                  required: true,
+                  label: "Select Employees",
+                  showSelectedValuesBelow: true,
+                  onFieldUpdate: async (field, value, formValues, setFieldValue) => {
+                    // Track selected employees for filter preservation
+                    const selectedEmps = baseEmpOptions?.filter(emp => 
+                      value.includes(emp.value)
+                    ) || [];
+                    setSelectedEmployees(selectedEmps);
+                  },
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "shift_assignment",
+                  options: shiftList,
+                  required: false,
+                  label: "Shift",
+                },
+                {
+                  InputField: AddCustomShift,
+                  customShiftData: customShiftData,
+                  setCustomShiftData: setCustomShiftData,
+                  colsSpan: 1,
+                },
+              ],
+            },
+          ],
+        }}
+      />
     </>
   );
 };
 
-// ShiftAction component
-const ShiftAction = ({
-  isOpen,
-  setIsOpen,
-  reload,
-  setEmployeeShift = () => {},
-}) => {
-  const formSheetData = {
-    triggerText: null,
-    title: "Add Shift Details",
-    description: null,
-    footer: null,
-  };
-
-  return (
-    <SheetComponent
-      {...formSheetData}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      width="568px"
-    >
-      <AddShiftForm
-        isOpen={isOpen}
-        setIsOpen={(value) => {
-          reload();
-          setIsOpen(value);
-        }}
-        setEmployeeShift={setEmployeeShift}
-      />
-    </SheetComponent>
-  );
-};
-
-export default AssignShift;
+export default AssignShift2;

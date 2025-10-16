@@ -24,7 +24,7 @@ import { CircleX } from "lucide-react";
 
 const AddEditApprovalHierarchyLevels = ({
   isOpen = true,
-  setReloadData = () => {},
+  setReloadData = () => { },
   id = null,
   level_group, // if edit, contains level group to edit
 }) => {
@@ -50,10 +50,12 @@ const AddEditApprovalHierarchyLevels = ({
       try {
         setIsLoading(true);
         const response = await getApprovalHierarchyData(id);
+        debugger
         // Handles mounting and form population in edit mode
         if (isMounted) {
+          const request_initiative = response.levels?.flatMap(level => level.initiative_designation || []);
+          const hierarchy = { ...response, request_initiative: request_initiative }
           if (isEditMode) {
-            const hierarchy = response;
             const levelGroupToEdit = level_group || "";
 
             // Filter levels matching the current request initiator
@@ -102,7 +104,7 @@ const AddEditApprovalHierarchyLevels = ({
               level_groups: levelGroupNonEdit,
             });
           } else {
-            setHierarchyData(response);
+            setHierarchyData(hierarchy);
           }
         }
       } catch (error) {
@@ -144,14 +146,12 @@ const AddEditApprovalHierarchyLevels = ({
         return {
           status: true,
           messageType: "SUCCESS",
-          title: `Levels ${
-            isEditMode ? "Updated" : "Added"
-          } for Approval Hierarchy`,
-          description: `Levels have been successfully ${
-            isEditMode ? "updated" : "added"
-          } against request initiator in ${(
-            HierarchyData.name || ""
-          ).toLowerCase()} approval hierarchy`,
+          title: `Levels ${isEditMode ? "Updated" : "Added"
+            } for Approval Hierarchy`,
+          description: `Levels have been successfully ${isEditMode ? "updated" : "added"
+            } against request initiator in ${(
+              HierarchyData.name || ""
+            ).toLowerCase()} approval hierarchy`,
         };
       }
     } catch (error) {
@@ -216,69 +216,69 @@ const AddEditApprovalHierarchyLevels = ({
           // Conditionally render levels from formValues.level
           ...(formValues?.levels
             ? formValues.levels.map((level, index) => ({
-                sheetCardExtension: true,
-                sheetCardTitle: `Approval Hierarchy Level ${level.level_number}`,
-                InputFields: [
-                  {
-                    InputField: SelectInputComponent,
-                    name: `levels[${index}].assignment_type`,
-                    label: "Approver Type",
-                    value: level.assignment_type,
-                    options: [
-                      { value: "DESIGNATION", label: "Designation" },
-                      { value: "DIRECT_REPORTING", label: "Direct Reporting" },
-                      {
-                        value: "INDIRECT_REPORTING",
-                        label: "Indirect Reporting",
-                      },
-                    ],
-                    onFieldUpdate: async (_, __, ___, handleChange) => {
-                      handleChange(`levels[${index}].designation`, null);
+              sheetCardExtension: true,
+              sheetCardTitle: `Approval Hierarchy Level ${level.level_number}`,
+              InputFields: [
+                {
+                  InputField: SelectInputComponent,
+                  name: `levels[${index}].assignment_type`,
+                  label: "Approver Type",
+                  value: level.assignment_type,
+                  options: [
+                    { value: "DESIGNATION", label: "Designation" },
+                    { value: "DIRECT_REPORTING", label: "Direct Reporting" },
+                    {
+                      value: "INDIRECT_REPORTING",
+                      label: "Indirect Reporting",
                     },
+                  ],
+                  onFieldUpdate: async (_, __, ___, handleChange) => {
+                    handleChange(`levels[${index}].designation`, null);
                   },
-                  {
-                    InputField: RemoveHierarchyLevels,
-                    name: "levels",
-                    level: level,
-                  },
-                  {
-                    InputField: SelectInputComponent,
-                    name: `levels[${index}].designation`,
-                    label: "Designation",
-                    options: Designations,
-                    value: level.designation,
-                    required: true,
-                    renderCondition: level.assignment_type === "DESIGNATION",
-                  },
+                },
+                {
+                  InputField: RemoveHierarchyLevels,
+                  name: "levels",
+                  level: level,
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: `levels[${index}].designation`,
+                  label: "Designation",
+                  options: Designations,
+                  value: level.designation,
+                  required: true,
+                  renderCondition: level.assignment_type === "DESIGNATION",
+                },
 
-                  {
-                    InputField: CheckBoxInput,
-                    name: `levels[${index}].auto_forward_enabled`,
-                    label: "Auto Forward",
-                    colsSpan: 2,
-                  },
-                  ...(level.auto_forward_enabled
-                    ? [
-                        {
-                          InputField: NumberInput,
-                          name: `levels[${index}].auto_forward_threshold`,
-                          label: "Auto Farward Threshold Type",
-                          description:
-                            "Add the thershold time in hours. Request will be forwarded to next level automatically if not responded in mentioned time",
-                          min: 1,
-                        },
-                      ]
-                    : []),
-                  {
-                    InputField: CheckBoxInput,
-                    name: `levels[${index}].is_final_approval`,
-                    label: "Final Approver",
-                    description:
-                      "If selected this level will be the final approver",
-                    colsSpan: 2,
-                  },
-                ],
-              }))
+                {
+                  InputField: CheckBoxInput,
+                  name: `levels[${index}].auto_forward_enabled`,
+                  label: "Auto Forward",
+                  colsSpan: 2,
+                },
+                ...(level.auto_forward_enabled
+                  ? [
+                    {
+                      InputField: NumberInput,
+                      name: `levels[${index}].auto_forward_threshold`,
+                      label: "Auto Farward Threshold Type",
+                      description:
+                        "Add the thershold time in hours. Request will be forwarded to next level automatically if not responded in mentioned time",
+                      min: 1,
+                    },
+                  ]
+                  : []),
+                {
+                  InputField: CheckBoxInput,
+                  name: `levels[${index}].is_final_approval`,
+                  label: "Final Approver",
+                  description:
+                    "If selected this level will be the final approver",
+                  colsSpan: 2,
+                },
+              ],
+            }))
             : []),
           {
             sheetCardExtension: false,
@@ -298,7 +298,7 @@ const AddEditApprovalHierarchyLevels = ({
 };
 
 const AddNewHierarchyLevels = React.memo(
-  ({ name, onChange = () => {}, value = [], error }) => {
+  ({ name, onChange = () => { }, value = [], error }) => {
     const handleClick = (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -320,7 +320,7 @@ const AddNewHierarchyLevels = React.memo(
 );
 
 const RemoveHierarchyLevels = React.memo(
-  ({ name, onChange = () => {}, value = [], error, level }) => {
+  ({ name, onChange = () => { }, value = [], error, level }) => {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const handleClick = (event) => {
       event.preventDefault();

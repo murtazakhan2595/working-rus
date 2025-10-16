@@ -10,7 +10,8 @@ import {
   getCertifications,
   getContactInfo,
   mapEmployeeData,
-  mapEmployeeStatsData
+  mapEmployeeStatsData,
+  mapEmployeePayloadData,
 } from "app/utils/MappingObjects/mapEmployeeData";
 import {
   EmployeeCVDetails,
@@ -771,35 +772,34 @@ const getEmployeeWorkInformationData = async (employeeid) => {
   return null;
 };
 
-const saveEmployeeWorkInformationData = async (employeeid, payload) => {
+const saveEmployeeWorkInformationData = async (id, payload) => {
   try {
-    console.log("payload", payload);
-    console.log("employeeid", employeeid);
-    if (employeeid) {
-      const response = await axios.patch(
-        `${baseUrl}/emp/${employeeid}`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200) {
-        return response?.data;
-      }
-    } else {
-      const response = await axios.post(`${baseUrl}/emp/add`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201) {
-        return response?.data;
-      }
+    const url = id
+      ? `${baseUrl}/emp/${id}`
+      : `${baseUrl}/emp/add`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapEmployeePayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
     }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching Personal Info data :", error);
+    renderErrorMessages(response?.data);
     return false;
+  } catch (error) {
+    console.error("API error in saveUpdate:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 

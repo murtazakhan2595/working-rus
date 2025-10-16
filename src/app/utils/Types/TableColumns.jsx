@@ -1,5 +1,4 @@
 import { EmployeeID } from "utils/getValuesFromTables";
-import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
@@ -93,92 +92,6 @@ export const EmployeeColumns = [
     formatter: (cell, row) => <EmployeeAction row={row} />,
   },
 ];
-
-export const AllJobApplicationColumns = (
-  handleOptionSelect,
-  setViewApplicationDetails,
-  setIsViewApplicationDetailOpen
-) => [
-  {
-    dataField: "id",
-    text: "Candidate ID",
-    formatter: (cell, row) => <EmployeeID value={cell} />,
-  },
-  {
-    dataField: "first_name",
-    text: "Candidate",
-    formatter: (cell, row) => {
-      const name = `${cell} ${row?.last_name}`.replace(/[^a-zA-Z0-9\s]/g, "");
-      return (
-        <OverviewCard
-          avatarProps={{
-            fallbackText: name.charAt(0),
-            text: name,
-          }}
-          title={name}
-          additionalInfo={[row?.email]}
-        />
-      );
-    },
-    onClick: (index, list) => {
-      setViewApplicationDetails({ index, list });
-      setIsViewApplicationDetailOpen(true);
-    },
-  },
-  {
-    dataField: "updated_at",
-    text: "Applied On",
-    formatter: (cell) => <>{moment(cell).format("MMM D, YYYY")}</>,
-  },
-  {
-    dataField: "Year_of_Experience",
-    text: "Experience",
-    formatter: (cell) => <p>{cell} Years</p>,
-  },
-  {
-    dataField: "expected_salary",
-    text: "Expected Salary",
-    formatter: (cell) => <>{formatNumber(cell)}</>,
-  },
-
-  {
-    dataField: "",
-    text: "Resume",
-    formatter: (cell, row) => (
-      <>
-        <div className="flex items-center justify-center gap-x-2">
-          <span title={row?.cv} className="text-base text-baseGray">
-            File
-          </span>
-          <a href={row?.cv} target="_blank" rel="noopener noreferrer">
-            <button>
-              <AiOutlineDownload />
-            </button>
-          </a>
-        </div>
-      </>
-    ),
-  },
-  {
-    dataField: "application_status",
-    text: "Status",
-    formatter: (cell) => {
-      const role = dropdownOptions.find((obj) => obj.value === cell);
-      return <StatusLabel status={role?.label} />;
-    },
-  },
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => (
-      <RenderJobApplicationActions
-        row={row}
-        handleOptionSelect={handleOptionSelect}
-      />
-    ),
-  },
-];
-
 
 
 export const MyClaimsRequestColumns = (expenseTypeOptions) => [

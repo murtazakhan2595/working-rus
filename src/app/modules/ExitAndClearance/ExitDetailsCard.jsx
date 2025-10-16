@@ -102,7 +102,7 @@ export const ExitDetails = (isResignation) => [
         // formatter: (cell) => renderDate(cell),
       },
       {
-        key: "exit_date",
+        key: "final_working_day",
         label: "Exit date",
         formatter: (cell) => renderDate(cell, "--"),
       },
@@ -212,7 +212,7 @@ const ExitDetailsCard = ({
       if (status === "INITIATED") {
         setOpenClearanceForm(data.employee_id);
       } else if (status === "COMPLETED") {
-        handleUploadClearanceReportClick(true);
+        handleUploadClearanceReportClick(data.id);
         setIsOpen(false)
         reloadData(true)
       }
@@ -267,25 +267,59 @@ const ExitDetailsCard = ({
                   Complete Clearance
                 </Button>
               );
-            if (
-              data.clearance_status &&
-              data.clearance_status.toLowerCase() === "completed"
-            )
+            // Completed clearance - check if exit interview is available
+          if (
+            data.clearance_status &&
+            data.clearance_status.toLowerCase() === "completed"
+          ) {
+            // Check if this is resignation/termination AND clearance is fully done
+             const isExitType = ["RESIGNATION", "TERMINATION"].includes(
+               data.exit_category
+             );
+
+            const isClearanceCompleted = data?.is_clearance_handover === true; // Your boolean flag
+            
+            if (isExitType && isClearanceCompleted) {
               return (
-                <Button
-                  variant="outline"
-                  onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
-                >
-                  Exit Interview
-                </Button>
+                <div className="space-y-2">
+                  <div className="text-sm text-green-600 font-medium">
+                    ✓ Exit Interview form is now available.
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={(event) => handleClick(event, "EXIT_INTERVIEW", data)}
+                  >
+                    Proceed for Exit Interview
+                  </Button>
+                </div>
               );
+            } else {
+              return (
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    disabled={true}
+                  >
+                    Exit Interview
+                  </Button>
+                  <div className="text-sm text-amber-600">
+                    {!isExitType 
+                      ? "Exit interview not applicable for this clearance type"
+                      : "Waiting for all clearance items to be completed"
+                    }
+                  </div>
+                </div>
+              );
+            }
           }
+        }
           return (
             <StatusButtons
               permissionKey={"MANAGE_EXIT_REQUESTS"}
               status={data?.status || null}
               current_approver={data?.current_approver || null}
               request_id={data.request}
+            final_approver={data.final_approvers}
               setResponse={(reponse, status) => {
                 if (reponse) {
                   toast.success(`Request ${status} Successfully!`);

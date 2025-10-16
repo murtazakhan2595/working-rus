@@ -9,7 +9,8 @@ import {
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
 import { renderErrorMessages } from "utils/renderErrors";
-import { fetchDepartments } from "state/slices/CommonSlice";
+import { mapCountriesList, mapCitiesList } from "app/utils/MappingObjects/mapGeneralData";
+import { mapEmployeeCustomInformationList } from "app/utils/MappingObjects/mapEmployeeData";
 
 export const baseUrl = initialState.baseUrl;
 export const headers = () => ({
@@ -30,11 +31,10 @@ const getDepartmentList = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "name";
   try {
-    const URL = `/department/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+    const URL = `/department/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
@@ -67,11 +67,10 @@ export const getBranchList = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "-id";
   try {
-    const URL = `/branch/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+    const URL = `/branch/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
@@ -212,11 +211,10 @@ const getDesignationList = async (payload) => {
       ordering = sortOrder === "desc" ? `-${sortField}` : sortField;
     }
 
-    const URL = `/designation/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+    const URL = `/designation/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
@@ -264,55 +262,47 @@ const getManagersList = async () => {
   return [];
 };
 
-const getEmployeeList = async (payload) => {
+export const getEmployeeDropdownList = async (payload) => {
   try {
     const pageNo = payload?.options?.page ?? "";
     const ordering = payload?.ordering ?? "first_name";
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData
       ? {
-          ...payload?.filterData,
-          employee_status: "Active,Probation,Notice Period",
-        }
+        ...payload?.filterData,
+        employee_status: "Active,Probation,Notice Period",
+      }
       : { employee_status: "Active,Probation,Notice Period" };
-    const URL = `/customemp/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
+    const URL = `/timetracker/customemployees/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers(), });
     if (response.status === 200) {
-      const employeeResponse = response.data?.results?.employees ?? [];
+      const employeeResponse = response?.data?.results ?? [];
+      const count = response?.data?.count ?? 0;
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name} - ${employee.serial_number}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
-        department_name: employee.department_name,
-        department_position: employee.department_position,
-        employee_location: employee.employee_location,
-        direct_report: parseInt(employee.direct_report) || null,
-        indirect_report: employee.indirect_report,
+        department_name: parseInt(employee.department_name),
+        department_position: parseInt(employee.department_position),
         branch_id: employee.branch_id,
-        work_email: employee.work_email,
+        direct_report: parseInt(employee.direct_report),
+        indirect_report: employee.indirect_report,
         serial_number: employee.serial_number,
-        basic_salary: employee.salary,
-        salary_type: employee.salary_type,
-        is_eos_applicable: employee.is_eos_applicable,
-        is_new: employee.is_new,
-        joining_date: employee.joining_date,
-        employee_status: employee.employee_status,
-        default_shift: employee.shift_assignment,
-        user_role: employee.user_role,
-        user_role_name: employee.user_role_name,
-        name_initials: `${
-          employee?.first_name?.charAt(0)?.toUpperCase() || ""
-        }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
+        direct_report: employee.direct_report,
+        indirect_report: employee.indirect_report,
+        name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
+          }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
-      return { results: employeeList, count: response.data?.count };
+
+      console.log("Employee Dropdown List:", { filterData, URL, response, employeeList });
+      return { results: employeeList, count };
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -330,13 +320,15 @@ const getEmployeeListWithDetail = async () => {
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: employee.first_name && employee.last_name
+          ? `${employee.first_name} ${employee.last_name} - ${employee.serial_number || ""}`
+          : `${employee.name || ""} - ${employee.serial_number || ""}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
-        direct_report: employee.direct_report,
+        direct_report: parseInt(employee.direct_report),
         indirect_report: employee.indirect_report,
         joining_date: employee.joining_date,
         last_name: employee.last_name,
@@ -355,9 +347,8 @@ const getEmployeeListWithDetail = async () => {
         user_role: employee.user_role,
         contract_start_date: employee.contract_start_date,
         isContracted: employee.contract_start_date ? true : false,
-        name_initials: `${
-          employee?.first_name?.charAt(0)?.toUpperCase() || ""
-        }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
+        name_initials: `${employee?.first_name?.charAt(0)?.toUpperCase() || ""
+          }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
       return employeeList;
     } else return [];
@@ -453,20 +444,20 @@ const getEmployeeCustomList = async (payload) => {
   const ordering = payload?.ordering ?? "-id";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/customemp/?ordering=${ordering}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/customemp/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const employeeDataResponse = response.data.results;
+      const ResponseResults = await mapEmployeeCustomInformationList(employeeDataResponse.employees)
       const employeeData = {
         count: employeeDataResponse.total_count,
-        results: employeeDataResponse.employees,
+        results: ResponseResults,
         ActiveEmployee: employeeDataResponse.active_employees,
         TotalEmployee: employeeDataResponse.total_employees,
         TotalManager: employeeDataResponse.total_managers,
@@ -506,7 +497,7 @@ function flattenEmployees(employees) {
       branch_id: emp.branch_id || "",
       work_email: emp.work_email || "",
       serial_number: emp.serial_number || "",
-      basic_salary: emp.ctc || "",
+      basic_salary: parseFloat(emp.ctc || 0),
       salary_type: emp.salary_type || "",
       is_eos_applicable: emp.is_eos_applicable,
       is_new: emp.is_new,
@@ -516,15 +507,14 @@ function flattenEmployees(employees) {
       user_role: emp.user_role || [],
       name_initials:
         emp.first_name && emp.last_name
-          ? `${emp.first_name.charAt(0).toUpperCase() || ""}${
-              emp.last_name.charAt(0).toUpperCase() || ""
-            }`
+          ? `${emp.first_name.charAt(0).toUpperCase() || ""}${emp.last_name.charAt(0).toUpperCase() || ""
+          }`
           : emp.name
-          ? emp.name
+            ? emp.name
               .split(" ")
               .map((n) => n[0]?.toUpperCase())
               .join("")
-          : "",
+            : "",
       profile_picture: emp.profile_picture || "",
       designation: emp.designation || emp.department_position || "",
       subordinates: [], // We'll flatten them
@@ -544,11 +534,10 @@ const getNewEmployeeCustomList = async (payload) => {
   const ordering = payload?.ordering ?? "-id";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/newcustomemp/?ordering=${ordering}&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/newcustomemp/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -616,30 +605,6 @@ export const getTimeZoneList = async (URL) => {
   return [];
 };
 
-const getCurrenciesList = async (URL) => {
-  try {
-    const response = await axios.get(`${baseUrl}/currencies/`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const currenciesResponse = response.data;
-      const currenciesList = currenciesResponse.map((currencies) => ({
-        value: currencies.code,
-        label: `${currencies.code} - ${currencies.name}`,
-      }));
-      return currenciesList;
-    } else {
-      return [];
-    }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching Personal Info data :", error);
-  }
-  return [];
-};
-
 const deleteRecord = async (URL, recordName) => {
   try {
     const response = await axios.delete(`${baseUrl}${URL}`, {
@@ -654,10 +619,11 @@ const deleteRecord = async (URL, recordName) => {
       toast.error(`Unexpected response status: ${response.status}`);
     }
   } catch (error) {
-    toast.error(error.message, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 1000,
-    });
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   } finally {
     return true;
   }
@@ -669,17 +635,76 @@ const getWorkingHours = async (payload) => {
     const ordering = payload?.ordering ?? "-id";
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
-    const URL = `/shift/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+    const URL = `/shift/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const workingHours = response.data;
       return workingHours;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+
+export const getCountriesList = async (payload) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const URL = `/countries/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapCountriesList(Response.results);
+      return { count: Response.count, results: ResponseData };
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+export const getCitiesList = async (payload, country) => {
+  try {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = {
+      ...(payload?.filterData ?? {}),
+      ...(country ? { country: country } : {}),
+    };
+    const URL = `/cities/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const Response = response.data;
+      const ResponseData = await mapCitiesList(Response.results);
+      return { count: Response.count, results: ResponseData };
     } else {
       return [];
     }
@@ -736,11 +761,10 @@ const getRoleList = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "-created_at";
   try {
-    const URL = `/userrole/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
+    const URL = `/userrole/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""
+      }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
@@ -773,34 +797,40 @@ export const SubmitResetPassword = async (payload) => {
 
 export const getCurrentRequestApprover = async (request_id) => {
   try {
-    const URL = `/requests/${request_id}/`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const ResponseData = response.data;
-      const ReturnData = {
-        current_level: ResponseData.current_level,
-        level_status: ResponseData.status,
-        current_approver:
-          ResponseData.current_approvers &&
-          Array.isArray(ResponseData.current_approvers)
-            ? ResponseData.current_approvers
-            : [],
-      };
-      return ReturnData;
-    } else return {};
+    if (request_id) {
+      const URL = `/requests/${request_id}/`;
+      const response = await axios.get(`${baseUrl}${URL}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        const ResponseData = response.data;
+        const ReturnData = {
+          current_level: ResponseData.current_level,
+          level_status: ResponseData.status,
+          current_approver:
+            ResponseData.current_approvers &&
+              Array.isArray(ResponseData.current_approvers)
+              ? ResponseData.current_approvers
+              : [],
+          final_approvers:
+            ResponseData.final_approvers &&
+              Array.isArray(ResponseData.final_approvers)
+              ? ResponseData.final_approvers
+              : [],
+        };
+        return ReturnData;
+      }
+    };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
   }
   return {};
 };
 
-export const handleRequest = async (request_id, approve) => {
+export const handleRequest = async (request_id, approve, data) => {
   try {
-    const url = `${baseUrl}/requests/${request_id}/${
-      approve ? "approve" : "reject"
-    }/`;
+    const url = `${baseUrl}/requests/${request_id}/${approve ? "approve" : "reject"
+      }/`;
 
     const method = "POST"; // Determine method based on existence of id
 
@@ -808,6 +838,7 @@ export const handleRequest = async (request_id, approve) => {
       method,
       url,
       headers: headers(),
+      data: data,
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -938,6 +969,27 @@ export const uploadRecord = async (formData, URL) => {
   }
 };
 
+
+export const getEmployeeTenure = async (employee_id) => {
+  const filterData = { employee_id: employee_id };
+  try {
+    const URL = `/employee-tenure/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+
+      return ResponseData;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 export {
   getDepartmentList,
   getManagersList,
@@ -945,11 +997,9 @@ export {
   getList,
   deleteRecord,
   getOrganizationList,
-  getEmployeeList,
   getEmployeeCustomList,
   getNewEmployeeCustomList,
   getProjectsList,
-  getCurrenciesList,
   saveDepartment,
   saveDesignation,
   getWorkingHours,

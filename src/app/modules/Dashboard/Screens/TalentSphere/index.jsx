@@ -28,7 +28,6 @@ import {
   TableCell,
 } from "../../../../../src/@/components/ui/table";
 import { Badge } from "../../../../../components/ui/badge";
-import { CreateUpdateJob } from "app/modules/RecruitmentData";
 
 /**
  * TalentSphere component
@@ -86,7 +85,7 @@ const TalentSphere = () => {
             <Button variant="outline">
               <Link to="/jobs">View Detail</Link>
             </Button>
-            <CreateUpdateJob fetchJobPosts={fetchData} isDashboard={true} />
+            {/* <CreateUpdateJob fetchJobPosts={fetchData} isDashboard={true} /> */}
             {/* <Button variant="secondary">
                 <Link to="/job-post">Add New Job</Link>
               </Button> */}

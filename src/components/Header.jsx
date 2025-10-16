@@ -7,14 +7,23 @@ import { ArrowLeft } from "lucide-react";
 const pathNames = () => {
   return {
     "people-team": "People Team",
+    "manpower-planning": "Manpower Planning",
     "team-profile-management": "Team Managment",
     "self-service": "Self Service",
+    "talent-sphere/applicant": "Applicant Profile",
+    "talent-sphere/resume-bank-applicants": "Resume Bank Applicants",
+    "talent-sphere/applicant-management": "Applicants Management",
+    "talent-sphere-setting": "Talent Sphere Setting",
     "talent-sphere": "Talent Sphere",
+    "requisition-planning": "Requisition Planning",
     "task-management": "Task Management",
     "pay-attendance": "Pay and Attendance",
     "people-engagement": "People Engagement",
     "personal-development": "Personal Development",
     "leave-tracker": "Leave Tracker",
+    'performance-cycle-setup': 'Performance Cycle',
+    'evaluatoin-summary': 'Evaluation Details',
+    'team-performance-evaluation': 'Team Performance',
     performance: "Performance",
     reports: "Reports",
     dashboard: "Dashboard",
@@ -78,7 +87,8 @@ const pathNames = () => {
     "job-application-form": "Job Application Form",
     "job-description": "Job Description",
     "my-attendance": "Attendance History",
-    "employee-tranfer": "Employee Transfer",
+    "tranfer-rotations": "Transfers & Rotations",
+    "job-rotations": "Job Rotations",
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",
@@ -95,6 +105,10 @@ const pathNames = () => {
     "time-adjustments": "Time Ajustments",
     "employee-leave-count": "Employee Leave Count",
     "organizational-tree": "Organizational Chart",
+    "job-rotation-calendar": "Job Rotation Calendar",
+    "clearance-requests": "Clearance & Handover Management",
+    "my-letter-request": "My Letter Requests",
+    "compliance": "Compliance",
   };
 };
 
@@ -117,7 +131,7 @@ const Header = ({
       path.includes(key)
     );
     setPathName(PATHNAMELIST[matchedPathKey] || "Dashboard");
-  }, [location]);
+  }, [location, PATHNAMELIST]);
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">

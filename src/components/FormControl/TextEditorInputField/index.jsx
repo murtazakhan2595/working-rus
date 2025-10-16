@@ -9,9 +9,6 @@ import {
   Image,
 } from "lucide-react";
 import { Button } from "components/ui/button";
-import { AiOutlinePaperClip } from "react-icons/ai";
-// import { iconButtonClasses } from "@mui/material";
-import AttachmentUI from "components/ui/AttachmentUI";
 import "./style.css";
 import {
   Command,
@@ -21,19 +18,26 @@ import {
 } from "src/@/components/ui/command";
 import Avatar from "components/ui/Avatar";
 import { ScrollArea } from "src/@/components/ui/scroll-area";
+import { FormField, InvalidInput } from "components/FormControl";
 
 const TextEditorIconClassName = "w-4 h-4";
 
 function TextEditorInputField({
+  required = false,
+  error = null,
+  touch = null,
+  disabled = null,
+  description = null,
   handleSubmitContent,
-  content = "",
+  value: content = "",
   upload,
-  setContent = () => { },
+  onChange: setContent = () => { },
   setAttachments = () => { },
   removeAttachment = () => { },
   attachments = [],
   name = "editor",
-  displayAttachments = false,
+  label = false,
+  className,
   users = [], // Users for mentions
   allowMentions = false, // New prop to control mention functionality
   editMode = false,
@@ -42,8 +46,6 @@ function TextEditorInputField({
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
 
   // Mention-related state - only used if allowMentions is true
   const [showMentionPopover, setShowMentionPopover] = useState(false);
@@ -75,7 +77,7 @@ function TextEditorInputField({
       // Save caret position
       setLastCaretPosition(range);
     }
-  }, [editMode]);
+  }, [editMode, content]);
 
   // Effect to handle reply initialization
   useEffect(() => {
@@ -164,7 +166,7 @@ function TextEditorInputField({
     caretPosition.insertNode(img); // Insert image at the restored position
     caretPosition.collapse(false); // Move cursor after image
     // Update content state
-    setContent(editorRef.current.innerHTML);
+    setContent(name, editorRef.current.innerHTML);
     // Save updated caret position
     setLastCaretPosition(caretPosition);
   };
@@ -273,7 +275,7 @@ function TextEditorInputField({
   const handleInput = useCallback(
     (e) => {
       const text = e.target.innerHTML;
-      setContent(text);
+      setContent(name, text);
       saveCaretPosition();
 
       if (!allowMentions) return;
@@ -311,7 +313,7 @@ function TextEditorInputField({
         setShowMentionPopover(false);
       }
     },
-    [setContent, allowMentions]
+    [setContent, allowMentions, name]
   );
 
   const handleKeyDown = useCallback(
@@ -346,7 +348,7 @@ function TextEditorInputField({
         }
       }
     },
-    [allowMentions]
+    [allowMentions, execCommand]
   );
 
   const handlePaste = async (e) => {
@@ -397,164 +399,161 @@ function TextEditorInputField({
     : [];
 
   return (
-    <div className="w-full max-w-[100%] mx-auto relative">
-      <div className="rounded-lg border border-neutral-500 bg-white">
-        <div className="flex flex-wrap items-center gap-2 border-b border-neutral-500 p-2">
-          <TextEditorButtons
-            command="bold"
-            icon={
-              <Bold strokeWidth={2.5} className={TextEditorIconClassName} />
-            }
-            handleCommand={handleCommand}
-          />
-          <TextEditorButtons
-            command="italic"
-            icon={
-              <Italic strokeWidth={2.5} className={TextEditorIconClassName} />
-            }
-            handleCommand={handleCommand}
-          />
-          <TextEditorButtons
-            command="underline"
-            icon={
-              <Underline
+    <FormField
+      name={name}
+      label={label}
+      required={required}
+      error={error}
+      touched={touch}
+      className={`${className}`}
+      disabled={disabled}
+      field_description={description}
+    >
+      <div className="w-full max-w-[100%] mx-auto relative">
+        <div className="rounded-lg border border-neutral-500 bg-white">
+          <div className="flex flex-wrap items-center gap-2 border-b border-neutral-500 p-2">
+            <TextEditorButtons
+              command="bold"
+              icon={
+                <Bold strokeWidth={2.5} className={TextEditorIconClassName} />
+              }
+              handleCommand={handleCommand}
+            />
+            <TextEditorButtons
+              command="italic"
+              icon={
+                <Italic strokeWidth={2.5} className={TextEditorIconClassName} />
+              }
+              handleCommand={handleCommand}
+            />
+            <TextEditorButtons
+              command="underline"
+              icon={
+                <Underline
+                  strokeWidth={2.5}
+                  className={TextEditorIconClassName}
+                />
+              }
+              handleCommand={handleCommand}
+            />
+            <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
+            <TextEditorButtons
+              command="insertOrderedList"
+              icon={
+                <List strokeWidth={2.5} className={TextEditorIconClassName} />
+              }
+              handleCommand={handleCommand}
+            />
+            <TextEditorButtons
+              command="insertUnorderedList"
+              icon={
+                <ListOrdered
+                  strokeWidth={2.5}
+                  className={TextEditorIconClassName}
+                />
+              }
+              handleCommand={handleCommand}
+            />
+            <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
+            <label className="hover:bg-white hover:text-primary p-1">
+              <input
+                type="file"
+                className="hidden"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+              <Image
                 strokeWidth={2.5}
                 className={TextEditorIconClassName}
-              />
-            }
-            handleCommand={handleCommand}
-          />
-          <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
-          <TextEditorButtons
-            command="insertOrderedList"
-            icon={
-              <List strokeWidth={2.5} className={TextEditorIconClassName} />
-            }
-            handleCommand={handleCommand}
-          />
-          <TextEditorButtons
-            command="insertUnorderedList"
-            icon={
-              <ListOrdered
-                strokeWidth={2.5}
-                className={TextEditorIconClassName}
-              />
-            }
-            handleCommand={handleCommand}
-          />
-          <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
-          <label className="hover:bg-white hover:text-primary p-1">
-            <input
-              type="file"
-              className="hidden"
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-            <Image
-              strokeWidth={2.5}
-              className={TextEditorIconClassName}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                saveCaretPosition(); // Save caret position before opening file picker
-                fileInputRef.current.click();
-              }}
-            />
-          </label>
-        </div>
-        {/* 
-        {attachments.length > 0 && displayAttachments && (
-          <div className="p-1">
-            {attachments.map((file, index) => (
-              <div key={index}>
-                <AttachmentUI
-                  attachment={file.attachment}
-                  name={file.name}
-                  removeFile={removeAttachment}
-                />
-              </div>
-            ))}
-          </div>
-        )} */}
-
-        <ScrollArea className="[&>div>div[style]]:!block">
-          <div
-            ref={editorRef}
-            id={name}
-            className={`w-full ${commentHeight} p-4 focus:outline-none rounded-b-lg textEditorText`}
-            contentEditable
-            onInput={handleInput}
-            onPaste={handlePaste}
-            onKeyDown={handleKeyDown}
-          />
-        </ScrollArea>
-
-        {allowMentions && showMentionPopover && (
-          <div
-            className="absolute z-50"
-            style={{ left: mentionPosition.x, top: mentionPosition.y }}
-          >
-            <div className="w-64 bg-white rounded-lg shadow-lg border border-gray-200">
-              <Command>
-                <CommandInput
-                  placeholder="Search users..."
-                  value={mentionFilter}
-                  onValueChange={setMentionFilter}
-                />
-                <CommandList className="max-h-48 overflow-y-auto">
-                  {filteredUsers.map((user) => (
-                    <CommandItem
-                      key={user.id}
-                      onSelect={() => handleMentionSelect(user)}
-                      className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
-                    >
-                      <Avatar
-                        className="h-8 w-8"
-                        src={user.profile_picture || ""}
-                        fallbackText={user.name?.charAt(0)?.toUpperCase() || ""}
-                        text={user.name || "Unknown User"}
-                        alt={`Avatar of ${user.first_name || user.name || "User"
-                          }`}
-                      />
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-sm">@{user.username}</div>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandList>
-              </Command>
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-row justify-end border-t border-neutral-500 p-2">
-          {/* <div className="flex items-center text-sm text-gray-900 font-inter">
-            {content?.replace(/<[^>]*>/g, "").length} characters
-          </div> */}
-          {handleSubmitContent && (
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSubmitContent(
-                    content,
-                    attachments,
-                    allowMentions ? mentionedUsers : undefined
-                  );
+                  e.stopPropagation();
+                  saveCaretPosition(); // Save caret position before opening file picker
+                  fileInputRef.current.click();
                 }}
-              >
-                Comment
-              </Button>
+              />
+            </label>
+          </div>
+          <ScrollArea className="[&>div>div[style]]:!block">
+            <div
+              ref={editorRef}
+              id={name}
+              className={`w-full ${commentHeight} p-4 focus:outline-none rounded-b-lg textEditorText`}
+              contentEditable
+              onInput={handleInput}
+              onPaste={handlePaste}
+              onKeyDown={handleKeyDown}
+            />
+          </ScrollArea>
+
+          {allowMentions && showMentionPopover && (
+            <div
+              className="absolute z-50"
+              style={{ left: mentionPosition.x, top: mentionPosition.y }}
+            >
+              <div className="w-64 bg-white rounded-lg shadow-lg border border-gray-200">
+                <Command>
+                  <CommandInput
+                    placeholder="Search users..."
+                    value={mentionFilter}
+                    onValueChange={setMentionFilter}
+                  />
+                  <CommandList className="max-h-48 overflow-y-auto">
+                    {filteredUsers.map((user) => (
+                      <CommandItem
+                        key={user.id}
+                        onSelect={() => handleMentionSelect(user)}
+                        className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+                      >
+                        <Avatar
+                          className="h-8 w-8"
+                          src={user.profile_picture || ""}
+                          fallbackText={user.name?.charAt(0)?.toUpperCase() || ""}
+                          text={user.name || "Unknown User"}
+                          alt={`Avatar of ${user.first_name || user.name || "User"
+                            }`}
+                        />
+                        <div>
+                          <div className="font-medium">{user.name}</div>
+                          <div className="text-sm">@{user.username}</div>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </Command>
+              </div>
             </div>
           )}
+
+          <div className="flex flex-row justify-end border-t border-neutral-500 p-2">
+            {/* <div className="flex items-center text-sm text-gray-900 font-inter">
+            {content?.replace(/<[^>]*>/g, "").length} characters
+          </div> */}
+            {handleSubmitContent && (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSubmitContent(
+                      content,
+                      attachments,
+                      allowMentions ? mentionedUsers : undefined
+                    );
+                  }}
+                >
+                  Comment
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </FormField>
+
   );
 }
 

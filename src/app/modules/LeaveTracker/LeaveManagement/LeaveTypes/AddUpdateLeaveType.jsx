@@ -46,6 +46,21 @@ export default function AddUpdateLeaveType({
     width: "900px",
   };
 
+  // Helper function to determine radio value from boolean fields
+  const getLeaveTypeCategory = (data) => {
+    if (data.is_maternity_leave) return "maternity";
+    if (data.is_annual_leave) return "annual";
+    if (data.is_special_leave) return "special";
+    return "none";
+  };
+
+  // Helper function to convert radio value back to boolean fields
+  const convertCategoryToBooleans = (category) => ({
+    is_maternity_leave: category === "maternity",
+    is_annual_leave: category === "annual",
+    is_special_leave: category === "special",
+  });
+
   const fetchUserRolesData = async (isMounted) => {
     try {
       setIsLoading(true);
@@ -98,6 +113,8 @@ export default function AddUpdateLeaveType({
         half_paid_days: data.half_paid_days || 0,
         tooltip_info: data.tooltip_info || "",
         status: data.status || true,
+        // Convert boolean fields to radio value
+        leave_type_category: getLeaveTypeCategory(data),
       });
     } else {
       // Initialize empty form for new record
@@ -124,6 +141,8 @@ export default function AddUpdateLeaveType({
         half_paid_days: 0,
         tooltip_info: "",
         status: true,
+        // Default to "none" for new records
+        leave_type_category: "none",
       });
     }
   }, [data]);
@@ -182,6 +201,20 @@ export default function AddUpdateLeaveType({
             name: "requires_attachment",
             label: "Requires Attachment?",
             description: "Medical certificate required",
+          },
+          {
+            InputField: RadioGroupInput,
+            name: "leave_type_category",
+            label: "Leave Type Category",
+            options: [
+              { label: "None", value: "none" },
+              { label: "Maternity Leave", value: "maternity" },
+              { label: "Annual Leave", value: "annual" },
+              { label: "Special Leave", value: "special" },
+            ],
+            required: false,
+            variant: "stacked",
+            colsSpan: 2,
           },
           {
             InputField: NumberInput,
@@ -319,23 +352,52 @@ export default function AddUpdateLeaveType({
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
       setIsLoading(true);
-      
+
+      // Convert radio selection to individual boolean fields
+      const categoryBooleans = convertCategoryToBooleans(
+        values.leave_type_category
+      );
+
       // Clean up payload for backend compatibility
       const cleanedValues = {
         ...values,
+        // Add the converted boolean fields
+        ...categoryBooleans,
+        // Remove the radio field (not needed by API)
+        leave_type_category: undefined,
+
         // Fix min_days_notice empty string issue
-        min_days_notice: values.min_days_notice === "" ? 0 : values.min_days_notice,
-        
+        min_days_notice:
+          values.min_days_notice === "" ? 0 : values.min_days_notice,
+
         // Fix "all-values-in-options" issue - convert to null when "All" is selected
-        nationalities: values.nationalities?.includes("all-values-in-options") ? [] : values.nationalities,
-        branches_ids: values.branches_ids?.includes("all-values-in-options") ? [] : values.branches_ids,
-        departments_ids: values.departments_ids?.includes("all-values-in-options") ? [] : values.departments_ids,
-        genders: values.genders?.includes("all-values-in-options") ? [] : values.genders,
-        marital_statuses: values.marital_statuses?.includes("all-values-in-options") ? [] : values.marital_statuses,
-        grades: values.grades?.includes("all-values-in-options") ? [] : values.grades,
-        religion: values.religion?.includes("all-values-in-options") ? [] : values.religion,
+        nationalities: values.nationalities?.includes("all-values-in-options")
+          ? []
+          : values.nationalities,
+        branches_ids: values.branches_ids?.includes("all-values-in-options")
+          ? []
+          : values.branches_ids,
+        departments_ids: values.departments_ids?.includes(
+          "all-values-in-options"
+        )
+          ? []
+          : values.departments_ids,
+        genders: values.genders?.includes("all-values-in-options")
+          ? []
+          : values.genders,
+        marital_statuses: values.marital_statuses?.includes(
+          "all-values-in-options"
+        )
+          ? []
+          : values.marital_statuses,
+        grades: values.grades?.includes("all-values-in-options")
+          ? []
+          : values.grades,
+        religion: values.religion?.includes("all-values-in-options")
+          ? []
+          : values.religion,
       };
-      
+
       const response = await saveLeaveType({
         ...cleanedValues,
         id: data?.id,

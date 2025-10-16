@@ -1,13 +1,15 @@
 import { countries } from "country-data";
 import Config from "constants/config";
+import { StatusLabel } from "components/StatusLabel";
 import {
   fetchDepartments,
   fetchDesignations,
   fetchProjects,
   fetchBranches,
   fetchCalendarHoliday,
+  fetchCountries,
+  fetchCurrencies,
 } from "state/slices/CommonSlice";
-import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
   fetchModules,
   fetchUserRoles,
@@ -21,7 +23,6 @@ import {
   fetchEmployeesDetail,
   fetchUser,
 } from "state/slices/EmpSlice";
-import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import { fetchUserAttendanceDetails } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
@@ -52,6 +53,7 @@ export const CurrencyList = countries.all.map((country) => {
     value: country.currencies[0] ?? "USD",
     label: `${country.currencies[0] ?? "USD"} - ${country.name}`,
     currency: country.currencies[0] ?? "USD",
+    country: country.name,
   };
 });
 
@@ -60,8 +62,11 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Leave", value: "LEAVE_APPLICATION" }]
     : []),
   ...(Config.MY_CLAIMS ? [{ label: "Claims", value: "MY_CLAIMS" }] : []),
+  ...(Config.EMPLOYEE_TRANSFER
+    ? [{ label: "Transfer Request by Manager", value: "EMPLOYEE_TRANSFER_MANAGER" }]
+    : []),
   ...(Config.MY_TRANSFERS
-    ? [{ label: "Transfer", value: "MY_TRANSFERS" }]
+    ? [{ label: "Transfer Request by Employee", value: "EMPLOYEE_TRANSFER_EMPLOYEE" }]
     : []),
   ...(Config.MY_ASSETS ? [{ label: "Assets", value: "MY_ASSETS" }] : []),
   ...(Config.EXIT_CLEARANCE
@@ -83,7 +88,19 @@ export const ApprovalHierarchyRequestType = [
     ? [{ label: "Manager Shift Schedule", value: "SHIFT_SCHEDULE_MANAGER" }]
     : []),
   ...(Config.EMPLOYEE_TRANSFER
-    ? [{ label: "Job Rotation", value: "JOB_ROTATION" }]
+    ? [{ label: "Job Rotation By Manager", value: "JOB_ROTATION_MANAGER" }]
+    : []),
+  ...(Config.EMPLOYEE_TRANSFER
+    ? [{ label: "Job Rotation By Employee", value: "JOB_ROTATION_EMPLOYEE" }]
+    : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Headcount Request", value: "HEADCOUNT_REQUEST" }]
+    : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Requisition Request", value: "REQUISTION_REQUEST" }]
+    : []),
+  ...(Config.TALENT_SPHERE
+    ? [{ label: "Offer Letter Request", value: "OFFER_LETTER" }]
     : []),
 ];
 
@@ -168,6 +185,8 @@ export const GenderOptions = [
   { value: "MALE", label: "Male" },
   { value: "FEMALE", label: "Female" },
 ];
+export const RequisitionGenderOptions = [{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'No Preference', value: 'none' },];
+                           
 
 export const BloodGroupOptions = [
   { value: "A+", label: "A+" },
@@ -371,6 +390,29 @@ export const PriorityList = [
   },
 ];
 
+export const BudgetStatusOptions = [
+  {
+    value: "Within Budget",
+    label: (<StatusLabel status={'success'}>Within Budget</StatusLabel>),
+    percentage: "0,50",
+  },
+  {
+    value: "Approaching Limit",
+    label: (<StatusLabel status={'warning'}>Approaching Limit</StatusLabel>),
+    percentage: "50.001,70",
+  },
+  {
+    value: "Near Threshold",
+    label: (<StatusLabel status={'alarming'}>Near Threshold</StatusLabel>),
+    percentage: "70.001,80",
+  },
+  {
+    value: "Over Budget",
+    label: (<StatusLabel status={'error'}>Over Budget</StatusLabel>),
+    percentage: "90.001,99999999999.99",
+  },
+];
+
 export const TaskStatus = [
   {
     value: "TODO",
@@ -397,6 +439,30 @@ export const TaskStatus = [
     backgroundColor: lightenColor("#B00D1B", 85),
   },
 ];
+
+// Assignment Scope options
+export const assignmentScopeOptions = [
+  { value: "DIRECT", label: "Direct Reporting" },
+  { value: "INDIRECT", label: "Indirect Reporting" },
+  { value: "DESIGNATION", label: "By Designation" },
+];
+
+// Clearance status options based on API response
+export const clearanceStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "IN_PROCESS", label: "In Process" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "REJECTED", label: "Rejected" },
+  { value: "ONHOLD", label: "On Hold" },
+];
+
+export const clearanceRequestStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Clear" },
+  { value: "NOT_APPLICABLE", label: "Not Applicable" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
 export const PriorityListIcons = [
   {
     value: 3,
@@ -460,33 +526,20 @@ export const ProjectStatusList = [
   },
 ];
 
-export const status2Options = [
-  {
-    value: "Pending",
-    label: (
-      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10">
-        Pending
-      </div>
-    ),
-  },
-  {
-    value: "Inprogress",
-    label: (
-      <div className="items-center px-2 py-1 text-xs font-medium text-yellow-800 rounded-full bginline-flex bg-yellow-50 ring-1 ring-inset ring-yellow-600/20">
-        <Timer />
-        In Progress
-      </div>
-    ),
-  },
-  {
-    value: "Done",
-    label: (
-      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 rounded-full bg-green-50 ring-1 ring-inset ring-green-600/20">
-        Done
-      </div>
-    ),
-  },
+export const RecruitmentApplicationSource = [
+  { label: 'Cohrus', value: 'cohrus' },
+  { label: 'Indeed', value: 'indeed' },
+  { label: 'Linkedin', value: 'linkedin' },
+  { label: 'Other', value: 'other' },
 ];
+
+export const RecruitmentApplicantStatusOption = [
+  { label: 'In Progress', value: 'in_progress' },
+  { label: 'Shortlisted', value: 'shortlisted' },
+  { label: 'Rejected', value: 'rejected' },
+  { label: 'Blacklisted', value: 'blacklisted' },
+];
+
 
 export const workplaceTypes = [
   { label: "Remote", value: "REMOTE" },
@@ -495,38 +548,15 @@ export const workplaceTypes = [
   { label: "Onsite", value: "ON_SITE" },
 ];
 
-export const dropdownStyles = {
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-  control: (provided, state) => ({
-    ...provided,
-    backgroundColor: "#fafbfc",
-    border: "none",
-    boxShadow: "none",
-    minWidth: "8rem",
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    fontSize: "16px",
-    fontWeight: state.isSelected ? "bold" : "normal",
-    color: state.isSelected ? "#000" : "#777",
-    padding: "8px 12px",
-    backgroundColor: state.isSelected ? "#FAFBFC" : "#FAFBFC",
-  }),
-  menu: (provided) => ({
-    ...provided,
-    borderRadius: "8px",
-    overflow: "hidden",
-  }),
-  scrollbarWidth: (base) => ({
-    ...base,
-    borderRadius: "8px",
-    backgroundColor: "#FAFBFC",
-  }),
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: "#555",
-  }),
-};
+export const RecruitmentEmailTemplateType = [
+  { label: "Application Received", value: "APPLICATION_RECEIVED" },
+  { label: "Interview Scheduled", value: "INTERVIEW_SCHEDULED" },
+  { label: "Interview Rejected", value: "REJECTED" },
+  { label: "Shortlisted", value: "SHORTLISTED" },
+  { label: "Offer Letter Sent", value: "OFFER_SENT" },
+  { label: "On Hold", value: "ON_HOLD" },
+
+];
 
 export const JobSortingFilters = [
   {
@@ -784,22 +814,17 @@ export const handleUpdateProfile = async (dispatch, data) => {
   const ModuleList = await dispatch(fetchModules());
   const MyPermissions = await dispatch(fetchMyPermissions());
   await dispatch(fetchUser(userprofile.id));
-  await dispatch(
-    fetchUserPermittedModules({
-      modules: ModuleList.payload,
-      permissions: MyPermissions.payload,
-    })
-  );
-  await dispatch(fetchEmployees());
-  dispatch(fetchEmployeesDetail());
+  await dispatch(fetchUserPermittedModules({ modules: ModuleList.payload, permissions: MyPermissions.payload, }));
+  await dispatch(fetchEmployeesDetail());
+  dispatch(fetchEmployees());
   dispatch(fetchBranches());
+  dispatch(fetchCountries());
+  dispatch(fetchCurrencies());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
-  await dispatch(fetchCalendarHoliday(userprofile.id));
-  await dispatch(fetchDocumentCategory());
-  dispatch(fetchTaskLabels());
-  await dispatch(fetchUserRoles());
+  dispatch(fetchCalendarHoliday(userprofile.id));
+  dispatch(fetchUserRoles());
   dispatch(fetchReportingManagers());
-  await dispatch(fetchUserAttendanceDetails(userprofile.id));
-  await dispatch(fetchProjects(userprofile));
+  // dispatch(fetchUserAttendanceDetails(userprofile.id));
+  dispatch(fetchProjects(userprofile));
 };

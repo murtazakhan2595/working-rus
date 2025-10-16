@@ -83,7 +83,7 @@ export const DetailCard = ({
   classNames = "mt-8",
 }) => {
   return (
-    <div className={`${classNames} flex flex-col rounded-lg shadow border  `}>
+    <div className={`${classNames} flex flex-col rounded-lg shadow border bg-white `}>
       <section className="flex flex-col justify-center p-6 text-sm">
         <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
           {detailCardTitle}

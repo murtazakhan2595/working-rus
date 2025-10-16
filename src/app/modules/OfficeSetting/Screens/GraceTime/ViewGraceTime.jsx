@@ -1,5 +1,5 @@
 import React from "react";
-import { NavigationSheetComponent } from "components"; 
+import { NavigationSheetComponent } from "components";
 import { DetailContent } from "components";
 import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
@@ -10,7 +10,7 @@ const ViewGraceTime = ({
   isOpen,
   setIsOpen,
   currentId,
-  reloadData = () => {},
+  reloadData = () => { },
   DataList = [],
 }) => {
   // Define the fields to display
@@ -77,7 +77,7 @@ const ViewGraceTime = ({
       editTooltip="Edit Grace Time"
       deleteTooltip="Delete Grace Time"
     >
-      <DetailContent title="Grace Time Details" fields={fields} />
+      <DetailContent fields={fields} />
     </NavigationSheetComponent>
   );
 };

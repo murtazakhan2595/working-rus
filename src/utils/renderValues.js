@@ -120,8 +120,9 @@ export function numberToWords(number) {
   return result.trim();
 }
 
-export function renderDate(date, fallbackValue = "N/A", variant = "date") {
-  if (!date || !moment(date).isValid()) return fallbackValue;
+
+export function renderDate(date, fallbackValue = "N/A", variant = "date", joiningText = ' to ') {
+  if (!date) return fallbackValue;
   const format =
     variant === "month-day"
       ? "MMM D"
@@ -132,8 +133,20 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date") {
           : variant === "time"
             ? "hh:mm A"
             : "MMM DD, YYYY";
-  return moment(date).format(format);
+  if (typeof date === 'string') {  // Handle multiple comma-separated dates
+    const dateList = date.split(",").map(d => d.trim()).filter(Boolean);
+
+    if (dateList.length === 0) return fallbackValue;
+    const formattedDates = dateList
+      .map(d => (moment(d).isValid() ? moment(d).format(format) : fallbackValue))
+      .filter(val => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
+
+    return formattedDates.join(joiningText);
+  } else if (moment(date).isValid()) {
+    return moment(date).format(format);
+  } else return fallbackValue;
 }
+
 
 export const formatDuration = (duration, calculateSeconds = false) => {
   if (!duration) return "0min";
@@ -194,7 +207,7 @@ export const calculatePercentage = (count = 0, total = 0) => {
   if (isNaN(parsedCount) || isNaN(parsedTotal)) return 0;
 
   // Prevent division by zero and ensure count is non-negative and not more than total
-  if (parsedTotal <= 0 || parsedCount < 0 || parsedCount > parsedTotal) return 0;
+  if (parsedTotal <= 0 || parsedCount < 0) return 0;
 
   const percentage = (parsedCount / parsedTotal) * 100;
   return parseFloat(percentage.toFixed(2)); // Round to 2 decimal places
@@ -419,3 +432,43 @@ export const getNodeExistInTree = (node = {}, selectedValue, label = "id") => {
 
   return null; // Not found anywhere in this subtree
 };
+
+
+
+
+
+/**
+ * Builds a readable range string based on minimum and maximum values.
+ *
+ * Rules:
+ * - If both minimum and maximum are missing → return the fallbackValue.
+ * - If only minimum is present → return "From {minimum}{suffix}".
+ * - If only maximum is present → return "Up to {maximum}{suffix}".
+ * - If both are present → return "{minimum}{suffix} - {maximum}{suffix}".
+ *
+ * @param {number|string|null} minimum - The starting value of the range.
+ * @param {number|string|null} maximum - The ending value of the range.
+ * @param {string} fallbackValue - The value to return if both min and max are missing.
+ * @param {string} [suffix=""] - Optional suffix to append (e.g., "kg", "years").
+ * @returns {string} - A human-readable range string.
+ */
+export const renderRange = (minimum, maximum, fallbackValue, suffix = "") => {
+  if (minimum == null && maximum == null) {
+    return fallbackValue;
+  }
+
+  if (minimum != null && maximum != null) {
+    return `${minimum} ${suffix} - ${maximum} ${suffix}`;
+  }
+
+  if (minimum != null) {
+    return `From ${minimum} ${suffix}`;
+  }
+
+  if (maximum != null) {
+    return `Up to ${maximum} ${suffix}`;
+  }
+
+  return fallbackValue;
+};
+

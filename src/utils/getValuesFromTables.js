@@ -117,7 +117,7 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   }
 
   // If not found and we want to show a meaningful fallback
-  return fallBackText;
+  return value||fallBackText;
 }
 
 export function DocCategoryName({ value, fallBackText = "N/A" }) {
@@ -126,6 +126,11 @@ export function DocCategoryName({ value, fallBackText = "N/A" }) {
     (option) => option.value === parseInt(value)
   );
   return doc_category ? doc_category.label : value ?? fallBackText;
+}
+export function Currency({ value, fallBackText = "N/A" }) {
+  const currencies = useSelector((state) => state.common.currencies);
+  const currency = currencies.find((option) => option.value === parseInt(value));
+  return currency ? currency.code : value ?? fallBackText;
 }
 
 export function BranchName({ value, fallBackText = "N/A" }) {
@@ -147,7 +152,7 @@ function DesignationName({ value, fallBackText }) {
 }
 
 function EmployeeName({ value, length }) {
-  const employees = useSelector((state) => state.emp.employees);
+  const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(value));
   const employeeName = employee ? employee.name : "N/A";
   const displayedName = length ? employeeName.slice(0, length) : employeeName;

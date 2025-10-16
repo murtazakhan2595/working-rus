@@ -31,6 +31,7 @@ const SelectInputComponent = React.memo(
     placeholder = null, // Placeholder text when no value is selected
     disabled = false,
     SelectAllOption = false,
+    description,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     // Toggle selection for a given option
@@ -72,6 +73,7 @@ const SelectInputComponent = React.memo(
         touched={touch}
         className={className}
         disabled={disabled}
+        field_description={description}
       >
         <FormPopoverButton
           open={isOpen}

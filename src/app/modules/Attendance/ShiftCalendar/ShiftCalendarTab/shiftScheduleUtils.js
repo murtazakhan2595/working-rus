@@ -15,7 +15,7 @@ export const filterOverlappingSchedules = (schedules) => {
   const filteredSchedules = [];
   const processedDates = new Set(); // Track dates that have been processed
 
-  sortedSchedules.forEach((schedule) => {
+  sortedSchedules.forEach((schedule, index) => {
     const scheduleStart = moment(schedule.start_date);
     const scheduleEnd = moment(schedule.end_date);
     

@@ -1,4 +1,4 @@
-import { Branch, GraceTime } from "app/utils/Types/OfficeSetting";
+import { Branch, GraceTime, EvaluationType, RatingScaleSetup, RatingScaleValue, Currency } from "app/utils/Types/OfficeSetting";
 
 export async function mapBranchList(data) {
   const branchList = await data?.map((branch) => {
@@ -87,6 +87,163 @@ export function mapGraceTimePayloadData(data, id) {
       if (key === "grace_time_minutes")
         payload[key] = parseInt(data[key] || "0");
       else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+
+//-------------Evaluation Type ---------------
+
+export function mapEvaluationTypeData(data) {
+  const graceTimeDetails = Object.keys(EvaluationType).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "name" || key === 'description') acc[key] = data[key].trim()
+      else acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return graceTimeDetails;
+}
+export async function mapEvaluationTypeList(data) {
+  const DataList = await data?.map((graceTime) => {
+    const Details = mapEvaluationTypeData(graceTime);
+    return {
+      value: Details.id,
+      label: Details.name,
+      ...Details,
+    };
+  });
+
+  return DataList;
+}
+
+export function mapEvaluationTypePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in EvaluationType) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "name" || key === 'description') payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+//-------------Rating Scale Setup ---------------
+
+export function mapRatingScaleSetupData(data) {
+
+  const Details = Object.keys(RatingScaleSetup).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "name") acc[key] = data[key].trim()
+      else acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+  return Details;
+}
+export async function mapRatingScaleSetupList(data) {
+  const DataList = await data?.map((obj) => {
+    const Details = mapRatingScaleSetupData(obj);
+    return {
+      value: Details.id,
+      label: Details.name,
+      ...Details,
+    };
+  });
+
+  return DataList;
+}
+
+export function mapRatingScaleSetupPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in RatingScaleSetup) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "name") payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+export function mapRatingScaleValuePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in RatingScaleValue) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "description") payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+
+//-------------Currencies ---------------
+
+export function mapCurrencyData(data) {
+  const RecordDetails = Object.keys(Currency).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return RecordDetails;
+}
+export async function mapCurrencyList(data) {
+  const DataList = await data?.map((Record) => {
+    const Details = mapCurrencyData(Record);
+    return {
+      value: Details.id,
+      label: `${Details.code} - ${Details.name}`,
+      ...Details,
+    };
+  });
+
+  return DataList;
+}
+
+export function mapCurrencyPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Currency object
+  for (const key in Currency) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+       payload[key] = data[key];
     }
   }
 

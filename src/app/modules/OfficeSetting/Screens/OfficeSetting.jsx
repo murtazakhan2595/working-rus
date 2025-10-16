@@ -13,6 +13,12 @@ import {
   Branches,
   GraceTime,
   Designations,
+  EvaluationType,
+  AddEvaluationType,
+  RatingScaleSetup,
+  AddRatingScaleSetup,
+  Currencies,
+  AddCurrency,
 } from "app/modules/OfficeSetting/Screens";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
@@ -39,12 +45,17 @@ import {
 import { OfficeSettingPermissionWrapper } from "../components/PermissionWrapper";
 import { OFFICE_SETTING_PERMISSIONS } from "../permissions/constants";
 
+import ClearanceChecklist from "./ClearanceChecklist";
+import AddClearanceChecklist from "./ClearanceChecklist/AddClearanceChecklist";
+
 const OfficeSetting = () => {
   const [edit, setEdit] = useState(false);
   const [editData, setEditData] = useState(null);
   const [activeTab, setActiveTab] = useState("offices");
   const [loading, setLoading] = useState(true);
   const [reloadSettingData, setReloadSettingData] = useState({});
+
+
 
   // Get user details from Redux store
   const userDetails = useSelector((state) => state.emp?.user_details);
@@ -221,6 +232,26 @@ const OfficeSetting = () => {
       label: "Grace Time",
       permission: OFFICE_SETTING_PERMISSIONS.GRACE_TIME.VIEW,
     },
+    {
+      value: "clearance-checklist",
+      label: "Clearance & Handover Setup",
+      permission: OFFICE_SETTING_PERMISSIONS.CLEARANCE_CHECKLIST,
+    },
+    {
+      value: "evaluation-type",
+      label: "Evaluation Type",
+      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    },
+    {
+      value: "rating-scale-setup",
+      label: "Rating Scale Setup",
+      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    },
+    {
+      value: "currency",
+      label: "Currencies",
+      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    },
   ];
 
   // Filter tabs based on permissions
@@ -318,7 +349,24 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
-              ) : (
+              ) : activeTab === "clearance-checklist" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={
+                    OFFICE_SETTING_PERMISSIONS.CLEARANCE_CHECKLIST
+                  }
+                >
+                  <AddClearanceChecklist
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          "clearance-checklist": !prev["clearance-checklist"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
+              ) : activeTab === "onboarding" ? (
                 <OfficeSettingPermissionWrapper
                   permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}
                 >
@@ -333,7 +381,52 @@ const OfficeSetting = () => {
                     }}
                   />
                 </OfficeSettingPermissionWrapper>
-              )
+              ) : activeTab === "evaluation-type" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE}
+                >
+                  <AddEvaluationType
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          'evaluation-type': !prev["evaluation-type"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
+              ) : activeTab === "rating-scale-setup" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE}
+                >
+                  <AddRatingScaleSetup
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          'rating-scale-setup': !prev["rating-scale-setup"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
+              ) : activeTab === "currency" ? (
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.CREATE}
+                >
+                  <AddCurrency
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          'currency': !prev["currency"],
+                        };
+                      });
+                    }}
+                  />
+                </OfficeSettingPermissionWrapper>
+              ) : null
             }
           />
           <Tabs
@@ -346,10 +439,7 @@ const OfficeSetting = () => {
             <div className="w-full mb-6">
               <TabsList>
                 {availableTabs?.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                  >
+                  <TabsTrigger key={tab.value} value={tab.value}>
                     {tab.label}
                   </TabsTrigger>
                 ))}
@@ -463,8 +553,22 @@ const OfficeSetting = () => {
               <TabsContent value="grace-time">
                 <GraceTime reload={reloadSettingData["grace-time"]} />
               </TabsContent>
+              <TabsContent value="evaluation-type">
+                <EvaluationType reload={reloadSettingData["evaluation-type"]} />
+              </TabsContent>
+              <TabsContent value="rating-scale-setup">
+                <RatingScaleSetup reload={reloadSettingData["rating-scale-setup"]} />
+              </TabsContent>
+              <TabsContent value="currency">
+                <Currencies reload={reloadSettingData["currency"]} />
+              </TabsContent>
               <TabsContent value="onboarding">
                 <OnboardingChecklist reload={reloadSettingData["onboarding"]} />
+              </TabsContent>
+              <TabsContent value="clearance-checklist">
+                <ClearanceChecklist
+                  reload={reloadSettingData["clearance-checklist"]}
+                />
               </TabsContent>
             </div>
           </Tabs>

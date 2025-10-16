@@ -9,6 +9,7 @@ import {
   getEmployeeInformation,
   mapEmployeePayloadData,
   mapEmployeeDocsChecklist,
+  mapEmployeeApplicantData,
 } from "app/utils/MappingObjects/mapEmployeeData";
 import {
   getEmployeeData,
@@ -26,13 +27,14 @@ import {
   GenderOptions,
   BloodGroupOptions,
   employeeStatus,
-  jobRoles,
   workplaceTypes,
   countriesCallingCodes,
   countriesList,
   SalaryTypeOptions,
 } from "data/Data";
 import OnboardingChecklistSection from "./OnboardingChecklistSection";
+import { getApplicantsData, getJobTypeList } from "app/hooks/talentSphere";
+
 import {
   EmailInput,
   PhoneNumberInput,
@@ -59,7 +61,7 @@ import { saveEmpoyeeDocBulk } from "app/hooks/employee";
 import { useSelector } from "react-redux";
 import { ReligionList } from "data/Data";
 
-const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
+const EmployeeForm = ({ id = null, setIsOpen = () => { }, SalarySetupAllowed, formVariant = "", applicant_id = null }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const Managers = useSelector((state) => state.emp.reportingManagers);
@@ -74,10 +76,14 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
   const [empId, setEmpId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [shiftList, setShiftList] = useState([]);
+  const [JobTypeList, setJobTypeList] = useState([]);
   const [customShiftData, setCustomShiftData] = useState(null);
+  const [probation_period, setProbationPeriod] = useState(null);
+  const [confirmation_date, setConfirmationDate] = useState(null);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
+    const job_types = await getJobTypeList({ filterData: { } });
     if (shiftData) {
       const shiftList = shiftData.results.map((shift) => {
         return {
@@ -89,6 +95,8 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
       });
       setShiftList(shiftList);
     }
+    setJobTypeList(job_types.results || []);
+
   };
 
   const initializeFormData = async (isMounted) => {
@@ -127,8 +135,6 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
 
           setFormData(updatedFormData);
         }
-
-        getShiftList();
       }
     } catch (error) {
       console.error("ERROR--", error);
@@ -145,6 +151,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
         const checklistData = await getEmployeeDocsChecklist({
           filterData: { employee_id: id },
         });
+
         if (isMounted) {
           setFormData({
             ...employeeData,
@@ -152,7 +159,6 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
           });
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
           setEmpId(response.serial_number);
-          getShiftList();
         }
       } catch (error) {
         console.error("ERROR--", error);
@@ -160,7 +166,36 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
         setIsLoading(false);
       }
     };
+    const fetchApplicantData = async (isMounted) => {
+      try {
+        setIsLoading(true);
+        const response = await getApplicantsData(applicant_id);
+        const employeeData = await mapEmployeeApplicantData(response, Designations);
+        const checklistData = await getEmployeeDocsChecklist({
+          filterData: { employee_id: id },
+        });
+        const serial_number = await getNewEmployeeCode();
+        setEmpId(serial_number);
+        if (isMounted) {
+          setFormData({
+            ...EmployeeInformation,
+            ...employeeData,
+            serial_number,
+            onboardingDocuments: checklistData?.results || [],
+          });
+          // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
+        }
+      } catch (error) {
+        console.error("ERROR--", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (isMounted) {
+      getShiftList();
+    }
     if (id) fetchEmployeeData(isMounted);
+    else if (applicant_id) fetchApplicantData(isMounted)
     else initializeFormData(isMounted);
     return () => {
       isMounted = false;
@@ -310,20 +345,21 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
 
   const handleClose = () => {
     setIsOpen(false);
-    navigate("/profile-management");
+    if (!applicant_id)
+      navigate("/profile-management");
   };
 
   if (isLoading) {
     return <PageLoader />;
   }
-
+  const FormColumns = formVariant === 'sheet' ? 2 : 3;
   return (
     <>
       <SheetUI
         isOpen={true}
         setIsOpen={handleClose}
-        variant=""
-        sheetConfig={{}}
+        variant={formVariant}
+        sheetConfig={{ title: 'Create Employee' }}
         formConfig={{
           initialValues: formData,
           enableReinitialize: true,
@@ -347,7 +383,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
           },
           submitButtonText: "Submit",
           cancelButtonText: "Cancel",
-          columns: 3,
+          columns: FormColumns,
           disableSubmit: isLoading,
           formFields: [
             {
@@ -434,7 +470,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   name: "residential_address",
                   required: true,
                   label: "Residential Address",
-                  colsSpan: 3,
+                  colsSpan: FormColumns,
                   maxRows: 3,
                 },
                 {
@@ -442,7 +478,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   name: "permanent_address",
                   required: false,
                   label: "Permanent Address",
-                  colsSpan: 3,
+                  colsSpan: FormColumns,
                   maxRows: 3,
                 },
               ],
@@ -481,6 +517,18 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                 },
                 {
                   InputField: SelectInputComponent,
+                  name: "national_service_status",
+                  options: [
+                    { value: "COMPLETED", label: "Completed" },
+                    { value: "NOT_COMPLETED", label: "Not Completed" },
+                  ],
+                  required: true,
+                  label: "National Service Status",
+                  renderCondition:
+                    FormValues.nationality === "United Arab Emirates",
+                },
+                {
+                  InputField: SelectInputComponent,
                   name: "department_position",
                   options: Designations,
                   required: true,
@@ -489,7 +537,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                 {
                   InputField: SelectInputComponent,
                   name: "employee_type",
-                  options: jobRoles,
+                  options: JobTypeList,
                   required: true,
                   label: "Employee Type",
                 },
@@ -527,8 +575,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   required: true,
                   label: "Joining Date",
                   onFieldUpdate: async (_, value, __, handleChange) => {
-                    handleChange("probation_start_date", value);
-                    handleChange("probation_end_date", null);
+                    await handleChange("probation_date_range", value);
                   },
                 },
                 {
@@ -536,47 +583,33 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   name: "probation_date_range",
                   required: true,
                   label: "Probation Date Range",
-                  value:
-                    FormValues.probation_start_date ||
-                      FormValues.probation_end_date
-                      ? `${FormValues.probation_start_date},${FormValues.probation_end_date}`
-                      : null,
                   minDate: FormValues.joining_date,
-                  onFieldUpdate: async (_, value, __, handleChange) => {
+                  onFieldUpdate: async (_, value) => {
                     const [start_date, end_date] = value?.split(",") || "";
-                    handleChange("probation_start_date", start_date || null);
-                    handleChange("probation_end_date", end_date || null);
                     if (end_date && start_date) {
-                      handleChange(
-                        "confirmation_date",
-                        moment(end_date).add(1, "days").format("YYYY-MM-DD")
-                      );
-                      handleChange(
-                        "probation_period",
-                        formatDaysDuration(start_date, end_date)
-                      );
+                      setConfirmationDate(moment(end_date).add(1, "days").format("YYYY-MM-DD"));
+                      setProbationPeriod(formatDaysDuration(start_date, end_date));
                     }
                   },
                 },
                 {
                   InputField: TextInput,
                   name: "probation_period",
-                  required: true,
                   disabled: true,
+                  value: probation_period || FormValues.probation_period,
                   label: "Probation Period",
                 },
                 {
                   InputField: DateInput,
                   name: "confirmation_date",
-                  required: true,
                   disabled: true,
-                  label: "Confirmation Date",
+                  value: confirmation_date || FormValues.confirmation_date,
                 },
                 {
                   InputField: CheckBoxInput,
                   name: "active_contract",
                   label: "Contract Employment",
-                  colsSpan: 3,
+                  colsSpan: FormColumns,
                 },
                 {
                   InputField: DateInput,
@@ -599,7 +632,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   label: "Job Description",
                   maxRows: 5,
                   maxLength: 1000,
-                  colsSpan: 3,
+                  colsSpan: FormColumns,
                 },
                 {
                   InputField: TextAreaInput,
@@ -608,7 +641,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                   label: "Job KPIs",
                   maxRows: 5,
                   maxLength: 1000,
-                  colsSpan: 3,
+                  colsSpan: FormColumns,
                 },
               ],
             },
@@ -654,8 +687,8 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                       options: shiftList,
                       required: true,
                       label: `Employee ${FormValues.salary_type === "hourly"
-                          ? "Hourly"
-                          : "Monthly"
+                        ? "Hourly"
+                        : "Monthly"
                         } Salary`,
                     },
                   ],
@@ -669,7 +702,7 @@ const EmployeeForm = ({ id, setIsOpen = () => { }, SalarySetupAllowed }) => {
                 {
                   InputField: OnboardingChecklistSection,
                   name: "onboardingDocuments",
-                  colsSpan: 3,
+                  colsSpan: FormColumns,
                 },
               ],
             },

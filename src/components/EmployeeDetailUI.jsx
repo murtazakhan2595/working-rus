@@ -114,6 +114,15 @@ const EmployeeDetailUI = React.memo(
             },
           ]
         : []),
+
+         ...(InformationKeys.includes("joining_date_tenure")?[
+           {
+          name: "branch_tenure",
+          label: "Current Branch Tenure",
+          value: calculateTenure(userProfile.joining_date)
+        },
+         ]:[]),
+
       ...(InformationKeys.includes("currency")
         ? [
             {
@@ -189,4 +198,14 @@ const EmployeeDetailUI = React.memo(
   }
 );
 
+function calculateTenure(date) {
+  if (!date) return "N/A";
+  const diff = new Date() - new Date(date);
+  const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+  const months = Math.floor((diff / (1000 * 60 * 60 * 24 * 30)) % 12);
+  return `${years} years ${months} months`;
+}
+
 export default EmployeeDetailUI;
+
+
