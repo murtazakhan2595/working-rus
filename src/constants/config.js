@@ -9,17 +9,17 @@ const Config = {
   MY_ATTENDANCE: true,
   DAILY_TASK_REPORT: false,
   MY_LEAVE_TRACKER: true,
-  MY_PAYROLL: true,
+  MY_PAYROLL: false,
   MY_CLAIMS: true,
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
-  MY_PERFORMANCE: true,
+  MY_PERFORMANCE: false,
   MY_SHIFT_CALENDAR: true,
   EXIT: true,
-  MY_JOB_ROTATIONS: true,
-  MY_CLEARANCE: true,
-  MY_LETTER_REQUEST: true,
+  MY_JOB_ROTATIONS: false,
+  MY_CLEARANCE: false,
+  MY_LETTER_REQUEST: false,
 
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
@@ -29,9 +29,9 @@ const Config = {
   TEAM_DAILY_TASK_REPORT: false,
   TEAM_LEAVE_REQUEST: true,
   TEAM_EXIT_CLEARANCE: true,
-  TEAM_PERFORMANCE_EVALUATION: true,
-  TEAM_TALENT_SPHERE: true,
-  MANAGER_CLEARANCE_DASHBOARD: true,
+  TEAM_PERFORMANCE_EVALUATION: false,
+  TEAM_TALENT_SPHERE: false,
+  MANAGER_CLEARANCE_DASHBOARD: false,
 
 
   //-------------PROFIL_MANAGMENT-----------
@@ -41,9 +41,9 @@ const Config = {
   EXIT_CLEARANCE: true,
   EMPLOYEE_CREATION: true,
   HR_DOCUMENTS: true,
-  COMPLIANCE: true,
+  COMPLIANCE: false,
   EMPLOYEE_TRANSFER: true,
-  CLEARANCE_AND_HANDOVER: true,
+  CLEARANCE_AND_HANDOVER: false,
 
   //-------------ATTENDANCE-----------
   ATTENDANCE: true,
@@ -61,14 +61,14 @@ const Config = {
   LEAVE_REQUEST: true,
 
   //-------------PAYROLL-----------
-  PAYROLL: true,
+  PAYROLL: false,
   //Sub Modules
-  EMPLOYEES_PAYROLL: true,
-  SALARY_SETUP: true,
-  CLAIM_REQUEST: true,
-  PAY_RUN: true,
-  ON_HOLD_SALARIES: true,
-  END_OF_SERVICE: true,
+  EMPLOYEES_PAYROLL: false,
+  SALARY_SETUP: false,
+  CLAIM_REQUEST: false,
+  PAY_RUN: false,
+  ON_HOLD_SALARIES: false,
+  END_OF_SERVICE: false,
 
   //-------------TASK_MANAGEMENT-----------
   TASK_MANAGEMENT: true,
@@ -76,16 +76,16 @@ const Config = {
   PROJECT_BOARD: true,
 
   //-------------TALENT_SPHERE-----------
-  TALENT_SPHERE: true,
+  TALENT_SPHERE: false,
   //Sub Modules
-  MANPOWER_PLANNINGS: true,
-  REQUISITION_PLANNING: true,
-  APPLICANT_INTERVIEW_TRACKER: true,
-  APPLICANTS:true,
-  TS_OFFER_TRACKING:true,
-  TS_DASHBOARD:true,
-  TS_APPLICANTS_PROFILE:true,
-  TS_RESUME_BANK:true,
+  MANPOWER_PLANNINGS: false,
+  REQUISITION_PLANNING: false,
+  APPLICANT_INTERVIEW_TRACKER: false,
+  APPLICANTS:false,
+  TS_OFFER_TRACKING:false,
+  TS_DASHBOARD:false,
+  TS_APPLICANTS_PROFILE:false,
+  TS_RESUME_BANK:false,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
@@ -103,7 +103,7 @@ const Config = {
   OFFICE_SETTING: true,
   //Sub Modules
   ORGANIZATION: true,
-  TALENT_SPHERE_SETTING: true,
+  TALENT_SPHERE_SETTING: false,
   DESIGNATIONS: false,
   BRANCHES: false,
   SHIFTS: false,
@@ -111,25 +111,25 @@ const Config = {
   ROLE_PERMISSIONS: true,
   APPROVAL_HIERARCHY: true,
   LEAVE_SETUP: true,
-  CLEARANCE_CHECKLIST: true,
+  CLEARANCE_CHECKLIST: false,
 
   //--------------Performance Edge-----------
-  PERFORMANCE_EDGE: true,
+  PERFORMANCE_EDGE: false,
   //Sub Modules
-  GENERATE_FORM: true,
-  PERFORMANCE_CYCLE_SETUP: true,
-  PERFORMANCE_DASHBOARD: true,
-  PERFORMANCE_EVALUATION: true,
+  GENERATE_FORM: false,
+  PERFORMANCE_CYCLE_SETUP: false,
+  PERFORMANCE_DASHBOARD: false,
+  PERFORMANCE_EVALUATION: false,
 
   //--------------Reports-----------
-  REPORTS: true,
+  REPORTS: false,
   //Sub Modules
-  PROFILE_MANAGEMENT_REPORTS: true,
-  EXIT_AND_CLEARANCE_REPORTS: true,
-  EMPLOYEE_CREATION_AND_HIRING: true,
-  HR_DOCUMENT_REPORTS: true,
-  TRANSFER_AND_ROTATIONS: true,
-  ATTENDANCE_AND_SHIFT_REPORTS: true,
+  PROFILE_MANAGEMENT_REPORTS: false,
+  EXIT_AND_CLEARANCE_REPORTS: false,
+  EMPLOYEE_CREATION_AND_HIRING: false,
+  HR_DOCUMENT_REPORTS: false,
+  TRANSFER_AND_ROTATIONS: false,
+  ATTENDANCE_AND_SHIFT_REPORTS: false,
 };
 
 export const URLS = [
