@@ -11,7 +11,7 @@ const Config = {
   MY_LEAVE_TRACKER: true,
   MY_PAYROLL: false,
   MY_CLAIMS: false,
-  MY_TRANSFERS: true,
+  MY_TRANSFERS: false,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
   MY_PERFORMANCE: false,
@@ -19,7 +19,7 @@ const Config = {
   EXIT: true,
   MY_JOB_ROTATIONS: false,
   MY_CLEARANCE: false,
-  MY_LETTER_REQUEST: false,
+  MY_LETTER_REQUEST: true,
 
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
@@ -42,7 +42,7 @@ const Config = {
   EMPLOYEE_CREATION: true,
   HR_DOCUMENTS: true,
   COMPLIANCE: false,
-  EMPLOYEE_TRANSFER: true,
+  EMPLOYEE_TRANSFER: false,
   CLEARANCE_AND_HANDOVER: false,
 
   //-------------ATTENDANCE-----------
@@ -88,9 +88,9 @@ const Config = {
   REQUEST_AND_ASSIGN: true,
 
   //-------------ORGANIZATIONAL_CHART-----------
-  ORGANIZATIONAL_CHART: true,
+  ORGANIZATIONAL_CHART: false,
   //Sub Modules
-  ORGANIZATION_TREE: true,
+  ORGANIZATION_TREE: false,
   MY_REPORTING_LINE: false,
 
   //-------------OFFICE_SETTING-----------
@@ -116,12 +116,12 @@ const Config = {
   PERFORMANCE_EVALUATION: false,
 
   //--------------Reports-----------
-  REPORTS: false,
+  REPORTS: true,
   //Sub Modules
-  PROFILE_MANAGEMENT_REPORTS: false,
+  PROFILE_MANAGEMENT_REPORTS: true,
   EXIT_AND_CLEARANCE_REPORTS: false,
   EMPLOYEE_CREATION_AND_HIRING: false,
-  HR_DOCUMENT_REPORTS: false,
+  HR_DOCUMENT_REPORTS: true,
   TRANSFER_AND_ROTATIONS: false,
   ATTENDANCE_AND_SHIFT_REPORTS: false,
 };
