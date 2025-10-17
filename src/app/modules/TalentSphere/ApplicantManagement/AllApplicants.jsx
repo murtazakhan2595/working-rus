@@ -166,7 +166,12 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       } else {
         // Store UI values as-is (strings for dropdowns)
         // Conversion to API format happens in fetchData
-        if (['application_date_range','blacklisted_on','added_on','rejected_on'].includes(filterName))
+        if (['application_date_range',
+          'blacklisted_on', 'added_on',
+          'rejected_on',
+          'screened_on',
+          'ai_feedback_confidence',
+          'expected_joining_date'].includes(filterName))
           updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
       }
@@ -246,6 +251,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   name: "ai_suggested",
                   placeholder: "AI Suggested",
                 }] : []),
+                ...(variant === "ai_picks" ? [{
+                  type: "numeric-range",
+                  name: "ai_feedback_confidence",
+                  placeholder: "AI Match Score Range",
+                }] : []),
                 {
                   type: "date-range",
                   name: "application_date_range",
@@ -262,6 +272,15 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                       type: "date-range",
                       name: "expected_joining_date",
                       placeholder: "Joining Date",
+                    },
+                  ]
+                  : []),
+                ...(variant === "screened"
+                  ? [
+                    {
+                      type: "date-range",
+                      name: "screened_on",
+                      placeholder: "Screened",
                     },
                   ]
                   : []),
