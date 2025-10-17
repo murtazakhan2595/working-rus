@@ -237,16 +237,16 @@ const OfficeSetting = () => {
       label: "Clearance & Handover Setup",
       permission: OFFICE_SETTING_PERMISSIONS.CLEARANCE_CHECKLIST,
     },
-    {
-      value: "evaluation-type",
-      label: "Evaluation Type",
-      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
-    },
-    {
-      value: "rating-scale-setup",
-      label: "Rating Scale Setup",
-      permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
-    },
+    // {
+    //   value: "evaluation-type",
+    //   label: "Evaluation Type",
+    //   permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    // },
+    // {
+    //   value: "rating-scale-setup",
+    //   label: "Rating Scale Setup",
+    //   permission: OFFICE_SETTING_PERMISSIONS.EVALUATION_TYPE.VIEW,
+    // },
     {
       value: "currency",
       label: "Currencies",
