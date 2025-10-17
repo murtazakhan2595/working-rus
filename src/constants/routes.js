@@ -410,6 +410,11 @@ export const SidebarRoutes = [
         component: <EmiratizationHiredApplicants />,
         name: "APPLICANTS",
       },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/source/:source",
+        component: <AllApplicants variant='by_source' />,
+        name: "APPLICANTS",
+      },
       Config.REQUISITION_PLANNING && {
         path: "/talent-sphere/requisition-planning",
         component: <RequisitionPlanning />,
