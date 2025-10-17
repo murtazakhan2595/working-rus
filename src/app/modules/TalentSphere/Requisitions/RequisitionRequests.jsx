@@ -11,14 +11,11 @@ import { PageLoader, TableCustom } from "components";
 import { getRequisitionRequestList, getRequisitionStats, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { RequisitionRequestColumns, RequisitionFilters, handleRequisitionFilterChange } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
-import { GlobalStatusOptions } from "data/Data";
 import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 import { GetDispatchStateList } from "utils/Lists";
 
 const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition }) => {
-    const Employees = GetDispatchStateList("employees", "emp");
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
-    const Currencies = GetDispatchStateList("currencies", "common");
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -28,6 +25,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     const [statsData, setStatsData] = useState({});
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+    const [StatusFilter, setStatusFilter] = useState([]);
 
     // State for auto-opening detail sheet
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
@@ -166,8 +164,9 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
 
     const handleFilterChange = (filterName, filterValue, tab) => {
         onPageChange("page", 1);
+        if (filterName === 'status' && !tab) setStatusFilter(filterValue);
         setFilterData((prevFilters) => {
-            const updatedFilters = handleRequisitionFilterChange(prevFilters, filterName, filterValue, tab ?? activeTab);
+            const updatedFilters = handleRequisitionFilterChange(prevFilters, filterName, filterValue, tab ?? activeTab, StatusFilter);
             // Handle other filters normally
             return { ...updatedFilters };
         });
@@ -208,6 +207,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                     className="w-full"
                     onValueChange={(tab) => {
                         handleFilterChange('status', "", tab);
+                        setStatusFilter("default");
                         setActiveTab(tab);
                     }}
                     value={activeTab}
@@ -234,7 +234,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
 
                     <CardContent>
                         <FilterInput
-                            filters={RequisitionFilters(isTeamView, activeTab, JobTypeList, CareerLevelList, Currencies, Employees)}
+                            filters={RequisitionFilters(isTeamView, activeTab, JobTypeList, CareerLevelList, StatusFilter)}
                             onChange={handleFilterChange}
                             className="justify-end mb-4"
                         />

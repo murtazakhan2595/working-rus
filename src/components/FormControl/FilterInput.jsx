@@ -45,6 +45,7 @@ const FilterInput = ({
   const Designations = GetDispatchStateList("designations", "common") || [];
   const Branches = GetDispatchStateList("branches", "common") || [];
   const Employees = GetDispatchStateList("employees", "emp") || [];
+      const Currencies = GetDispatchStateList("currencies", "common")||[];
   const classNamesStyle = "";
   const DefaultWidth = "min-w-56";
   const DefaultHeight = "min-h-[38px]";
@@ -150,7 +151,7 @@ const FilterInput = ({
   };
 
   return (
-    <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3`}>
+    <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3 justify-end mb-4`}>
       {filters &&
         filters?.map((filter, index) => {
           const {
@@ -160,6 +161,7 @@ const FilterInput = ({
             placeholder,
             name,
             options = [],
+            value,
           } = filter;
           const SearchOptions = !options
             ? []
@@ -176,6 +178,8 @@ const FilterInput = ({
                         ? countriesList || []
                         : options.toLowerCase() === "employees"
                           ? Employees || []
+                        : options.toLowerCase() === "currencies"
+                          ? Currencies || []
                           : []
                 : [];
           switch (filter.type) {
@@ -189,7 +193,7 @@ const FilterInput = ({
                   placeholder={placeholder}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
-                  value={filterValues[name] || null}
+                  value={value || filterValues[name] || null}
                   resetField={resetFields}
                 />
               );
@@ -218,7 +222,7 @@ const FilterInput = ({
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
-                  value={filterValues[name] || null}
+                  value={value || filterValues[name] || null}
                   resetField={resetFields}
                 />
               );

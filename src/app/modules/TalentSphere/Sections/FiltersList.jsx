@@ -1,7 +1,11 @@
 import { GlobalStatusOptions } from "data/Data";
 
+const RequisitionStatusOptions = (viewMode) => viewMode === "Records"
+    ? [...GlobalStatusOptions(false), { label: "Published", value: "Published" }]
+    : viewMode === "Requests" ? [{ label: "Draft", value: "Draft" }, { label: "Pending", value: "Pending" }]
+        : [{ label: "Approved", value: "Approved" }, { label: "Published", value: "Published" }, { label: "Draft", value: "Draft" }]
 
-export const RequisitionFilters = (isTeamView, viewMode, JobTypeList, CareerLevelList, Currencies, Employees) => [
+export const RequisitionFilters = (isTeamView, viewMode, JobTypeList, CareerLevelList, StatusFilter) => [
     {
         type: "search",
         name: "job_title",
@@ -33,7 +37,7 @@ export const RequisitionFilters = (isTeamView, viewMode, JobTypeList, CareerLeve
     },
     {
         type: "select",
-        options: Currencies,
+        options: 'Currencies',
         name: "currency",
         placeholder: "Currency",
     },
@@ -70,7 +74,7 @@ export const RequisitionFilters = (isTeamView, viewMode, JobTypeList, CareerLeve
     ...(!isTeamView ? [{
         type: "select",
         name: "requested_by",
-        options: Employees,
+        options: 'Employees',
         placeholder: "Requested By",
     },
     {
@@ -78,25 +82,13 @@ export const RequisitionFilters = (isTeamView, viewMode, JobTypeList, CareerLeve
         placeholder: "Request Date",
         name: "created_at",
     },] : []),
-    ...(viewMode === "Records"
-        ? [
-            {
-                type: "select",
-                options: [...GlobalStatusOptions(false), { label: "Published", value: "Published" }],
-                name: "status",
-                placeholder: "Status",
-            },
-        ] : viewMode === "Requests" ? [{
-            type: "select",
-            options: [{ label: "Draft", value: "Draft" }, { label: "Pending", value: "Pending" }],
-            name: "status",
-            placeholder: "Status",
-        },] : [{
-            type: "select",
-            options: [{ label: "Approved", value: "Approved" }, { label: "Published", value: "Published" }, { label: "Draft", value: "Draft" }],
-            name: "status",
-            placeholder: "Status",
-        },]),
+    {
+        type: "select",
+        options: RequisitionStatusOptions(viewMode),
+        name: "status",
+        placeholder: "Status",
+        ...(StatusFilter ? { value: StatusFilter } : {}),
+    }
 ]
 
 export const handleRequisitionFilterChange = (prevFilters, filterName, filterValue, activeView) => {
@@ -121,7 +113,7 @@ export const handleRequisitionFilterChange = (prevFilters, filterName, filterVal
                 delete updatedFilters['is_draft'];
             } else if (filterValue === 'Draft') {
                 updatedFilters['is_draft'] = true;
-                delete updatedFilters[filterName];
+                updatedFilters[filterName] = 'pending';
                 delete updatedFilters['is_publish'];
             } else if (filterValue.toLowerCase() === 'approved') {
                 updatedFilters['is_publish'] = false;
