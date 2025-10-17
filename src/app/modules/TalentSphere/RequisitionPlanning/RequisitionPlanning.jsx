@@ -71,7 +71,7 @@ export default function RequisitionPlanning() {
         if (activeButtonTab === "Generate Requisition" && isAddRequisitionPermitted) {
             return (
                 <Button title="generate-requisition" onClick={handleRequestClick}>
-                    Add Requisition
+                    Generate Requisition
                 </Button>
             )
         }
