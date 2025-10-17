@@ -129,7 +129,7 @@ const ApplicantSources = ({ data, loading }) => {
                 radius={[8, 8, 0, 0]}
                 onClick={(data) => {
                   const filterValue = mapSourceToFilterValue(data.source);
-                  navigate(`/talent-sphere/applicant-management?source=${filterValue}`);
+                  navigate(`/talent-sphere/applicant-management/source/${filterValue}`);
                 }}
                 cursor="pointer"
               >

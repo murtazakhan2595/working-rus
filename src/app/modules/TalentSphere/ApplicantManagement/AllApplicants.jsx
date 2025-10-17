@@ -6,14 +6,16 @@ import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription, Card } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 
 const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const routeParams = useParams();
 
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
-    const source = searchParams.get("source");
+    // Support both query param (?source=) and route param (/source/:source)
+    const source = searchParams.get("source") || routeParams.source;
     const recruitmentRequisition = searchParams.get("recruitment_requisition");
     const emiratizationFlag = searchParams.get("emiratization_flag");
     const filters = {};
@@ -83,6 +85,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       // Start with current filters
       const filters = {
         ...filterData,
+        // Do not add implicit status for by_source variant
         ...(variant === "all" ? { status: "new" } : {}),
         ...(variant === "rejected" ? { status: "rejected" } : {}),
         ...(variant === "resume_bank" ? { status: "resume_bank" } : {}),
@@ -99,6 +102,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       if (variant === "emiratization_all") {
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_screened") {
+      // For by_source we ensure only application_source is enforced from initial URL
+      if (variant === "by_source") {
+        // Remove any accidental status injected elsewhere
+        delete filters.status;
+      }
         filters.status = "screened";
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_shortlisted") {
