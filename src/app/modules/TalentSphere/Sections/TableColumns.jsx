@@ -141,7 +141,7 @@ export const BenefitsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -205,7 +205,7 @@ export const SkillsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -244,7 +244,7 @@ export const BlacklistReasonsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -366,7 +366,7 @@ export const EmailTemplatesColumns = (reloadData) => [
         dataField: "subject",
         text: "Email Subject",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "template_type",
@@ -491,7 +491,7 @@ export const InterviewTypesColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -604,7 +604,7 @@ export const JobTypesColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -649,7 +649,7 @@ export const EducationsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -694,7 +694,7 @@ export const CareerLevelsColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true}/>,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />,
     },
     {
         dataField: "created_at",
@@ -1168,7 +1168,7 @@ export const ApplicationColumns = (reloadData, variant) => [
         text: "Candidate",
         formatter: (cell, row) => (
             <div>
-                <div><span className="font-bold">ID: </span>{row?.candidate_id}</div>
+                <div><span className="font-bold">ID: </span>{row?.candidate_id || 'N/A'}</div>
                 <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
                 <div><span className="font-bold">Email: </span>{row?.email}</div>
                 <div><span className="font-bold">Contact No.: </span>{row?.contact_number}</div>
