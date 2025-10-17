@@ -492,6 +492,8 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails = tru
     for (const key of Object.keys(Requisition)) {
         if (key === "approval_details" && fetchApprovalDetails) {
             RecordDetails[key] = await mapApproverDetails({ ...data, });
+        } else if (key === 'enable_benefits') {
+            RecordDetails[key] = data['benefits'] && Array.isArray(data['benefits']) && data['benefits'].length > 0;
         } else {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 if (key === 'id') RecordDetails['requisition_id'] = data[key];
