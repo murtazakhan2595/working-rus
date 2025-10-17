@@ -42,8 +42,8 @@ const ViewRequisitionRequest = ({
         setOpenModal(true);
     };
     const handleRejectClick = async (comment, id) => {
-                            debugger;
-      
+        debugger;
+
         await saveUpdateRequisitionRequest({ rejection_reason: comment }, id);
     };
 
@@ -105,7 +105,7 @@ const ViewRequisitionRequest = ({
                 {
                     key: "requested_by",
                     label: "",
-                    formatter: (cell) => (<EmployeeDetailUI id={cell} InformationKeys={["id","name", "department", "position", "branch",]} ViewVariant={"vertical"} />),
+                    formatter: (cell) => (<EmployeeDetailUI id={cell} InformationKeys={["id", "name", "department", "position", "branch",]} ViewVariant={"vertical"} />),
                 },
             ],
         },
@@ -193,8 +193,13 @@ const ViewRequisitionRequest = ({
                         initialValues: ModalData,
                         enableReinitialize: true,
                         handleSubmit: handleSubmit,
-                        validateFormSchema: () => {
+                        validateFormSchema: (values) => {
                             const error = {};
+                            const { salary_min, salary_max } = values;
+                            if (salary_min && salary_max) {
+                                if (parseFloat(salary_max) < parseFloat(salary_min))
+                                    error.salary_max = 'Maximum salary cannot be greater than minimum salary'
+                            }
                             return error;
                         },
                         submitButtonText: "Confirm",

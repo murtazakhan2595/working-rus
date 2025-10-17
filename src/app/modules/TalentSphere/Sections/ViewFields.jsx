@@ -39,6 +39,7 @@ export const RequisitionViewFields = [
       {
         key: "required_skillset_name",
         label: "Required Skills",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
       },
     ],
   },
