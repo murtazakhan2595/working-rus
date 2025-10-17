@@ -158,7 +158,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       } else {
         // Store UI values as-is (strings for dropdowns)
         // Conversion to API format happens in fetchData
-        if (['application_date_range'].includes(filterName))
+        if (['application_date_range','blacklisted_on','resumed_on'].includes(filterName))
           updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
       }
@@ -229,7 +229,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   name: "emiratization_flag",
                   placeholder: "Emiratization Role",
                 },
-                ...(variant !== "ai_picks" ? [{
+                ...(variant !== "ai_picks" && variant !== "resume_bank" ? [{
                   type: "select",
                   options: [
                     { value: true, label: "Suggested" },
@@ -260,8 +260,20 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                 ...(variant === "resume_bank"
                   ? [
                     {
+                      type: "select",
+                      name: "recommended_department",
+                      options: 'Departments',
+                      placeholder: "Recommended Department",
+                    },
+                    {
+                      type: "select",
+                      name: "recommended_designation",
+                      options: 'Designations',
+                      placeholder: "Recommended Designation",
+                    },
+                    {
                       type: "date-range",
-                      name: "added_on",
+                      name: "resumed_on",
                       placeholder: "Added On",
                     },
                   ]

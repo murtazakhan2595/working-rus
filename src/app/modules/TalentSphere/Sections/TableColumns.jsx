@@ -1203,8 +1203,8 @@ export const ApplicationColumns = (reloadData, variant) => [
                     <div>
                         <div><span className="font-bold">Recommended Designation: </span><DesignationName value={cell?.recommended_designation} /></div>
                         <div><span className="font-bold">Recommended Department: </span><DepartmentName value={cell?.recommended_department} /></div>
-                        <div><span className="font-bold">Blacklisted By: </span><EmployeeName value={cell?.added_by} /></div>
-                        <div><span className="font-bold">Date: </span>{renderDate(cell?.added_on, "--", 'date-time')}</div>
+                        <div><span className="font-bold">Added By: </span><EmployeeName value={cell?.added_by} /></div>
+                        <div><span className="font-bold">Added On: </span>{renderDate(cell?.added_on, "--", 'date-time')}</div>
                     </div>
                 );
             },
