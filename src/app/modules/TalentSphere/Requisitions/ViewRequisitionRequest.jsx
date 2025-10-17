@@ -141,7 +141,7 @@ const ViewRequisitionRequest = ({
                         request_id={data.request}
                         RejectionConfig={{ label: 'Rejection Reason', required: true }}
                         onApprove={(handleApprove) => handleApprovalClick(handleApprove, data)}
-                        setResponse={async (response, status, approval_Data) => {
+                        setResponse={async (response, _, approval_Data) => {
                             if (response) {
                                 const updated_date = await fetchData(data.id);
                                 if (updated_date === 'rejected') {
