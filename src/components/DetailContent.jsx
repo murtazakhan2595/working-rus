@@ -47,7 +47,7 @@ const DetailContent = ({ currentItem = {}, fields = [], orientation = "vertical"
                       <DetailBox
                         key={key}
                         label={label}
-                        value={formatter ? formatter(value, currentItem) : value ?? fallBackText}
+                        value={formatter ? formatter(value, currentItem) : value !== null && value !== undefined && value !== "" ? value : fallBackText}
                         orientation={orientation}
                       />
                     ) : (
