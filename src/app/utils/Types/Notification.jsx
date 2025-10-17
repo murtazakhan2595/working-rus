@@ -174,4 +174,14 @@ export const Notifications_Action_URL = [
     notification_type: "document_assigned",
     action_url: "/my-documents",
   },
+  {
+    module: "APPROVAL_HIERARCHY",
+    notification_type: "REQUISTION_REQUEST_REJECTED",
+    action_url: "/team-talent-sphere/requisition",
+  },
+  {
+    module: "APPROVAL_HIERARCHY",
+    notification_type: "REQUISTION_REQUEST_APPROVED",
+    action_url: "/team-talent-sphere/requisition",
+  },
 ];

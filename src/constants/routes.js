@@ -249,6 +249,11 @@ export const SidebarRoutes = [
         component: <TeamTalentSphere />,
         name: "TEAM_TALENT_SPHERE",
       },
+      Config.TEAM_TALENT_SPHERE && {
+        path: "/team-talent-sphere/requisition",
+        component: <TeamTalentSphere activeView={'Requisition Request'} subActiveView={'Records'}/>,
+        name: "VIEW_REQUISITION_REQUEST_CREATED",
+      },
       Config.MANAGER_CLEARANCE_DASHBOARD && {
         path: "/manager-clearance-dashboard",
         component: <ManagerClearanceDashboard />,
@@ -617,7 +622,7 @@ export const SidebarRoutes = [
         component: <EOSDetails />,
         name: "VIEW_END_OF_SERVICE",
       },
-   
+
       Config.SALARY_SETUP && {
         path: "/payroll/salary-setup-eos/:id",
         component: <EmployeeSalarySetup />,

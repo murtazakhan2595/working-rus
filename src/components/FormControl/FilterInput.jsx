@@ -481,7 +481,8 @@ const RenderSelectInputField = React.memo(
     }, [resetField]);
 
     useEffect(() => {
-      setInputValue(value);
+      const valueExist = allOptions.find(obj => obj.value === value);
+      setInputValue(valueExist ? value : null);
     }, [value]);
 
     return (
