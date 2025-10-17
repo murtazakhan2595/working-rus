@@ -10,7 +10,7 @@ import {
 } from "components/FormControl";
 
 const CommentsInputField = ({
-  addAttachment = () => {}, //Add the comments attchment to include in task attachments
+  addAttachment = () => { }, //Add the comments attchment to include in task attachments
   taskId,
   userId,
   employees,
@@ -19,7 +19,7 @@ const CommentsInputField = ({
   setEditCommentContent,
   replyComment,
   setReplyComment,
-  fetchData = () => {},
+  fetchData = () => { },
   name = "comments",
   label = "Comments",
   required = false,
@@ -173,8 +173,9 @@ const CommentsInputField = ({
       >
         {editingMode || editMode ? (
           <TextEditorInputField
-            content={newComment}
-            setContent={setNewComment}
+            value={newComment}
+            name='comments'
+            onChange={(_, value) => setNewComment(value)}
             handleSubmitContent={handleSubmitComment}
             setAttachments={setCommentAttachment}
             attachments={commentAttachments}
