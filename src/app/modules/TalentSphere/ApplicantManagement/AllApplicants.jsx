@@ -158,7 +158,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       } else {
         // Store UI values as-is (strings for dropdowns)
         // Conversion to API format happens in fetchData
-        if (['application_date_range','blacklisted_on','added_on'].includes(filterName))
+        if (['application_date_range','blacklisted_on','added_on','rejected_on'].includes(filterName))
           updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
       }
@@ -245,7 +245,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                 },
                 ...(variant === "rejected" ? [{
                   type: "date-range",
-                  name: "rejection_date",
+                  name: "rejected_on",
                   placeholder: "Rejection Date",
                 },] : []),
                 ...(variant === "shortlisted"
