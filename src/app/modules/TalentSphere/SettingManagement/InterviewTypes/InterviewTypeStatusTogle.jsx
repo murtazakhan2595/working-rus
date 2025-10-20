@@ -11,7 +11,7 @@ const InterviewTypeStatusTogle = ({ status, data, reloadData }) => {
     async (value, data) => {
       try {
         const response = await saveUpdateInterviewType(
-          { status: value ? 'active' : 'inactive' },
+          { is_active: value },
           data.id
         );
 
@@ -36,7 +36,7 @@ const InterviewTypeStatusTogle = ({ status, data, reloadData }) => {
     >
       <Switch
         id="Status"
-        checked={status === "active"}
+        checked={status}
         disabled={!isEditPermitted}
         onCheckedChange={(value) => onCheckedChange(value, data)}
       />

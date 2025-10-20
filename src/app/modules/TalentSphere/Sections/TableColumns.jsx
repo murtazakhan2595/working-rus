@@ -516,7 +516,7 @@ export const InterviewTypesColumns = (reloadData) => [
         // formatter: (cell) => <EmployeeName value={cell} />,
     },
     {
-        dataField: "status",
+        dataField: "is_active",
         text: "Status",
         formatter: (cell, row) => {
             return (

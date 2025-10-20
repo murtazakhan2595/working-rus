@@ -70,7 +70,7 @@ const InterviewTypes = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                if (['created_at'].includes(filterName) && filterValue && filterValue.includes(","))
+                if (['created_at'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
