@@ -978,7 +978,7 @@ export const DemographicsFormColumns = (reloadData) => [
         text: "Status",
         formatter: (cell, row) => {
             return (
-                <DemographicsFormStatusTogle data={row} is_active={cell} reloadData={reloadData} />
+                <DemographicsFormStatusTogle data={row} status={cell} reloadData={reloadData} />
             );
         },
     },
@@ -1423,8 +1423,15 @@ export const ResumeBankColumns = (reloadData) => [
  */
 export const InProgressInterviewColumns = (reloadData) => [
     {
-        dataField: "candidate_name",
-        text: "Candidate Name",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "job_title",
@@ -1441,12 +1448,8 @@ export const InProgressInterviewColumns = (reloadData) => [
     },
     {
         dataField: "panel_name",
-        text: "Interview Panel",
+        text: "Panelist",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
-    },
-    {
-        dataField: "ai_match_score",
-        text: "AI Match Score",
     },
     {
         dataField: "status",

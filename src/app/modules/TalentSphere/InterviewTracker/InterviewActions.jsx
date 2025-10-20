@@ -57,7 +57,7 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
             />
 
             {view && (
-                <ViewApplicationDetail
+                <ViewInterviewDetails
                     isOpen={view}
                     reloadData={() => {
                         reloadData(true);
@@ -66,7 +66,7 @@ const InterviewActions = ({ data, DataList = [], reloadData = () => { }, isTeamV
                     setIsOpen={() => {
                         setView(false);
                     }}
-                    currentId={data.applicant_id}
+                    currentId={data.id}
                     DataList={DataList}
                 />
             )}
