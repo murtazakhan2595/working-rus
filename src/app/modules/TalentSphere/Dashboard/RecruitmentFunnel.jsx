@@ -111,22 +111,49 @@ const RecruitmentFunnel = ({ data, loading }) => {
   const chartData = React.useMemo(() => {
     if (!data || !Array.isArray(data) || data.length === 0) return [];
 
-    // Calculate total pipeline (first stage count)
-    const totalPipeline = data[0]?.count || 0;
-
     return data.map((item, index) => {
       const displayName =
         item.stage?.replace(/([A-Z])/g, " $1").trim() || "Unknown";
-      const percentage =
-        totalPipeline > 0
-          ? ((item.count / totalPipeline) * 100).toFixed(1)
-          : "0.0";
+      
+      // Calculate pipeline percentage (relative to first stage)
+      const totalPipeline = data[0]?.count || 0;
+      const pipelinePercentage = totalPipeline > 0 
+        ? ((item.count / totalPipeline) * 100).toFixed(1)
+        : "0.0";
+
+      // Use API's conversion data if available, otherwise calculate from previous stage
+      let conversionRate = "0.0";
+      if (item.conversion !== null && item.conversion !== undefined) {
+        // API provides conversion data - use it directly
+        if (item.conversion >= 1) {
+          // If conversion >= 1, it's a multiplier (e.g., 69.75x)
+          conversionRate = `${item.conversion.toFixed(1)}x`;
+        } else {
+          // If conversion < 1, it's a percentage (e.g., 0.05 = 5%)
+          conversionRate = `${(item.conversion * 100).toFixed(1)}%`;
+        }
+      } else if (index > 0) {
+        // Fallback: calculate from previous stage if API doesn't provide conversion
+        const previousStageCount = data[index - 1]?.count || 0;
+        if (previousStageCount > 0) {
+          const calculatedConversion = item.count / previousStageCount;
+          if (calculatedConversion >= 1) {
+            conversionRate = `${calculatedConversion.toFixed(1)}x`;
+          } else {
+            conversionRate = `${(calculatedConversion * 100).toFixed(1)}%`;
+          }
+        }
+      } else {
+        // For first stage, show 100% as baseline
+        conversionRate = "100.0%";
+      }
 
       return {
         ...item,
         displayName,
         color: getStageColor(item.stage, index),
-        percentage,
+        percentage: pipelinePercentage,
+        conversionRate: conversionRate,
         dataSource: getDataSource(item.stage, displayName),
       };
     });
@@ -182,14 +209,11 @@ const RecruitmentFunnel = ({ data, loading }) => {
           </p>
           <p className="text-xs text-neutral-700 mt-1">Count: {data.count}</p>
           <p className="text-xs text-neutral-700">
-            Percentage: {data.percentage}%
+            Pipeline %: {data.percentage}%
           </p>
-          {conversionDisplay && (
-            <p className="text-xs text-neutral-700">
-              Conversion: {conversionDisplay}{" "}
-              {getConversionExplanation(data.conversion)}
-            </p>
-          )}
+          <p className="text-xs text-neutral-700">
+            Conversion: {data.conversionRate}
+          </p>
           <p className="text-xs text-neutral-700 mt-1 pt-1 border-t border-neutral-200">
             Source: {data.dataSource}
           </p>
