@@ -140,14 +140,13 @@ const ViewRequisitionRequest = ({
                         final_approver={data.final_approvers || []}
                         request_id={data.request}
                         RejectionConfig={{ label: 'Rejection Reason', required: true }}
-                        onApprove={(handleApprove) => handleApprovalClick(handleApprove, data)}
+                        onApprove={async (handleApprove) => await handleApprovalClick(handleApprove, data)}
                         setResponse={async (response, _, approval_Data) => {
                             if (response) {
-                                const updated_date = await fetchData(data.id);
-                                if (updated_date === 'rejected') {
+                                const updated_date = await fetchData(data.id,true);
+                                if (updated_date?.status?.toLowerCase() === 'rejected') {
                                     handleRejectClick(approval_Data.comment, data.id);
-                                }
-                                setForceLoad(!forceLoad);
+                                } else setForceLoad(!forceLoad);
                             }
                         }}
                     />
