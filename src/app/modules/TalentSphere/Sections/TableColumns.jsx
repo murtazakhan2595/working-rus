@@ -978,7 +978,7 @@ export const DemographicsFormColumns = (reloadData) => [
         text: "Status",
         formatter: (cell, row) => {
             return (
-                <DemographicsFormStatusTogle data={row} is_active={cell} reloadData={reloadData} />
+                <DemographicsFormStatusTogle data={row} status={cell} reloadData={reloadData} />
             );
         },
     },
