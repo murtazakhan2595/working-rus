@@ -112,7 +112,8 @@ export async function mapApproverDetails({
           </>
         );
       } else {
-        levelDetail.info = "Unknown - No eligible approver with the necessary permissions was found to perform this action.";
+        levelDetail.info = "Unknown";
+        levelDetail.description = "No eligible approver with the necessary permissions was found to perform this action.";
       }
     }
 

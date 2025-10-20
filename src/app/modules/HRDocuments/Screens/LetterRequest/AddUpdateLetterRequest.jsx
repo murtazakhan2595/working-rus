@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { LetterRequest } from "app/utils/Types/HRDocuments";
 import { validationLetterRequestFormSchema } from "app/utils/FormSchema/hrDocumentFromSchema";
@@ -7,12 +7,11 @@ import { SheetUI } from "components";
 import {
   addUpdateLetterRequest
 } from "app/hooks/hrDocuments";
-import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import { useDispatch } from "react-redux";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Add Category",
+  title: "Add Letter Request",
   description: null,
   footer: null,
   width: "560px",

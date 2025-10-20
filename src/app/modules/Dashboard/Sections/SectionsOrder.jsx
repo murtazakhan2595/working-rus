@@ -3,13 +3,9 @@ import {
   MyTasks,
   EmployeeOverview,
   LeaveTrackerOverview,
-  TalentSphere,
   MyLeaves,
-  AllProjects,
-  MyTeams,
   TaskProgress,
   LeaveEmployeeDetails,
-  OnGoingApplications,
   ExpiredDocuments,
   MyAttendanceSumary,
   ProfileCompletion,
@@ -73,12 +69,7 @@ const DashboardHR = [
   //   content: <LeaveEmployeeDetails />,
   //   value: "LeaveEmployeeDetails",
   // },
-  // {
-  //   type: "div",
-  //   className: `col-span-2`,
-  //   content: <TalentSphere />,
-  //   value: "TalentSphere",
-  // },
+
   // {
   //   type: "div",
   //   className: `w-full`,

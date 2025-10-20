@@ -12,6 +12,7 @@ import { SentOfferForm } from "app/modules/TalentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
+import { usePermissions } from "utils/PermissionUtils";
 
 const ViewOfferGenerated = ({
     isOpen,
@@ -22,6 +23,8 @@ const ViewOfferGenerated = ({
     ViewMode = false,
     isTeamView = false,
 }) => {
+    const { hasAccess } = usePermissions();
+    const sendOfferPermitted = hasAccess("SEND_OFFER_TO_APPLICANTS");
     const [forceLoad, setForceLoad] = useState(false);
     const [FormData, setFormData] = useState({});
     const [OpenSentOfferForm, setOpenSentOfferForm] = useState(false);
@@ -149,9 +152,10 @@ const ViewOfferGenerated = ({
             customContent: true,
             renderContent: (data) => {
                 if (ViewMode || isTeamView) return null;
-                if (data?.status?.toLowerCase() === 'approved')
-                    return <Button className="flex justify-end mt-4" onClick={(event) => handleSentApplicant(event, data)}>Send to Applicant</Button>
-                return (
+                if (data?.status?.toLowerCase() === 'approved') {
+                    if (sendOfferPermitted)
+                        return <Button className="flex justify-end mt-4" onClick={(event) => handleSentApplicant(event, data)}>Send to Applicant</Button>
+                } else return (
                     <StatusButtons
                         permissionKey={'MANAGE_APPLICANT_OFFER_LETTER'}
                         status={data?.status}

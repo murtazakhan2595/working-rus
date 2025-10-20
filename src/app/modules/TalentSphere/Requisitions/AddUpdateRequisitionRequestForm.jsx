@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import { GetDispatchStateList } from "utils/Lists";
 import { validateRequisitionRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
 import { DateInput } from "components/FormControl";
-import {RequisitionGenderOptions} from 'data/Data';
+import { RequisitionGenderOptions } from 'data/Data';
 
 const AddUpdateRequisitionRequestForm = ({
     id = false,
@@ -35,6 +35,7 @@ const AddUpdateRequisitionRequestForm = ({
     const Currencies = GetDispatchStateList('currencies', 'common');
     const { id: employee_id } = GetDispatchStateList('userProfile', 'user');
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
     const [FormData, setFormData] = useState({ ...Requisition, approval_required: approvalRequired });
     const [BenefitList, setBenefitList] = useState([]);
     const [SkillList, setSkillList] = useState([]);
@@ -56,15 +57,15 @@ const AddUpdateRequisitionRequestForm = ({
 
     useEffect(() => {
         const fetchBenefitData = async (isMounted) => {
+            setIsLoadingOptions(true);
             try {
-                setIsLoading(true);
-                const filterData = { status: true };
-                const benefits = await getBenefitList({ filterData });
-                const education = await getEducationList({ filterData });
-                const career_level = await getCareerLevelList({ filterData });
-                const remote_work_checklist = await getRemoteWorkChecklistList({ filterData });
-                const job_type = await getJobTypeList({ filterData });
-                const requisition = await getRequisitionRequestList();
+                const requisition = await getRequisitionRequestList({ filterData: { status: ['pending', 'approved'] } });
+                const filter = { status: true };
+                const benefits = await getBenefitList({ filterData: filter });
+                const education = await getEducationList({ filterData: filter });
+                const career_level = await getCareerLevelList({ filterData: filter });
+                const remote_work_checklist = await getRemoteWorkChecklistList({ filterData: filter });
+                const job_type = await getJobTypeList({ filterData: filter });
                 const skills = await getSkillList();
                 if (isMounted) {
                     setBenefitList(benefits.results);
@@ -78,7 +79,7 @@ const AddUpdateRequisitionRequestForm = ({
             } catch (error) {
                 console.error("Error fetching roles:", error);
             } finally {
-                setIsLoading(false);
+                setIsLoadingOptions(false);
             }
         };
         let isMounted = true;
@@ -172,10 +173,17 @@ const AddUpdateRequisitionRequestForm = ({
                 cancelButtonText: "Cancel",
                 columns: 2,
                 additionalButtonConfig: [
-                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, true), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
+                    {
+                        buttonText: 'Save as Draft',
+                        variant: 'continue',
+                        onButtonClick: (values) => handleSubmit(values, true),
+                        disabled: isLoading || isSubmittingForm || isLoadingOptions,
+                        loadingText: isSubmittingForm ? "Submitting Form..." : isLoadingOptions ? "Loading Options..." : "",
+                        validateForm: true,
+                    },
                 ],
-                disableSubmit: isLoading || isSubmittingForm,
-                loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
+                disableSubmit: isLoading || isLoadingOptions || isSubmittingForm,
+                loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoadingOptions ? "Loading Options..." : "",
                 formFields: [
                     {
                         sheetCardExtension: true,
@@ -268,8 +276,8 @@ const AddUpdateRequisitionRequestForm = ({
                                     options: Countries,
                                     disabled: FormValues.is_emiratization_role,
                                     onFieldUpdate: async (_, value, __, handleChange) => {
+                                        handleChange('cities', null);
                                         getCitiesDropdown(value);
-                                        handleChange('city', null);
                                     },
                                 },
                                 {
@@ -284,9 +292,9 @@ const AddUpdateRequisitionRequestForm = ({
                                     name: "is_emiratization_role",
                                     label: "Emiratization Role",
                                     onFieldUpdate: async (_, value, __, handleChange) => {
+                                        handleChange('cities', null);
                                         if (value) getCitiesDropdown("United Arab Emirates");
                                         handleChange("countries", value ? "United Arab Emirates" : "");
-                                        handleChange('city', null);
                                     },
                                 },
                             ]),
@@ -394,12 +402,13 @@ const AddUpdateRequisitionRequestForm = ({
                                 required: true,
                                 label: "Gender Preference",
                                 options: RequisitionGenderOptions
-                             },
+                            },
 
                             {
                                 InputField: DateInput,
                                 name: "recommended_posting_date",
                                 label: "Recommended Posting Date",
+                                minDate: new Date(),
                             },
                             {
                                 InputField: TextAreaInput,

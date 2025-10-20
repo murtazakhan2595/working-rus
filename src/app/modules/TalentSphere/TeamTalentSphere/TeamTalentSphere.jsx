@@ -18,18 +18,18 @@ import {
 } from 'app/modules/TalentSphere';
 import Error from "app/modules/Error";
 
-export default function TeamTalentSphere() {
+export default function TeamTalentSphere({ activeView, subActiveView }) {
     const isViewManpowerHeadcountPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
     const isAddManpowerHeadcountPermitted = HasAccess("REQUEST_MANPOWER_HEADCOUNT");
     const isViewCareerLevelsPermitted = HasAccess("VIEW_TS_CAREER_LEVEL");
     const isAddCareerLevelsPermitted = HasAccess("ADD_TS_CAREER_LEVEL");
     const isViewEducationsPermitted = HasAccess("VIEW_TS_EDUCATION");
     const isAddEducationsPermitted = HasAccess("ADD_TS_EDUCATION");
-    const isViewRequisitionRequestsPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
+    const isViewRequisitionRequestsPermitted = HasAccess("VIEW_REQUISITION_REQUEST_CREATED");
     const isAddRequisitionRequestsPermitted = HasAccess("CREATE_REQUISITION_REQUEST");
     const isViewHeadcountRequestPermitted = HasAccess("VIEW_TEAM_MANPOWER_HEADCOUNT");
     const isAddChecklistPermitted = HasAccess("ADD_TS_REMOTE_WORK_CHECKLIST");
-    const [activeTab, setActiveTab] = useState(null);
+    const [activeTab, setActiveTab] = useState(activeView);
     const [OpenHeadcountRequest, setOpenBenefitForm] = useState(false);
     const [OpenCareerLevelForm, setOpenCareerLevelForm] = useState(false);
     const [OpenEducationForm, setOpenEducationForm] = useState(false);
@@ -113,7 +113,7 @@ export default function TeamTalentSphere() {
                     </TabsList>
                 </div>
                 <TabsContent value={'Requisition Request'}>
-                    <RequisitionRequests reload={reloadData['requisition-request']} isTeamView={true} />
+                    <RequisitionRequests reload={reloadData['requisition-request']} isTeamView={true} activeView={subActiveView} />
                 </TabsContent>
                 <Card>
                     <TabsContent value={'Manpower Headcount'}>

@@ -22,9 +22,8 @@ import {
     AddUpdateRemoteWorkChecklistForm,
     EmailTemplates,
     AddUpdateEmailTemplateForm,
-
+    DemoGraphics,
 } from "app/modules/TalentSphere/SettingManagement";
-import Demographics from "app/modules/TalentSphere/DemographicsForm";
 import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
 import { AllApplicants, } from "app/modules/TalentSphere";
 import {
@@ -88,6 +87,7 @@ export const SETTING_TAB_CONFIG = [
     {
         key: "checklist",
         label: "Remote Work Checklist",
+        addLabel: "Add Checklist Item",
         viewPerm: "VIEW_TS_REMOTE_WORK_CHECKLIST",
         addPerm: "ADD_TS_REMOTE_WORK_CHECKLIST",
         list: (reload) => <RemoteWorkChecklist reload={reload} />,
@@ -95,9 +95,9 @@ export const SETTING_TAB_CONFIG = [
     },
     {
         key: "add-demographics",
-        label: "Add Demographics",
+        label: "Demographics Form",
         // no permissions required
-        list: () => <Demographics />,
+        list: () => <DemoGraphics />,
         form: null,
     },
     {
@@ -119,7 +119,7 @@ export const SETTING_TAB_CONFIG = [
     {
         key: "email-template",
         label: "Email Templates",
-        viewPerm: "VIEW_TS_BENEFITS",
+        viewPerm: "VIEW_TS_EMAIL_TEMPLATES",
         addPerm: "ADD_TS_EMAIL_TEMPLATE",
         list: (reload) => <EmailTemplates reload={reload} />,
         form: AddUpdateEmailTemplateForm,
@@ -186,7 +186,7 @@ export const OFFER_TAB_CONFIG = [
         key: "offer-request",
         label: "Offer Letter Requests",
         viewPerm: "VIEW_TS_BENEFITS",
-        addPerm: "ADD_TS_BENEFITS",
+        addPerm: "GENERATE_OFFER_LETTER",
         list: (reload, deepLinkFilterData, deepLinkSubTab) => <OfferRequests reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
         form: GenerateOffer,
         addLabel: 'Generate Offer'
@@ -242,7 +242,7 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: "blacklist",
     },
     {
-        label: "Demographics",
+        label: "DemoGraphics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
     },

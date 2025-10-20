@@ -6,7 +6,7 @@ import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplica
 import { useDispatch } from "react-redux";
 
 const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
-    const scheduleInterviewPermitted = HasAccess("MARK_ATTENDANCE");
+    const scheduleInterviewPermitted = HasAccess("SCHEDULE_APPLICANT_INTERVIEW");
 
 
     const [view, setView] = useState(null);
@@ -72,6 +72,7 @@ const ApplicationActions = ({ data, DataList = [], reloadData = () => { }, isTea
                     setIsOpen={() => setInterview(false)}
                     // id={data.id}
                     applicant={data.id}
+                    vacancyId={data?.published_vacancy || data?.publish_vacancy?.id}
                     mode="add"
                     reloadData={reloadData}
                 />

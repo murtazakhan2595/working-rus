@@ -71,7 +71,7 @@ const EmailTemplates = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-              if (['created_on'].includes(filterName))
+              if (['created_on'].includes(filterName) && filterValue && filterValue.includes(","))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else  updatedFilters[filterName] = filterValue;
             }

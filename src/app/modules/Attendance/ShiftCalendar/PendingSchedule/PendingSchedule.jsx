@@ -20,8 +20,9 @@ import RejectReasonDialog from "./RejectReasonDialog";
 import ScheduleShiftModal from "../Modals/ScheduleShiftModal";
 import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
+import { Loader2 } from "lucide-react";
 
-const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
+const PendingSchedule = ({ pendingSchedules, reload, employees, isLoading = false }) => {
   const [activeSchedule, setActiveSchedule] = useState(null);
   const [approveState, setApproveState] = useState(null);
   const [rejectState, setRejectState] = useState(null);
@@ -200,22 +201,31 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="max-h-[700px] overflow-auto">
-          {FinalPendingSchedule &&
-            FinalPendingSchedule?.map((schedule, index) => {
-              return (
-                <ListView
-                  pendingShift={schedule}
-                  key={index}
-                  handleSelect={handleScheduleSelect}
-                  active={activeSchedule}
-                  getShiftName={getShiftName}
-                />
-              )
-            })}
-          {(!pendingSchedules?.results ||
-            pendingSchedules.results.length === 0) && (
-              <div className="text-center py-4">No pending schedule found</div>
-            )}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-plum-600" />
+              <p className="mt-2 text-sm text-muted-foreground">Loading pending schedules...</p>
+            </div>
+          ) : (
+            <>
+              {FinalPendingSchedule &&
+                FinalPendingSchedule?.map((schedule, index) => {
+                  return (
+                    <ListView
+                      pendingShift={schedule}
+                      key={index}
+                      handleSelect={handleScheduleSelect}
+                      active={activeSchedule}
+                      getShiftName={getShiftName}
+                    />
+                  )
+                })}
+              {(!pendingSchedules?.results ||
+                pendingSchedules.results.length === 0) && (
+                  <div className="text-center py-4">No pending schedule found</div>
+                )}
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -357,7 +367,7 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName }) => {
         <div className="flex flex-col items-end justify-center gap-2 min-w-[90px]">
           <span
             className={`
-            px-3 py-1.5 rounded-full text-xs font-medium lowercase capitalize
+            px-3 py-1.5 rounded-full text-xs font-medium capitalize
             ${
               pendingShift?.status?.toLowerCase() === "pending"
                 ? "bg-yellow-100 text-yellow-800"

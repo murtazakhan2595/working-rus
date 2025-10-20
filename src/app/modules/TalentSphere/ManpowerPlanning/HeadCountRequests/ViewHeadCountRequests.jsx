@@ -36,7 +36,7 @@ const ViewHeadCountRequests = ({
                 fiscal_year: fiscal_year,
                 branch,
                 department,
-                planned_headcount: parseInt(ManpowerPlanData.planned_headcount) + parseInt(requested_headcount),
+                planned_headcount: parseInt(ManpowerPlanData?.planned_headcount||0) + parseInt(requested_headcount),
                 total_allocated_budget: ManpowerPlanData?.total_allocated_budget || 1,
                 justification: ManpowerPlanData?.justifications || reason,
             }
@@ -89,7 +89,7 @@ const ViewHeadCountRequests = ({
                 },
                 {
                     key: "rejection_reason",
-                    label: "Rehection Reason",
+                    label: "Rejection Reason",
                     renderCondition: (_, data) => {
                         if (data?.status?.toLowerCase() === 'rejected') return true;
                         else return false;

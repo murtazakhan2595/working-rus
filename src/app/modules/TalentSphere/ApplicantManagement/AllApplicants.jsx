@@ -6,14 +6,16 @@ import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription, Card } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 
 const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const routeParams = useParams();
 
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
-    const source = searchParams.get("source");
+    // Support both query param (?source=) and route param (/source/:source)
+    const source = searchParams.get("source") || routeParams.source;
     const recruitmentRequisition = searchParams.get("recruitment_requisition");
     const emiratizationFlag = searchParams.get("emiratization_flag");
     const filters = {};
@@ -83,6 +85,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       // Start with current filters
       const filters = {
         ...filterData,
+        // Do not add implicit status for by_source variant
         ...(variant === "all" ? { status: "new" } : {}),
         ...(variant === "rejected" ? { status: "rejected" } : {}),
         ...(variant === "resume_bank" ? { status: "resume_bank" } : {}),
@@ -99,6 +102,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       if (variant === "emiratization_all") {
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_screened") {
+      // For by_source we ensure only application_source is enforced from initial URL
+      if (variant === "by_source") {
+        // Remove any accidental status injected elsewhere
+        delete filters.status;
+      }
         filters.status = "screened";
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_shortlisted") {
@@ -158,7 +166,14 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       } else {
         // Store UI values as-is (strings for dropdowns)
         // Conversion to API format happens in fetchData
-        updatedFilters[filterName] = filterValue;
+        if (['application_date_range',
+          'blacklisted_on', 'added_on',
+          'rejected_on',
+          'screened_on',
+          'ai_feedback_confidence',
+          'expected_joining_date'].includes(filterName))
+          updatedFilters[filterName] = filterValue?.split(',');
+        else updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
     });
@@ -167,7 +182,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   const TabTitle = React.useMemo(() => {
     return {
       by_requisition: { title: 'Requisition', description: ', that have applied for specific requisition.', navigationLink: '/talent-sphere/dashboard' },
-      emiratization_all : { title: 'Emiratization', description: ', that have applied for requisition with emiratization role.', navigationLink: '/talent-sphere/dashboard' },
+      emiratization_all: { title: 'Emiratization', description: ', that have applied for requisition with emiratization role.', navigationLink: '/talent-sphere/dashboard' },
       ai_picks: { title: 'AI Pick', description: '. The system automatically analyzes job descriptions and applicants’ resumes using AI, helping you quickly identify the most suitable candidates without the need for manual review.' },
       in_progress: { title: 'In Progress', description: ' whose interviews have been scheduled.' },
       resume_bank: { title: 'Resume Bank', description: ' who were moved to resume bank.' },
@@ -202,6 +217,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   placeholder: "Candidate Name/Id",
                 },
                 {
+                  type: "search",
+                  name: "location",
+                  placeholder: "Search by location",
+                },
+                {
                   type: "select",
                   options: "Departments",
                   name: "department",
@@ -222,7 +242,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   name: "emiratization_flag",
                   placeholder: "Emiratization Role",
                 },
-                ...(variant !== "ai_picks" ? [{
+                ...(variant !== "ai_picks" && variant !== "resume_bank" ? [{
                   type: "select",
                   options: [
                     { value: true, label: "Suggested" },
@@ -231,6 +251,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   name: "ai_suggested",
                   placeholder: "AI Suggested",
                 }] : []),
+                ...(variant === "ai_picks" ? [{
+                  type: "numeric-range",
+                  name: "ai_feedback_confidence",
+                  placeholder: "AI Match Score Range",
+                }] : []),
                 {
                   type: "date-range",
                   name: "application_date_range",
@@ -238,7 +263,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                 },
                 ...(variant === "rejected" ? [{
                   type: "date-range",
-                  name: "rejection_date",
+                  name: "rejected_on",
                   placeholder: "Rejection Date",
                 },] : []),
                 ...(variant === "shortlisted"
@@ -247,6 +272,36 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                       type: "date-range",
                       name: "expected_joining_date",
                       placeholder: "Joining Date",
+                    },
+                  ]
+                  : []),
+                ...(variant === "screened"
+                  ? [
+                    {
+                      type: "date-range",
+                      name: "screened_on",
+                      placeholder: "Screened",
+                    },
+                  ]
+                  : []),
+                ...(variant === "resume_bank"
+                  ? [
+                    {
+                      type: "select",
+                      name: "recommended_department",
+                      options: 'Departments',
+                      placeholder: "Recommended Department",
+                    },
+                    {
+                      type: "select",
+                      name: "recommended_designation",
+                      options: 'Designations',
+                      placeholder: "Recommended Designation",
+                    },
+                    {
+                      type: "date-range",
+                      name: "added_on",
+                      placeholder: "Added On",
                     },
                   ]
                   : []),
@@ -268,10 +323,6 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
               ]}
               className="justify-end"
               onChange={handleFilterChange}
-            // filterValues={{
-            //   ...filterData,
-            //   ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {}),
-            // }}
             />
           </div>
         </CardHeader>

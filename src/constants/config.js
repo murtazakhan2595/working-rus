@@ -66,9 +66,9 @@ const Config = {
   EMPLOYEES_PAYROLL: true,
   SALARY_SETUP: true,
   CLAIM_REQUEST: true,
-  PAY_RUN: false,
-  ON_HOLD_SALARIES: false,
-  END_OF_SERVICE: false,
+  PAY_RUN: true,
+  ON_HOLD_SALARIES: true,
+  END_OF_SERVICE: true,
 
   //-------------TASK_MANAGEMENT-----------
   TASK_MANAGEMENT: true,
@@ -150,8 +150,8 @@ export const URLS = [
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
-    Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net",
-    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+    Frontend: "https://demo.cohrus.com",
+    Backend: "https://be-demo.cohrus.com/api",
   },
   {
     Frontend: "https://staging.cohrus.com",

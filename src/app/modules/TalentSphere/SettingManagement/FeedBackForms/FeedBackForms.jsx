@@ -70,7 +70,7 @@ const FeedBackForms = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-               if (['created_at'].includes(filterName))
+               if (['created_at'].includes(filterName) && filterValue && filterValue.includes(","))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -97,7 +97,7 @@ const FeedBackForms = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },]
+                                options: [{ value: 'active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },]
                             },
                             {
                                 type: "select",

@@ -128,9 +128,6 @@ const AddUpdateVacancyForm = ({
                 submitButtonText: "Publish",
                 cancelButtonText: "Cancel",
                 columns: 2,
-                additionalButtonConfig: [
-                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, true), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
-                ],
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [

@@ -12,7 +12,7 @@ const CoverFileUpload = ({
   touch,
   onChange = () => { },
   label,
-  acceptType,
+  acceptType=".png,.jpg,.csv,.doc,.pdf,.xlsx,.xls,.docx",
   required,
   maxSize = 10,
   variant = "CoverFileUpload", // [AttachmentFileUpload, CoverFileUpload] other options

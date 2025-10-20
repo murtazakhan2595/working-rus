@@ -2626,3 +2626,31 @@ export const getApplicantOfferLetterPreview = async (payload, id) => {
     return false; // To be caught and handled in UI/component
   }
 };
+
+// Predict interview panel members for a vacancy
+export const getVacancyPanelSuggestion = async (vacancyId) => {
+  try {
+    if (!vacancyId) return false;
+    const response = await axios.post(
+      `${baseUrl}/vacancyPanel/`,
+      { vacancy_id: vacancyId },
+      { headers: headers() }
+    );
+    if (response.status === 200 || response.status === 201) {
+      return response.data; // { id, vacancy, employees: [ids] }
+    }
+    return false;
+  } catch (error) {
+    const status = error?.response?.status;
+    // Treat 404 (no predicted panel) as non-fatal; let caller decide what to do
+    if (status === 404) {
+      return { employees: [], detail: error?.response?.data?.detail };
+    }
+    console.error("Error fetching vacancy panel suggestion:", error);
+    if (status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};

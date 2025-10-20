@@ -32,7 +32,6 @@ const AlertDialogue = ({
     event.stopPropagation();
     setIsLoading(true)
     try {
-      debugger
       const response = await handleContinue();
       if (response?.status) {
         setMessageConfig(response);

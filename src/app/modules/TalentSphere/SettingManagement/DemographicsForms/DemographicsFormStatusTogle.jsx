@@ -1,22 +1,22 @@
 import React, { useState, useCallback } from "react";
 import { Switch } from "src/@/components/ui/switch";
 import { toast } from "react-toastify";
-import { saveUpdateBlacklistReason } from "app/hooks/talentSphere";
+import { saveUpdateDemographicForm } from "app/hooks/talentSphere";
 import { HasAccess } from "utils/PermissionUtils";
 
-const BlacklistReasonStatusTogle = ({ status, data, reloadData }) => {
-  const isEditPermitted = HasAccess("EDIT_BLACKLIST_REASON");
+const DemographicsFormStatusTogle = ({ status, data, reloadData }) => {
+  const isEditPermitted = HasAccess("EDIT_INTERVIEW_TYPE");
 
   const onCheckedChange = useCallback(
     async (value, data) => {
       try {
-        const response = await saveUpdateBlacklistReason(
-          { is_active: value ? true : false },
+        const response = await saveUpdateDemographicForm(
+          { is_active: value },
           data.id
         );
 
         if (response) {
-          toast.success(`BlacklistReason Status Updated Successfully!`, {
+          toast.success(`Demograpghic Form Status Updated Successfully!`, {
             position: toast.POSITION.TOP_RIGHT,
           });
           reloadData(true);
@@ -45,4 +45,4 @@ const BlacklistReasonStatusTogle = ({ status, data, reloadData }) => {
 };
 
 
-export default BlacklistReasonStatusTogle;
+export default DemographicsFormStatusTogle;

@@ -24,9 +24,9 @@ const ViewApplicationDetail = ({
   const { hasAccess } = usePermissions();
   const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
   const viewFeedBackPermitted = hasAccess("VIEW_INTERVIEW_FEEDBACK");
-  const updateStatusPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
-  const generateOfferPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
-  const scheduleInterviewPermitted = hasAccess("UPDATE_APPLICANT_STATUS");
+  const updateStatusPermitted = hasAccess("MANAGE_APPLICANTS");
+  const generateOfferPermitted = hasAccess("GENERATE_OFFER_LETTER");
+  const scheduleInterviewPermitted = hasAccess("SCHEDULE_APPLICANT_INTERVIEW");
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
@@ -70,6 +70,7 @@ const ViewApplicationDetail = ({
       if (status === 'schedule-interview') {
         setFormData({
           applicant: data.id,
+          vacancyId: data?.published_vacancy || data?.publish_vacancy?.id,
         });
         setOpenInterviewForm(true);
         return null;
@@ -170,7 +171,7 @@ const ViewApplicationDetail = ({
             const feedback_submitted = (data.interview_feedbacks || []).find(obj => (obj.panel_member === user_id && obj.interview === latest_interview.id));
             if (panelist_included && !feedback_submitted) statusKey = 'feedack';
           }
-          const isOfferGenerated = data?.offer_tracking || (data?.offer_letter?.[data?.offer_letter?.length - 1] || {}).status !== 'rejected';
+          const isOfferGenerated = data?.offer_tracking && (data?.offer_letter?.[data?.offer_letter?.length - 1])?.status !== 'rejected';
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
@@ -252,6 +253,8 @@ const ViewApplicationDetail = ({
           setIsOpen={() => setOpenInterviewForm(false)}
           id={FormData.id}
           applicant={FormData.applicant}
+          // vacancyId={FormData.vacancyId}
+          vacancyId={FormData.vacancyId}
           mode="add"
           reloadData={reloadData}
         />

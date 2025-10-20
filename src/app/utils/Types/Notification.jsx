@@ -12,6 +12,12 @@ export const Notification = {
   user: null,
 };
 
+export const NotificationTitle = {
+  REQUISTION_REQUEST: 'requisition request',
+  OFFER_LETTER: 'offer letter',
+  HEADCOUNT_REQUEST: 'headcount request',
+}
+
 export const Notifications_Action_URL = [
   {
     module: "Reimbursement",
@@ -167,5 +173,15 @@ export const Notifications_Action_URL = [
     module: "compliance_documents",
     notification_type: "document_assigned",
     action_url: "/my-documents",
+  },
+  {
+    module: "APPROVAL_HIERARCHY",
+    notification_type: "REQUISTION_REQUEST_REJECTED",
+    action_url: "/team-talent-sphere/requisition",
+  },
+  {
+    module: "APPROVAL_HIERARCHY",
+    notification_type: "REQUISTION_REQUEST_APPROVED",
+    action_url: "/team-talent-sphere/requisition",
   },
 ];

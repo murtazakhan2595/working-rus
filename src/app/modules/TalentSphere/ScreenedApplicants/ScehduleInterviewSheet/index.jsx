@@ -14,6 +14,8 @@ import {
   saveUpdateInterview,
   getInterviewById,
 } from "app/hooks/talentSphere"
+import { getApplicantById } from "app/hooks/talentSphere";
+import { getVacancyPanelSuggestion } from "app/hooks/talentSphere";
 import { getEmailTemplateList } from "app/hooks/talentSphere";
 import { getInterviewTypeList } from "app/hooks/talentSphere";
 import { Interview } from "app/utils/Types/TalentSphere";
@@ -34,6 +36,7 @@ const ScheduleInterviewSheet = ({
   reloadData,
   mode,
   applicant,
+  vacancyId,
 }) => {
   const Employees = GetDispatchStateList("employees", "emp");
   const [formValues, setFormValues] = useState(Interview)
@@ -77,6 +80,43 @@ const ScheduleInterviewSheet = ({
       isMounted = false;
     };
   }, []);
+
+  // Auto-suggest panel members using vacancy panel prediction
+  useEffect(() => {
+    let isMounted = true;
+    const suggestPanel = async () => {
+      try {
+        if (id) return; // skip when editing an existing interview
+        let vId = vacancyId;
+        if (!vId && applicant) {
+          const applicantData = await getApplicantById(applicant);
+          if (!applicantData) return;
+          vId = applicantData?.published_vacancy || applicantData?.publish_vacancy?.id;
+        }
+        if (!vId) return;
+        const suggestion = await getVacancyPanelSuggestion(vId);
+        if (suggestion?.detail && (!suggestion.employees || suggestion.employees.length === 0)) {
+          toast.info(suggestion.detail);
+          return;
+        }
+        const employees = suggestion?.employees || [];
+        if (isMounted && Array.isArray(employees) && employees.length > 0) {
+          const availableIds = new Set((Employees || []).map((opt) => opt.value));
+          const presentIds = employees.filter((empId) => availableIds.has(empId));
+          const missingIds = employees.filter((empId) => !availableIds.has(empId));
+          if (missingIds.length > 0) {
+            toast.info(`${missingIds.length} suggested panel member(s) not found in employee list`);
+          }
+          setFormData((prev) => ({ ...prev, panel: presentIds }));
+          setFormValues((prev) => ({ ...prev, panel: presentIds }));
+        }
+      } catch (e) {
+        // silent fail; user can still pick manually
+      }
+    };
+    suggestPanel();
+    return () => { isMounted = false };
+  }, [applicant, id, vacancyId]);
   // Fetch interview data for edit mode
   useEffect(() => {
     let isMounted = true

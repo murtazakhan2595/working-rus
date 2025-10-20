@@ -68,7 +68,7 @@ const RemoteWorkChecklist = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-                if (['created_at'].includes(filterName))
+                if (['created_at'].includes(filterName) && filterValue && filterValue.includes(","))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else
                     updatedFilters[filterName] = filterValue;
@@ -90,7 +90,7 @@ const RemoteWorkChecklist = ({ reload }) => {
                             {
                                 type: "search",
                                 placeholder: "Search by name",
-                                name: "name",
+                                name: "remote_item_name",
                             },
                             {
                                 type: "select",

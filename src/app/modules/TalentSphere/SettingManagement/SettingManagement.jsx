@@ -6,7 +6,6 @@ import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import Error from "app/modules/Error";
 import { SETTING_TAB_CONFIG } from "app/modules/TalentSphere/Sections";
-import Demographics from "app/modules/TalentSphere/DemographicsForm";
 
 export default function SettingManagement() {
   const { hasAccess } = usePermissions();
@@ -32,7 +31,7 @@ export default function SettingManagement() {
     if (currentTab.addPerm && hasAccess(currentTab.addPerm)) {
       return (
         <Button title={currentTab.key} onClick={() => setOpenForms({ [currentTab.key]: true })}>
-          Add {currentTab.label}
+          {currentTab?.addLabel ?? `Add ${currentTab.label}`}
         </Button>
       );
     }

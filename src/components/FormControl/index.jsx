@@ -22,6 +22,7 @@ import DateRangeFilter from "./DateRangeFilter";
 import TextAreaInput from "./TextAreaInput";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
+import RangeInputField from "./RangeInputField";
 import { InputSignature } from "./InputSignature";
 import {
   SelectMultiInputComponent,
@@ -212,6 +213,7 @@ export const FormFieldResetButton = memo(
 export {
   CommentsInputField,
   TimePicker,
+  RangeInputField,
   SelectLocationOnMap,
   SelectMultiInputComponent,
   SelectInputComponent,

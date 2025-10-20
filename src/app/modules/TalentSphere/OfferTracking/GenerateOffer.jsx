@@ -59,14 +59,12 @@ const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, rel
                 if (isMounted) {
                     setTemplateList(response.results || []);
                     const filtered_applicant = (applicants.results || []).filter(obj => {
-                        if (obj.offers_tracking)
-                            return false;
-                        if (obj.offer_letters && obj.offer_letters.length > 0)
-                            if (obj.offer_letters[obj.offer_letters.length - 1]?.status === 'rejected')
-                                return true;
+                        if (obj.offer_letters && obj.offer_letters.length === 0)
+                            return true;
+                        else if (obj.offer_letters[obj.offer_letters.length - 1]?.status === 'rejected')
+                            return true;
                         return false;
                     });
-                    console.log(filtered_applicant);
                     const applicant_dropdown = getDropdownListWithExtraKeys(
                         filtered_applicant,
                         'serial_id',

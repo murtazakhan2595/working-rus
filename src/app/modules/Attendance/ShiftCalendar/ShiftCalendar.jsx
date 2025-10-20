@@ -37,9 +37,12 @@ const ShiftCalendar = () => {
     results: [],
     count: 0,
   });
+  const [isLoadingPendingSchedules, setIsLoadingPendingSchedules] = useState(false);
+  const [isLoadingDraftSchedules, setIsLoadingDraftSchedules] = useState(false);
 
   const isViewLogsPermitted = HasAccess("VIEW_SHIFT_HISTORY_LOGS");
   const isViewShiftCalendarPermitted = HasAccess("VIEW_SHIFT_CALENDAR");
+  const isTeamViewCalendarPermitted = HasAccess("VIEW_TEAM_SHIFT_CALENDAR");
   const isScheduleShiftPermitted = HasAccess("SCHEDULE_EMPLOYEE_SHIFT");
   const isViewPendingSchedulesPermitted = HasAccess("VIEW_PENDING_SCHEDULES");
   const isEditPendingSchedulesPermitted = HasAccess("EDIT_PENDING_SCHEDULES");
@@ -95,6 +98,7 @@ const ShiftCalendar = () => {
 
   const fetchPendingSchedules = useCallback(async () => {
     try {
+      setIsLoadingPendingSchedules(true);
       const response = await getShiftSchedule({
         filterData: { status: "PENDING" }, // Backend will filter out drafts by default
         ordering: "-id",
@@ -104,11 +108,14 @@ const ShiftCalendar = () => {
       }
     } catch (err) {
       // Remove console.error
+    } finally {
+      setIsLoadingPendingSchedules(false);
     }
   }, []);
 
   const fetchDraftSchedules = useCallback(async () => {
     try {
+      setIsLoadingDraftSchedules(true);
       const filterData = { draft: true }; // Get only draft schedules
 
       // Add assigned_by_id filter so users only see their own draft schedules
@@ -126,6 +133,8 @@ const ShiftCalendar = () => {
       }
     } catch (err) {
       // Remove console.error
+    } finally {
+      setIsLoadingDraftSchedules(false);
     }
   }, [userProfile]);
 
@@ -166,6 +175,7 @@ const ShiftCalendar = () => {
           component: (
             <DraftSchedule
               draftSchedules={displayDraftSchedules}
+              isLoading={isLoadingDraftSchedules}
               reload={() => {
                 fetchDraftSchedules();
                 fetchPendingSchedules(); // Also reload pending schedules when draft is processed
@@ -184,6 +194,7 @@ const ShiftCalendar = () => {
           component: (
             <PendingSchedule
               pendingSchedules={displayPendingSchedules}
+              isLoading={isLoadingPendingSchedules}
               reload={() => {
                 fetchPendingSchedules();
                 fetchDraftSchedules(); // Also reload draft schedules when schedule is rejected
@@ -194,7 +205,7 @@ const ShiftCalendar = () => {
         },
       ]
       : []),
-    ...(isViewShiftCalendarPermitted
+    ...(isViewShiftCalendarPermitted || isTeamViewCalendarPermitted
       ? [
         {
           value: "shift-calendar",

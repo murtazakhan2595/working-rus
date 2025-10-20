@@ -10,7 +10,7 @@ const KPICards = ({ data, loading }) => {
       title: "Total Requisitions",
       value: data?.total_requisitions || 0,
       description: "All requisitions raised",
-      color: "text-blue-600",
+      color: "text-[#3B82F6]", // Match funnel: Requisitions Raised (blue)
       route: "/talent-sphere/requisition-planning",
     },
     {
@@ -24,57 +24,58 @@ const KPICards = ({ data, loading }) => {
       title: "Approved Requisitions",
       value: data?.approved_requisitions || 0,
       description: "Ready to publish",
-      color: "text-green-600",
+      color: "text-[#10B981]", // Align with acceptance/positive state
       route: "/talent-sphere/requisition-planning",
     },
     {
       title: "Published Vacancies",
       value: data?.published_vacancies || 0,
       description: "Active job postings",
-      color: "text-purple-600",
+      color: "text-[#F59E0B]", // Match funnel: Vacancies Published (orange)
       route: "/talent-sphere/requisition-planning",
     },
     {
       title: "Total Applicants",
       value: data?.total_applicants || 0,
       description: "Candidates applied",
-      color: "text-plum-900",
+      color: "text-[#8B5CF6]", // Match funnel: Total Applicants (purple)
       route: "/talent-sphere/applicant-management",
     },
     {
       title: "Screened Candidates",
       value: data?.screened_candidates || 0,
       description: "Shortlisted for interviews",
-      color: "text-cyan-600",
+      color: "text-[#EF4444]", // Match funnel: Screened Candidates (red)
       route: "/talent-sphere/applicant-management",
     },
     {
       title: "Interviews Scheduled",
       value: data?.interviews_scheduled || 0,
       description: "Upcoming interviews",
-      color: "text-indigo-600",
+      color: "text-[#06B6D4]", // Match funnel: Interviews Scheduled (cyan)
       route: "/talent-sphere/interview-tracker",
     },
     {
       title: "Offers Generated",
       value: data?.offers_generated || 0,
       description: "Offers created",
-      color: "text-orange-600",
+      color: "text-[#EC4899]", // Match funnel: Offers Generated (pink)
       route: "/talent-sphere/offer-tracking",
     },
     {
       title: "Offers Accepted",
       value: data?.offers_accepted || 0,
       description: "Candidates accepted",
-      color: "text-green-700",
+      color: "text-[#10B981]", // Match funnel: Offers Accepted (green)
       route: "/talent-sphere/offer-tracking",
     },
     {
       title: "Hired Applicants",
       value: data?.hired_applicants || 0,
       description: "Successfully onboarded",
-      color: "text-emerald-600",
+      color: "text-[#059669]", // Match funnel: Final Hires (dark green)
       route: "/talent-sphere/applicant-management",
+      state: { tab: "Hired" },
     },
     {
       title: "Rejected Applicants",
@@ -92,10 +93,9 @@ const KPICards = ({ data, loading }) => {
     },
   ];
 
-  const handleCardClick = (route) => {
-    if (route) {
-      navigate(route);
-    }
+  const handleCardClick = (route, state) => {
+    if (!route) return;
+    navigate(route, state ? { state } : undefined);
   };
 
   return (
@@ -104,7 +104,7 @@ const KPICards = ({ data, loading }) => {
         <Card
           key={index}
           className="flex flex-col justify-center shadow-md border rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick(stat.route)}
+          onClick={() => handleCardClick(stat.route, stat.state)}
         >
           {loading ? (
             <div className="animate-pulse">

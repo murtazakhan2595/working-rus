@@ -5,7 +5,7 @@ import { ViewHeadCountRequests } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
 
-const HeadCountRequestsActions = ({ data, DataList = [], reloadData = () => { } }) => {
+const HeadCountRequestsActions = ({ data, DataList = [], reloadData = () => { }, isTeamView = false }) => {
     const [view, setView] = useState(null);
     const handleView = () => {
         setView(true)
@@ -30,6 +30,7 @@ const HeadCountRequestsActions = ({ data, DataList = [], reloadData = () => { } 
                     }}
                     currentId={data.id}
                     DataList={DataList}
+                    isTeamView={isTeamView}
                 />
             )}
         </>

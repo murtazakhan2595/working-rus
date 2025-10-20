@@ -1,36 +1,29 @@
 import { saveUpdateHeadcountRequest, getManpowerById, getManpowerPlanningList } from 'app/hooks/talentSphere';
-import { getEmployeeList } from 'app/hooks/general';
 import { HeadcountRequest } from "app/utils/Types/TalentSphere";
 import {
     TextAreaInput,
     SelectInputComponent,
     NumberInput,
 } from "components/FormControl";
-import { BudgetStatusOptions } from "data/Data";
 import React, { useEffect, useState } from "react";
 import { SheetUI } from "components";
 import { GetDispatchStateList } from "utils/Lists";
-import { yearsDropdownList } from 'utils/Lists';
 import { validateHeadCoutnRequestFormSchema } from 'app/utils/FormSchema/TalentSphereFormSchema';
-import { calculateTotal, calculatePercentage } from 'utils/renderValues';
-import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 import { CoverFileUpload } from 'components/FormControl';
 
 const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, }) => {
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
     const {
-        id: user_id,
+        // id: user_id,
         branch_id: user_branch,
-        department_name: user_department,
+        // department_name: user_department,
     } = GetDispatchStateList("user_details", "emp") || {};
     const [FormValues, setFormValues] = useState({ ...HeadcountRequest, branch: user_branch });
     const [isLoading, setIsLoading] = useState(false);
     const isEditMode = Boolean(id);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState({ ...HeadcountRequest, branch: user_branch });
-    const [ManpowerExist, setManpowerExist] = useState(false);
-    const [BudgetStatus, setBudgetStatus] = useState(null);
 
     const FormSheetData = {
         triggerText: "",
@@ -67,7 +60,6 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
 
     const handleSubmit = async (values) => {
         setIsSubmittingForm(true);
-        debugger
         try {
             const payload = { ...values, };
             const response = await saveUpdateHeadcountRequest(payload, id);
@@ -94,7 +86,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                 const filterData = {
                     ...(department ? { department: department } : {}),
                     ...(branch ? { branch: branch } : {}),
-                    fiscal_year: (new Date).getFullYear(),
+                    fiscal_year: (new Date()).getFullYear(),
                 }
                 const response = await getManpowerPlanningList({ filterData });
                 if (response) {
@@ -117,42 +109,6 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
         }
     };
 
-    const renderConsumedBudgetStatus = async (consumed_budget, total_budget, handleChange) => {
-        try {
-            if (consumed_budget && total_budget) {
-                const percentage = calculatePercentage(consumed_budget, total_budget);
-                const consumed_budget_status = getConsumedBudgetStatus(percentage)
-                setBudgetStatus(consumed_budget_status);
-            } else {
-                setBudgetStatus(null);
-            }
-        } catch (error) {
-            // Show error message
-            console.error(error)
-        }
-    };
-
-    const ValidateExistingRecord = async (branch, department, fiscalYear) => {
-        try {
-            if (branch && department && fiscalYear) {
-                const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: fiscalYear } : {}) }
-                const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
-                if (existingPlanning.count > 0) {
-                    setManpowerExist(true);
-                    return 0;
-                }
-            }
-            setManpowerExist(false);
-            return 0;
-
-        } catch (error) {
-            // Show error message
-            console.error(error)
-        }
-    };
-
-
-
     return (
         <SheetUI
             isOpen={isOpen}
@@ -174,7 +130,7 @@ const AddUpdateManpowerHeadcountRequest = ({ id, isOpen = true, setIsOpen = () =
                     setFormValues(values);
                 },
                 disableSubmit: isLoading || isSubmittingForm,
-                loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+                loadingMessage: isLoading ? "Loadind Data..." : isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
                     {
                         sheetCardExtension: true,

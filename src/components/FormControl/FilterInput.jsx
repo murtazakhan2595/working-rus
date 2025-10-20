@@ -22,6 +22,7 @@ import {
   DateRangeInput,
   DateRangeFilter,
   TextInput,
+  RangeInputField,
 } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { GetDispatchStateList } from "utils/Lists";
@@ -44,6 +45,7 @@ const FilterInput = ({
   const Designations = GetDispatchStateList("designations", "common") || [];
   const Branches = GetDispatchStateList("branches", "common") || [];
   const Employees = GetDispatchStateList("employees", "emp") || [];
+      const Currencies = GetDispatchStateList("currencies", "common")||[];
   const classNamesStyle = "";
   const DefaultWidth = "min-w-56";
   const DefaultHeight = "min-h-[38px]";
@@ -149,7 +151,7 @@ const FilterInput = ({
   };
 
   return (
-    <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3`}>
+    <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3 justify-end mb-4`}>
       {filters &&
         filters?.map((filter, index) => {
           const {
@@ -159,6 +161,7 @@ const FilterInput = ({
             placeholder,
             name,
             options = [],
+            value,
           } = filter;
           const SearchOptions = !options
             ? []
@@ -175,6 +178,8 @@ const FilterInput = ({
                         ? countriesList || []
                         : options.toLowerCase() === "employees"
                           ? Employees || []
+                        : options.toLowerCase() === "currencies"
+                          ? Currencies || []
                           : []
                 : [];
           switch (filter.type) {
@@ -188,7 +193,7 @@ const FilterInput = ({
                   placeholder={placeholder}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
-                  value={filterValues[name] || null}
+                  value={value || filterValues[name] || null}
                   resetField={resetFields}
                 />
               );
@@ -217,7 +222,7 @@ const FilterInput = ({
                   placeholder={`Search ${placeholder}`}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
-                  value={filterValues[name] || null}
+                  value={value || filterValues[name] || null}
                   resetField={resetFields}
                 />
               );
@@ -330,32 +335,16 @@ const RenderNumericRangeField = React.memo(
     }, [value]);
 
     const handleChange = (_, value) => {
-      let newValue = value;
-      if (!newValue.includes("-")) {
-        const lastValue = inputValue;
-        if (!lastValue) {
-          newValue = newValue + "-";
-        } else {
-          const cursorWasBeforeDash =
-            lastValue.indexOf("-") >= 0 &&
-            value.length < lastValue.length &&
-            lastValue.indexOf("-") >= value.length;
-          if (cursorWasBeforeDash) newValue = "-" + newValue;
-          else newValue = newValue + "-";
-        }
-      }
-      newValue = newValue.replace(/[^0-9-]/g, "");
-      const parts = newValue.split("-");
-      if (parts.length > 2) newValue = parts[0] + "-" + parts[1];
-      if (newValue === "") newValue = "-";
-      setInputValue(newValue);
-      handleInputChange?.(name, parts);
+      setInputValue(value);
+      if (!value)
+        handleInputChange(name, "");
+      else if (value.includes(','))
+        handleInputChange(name, value);
     };
 
     return (
       <div className={`${className} ${width} ${height} relative`}>
-        <TextInput
-          type={"text"}
+        <RangeInputField
           placeholder={placeholder}
           className={`rounded-sm text-neutral-1000`}
           name={name}
@@ -496,7 +485,8 @@ const RenderSelectInputField = React.memo(
     }, [resetField]);
 
     useEffect(() => {
-      setInputValue(value);
+      const valueExist = allOptions.find(obj => obj.value === value);
+      setInputValue(valueExist ? value : null);
     }, [value]);
 
     return (
@@ -555,7 +545,11 @@ const RenderDateRangeInputField = React.memo(
           value={inputValue || ""}
           onChange={(field, value) => {
             setInputValue(value);
-            handleInputChange(field, value);
+            if (!value)
+              handleInputChange(field, "");
+            else if (value.includes(','))
+              handleInputChange(field, value);
+
           }}
         />
       </div>

@@ -240,7 +240,7 @@ const Notifications = () => {
                           />
                         </div>
                         <div className="flex-1 space-y-1">
-                          <p className="text-neutral-1200 font-medium ">
+                          <p className="text-neutral-1200 font-medium capitalize">
                             {n.title}
                           </p>
                           <Tooltip>

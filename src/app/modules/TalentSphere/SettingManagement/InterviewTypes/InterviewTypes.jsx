@@ -83,7 +83,7 @@ const InterviewTypes = ({ reload }) => {
             <CardHeader>
                 <CardTitle >Interview Types</CardTitle>
                 <CardDescription>
-                    Here you can add, update, and delete company-provided benefits
+                    Here you can add, update, and delete Interview Types
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
