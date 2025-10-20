@@ -123,7 +123,7 @@ const AddUpdateEducationForm = ({
                 InputField: TextInput,
                 name: "level",
                 required: true,
-                label: "Name",
+                label: "Level",
                 validateDuplicate: true,
               },
               {

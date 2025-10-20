@@ -35,6 +35,7 @@ const AddUpdateRequisitionRequestForm = ({
     const Currencies = GetDispatchStateList('currencies', 'common');
     const { id: employee_id } = GetDispatchStateList('userProfile', 'user');
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
     const [FormData, setFormData] = useState({ ...Requisition, approval_required: approvalRequired });
     const [BenefitList, setBenefitList] = useState([]);
     const [SkillList, setSkillList] = useState([]);
@@ -56,15 +57,15 @@ const AddUpdateRequisitionRequestForm = ({
 
     useEffect(() => {
         const fetchBenefitData = async (isMounted) => {
-            setIsLoading(true);
+            setIsLoadingOptions(true);
             try {
+                const requisition = await getRequisitionRequestList({ filterData: { status: ['pending', 'approved'] } });
                 const filter = { status: true };
                 const benefits = await getBenefitList({ filterData: filter });
                 const education = await getEducationList({ filterData: filter });
                 const career_level = await getCareerLevelList({ filterData: filter });
                 const remote_work_checklist = await getRemoteWorkChecklistList({ filterData: filter });
                 const job_type = await getJobTypeList({ filterData: filter });
-                const requisition = await getRequisitionRequestList();
                 const skills = await getSkillList();
                 if (isMounted) {
                     setBenefitList(benefits.results);
@@ -78,7 +79,7 @@ const AddUpdateRequisitionRequestForm = ({
             } catch (error) {
                 console.error("Error fetching roles:", error);
             } finally {
-                setIsLoading(false);
+                setIsLoadingOptions(false);
             }
         };
         let isMounted = true;
@@ -172,10 +173,17 @@ const AddUpdateRequisitionRequestForm = ({
                 cancelButtonText: "Cancel",
                 columns: 2,
                 additionalButtonConfig: [
-                    { buttonText: 'Save as Draft', variant: 'continue', onButtonClick: (values) => handleSubmit(values, true), disabled: isLoading || isSubmittingForm, loadingText: isSubmittingForm ? "Submitting Form..." : "" },
+                    {
+                        buttonText: 'Save as Draft',
+                        variant: 'continue',
+                        onButtonClick: (values) => handleSubmit(values, true),
+                        disabled: isLoading || isSubmittingForm || isLoadingOptions,
+                        loadingText: isSubmittingForm ? "Submitting Form..." : isLoadingOptions ? "Loading Options..." : "",
+                        validateForm: true,
+                    },
                 ],
-                disableSubmit: isLoading || isSubmittingForm,
-                loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoading ? "Loading Options..." : "",
+                disableSubmit: isLoading || isLoadingOptions || isSubmittingForm,
+                loadingMessage: isSubmittingForm ? "Submitting Form..." : isLoadingOptions ? "Loading Options..." : "",
                 formFields: [
                     {
                         sheetCardExtension: true,
@@ -400,6 +408,7 @@ const AddUpdateRequisitionRequestForm = ({
                                 InputField: DateInput,
                                 name: "recommended_posting_date",
                                 label: "Recommended Posting Date",
+                                minDate: new Date(),
                             },
                             {
                                 InputField: TextAreaInput,

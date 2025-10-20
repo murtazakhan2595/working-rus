@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
     CardContent,
     CardDescription,
@@ -9,18 +9,15 @@ import {
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
 import { getRequisitionRequestList, getRequisitionStats, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
-import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
+import { RequisitionRequestColumns, RequisitionFilters, handleRequisitionFilterChange } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
-import { GlobalStatusOptions } from "data/Data";
 import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 import { GetDispatchStateList } from "utils/Lists";
 
-const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition, deepLinkAction }) => {
-    const Employees = GetDispatchStateList("employees", "emp");
+const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Requests", deepLinkRequisition }) => {
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
-    const Currencies = GetDispatchStateList("currencies", "common");
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({ status: 'pending' });
+    const [filterData, setFilterData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [RequisitionList, setRequisitionList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -28,6 +25,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     const [statsData, setStatsData] = useState({});
     const [JobTypeList, setJobTypeList] = useState([]);
     const [CareerLevelList, setCareerLevelList] = useState([]);
+    const [StatusFilter, setStatusFilter] = useState([]);
 
     // State for auto-opening detail sheet
     const [viewSheetOpen, setViewSheetOpen] = useState(false);
@@ -77,7 +75,6 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
     useEffect(() => {
         const fetchBenefitData = async (isMounted) => {
             try {
-                setIsLoading(true);
                 // Add organizationId to filter if available
                 const job_type = await getJobTypeList();
                 const careere_level = await getCareerLevelList();
@@ -87,8 +84,6 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                 }
             } catch (error) {
                 console.error("Error fetching roles:", error);
-            } finally {
-                setIsLoading(false);
             }
         };
         let isMounted = true;
@@ -98,15 +93,22 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
         };
     }, []);
 
-    const fetchData = async (isMounted) => {
+    const fetchData = useCallback(async (isMounted) => {
         try {
             setIsLoading(true);
             const filters = {
+                ...(activeTab === 'Records' ? { status: ["approved", "rejected"] } : { status: "pending" }),
                 ...filterData,
                 ...(isTeamView ? { requested_by: user_id } : {}),
-                approval_required: true
-            }
-            const RequisitionList = await getRequisitionRequestList({ filterData: filters, options, ordering, });
+                approval_required: true,
+            };
+
+            const RequisitionList = await getRequisitionRequestList({
+                filterData: filters,
+                options,
+                ordering,
+            });
+
             if (RequisitionList && isMounted) {
                 setRequisitionList(RequisitionList);
             }
@@ -115,7 +117,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [filterData, options, ordering, isTeamView, user_id, activeTab]);
 
     useEffect(() => {
         let isMounted = true;
@@ -123,7 +125,8 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering]);
+    }, [fetchData]);
+
 
     const fetchStatData = async () => {
         try {
@@ -159,44 +162,14 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
         };
     }, [reload]);
 
-    const handleFilterChange = (filterName, filterValue) => {
+    const handleFilterChange = (filterName, filterValue, tab) => {
         onPageChange("page", 1);
+        if (filterName === 'status' && !tab) setStatusFilter(filterValue);
         setFilterData((prevFilters) => {
-            const updatedFilters = { ...prevFilters };
+            const updatedFilters = handleRequisitionFilterChange(prevFilters, filterName, filterValue, tab ?? activeTab, StatusFilter);
             // Handle other filters normally
-            if (filterValue === "" || filterValue === null) {
-                if (filterName === "status") {
-                    if (activeTab === "Requests") {
-                        updatedFilters[filterName] = "pending";
-                    } else if (activeTab === "Records") {
-                        updatedFilters[filterName] =
-                            ["approved", "rejected"];
-                    }
-                } else delete updatedFilters[filterName];
-            } else {
-                if (filterName === "status")
-                    updatedFilters[filterName] = filterValue.toLowerCase();
-                else if (['created_at'].includes(filterName))
-                    updatedFilters[filterName] = filterValue?.split(',');
-                else updatedFilters[filterName] = filterValue;
-            }
-
-            return updatedFilters;
+            return { ...updatedFilters };
         });
-    };
-
-    const handleTabChange = (tab) => {
-        if (tab === "Requests") {
-            setFilterData((prev) => ({
-                ...prev,
-                status: "pending",
-            }));
-        } else if (tab === "Records") {
-            setFilterData((prev) => ({
-                ...prev,
-                status: ["approved", "rejected"],
-            }));
-        }
     };
 
     const RotationStatsData = React.useMemo(() => [
@@ -233,8 +206,9 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
                     defaultValue="Requests"
                     className="w-full"
                     onValueChange={(tab) => {
+                        handleFilterChange('status', "", tab);
+                        setStatusFilter("default");
                         setActiveTab(tab);
-                        handleTabChange(tab);
                     }}
                     value={activeTab}
                 >
@@ -260,83 +234,7 @@ const RequisitionRequests = ({ reload, isTeamView = false, activeView = "Request
 
                     <CardContent>
                         <FilterInput
-                            filters={[
-                                {
-                                    type: "search",
-                                    name: "job_title",
-                                    placeholder: "Job Title",
-                                },
-                                {
-                                    type: "select",
-                                    options: "Departments",
-                                    name: "department",
-                                    placeholder: "Department",
-                                },
-                                {
-                                    type: "select",
-                                    options: JobTypeList,
-                                    name: "job_type",
-                                    placeholder: "Job Type",
-                                },
-                                {
-                                    type: "select",
-                                    options: CareerLevelList,
-                                    name: "career_level",
-                                    placeholder: "Career Level",
-                                },
-                                {
-                                    type: "select",
-                                    options: Currencies,
-                                    name: "currency",
-                                    placeholder: "Currency",
-                                },
-                                {
-                                    type: "select",
-                                    options: [{ label: 'Monthly', value: 'monthly' }, { label: 'Bi-Weekly', value: 'bi-weekly' }, { label: 'Weekly', value: 'weekly' }, { label: 'Annually', value: 'annually' },],
-                                    name: "payment_frequency",
-                                    placeholder: "Payment Frequency",
-                                },
-                                {
-                                    type: "select",
-                                    options: [
-                                        { value: 'onsite', label: 'Onsite' },
-                                        { value: 'hybrid', label: "Hybrid" },
-                                        { value: 'remote', label: "Remote" },
-                                    ],
-                                    name: "work_mode",
-                                    placeholder: "Work Mode",
-                                },
-                                {
-                                    type: "select",
-                                    options: [
-                                        { value: true, label: 'Required' },
-                                        { value: false, label: "Not Reqiured" },
-                                    ],
-                                    name: "is_emiratization_role",
-                                    placeholder: "Emiratization Role",
-                                },
-                                ...(!isTeamView ? [{
-                                    type: "select",
-                                    name: "requested_by",
-                                    options: Employees,
-                                    placeholder: "Requested By",
-                                },
-                                {
-                                    type: "date-range",
-                                    placeholder: "Request Date",
-                                    name: "created_at",
-                                },] : []),
-                                ...(activeTab === "Records"
-                                    ? [
-                                        {
-                                            type: "select",
-                                            options: [...GlobalStatusOptions(false),],
-                                            name: "status",
-                                            placeholder: "Status",
-                                        },
-                                    ]
-                                    : []),
-                            ]}
+                            filters={RequisitionFilters(isTeamView, activeTab, JobTypeList, CareerLevelList, StatusFilter)}
                             onChange={handleFilterChange}
                             className="justify-end mb-4"
                         />

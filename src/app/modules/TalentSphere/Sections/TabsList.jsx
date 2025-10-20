@@ -22,9 +22,8 @@ import {
     AddUpdateRemoteWorkChecklistForm,
     EmailTemplates,
     AddUpdateEmailTemplateForm,
-
+    DemoGraphics,
 } from "app/modules/TalentSphere/SettingManagement";
-import Demographics from "app/modules/TalentSphere/DemographicsForm";
 import {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
@@ -97,6 +96,7 @@ export const SETTING_TAB_CONFIG = [
     {
         key: "checklist",
         label: "Remote Work Checklist",
+        addLabel: "Add Checklist Item",
         viewPerm: "VIEW_TS_REMOTE_WORK_CHECKLIST",
         addPerm: "ADD_TS_REMOTE_WORK_CHECKLIST",
         list: (reload) => <RemoteWorkChecklist reload={reload} />,
@@ -104,9 +104,9 @@ export const SETTING_TAB_CONFIG = [
     },
     {
         key: "add-demographics",
-        label: "Add Demographics",
+        label: "Demographics Form",
         // no permissions required
-        list: () => <Demographics />,
+        list: () => <DemoGraphics />,
         form: null,
     },
     {
@@ -283,7 +283,7 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: "blacklist",
     },
     {
-        label: "Demographics",
+        label: "DemoGraphics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
     },

@@ -5,6 +5,7 @@ import {
   getHiringTrends,
   getSkillsGap
 } from "app/hooks/talentSphere";
+import { mapRequisitionRequestList } from "app/utils/MappingObjects/mapTalentSphere";
 import axios from "axios";
 import { baseUrl, headers } from "app/hooks/general";
 
@@ -54,12 +55,45 @@ export const useTalentSphereDashboard = (filterData = {}) => {
     const encoded = encodeURIComponent(JSON.stringify(sanitized));
     return encoded ? `?search=${encoded}` : "";
   };
+  
+  const buildRequisitionFilterParams = (filters) => {
+    if (!filters || Object.keys(filters).length === 0) return "";
+
+    const sanitized = {};
+    const allowedKeys = [
+      "department",
+      "branch",
+      "job_title",
+      "work_mode",
+      "payment_frequency",
+      "currency",
+      "is_emiratization_role",
+      "requested_by",
+      "requisition_type",
+      "requisition_status",
+    ];
+
+    Object.keys(filters).forEach((key) => {
+      let value = filters[key];
+      if (value === undefined || value === null || value === "") return;
+      // Skip date_range as it's not supported
+      if (key === "date_range") return;
+      // Only include allowed keys
+      if (allowedKeys.includes(key)) {
+        sanitized[key] = value;
+      }
+    });
+
+    const encoded = encodeURIComponent(JSON.stringify(sanitized));
+    return encoded ? `?search=${encoded}` : "";
+  };
 
   const fetchAllData = async () => {
     setLoading(true);
     try {
       const filterParams = buildFilterParams(filterData);
       const noDateParams = buildFilterParams(filterData, ["date_range"]);
+      const requisitionParams = buildRequisitionFilterParams(filterData);
       // Fetch all API data in parallel
       const [
         summary,
@@ -96,8 +130,8 @@ export const useTalentSphereDashboard = (filterData = {}) => {
         axios.get(`${baseUrl}/Ai-Hiring-Pridiction/${filterParams}`, { headers: headers() }),
         // AI flagged
         axios.get(`${baseUrl}/ai-flaged${filterParams}`, { headers: headers() }),
-        // Requisitions list (not in the 9 APIs but kept consistent)
-        axios.get(`${baseUrl}/requisition-requests/`, { headers: headers() }),
+        // Requisitions list (uses raw keys: department, branch, job_title, work_mode, payment_frequency, currency, is_emiratization_role, requested_by)
+        axios.get(`${baseUrl}/requisition-requests/${requisitionParams}`, { headers: headers() }),
         // Predictive Analytics APIs
         getHiringPrediction(),
         getHiringTrends(),
@@ -113,7 +147,9 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       setBudgetWarnings(budget.data?.results || []);
       setHiringPredictions(predictions.data?.results || []);
       setAiFlaggedData(flagged.data || null);
-      setRequisitionsData(requisitions.data?.results || []);
+      const reqResults = requisitions.data?.results || [];
+      const mappedReqs = await mapRequisitionRequestList(reqResults);
+      setRequisitionsData(mappedReqs || []);
       
       // Set Predictive Analytics Data
       setHiringPredictionData(hiringPrediction || null);
@@ -151,6 +187,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
 
   useEffect(() => {
     fetchAllData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData]);
 
   return {

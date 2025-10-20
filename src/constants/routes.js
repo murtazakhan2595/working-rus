@@ -249,7 +249,12 @@ export const SidebarRoutes = [
         component: <TeamTalentSphere />,
         name: "TEAM_TALENT_SPHERE",
       },
-        Config.MANAGER_CLEARANCE_DASHBOARD && {
+      Config.TEAM_TALENT_SPHERE && {
+        path: "/team-talent-sphere/requisition",
+        component: <TeamTalentSphere activeView={'Requisition Request'} subActiveView={'Records'}/>,
+        name: "VIEW_REQUISITION_REQUEST_CREATED",
+      },
+      Config.MANAGER_CLEARANCE_DASHBOARD && {
         path: "/manager-clearance-dashboard",
         component: <ManagerClearanceDashboard />,
         name: "MANAGER_CLEARANCE_DASHBOARD",
@@ -262,62 +267,62 @@ export const SidebarRoutes = [
       component: <Compliance />,
       name: "COMPLIANCE",
     },
-      Config.PROFILE_MANAGEMENT && {
-        path: "/profile-management",
-        component: <Employee />,
-        name: "PROFILE_MANAGEMENT",
-      },
-      Config.HR_DOCUMENTS && {
-        path: "/documents",
-        component: <HRDocuments />,
-        name: "HR_DOCUMENTS",
-      },
-      Config.HR_DOCUMENTS && {
-        path: "/documents/detail",
-        component: <DocumentDetails />,
-        name: "VIEW_HR_DOCUMENT_DETAILS",
-      },
+    Config.PROFILE_MANAGEMENT && {
+      path: "/profile-management",
+      component: <Employee />,
+      name: "PROFILE_MANAGEMENT",
+    },
+    Config.HR_DOCUMENTS && {
+      path: "/documents",
+      component: <HRDocuments />,
+      name: "HR_DOCUMENTS",
+    },
+    Config.HR_DOCUMENTS && {
+      path: "/documents/detail",
+      component: <DocumentDetails />,
+      name: "VIEW_HR_DOCUMENT_DETAILS",
+    },
 
-      Config.EMPLOYEE_TRANSFER && {
-        path: "/tranfer-rotations",
-        component: <TransferAndRotation />,
-        name: "EMPLOYEE_TRANSFER",
-      },
-      Config.EMPLOYEE_TRANSFER && {
-        path: "/user-job-rotations",
-        component: <UserJobRotations />,
-        name: "VIEW_JOB_ROTATION",
-      },
-      Config.EMPLOYEE_CREATION && {
-        path: "/create-employee",
-        component: <CreateUpdateEmployee />,
-        name: "EMPLOYEE_CREATION",
-      },
-      Config.PROFILE_MANAGEMENT && {
-        path: "/edit-employee/:id",
-        component: <CreateUpdateEmployee />,
-        name: "EDIT_EMPLOYEE",
-      },
-      Config.PROFILE_MANAGEMENT && {
-        path: "/profile/:id",
-        component: <EditEmployeeProfile />,
-        name: "EDIT_EMPLOYEE_PROFILE",
-      },
-      Config.PROFILE_MANAGEMENT && {
-        path: "/user/:id",
-        component: <ViewEmployee profileView={false} />,
-        name: "VIEW_EMPLOYEES",
-      },
-      Config.CLEARANCE_AND_HANDOVER && {
-        path: "/clearance-requests",
-        component: <ClearanceAndHandover />,
-        name: "CLEARANCE_AND_HANDOVER",
-      },
-      Config.EXIT_CLEARANCE && {
-        path: "/exit-clearance",
-        component: <ExitAndClearance />,
-        name: "EXIT_CLEARANCE",
-      },
+    Config.EMPLOYEE_TRANSFER && {
+      path: "/tranfer-rotations",
+      component: <TransferAndRotation />,
+      name: "EMPLOYEE_TRANSFER",
+    },
+    Config.EMPLOYEE_TRANSFER && {
+      path: "/user-job-rotations",
+      component: <UserJobRotations />,
+      name: "VIEW_JOB_ROTATION",
+    },
+    Config.EMPLOYEE_CREATION && {
+      path: "/create-employee",
+      component: <CreateUpdateEmployee />,
+      name: "EMPLOYEE_CREATION",
+    },
+    Config.PROFILE_MANAGEMENT && {
+      path: "/edit-employee/:id",
+      component: <CreateUpdateEmployee />,
+      name: "EDIT_EMPLOYEE",
+    },
+    Config.PROFILE_MANAGEMENT && {
+      path: "/profile/:id",
+      component: <EditEmployeeProfile />,
+      name: "EDIT_EMPLOYEE_PROFILE",
+    },
+    Config.PROFILE_MANAGEMENT && {
+      path: "/user/:id",
+      component: <ViewEmployee profileView={false} />,
+      name: "VIEW_EMPLOYEES",
+    },
+    Config.CLEARANCE_AND_HANDOVER && {
+      path: "/clearance-requests",
+      component: <ClearanceAndHandover />,
+      name: "CLEARANCE_AND_HANDOVER",
+    },
+    Config.EXIT_CLEARANCE && {
+      path: "/exit-clearance",
+      component: <ExitAndClearance />,
+      name: "EXIT_CLEARANCE",
+    },
     ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.TASK_MANAGEMENT
@@ -403,6 +408,11 @@ export const SidebarRoutes = [
       Config.TS_DASHBOARD && {
         path: "/talent-sphere/applicant-management/emiratization-hired",
         component: <EmiratizationHiredApplicants />,
+        name: "APPLICANTS",
+      },
+      Config.TS_DASHBOARD && {
+        path: "/talent-sphere/applicant-management/source/:source",
+        component: <AllApplicants variant='by_source' />,
         name: "APPLICANTS",
       },
       Config.REQUISITION_PLANNING && {
@@ -557,6 +567,16 @@ export const SidebarRoutes = [
         component: <Payslip />,
         name: "VIEW_PAYSLIPS",
       },
+      Config.SALARY_SETUP && {
+        path: "/payroll/salary-setup/:id",
+        component: <EmployeeSalarySetup />,
+        name: "VIEW_EMPLOYEE_SALARY_SETUP",
+      },
+      Config.PAY_RUN && {
+        path: "/payroll/create-payrun",
+        component: <CreatePayRun />,
+        name: "GENERATE_RUN_PAYROLL",
+      },
       Config.EMPLOYEES_PAYROLL && {
         path: "/payroll",
         component: <EmployeesPayroll />,
@@ -565,7 +585,7 @@ export const SidebarRoutes = [
       Config.EMPLOYEES_PAYROLL && {
         path: "/payroll/:id",
         component: <EmployeeSalaryDetails />,
-        name: "Payroll Details",
+        name: "EMPLOYEES_PAYROLL",
       },
       Config.SALARY_SETUP && {
         path: "/payroll/salary-setup",
@@ -598,9 +618,43 @@ export const SidebarRoutes = [
         name: "END_OF_SERVICE",
       },
       Config.END_OF_SERVICE && {
+        path: "/payslip-eos/:id",
+        component: <Payslip />,
+        name: "VIEW_END_OF_SERVICE",
+      },
+      Config.END_OF_SERVICE && {
         path: "/payroll/eos/:id",
         component: <EOSDetails />,
         name: "VIEW_END_OF_SERVICE",
+      },
+
+      Config.SALARY_SETUP && {
+        path: "/payroll/salary-setup-eos/:id",
+        component: <EmployeeSalarySetup />,
+        name: "VIEW_EMPLOYEE_SALARY_SETUP",
+      },
+      Config.SALARY_SETUP && {
+        path: "/payroll/team-payroll-adjustment",
+        component: <TeamAdjustments />,
+        name: "VIEW_PAYROLL_ADJUSTMENT",
+      },
+
+      Config.PAY_RUN && {
+        path: "/payroll/pay-slip-details/:id",
+        component: <PayRunDetails />,
+        name: "VIEW_PAYSLIPS",
+      },
+      Config.PAY_RUN && {
+        path: "/payroll/pay-run/details/:id",
+        component: <PayrollPayrunDetail />,
+        name: "VIEW_RUN_PAYROLL",
+      },
+
+      Config.SELF_SERVICE_HUB &&
+      Config.EMPLOYEE_OFFBOARDING && {
+        path: "/self-service/exit/eos-settlement/:id",
+        component: <EOSSettlementDetails />,
+        name: "EOS Settlement Details",
       },
     ].filter(Boolean) // Filter out undefined route
     : []),
@@ -713,51 +767,6 @@ export const SidebarRoutes = [
     name: "CHANGE_PASSWORD",
   },
 ];
-const RemainingSidebarRoutes = [
-  Config.PAYROLL && {
-    path: "/payslip-eos/:id",
-    component: <Payslip />,
-    name: "Payslip EOS",
-  },
-
-  Config.PAYROLL && {
-    path: "/payroll/salary-setup/:id",
-    component: <EmployeeSalarySetup />,
-    name: "Salary Setup Detail",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/salary-setup-eos/:id",
-    component: <EmployeeSalarySetup />,
-    name: "Salary Setup EOS",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/team-payroll-adjustment",
-    component: <TeamAdjustments />,
-    name: "Salary Setup",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/create-payrun",
-    component: <CreatePayRun />,
-    name: "Create Payrun",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/pay-slip-details/:id",
-    component: <PayRunDetails />,
-    name: "Pay Slip Details",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/pay-run/details/:id",
-    component: <PayrollPayrunDetail />,
-    name: "Payroll Details",
-  },
-
-  Config.SELF_SERVICE_HUB &&
-  Config.EMPLOYEE_OFFBOARDING && {
-    path: "/self-service/exit/eos-settlement/:id",
-    component: <EOSSettlementDetails />,
-    name: "EOS Settlement Details",
-  },
-].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
   {

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 
 import "./index.css";
 import { useState, useEffect, useMemo } from "react";
@@ -18,7 +17,7 @@ import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
 import { getNodeExistInTree } from "utils/renderValues";
 import Error from "app/modules/Error";
 // import useAccessCheck from "app/hooks/useAccessCheck";
-import {fetchInterviewOptions} from "./state/slices/ScreenedInterview";
+// import {fetchInterviewOptions} from "./state/slices/ScreenedInterview";
 import ChatbrixWidget from "./components/ChatbrixWidget";
 
 function App() {
@@ -107,7 +106,7 @@ function App() {
           "/applicant-offer",
           "/forgot-password",
           "/confirm-password",
-          "/access-denied"
+          "/access-denied",
         ];
         const isProtectedRoute = protectedRoutes.some((route) =>
           pathname.startsWith(route)
@@ -187,7 +186,7 @@ function App() {
 
         <Route path="*" element={<Err404 />} />
       </Routes>
-      <ChatbrixWidget />
+      {/* <ChatbrixWidget />/ */}
     </>
   );
 }

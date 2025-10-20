@@ -91,8 +91,8 @@ const Educations = ({ reload }) => {
                         filters={[
                             {
                                 type: "search",
-                                placeholder: "Search by name",
-                                name: "name",
+                                placeholder: "Search by level",
+                                name: "education_level",
                             },
                             {
                                 type: "date-range",

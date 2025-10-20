@@ -8,7 +8,7 @@ import { RequisitionGenderOptions } from 'data/Data';
 
 export const RequisitionViewFields = [
   {
-    title: "Requisition Details",
+    title: "Job Details",
     footerTitle: "Request At",
     footerField: "created_at",
     field: [
@@ -39,6 +39,7 @@ export const RequisitionViewFields = [
       {
         key: "required_skillset_name",
         label: "Required Skills",
+        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true} />
       },
     ],
   },
@@ -216,7 +217,7 @@ export const ApplicantInformation = [
       {
         key: "application_date",
         label: "Application Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        formatter: (cell) => renderDate(cell, "--", "date-time"),
       },
     ],
   },
@@ -250,7 +251,7 @@ export const ShortlistingInfomation = [{
     {
       key: "shortlisted_on",
       label: "Date",
-      formatter: (cell) => renderDate(cell, "--"),
+      formatter: (cell) => renderDate(cell, "--", "date-time"),
     },
     {
       key: "desired_salary",
@@ -285,7 +286,7 @@ export const ScreeningInfomation = [{
     {
       key: "screened_date",
       label: "Date",
-      formatter: (cell) => renderDate(cell, "--"),
+      formatter: (cell) => renderDate(cell, "--", "date-time"),
     },
   ],
 },
@@ -302,7 +303,6 @@ export const VacancyDetails = [
       {
         key: "job_title",
         label: "Job Title",
-        // formatter: (cell) => renderDate(cell),
       },
       {
         key: "department",
@@ -329,7 +329,6 @@ export const VacancyDetails = [
       {
         key: "job_description",
         label: "Job Description",
-        // formatter: (cell) => renderDate(cell),
       },
     ],
   },
@@ -347,7 +346,7 @@ export const BlacklistedInformation = [
       {
         key: "blacklisted_on",
         label: "Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        formatter: (cell) => renderDate(cell, "--", "date-time"),
       },
       {
         key: "reasons",
@@ -376,7 +375,7 @@ export const RejectedInformation = [
       {
         key: "rejected_on",
         label: "Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        formatter: (cell) => renderDate(cell, "--", "date-time"),
       },
       {
         key: "rejection_reason",
@@ -407,7 +406,7 @@ export const ResumeBankInformation = [
       {
         key: "added_on",
         label: "Added Date",
-        formatter: (cell) => renderDate(cell, "--"),
+        formatter: (cell) => renderDate(cell, "--", "date-time"),
       },
 
     ],
@@ -822,10 +821,10 @@ export const ExportApplicantsRecord = (row, Currencies) => {
     'Emiratization Flag': row.emiratization_flag,
     'Job Position': row.job_title,
     Department: row.vacancy_department,
-    'Application Date': renderDate(row.application_date),
+    'Application Date': renderDate(row.application_date, '--', "date-time"),
     Location: row.location,
     'Screened By': row.screened_by,
-    'Screened Date': renderDate(row.screened_date),
+    'Screened Date': renderDate(row.screened_date, '--', "date-time"),
     'AI Match Score': row.ai_match_score,
     'AI Match Skills': row.ai_matched_skills,
     'AI Missing Skills': row.ai_missing_skills,

@@ -90,13 +90,13 @@ const RemoteWorkChecklist = ({ reload }) => {
                             {
                                 type: "search",
                                 placeholder: "Search by name",
-                                name: "name",
+                                name: "remote_item_name",
                             },
                             {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options: [{ value: 'Available', label: 'Available' }, { value: 'Unvailable', label: 'Unvailable' },]
+                                options: [{ value: true, label: 'Available' }, { value: false, label: 'Unvailable' },]
                             },
                             {
                                 type: "date-range",

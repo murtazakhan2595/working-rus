@@ -38,15 +38,17 @@ import {
     ExportApplicantsRecord,
 } from './ViewFields';
 import { AddNewSection, AddNewSectionField, RemoveSection } from './FormSections';
-import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG, OFFER_TAB_CONFIG,APPLICANT_PROFILE_TAB_CONFIG,TEAM_TALENT_SPHERE_TAB_CONFIG } from './TabsList';
-
+import { SETTING_TAB_CONFIG, APPLICANT_TAB_CONFIG, OFFER_TAB_CONFIG, APPLICANT_PROFILE_TAB_CONFIG,TEAM_TALENT_SPHERE_TAB_CONFIG } from './TabsList';
+import { RequisitionFilters, handleRequisitionFilterChange } from './FiltersList';
 export {
     SETTING_TAB_CONFIG,
     AllOfferDetails,
     OFFER_TAB_CONFIG,
     ScreeningInfomation,
     BlacklistedInformation,
+    handleRequisitionFilterChange,
     SkillsColumns,
+    RequisitionFilters,
     ExportApplicantsRecord,
     TEAM_TALENT_SPHERE_TAB_CONFIG,
     RejectedInformation,

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import DemographicsSheet from "./DemographicsForm/DemographicsSheet";
-import ViewDemographicForm from "app/modules/TalentSphere/DemographicsForm/ViewDemographicForm"
+import DemographicsSheet from "./DemographicsSheet";
+import ViewDemographicForm from "./ViewDemographicForm"
 
-export const DemographicsFormActions = ({
+export  const DemographicsFormActions = ({
     data,
     DataList = [],
     reloadData = () => { },

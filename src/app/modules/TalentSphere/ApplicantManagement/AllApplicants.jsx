@@ -6,14 +6,17 @@ import { ApplicationColumns } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription, Card } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
+import { getInterviewTypeList } from "app/hooks/talentSphere";
 
-const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
+const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const routeParams = useParams();
 
   // Initialize filterData with URL params BEFORE first render
   const initialFilters = React.useMemo(() => {
-    const source = searchParams.get("source");
+    // Support both query param (?source=) and route param (/source/:source)
+    const source = searchParams.get("source") || routeParams.source;
     const recruitmentRequisition = searchParams.get("recruitment_requisition");
     const emiratizationFlag = searchParams.get("emiratization_flag");
     const filters = {};
@@ -30,6 +33,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   }, []); // Empty deps - calculate only once on mount
 
   const [RequisitionList, setRequisitionList] = useState({});
+  const [InterviewTypeList, setInterviewTypeList] = useState([]);
   const [filterData, setFilterData] = useState(initialFilters);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -47,6 +51,27 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency - run only once on mount
+
+
+  useEffect(() => {
+    const fetchOptionsData = async (isMounted) => {
+      try {
+        // Add organizationId to filter if available
+        if(variant==='in_progress'){
+        const interview_type = await getInterviewTypeList();
+        if (isMounted) {
+          setInterviewTypeList(interview_type.results);
+        }}
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+    let isMounted = true;
+   if(variant) fetchOptionsData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [variant]);
 
   // Handle deep link filter data when navigating from dashboard
   useEffect(() => {
@@ -83,6 +108,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       // Start with current filters
       const filters = {
         ...filterData,
+        // Do not add implicit status for by_source variant
         ...(variant === "all" ? { status: "new" } : {}),
         ...(variant === "rejected" ? { status: "rejected" } : {}),
         ...(variant === "resume_bank" ? { status: "resume_bank" } : {}),
@@ -99,6 +125,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       if (variant === "emiratization_all") {
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_screened") {
+        // For by_source we ensure only application_source is enforced from initial URL
+        if (variant === "by_source") {
+          // Remove any accidental status injected elsewhere
+          delete filters.status;
+        }
         filters.status = "screened";
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_shortlisted") {
@@ -138,16 +169,16 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData, ordering, options, variant]);
 
-  useEffect(() => {
-    let isMounted = true;
-    onPageChange("page", 1);
-    setOrdering("-id");
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reload]);
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   onPageChange("page", 1);
+  //   setOrdering("-id");
+  //   fetchData(isMounted);
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -158,7 +189,12 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       } else {
         // Store UI values as-is (strings for dropdowns)
         // Conversion to API format happens in fetchData
-        if (['application_date_range'].includes(filterName))
+        if (['application_date_range',
+          'blacklisted_on', 'added_on',
+          'rejected_on',
+          'screened_on',
+          'ai_feedback_confidence',
+          'expected_joining_date'].includes(filterName))
           updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
       }
@@ -174,7 +210,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       in_progress: { title: 'In Progress', description: ' whose interviews have been scheduled.' },
       resume_bank: { title: 'Resume Bank', description: ' who were moved to resume bank.' },
     };
-  }, [variant]);
+  }, []);
 
   return (
     <div className="">
@@ -204,6 +240,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   placeholder: "Candidate Name/Id",
                 },
                 {
+                  type: "search",
+                  name: "location",
+                  placeholder: "Search by location",
+                },
+                {
                   type: "select",
                   options: "Departments",
                   name: "department",
@@ -224,7 +265,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   name: "emiratization_flag",
                   placeholder: "Emiratization Role",
                 },
-                ...(variant !== "ai_picks" ? [{
+                ...(variant !== "ai_picks" && variant !== "resume_bank" ? [{
                   type: "select",
                   options: [
                     { value: true, label: "Suggested" },
@@ -233,6 +274,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                   name: "ai_suggested",
                   placeholder: "AI Suggested",
                 }] : []),
+                ...(variant === "ai_picks" ? [{
+                  type: "numeric-range",
+                  name: "ai_feedback_confidence",
+                  placeholder: "AI Match Score Range",
+                }] : []),
                 {
                   type: "date-range",
                   name: "application_date_range",
@@ -240,7 +286,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                 },
                 ...(variant === "rejected" ? [{
                   type: "date-range",
-                  name: "rejection_date",
+                  name: "rejected_on",
                   placeholder: "Rejection Date",
                 },] : []),
                 ...(variant === "shortlisted"
@@ -249,6 +295,57 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                       type: "date-range",
                       name: "expected_joining_date",
                       placeholder: "Joining Date",
+                    },
+                  ]
+                  : []),
+                ...(variant === "screened"
+                  ? [
+                    {
+                      type: "date-range",
+                      name: "screened_on",
+                      placeholder: "Screened",
+                    },
+                  ]
+                  : []),
+                ...(variant === "resume_bank"
+                  ? [
+                    {
+                      type: "select",
+                      name: "recommended_department",
+                      options: 'Departments',
+                      placeholder: "Recommended Department",
+                    },
+                    {
+                      type: "select",
+                      name: "recommended_designation",
+                      options: 'Designations',
+                      placeholder: "Recommended Designation",
+                    },
+                    {
+                      type: "date-range",
+                      name: "added_on",
+                      placeholder: "Added On",
+                    },
+                  ]
+                  : []),
+                ...(variant === "in_progress"
+                  ? [
+                    {
+                      type: "multiple-select",
+                      name: "panel",
+                      options: 'Employees',
+                      placeholder: "Panel Members",
+                    },
+                    {
+                      type: "select",
+                      name: "interview_type",
+                      options: InterviewTypeList,
+                      placeholder: "Interview Type",
+                    },
+                    {
+                      type: "date-range",
+                      name: "blacklisted_on",
+                      placeholder: "Interview Date",
                     },
                   ]
                   : []),
@@ -270,10 +367,6 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
               ]}
               className="justify-end"
               onChange={handleFilterChange}
-            // filterValues={{
-            //   ...filterData,
-            //   ...(filterData.application_date_range ? { application_date_range: filterData.application_date_range.join(',') } : {}),
-            // }}
             />
           </div>
         </CardHeader>

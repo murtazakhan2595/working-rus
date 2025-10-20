@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { TableCustom, PageLoader } from "components";
 import { getRequisitionRequestList, getJobTypeList, getCareerLevelList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
-import { RequisitionRequestColumns } from "app/modules/TalentSphere/Sections";
+import { RequisitionRequestColumns, RequisitionFilters, handleRequisitionFilterChange } from "app/modules/TalentSphere/Sections";
 import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
-import { GlobalStatusOptions } from "data/Data";
 import { ViewRequisitionRequest } from "app/modules/TalentSphere";
 import { GetDispatchStateList } from "utils/Lists";
 
@@ -114,31 +113,27 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
             isMounted = false;
         };
     }, []);
-    const fetchData = async (isMounted) => {
-        setIsLoading(true);
+
+    const fetchData = useCallback(async (isMounted) => {
         try {
-            // Convert UI filter values to API format
+            setIsLoading(true);
             const filters = { ...filterData, approval_required: false };
 
-            // Convert is_emiratization_role from "required"/"not_required" string to boolean for API
-            if (filters.is_emiratization_role) {
-                filters.is_emiratization_role = filters.is_emiratization_role === 'required' ? true : false;
-            }
-
-            const response = await getRequisitionRequestList({
+            const RequisitionList = await getRequisitionRequestList({
                 filterData: filters,
                 options,
                 ordering,
             });
-            if (isMounted && response) {
-                setRequisitionList(response);
+
+            if (RequisitionList && isMounted) {
+                setRequisitionList(RequisitionList);
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [filterData, options, ordering]);
 
     useEffect(() => {
         let isMounted = true;
@@ -146,7 +141,7 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
         return () => {
             isMounted = false;
         };
-    }, [filterData, ordering, options]);
+    }, [fetchData]);
 
     useEffect(() => {
         let isMounted = true;
@@ -158,20 +153,12 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
         };
     }, [reload]);
 
-    const handleFilterChange = (filterName, filterValue) => {
+    const handleFilterChange = (filterName, filterValue, tab) => {
         onPageChange("page", 1);
         setFilterData((prevFilters) => {
-            const updatedFilters = { ...prevFilters };
-            if (filterValue === "" || filterValue === "All") {
-                delete updatedFilters[filterName];
-            } else {
-                // Store UI values as-is (strings for dropdowns)
-                // Conversion to API format happens in fetchData
-                if (['created_at'].includes(filterName))
-                    updatedFilters[filterName] = filterValue?.split(',');
-                else updatedFilters[filterName] = filterValue;
-            }
-            return updatedFilters;
+            const updatedFilters = handleRequisitionFilterChange(prevFilters, filterName, filterValue);
+            // Handle other filters normally
+            return { ...updatedFilters };
         });
     };
 
@@ -184,84 +171,8 @@ const GenerateRequisition = ({ reload, deepLinkRequisition, deepLinkAction, deep
                 </CardDescription>
                 <div className="flex justify-end">
                     <FilterInput
-                        filters={[
-                            {
-                                type: "search",
-                                name: "job_title",
-                                placeholder: "Job Title",
-                            },
-                            {
-                                type: "select",
-                                options: "Departments",
-                                name: "department",
-                                placeholder: "Department",
-                            },
-                            {
-                                type: "select",
-                                options: "Branches",
-                                name: "branch",
-                                placeholder: "Branch",
-                            },
-                            {
-                                type: "select",
-                                options: JobTypeList,
-                                name: "job_type",
-                                placeholder: "Job Type",
-                            },
-                            {
-                                type: "select",
-                                options: CareerLevelList,
-                                name: "career_level",
-                                placeholder: "Career Level",
-                            },
-                            {
-                                type: "select",
-                                options: [
-                                    { value: 'onsite', label: 'Onsite' },
-                                    { value: 'hybrid', label: "Hybrid" },
-                                    { value: 'remote', label: "Remote" },
-                                ],
-                                name: "work_mode",
-                                placeholder: "Work Mode",
-                            },
-                            {
-                                type: "numeric-range",
-                                name: "salary_range",
-                                placeholder: "Salary Range",
-                            },
-
-                            {
-                                type: "select",
-                                options: [
-                                    { value: true, label: 'Required' },
-                                    { value: false, label: "Not Reqiured" },
-                                ],
-                                name: "is_emiratization_role",
-                                placeholder: "Emiratization Role",
-                            },
-                            {
-                                type: "select",
-                                name: "requested_by",
-                                options: Employees,
-                                placeholder: "Requested By",
-                            },
-                            {
-                                type: "date-range",
-                                placeholder: "Request Date",
-                                name: "created_at",
-                            },
-                            // {
-                            //     type: "select",
-                            //     options: [...GlobalStatusOptions(false),],
-                            //     name: "status",
-                            //     placeholder: "Status",
-                            //     values: filterData.status,
-                            // },
-
-                        ]}
-                        className="justify-end"
+                        filters={RequisitionFilters(false, 'default', JobTypeList, CareerLevelList)}
                         onChange={handleFilterChange}
-                        // filterValues={filterData}
                     />
                 </div>
             </CardHeader>
