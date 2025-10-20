@@ -66,7 +66,7 @@ const EmiratizationWidget = ({ data, loading }) => {
     switch (metricTitle) {
       case "Total Emiratization Roles":
         // Navigate to dedicated emiratization requisitions page
-        navigate("/talent-sphere/talent-sphere/emiratization-requisitions");
+        navigate("/talent-sphere/applicant-management/emiratization-applicants");
         break;
 
       case "Applicants for Emiratization Roles":
