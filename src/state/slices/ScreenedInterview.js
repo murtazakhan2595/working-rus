@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getApplicantsList,
-  getInterviewTypesList,
+  getInterviewTypeList,
   getEmailTemplateList,
 } from "app/hooks/talentSphere";
 
@@ -14,7 +14,7 @@ export const fetchInterviewOptions = createAsyncThunk(
     const [applicantsData, interviewTypesData, panelMembersData, emailTemplatesData] =
       await Promise.all([
         getApplicantsList(),
-        getInterviewTypesList(),
+        getInterviewTypeList(),
         getEmployeeDropdownList(),
         getEmailTemplateList(),
       ]);

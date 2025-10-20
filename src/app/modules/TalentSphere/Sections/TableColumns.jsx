@@ -1308,18 +1308,18 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
-    ...(variant === 'in_progress' ? [
-        {
-            dataField: "ai_feedback_summary",
-            text: "AI Feedback",
-            formatter: (cell, row) => {
-                return (<div>
-                    {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
-                </div>
-                );
-            },
-        },
-    ] : []),
+    // ...(variant === 'in_progress' ? [
+    //     {
+    //         dataField: "ai_feedback_summary",
+    //         text: "AI Feedback",
+    //         formatter: (cell, row) => {
+    //             return (<div>
+    //                 {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
+    //             </div>
+    //             );
+    //         },
+    //     },
+    // ] : []),
     ...(variant !== 'resume_bank' ? [{
         dataField: "ai_suggested",
         text: "AI Suggestion",

@@ -7,8 +7,9 @@ import { FilterInput } from "components/FormControl";
 import { CardHeader, CardTitle, CardDescription, Card } from "components/ui/card";
 import { RecruitmentApplicationSource } from "data/Data";
 import { useSearchParams, useParams } from "react-router-dom";
+import { getInterviewTypeList } from "app/hooks/talentSphere";
 
-const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
+const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const routeParams = useParams();
 
@@ -32,6 +33,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
   }, []); // Empty deps - calculate only once on mount
 
   const [RequisitionList, setRequisitionList] = useState({});
+  const [InterviewTypeList, setInterviewTypeList] = useState([]);
   const [filterData, setFilterData] = useState(initialFilters);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -49,6 +51,27 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency - run only once on mount
+
+
+  useEffect(() => {
+    const fetchOptionsData = async (isMounted) => {
+      try {
+        // Add organizationId to filter if available
+        if(variant==='in_progress'){
+        const interview_type = await getInterviewTypeList();
+        if (isMounted) {
+          setInterviewTypeList(interview_type.results);
+        }}
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+    let isMounted = true;
+   if(variant) fetchOptionsData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [variant]);
 
   // Handle deep link filter data when navigating from dashboard
   useEffect(() => {
@@ -102,11 +125,11 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       if (variant === "emiratization_all") {
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_screened") {
-      // For by_source we ensure only application_source is enforced from initial URL
-      if (variant === "by_source") {
-        // Remove any accidental status injected elsewhere
-        delete filters.status;
-      }
+        // For by_source we ensure only application_source is enforced from initial URL
+        if (variant === "by_source") {
+          // Remove any accidental status injected elsewhere
+          delete filters.status;
+        }
         filters.status = "screened";
         filters.emiratization_flag = true;
       } else if (variant === "emiratization_shortlisted") {
@@ -146,16 +169,16 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData, ordering, options, variant]);
 
-  useEffect(() => {
-    let isMounted = true;
-    onPageChange("page", 1);
-    setOrdering("-id");
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reload]);
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   onPageChange("page", 1);
+  //   setOrdering("-id");
+  //   fetchData(isMounted);
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -187,7 +210,7 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
       in_progress: { title: 'In Progress', description: ' whose interviews have been scheduled.' },
       resume_bank: { title: 'Resume Bank', description: ' who were moved to resume bank.' },
     };
-  }, [variant]);
+  }, []);
 
   return (
     <div className="">
@@ -302,6 +325,27 @@ const AllApplicants = ({ reload, variant = "all", deepLinkFilterData }) => {
                       type: "date-range",
                       name: "added_on",
                       placeholder: "Added On",
+                    },
+                  ]
+                  : []),
+                ...(variant === "in_progress"
+                  ? [
+                    {
+                      type: "multiple-select",
+                      name: "panel",
+                      options: 'Employees',
+                      placeholder: "Panel Members",
+                    },
+                    {
+                      type: "select",
+                      name: "interview_type",
+                      options: InterviewTypeList,
+                      placeholder: "Interview Type",
+                    },
+                    {
+                      type: "date-range",
+                      name: "blacklisted_on",
+                      placeholder: "Interview Date",
                     },
                   ]
                   : []),
