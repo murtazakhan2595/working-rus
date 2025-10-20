@@ -101,7 +101,8 @@ const Notifications = () => {
         try {
           const notification = JSON.parse(event.data);
           const transformed = mapNotificationData(notification);
-          setNotifications((prev) => [transformed, ...prev]);
+          if (transformed.title)
+            setNotifications((prev) => [transformed, ...prev]);
         } catch (error) {
           console.error(`Error parsing message from ${path}`, error);
         }
@@ -130,7 +131,8 @@ const Notifications = () => {
     ws.onmessage = (event) => {
       const notification = JSON.parse(event.data);
       const transformed = mapNotificationData(notification);
-      setNotifications((prev) => [transformed, ...prev]);
+      if (transformed.title)
+        setNotifications((prev) => [transformed, ...prev]);
     };
 
     ws.onclose = () => {
@@ -246,9 +248,8 @@ const Notifications = () => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <p
-                                className={`text-sm text-neutral-1100${
-                                  !n.is_read ? "font-bold" : ""
-                                }`}
+                                className={`text-sm text-neutral-1100${!n.is_read ? "font-bold" : ""
+                                  }`}
                               >
                                 {truncateText(plainText, 150)}
                               </p>
@@ -260,7 +261,7 @@ const Notifications = () => {
                             )}
                           </Tooltip>
                           <p className="text-xs text-neutral-1000">
-                            {renderDate(n.created_at)}
+                            {renderDate(n.created_at, '--', 'date-time')}
                           </p>
                         </div>
                       </div>

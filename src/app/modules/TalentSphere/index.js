@@ -8,7 +8,6 @@ import {
     HeadCountRequestsActions,
     ViewHeadCountRequests,
 } from './ManpowerPlanning';
-import DemoGraphics from './DemographicsForm';
 import {
     TalentSphereSettingManagement,
     Benefits,
@@ -52,6 +51,9 @@ import {
     Skills,
     AddUpdateSkillForm,
     SkillActions,
+    DemographicsFormStatusTogle,
+    DemographicsFormActions,
+    DemoGraphics,
 } from './SettingManagement';
 
 import {
@@ -68,6 +70,7 @@ import {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
+    ScheduledInterviews,
 } from './TeamTalentSphere';
 import {
     AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest, RequisitionActions,
@@ -117,6 +120,9 @@ import {
 import { ScheduleInterviewSheet } from './ScreenedApplicants';
 import ApplicantByRequisition from './ApplicantManagement/ApplicantByRequisition';
 export {
+    DemographicsFormStatusTogle,
+    DemographicsFormActions,
+    ScheduledInterviews,
     TalentSphereDashboard,
     ScheduleInterviewSheet,
     ApplicantProfileActions,

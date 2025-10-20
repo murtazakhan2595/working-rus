@@ -22,11 +22,19 @@ import {
     AddUpdateRemoteWorkChecklistForm,
     EmailTemplates,
     AddUpdateEmailTemplateForm,
-
+    DemoGraphics,
 } from "app/modules/TalentSphere/SettingManagement";
-import Demographics from "app/modules/TalentSphere/DemographicsForm";
-import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
-import { AllApplicants, } from "app/modules/TalentSphere";
+import {
+    TeamManpowerHeadcount,
+    AddUpdateManpowerHeadcountRequest,
+    ManpowerHeadCountRequest,
+    ScheduledInterviews,
+} from 'app/modules/TalentSphere/TeamTalentSphere';
+import { AllApplicants } from "app/modules/TalentSphere";
+import {
+    RequisitionRequests,
+    AddUpdateRequisitionRequestForm,
+} from "app/modules/TalentSphere/Requisitions";
 import {
     GenerateOffer,
     OfferRequests,
@@ -96,9 +104,9 @@ export const SETTING_TAB_CONFIG = [
     },
     {
         key: "add-demographics",
-        label: "Add Demographics",
+        label: "Demographics Form",
         // no permissions required
-        list: () => <Demographics />,
+        list: () => <DemoGraphics />,
         form: null,
     },
     {
@@ -140,6 +148,38 @@ export const SETTING_TAB_CONFIG = [
         addPerm: "ADD_BLACKLIST_REASON",
         list: (reload) => <BlacklistReasons reload={reload} />,
         form: AddUpdateBlacklistReasonForm,
+    },
+];
+export const TEAM_TALENT_SPHERE_TAB_CONFIG = [
+    {
+        key: "headcount-request",
+        label: "Manpower Headcount",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        addPerm: "REQUEST_MANPOWER_HEADCOUNT",
+        list: (reload) => <TeamManpowerHeadcount reload={reload} />,
+        form: AddUpdateManpowerHeadcountRequest,
+    },
+    {
+        key: "headcount-request",
+        label: "Manpower Headcount Request",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        addPerm: "REQUEST_MANPOWER_HEADCOUNT",
+        list: (reload) => <ManpowerHeadCountRequest reload={reload} />,
+        form: AddUpdateManpowerHeadcountRequest,
+    },
+    {
+        key: "requisition-request",
+        label: "Requisition Request",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        addPerm: "CREATE_REQUISITION_REQUEST",
+        list: (reload) => <RequisitionRequests reload={reload} />,
+        form: AddUpdateRequisitionRequestForm,
+    },
+    {
+        key: "interviews",
+        label: "Applicant Interviews",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        list: (reload) => <ScheduledInterviews reload={reload} />,
     },
 ];
 
@@ -243,7 +283,7 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: "blacklist",
     },
     {
-        label: "Demographics",
+        label: "DemoGraphics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
     },

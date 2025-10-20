@@ -122,11 +122,11 @@ const AddUpdateEmailTemplateForm = ({
             InputFields: [
               {
                 InputField: RadioGroupInput,
-                name: "status",
+                name: "is_active",
                 label: "Status",
                 options: [
-                  { value: 'active', label: 'Active' },
-                  { value: 'inactive', label: "Inactive" },
+                  { value: true, label: 'Active' },
+                  { value: false, label: "Inactive" },
                 ],
               },
               {

@@ -26,13 +26,14 @@ import {
     ApplicationActions,
     InterviewActions,
     OfferRequestActions,
-    ApplicantProfileActions
+    ApplicantProfileActions,
+    DemographicsFormStatusTogle,
+    DemographicsFormActions,
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
 import { BudgetStatusOptions, RecruitmentApplicationSource, RecruitmentEmailTemplateType } from "data/Data";
 import { MultiStatusLabel } from "components";
-import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 import { DesignationName } from "utils/getValuesFromTables";
 
 
@@ -95,7 +96,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
     {
         dataField: "justification",
         text: "Justification",
-        formatter: (cell) => <TextUI text={cell} maxLength={100} />
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
     },
     {
         dataField: "created_by",
@@ -516,7 +517,7 @@ export const InterviewTypesColumns = (reloadData) => [
         // formatter: (cell) => <EmployeeName value={cell} />,
     },
     {
-        dataField: "status",
+        dataField: "is_active",
         text: "Status",
         formatter: (cell, row) => {
             return (
@@ -925,15 +926,18 @@ export const DemographicsFormColumns = (reloadData) => [
         text: "Form Name",
         dataSort: true,
     },
-    {
-        dataField: "is_active",
-        text: "Status",
-        formatter: (cell) => <StatusLabel status={cell ? 'Active' : 'Inactive'}>{cell ? 'Active' : 'Inactive'}</StatusLabel>
-    },
+
     {
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter:(cell)=>{
+            const maxlength = 50
+            if (cell && cell.length > maxlength) {
+                return cell.substring(0, maxlength) + '...';
+            }
+            return cell || '--'
+        } 
     },
     {
         dataField: "sections",
@@ -968,6 +972,15 @@ export const DemographicsFormColumns = (reloadData) => [
         text: "Updated Date",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
         dataSort: true,
+    },
+    {
+        dataField: "is_active",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <DemographicsFormStatusTogle data={row} status={cell} reloadData={reloadData} />
+            );
+        },
     },
     {
         dataField: "",
@@ -1301,18 +1314,18 @@ export const ApplicationColumns = (reloadData, variant) => [
             },
         },
     ] : []),
-    ...(variant === 'in_progress' ? [
-        {
-            dataField: "ai_feedback_summary",
-            text: "AI Feedback",
-            formatter: (cell, row) => {
-                return (<div>
-                    {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
-                </div>
-                );
-            },
-        },
-    ] : []),
+    // ...(variant === 'in_progress' ? [
+    //     {
+    //         dataField: "ai_feedback_summary",
+    //         text: "AI Feedback",
+    //         formatter: (cell, row) => {
+    //             return (<div>
+    //                 {row?.ai_feedback_summary && <div><span className="font-bold">Summary: </span>{row?.ai_feedback_summary}</div>}
+    //             </div>
+    //             );
+    //         },
+    //     },
+    // ] : []),
     ...(variant !== 'resume_bank' ? [{
         dataField: "ai_suggested",
         text: "AI Suggestion",
@@ -1410,8 +1423,15 @@ export const ResumeBankColumns = (reloadData) => [
  */
 export const InProgressInterviewColumns = (reloadData) => [
     {
-        dataField: "candidate_name",
-        text: "Candidate Name",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "job_title",
@@ -1428,12 +1448,8 @@ export const InProgressInterviewColumns = (reloadData) => [
     },
     {
         dataField: "panel_name",
-        text: "Interview Panel",
+        text: "Panelist",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
-    },
-    {
-        dataField: "ai_match_score",
-        text: "AI Match Score",
     },
     {
         dataField: "status",
