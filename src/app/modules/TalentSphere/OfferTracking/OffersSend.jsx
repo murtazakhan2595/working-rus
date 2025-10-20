@@ -35,9 +35,15 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
             onPageChange("page", 1);
         }
         
-        // Set the active sub-tab if provided
+        // Set the active sub-tab if provided and update filterData accordingly
         if (deepLinkSubTab && OuterTabList.includes(deepLinkSubTab)) {
             setActiveTab(deepLinkSubTab);
+            // Update filterData based on the sub-tab
+            const statusValue = deepLinkSubTab === "Not Joined" ? "not_joined" : deepLinkSubTab.toLowerCase();
+            setFilterData((prev) => ({
+                ...prev,
+                status: statusValue,
+            }));
         }
     }, [deepLinkFilterData, deepLinkSubTab, OuterTabList]);
 

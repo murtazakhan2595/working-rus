@@ -67,7 +67,7 @@ const KPICards = ({ data, loading }) => {
       description: "Offers created",
       color: "text-[#EC4899]", // Match funnel: Offers Generated (pink)
       route: "/talent-sphere/offer-tracking",
-      state: { tab: "Offer Send", subTab: "Pending"},
+      state: { tab: "Offer Send", subTab: "Pending", filterData: {} },
     },
     {
       title: "Offers Accepted",
@@ -75,7 +75,7 @@ const KPICards = ({ data, loading }) => {
       description: "Candidates accepted",
       color: "text-[#10B981]", // Match funnel: Offers Accepted (green)
       route: "/talent-sphere/offer-tracking",
-      state: { tab: "Offer Send", subTab: "Accepted"},
+      state: { tab: "Offer Send", subTab: "Accepted", filterData: {} },
     },
     {
       title: "Hired Applicants",
