@@ -133,7 +133,9 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date", joinin
           : variant === "time"
             ? "hh:mm A"
             : "MMM DD, YYYY";
-  if (typeof date === 'string') {  // Handle multiple comma-separated dates
+  if (moment(date).isValid())
+    return moment(date).format(format);
+  else if (typeof date === 'string') {  // Handle multiple comma-separated dates
     const dateList = date.split(",").map(d => d.trim()).filter(Boolean);
 
     if (dateList.length === 0) return fallbackValue;
@@ -142,8 +144,6 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date", joinin
       .filter(val => val !== fallbackValue || dateList.length === 1); // keep fallback only if it's the only value
 
     return formattedDates.join(joiningText);
-  } else if (moment(date).isValid()) {
-    return moment(date).format(format);
   } else return fallbackValue;
 }
 

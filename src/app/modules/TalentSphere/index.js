@@ -70,6 +70,7 @@ import {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
+    ScheduledInterviews,
 } from './TeamTalentSphere';
 import {
     AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest, RequisitionActions,
@@ -121,6 +122,7 @@ import ApplicantByRequisition from './ApplicantManagement/ApplicantByRequisition
 export {
     DemographicsFormStatusTogle,
     DemographicsFormActions,
+    ScheduledInterviews,
     TalentSphereDashboard,
     ScheduleInterviewSheet,
     ApplicantProfileActions,
