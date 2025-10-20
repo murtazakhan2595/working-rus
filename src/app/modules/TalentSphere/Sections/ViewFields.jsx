@@ -415,7 +415,7 @@ export const ResumeBankInformation = [
 ]
 export const InterviewDetails = [
   {
-    title: (data) => `${data.index + 1} - Interview Information`,
+    title: (data) => `${data.index ? `${data.index + 1} - ` : ''}Interview Information`,
     field: [
       {
         key: "interview_type_name",
@@ -833,5 +833,11 @@ export const ExportApplicantsRecord = (row, Currencies) => {
     'Offered Salary': row?.offer_letters && row?.offer_letters.length > 0 ? `${row?.offer_letters[row?.offer_letters.length - 1]?.offered_salary} ${currency || ''} (${row?.publish_vacancy?.payment_frequency || ""})` : "",
   };
 }
+
+
+export const InterviewDetailsForPenalist = [
+  ...(ApplicantInformation),
+  ...(InterviewDetails),
+]
 
 

@@ -4,6 +4,7 @@ import {
     CardDescription,
     CardTitle,
     CardHeader,
+    Card,
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
@@ -109,6 +110,7 @@ const ManpowerHeadCountRequest = ({ reload, activeView = "Requests" }) => {
     };
 
     return (
+        <Card>
         <Tabs
             defaultValue="Requests"
             className="w-full"
@@ -191,6 +193,7 @@ const ManpowerHeadCountRequest = ({ reload, activeView = "Requests" }) => {
                 )}
             </CardContent>
         </Tabs>
+        </Card>
     );
 };
 
