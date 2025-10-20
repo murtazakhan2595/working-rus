@@ -62,8 +62,15 @@ import {
     BlacklistReasonStatusTogle,
     BlacklistReasonActions,
 } from './BlacklistReasons';
+import DemographicsFormStatusTogle from './DemographicsForms/DemographicsFormStatusTogle';
+import {DemographicsFormActions} from './DemographicsForms/DemographicsFormActions';
+import DemoGraphics from './DemographicsForms';
+
 export {
     TalentSphereSettingManagement,
+    DemographicsFormStatusTogle,
+    DemographicsFormActions,
+    DemoGraphics,
     Skills,
     AddUpdateSkillForm,
     SkillActions,

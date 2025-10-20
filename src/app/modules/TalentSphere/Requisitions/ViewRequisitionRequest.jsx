@@ -42,9 +42,8 @@ const ViewRequisitionRequest = ({
         setOpenModal(true);
     };
     const handleRejectClick = async (comment, id) => {
-        debugger;
-
         await saveUpdateRequisitionRequest({ rejection_reason: comment }, id);
+        setForceLoad(!forceLoad);
     };
 
     const handleSubmit = async ({ handleApprove = () => { }, department, branch, number_of_positions, salary_max, salary_min, id }) => {
@@ -141,13 +140,13 @@ const ViewRequisitionRequest = ({
                         final_approver={data.final_approvers || []}
                         request_id={data.request}
                         RejectionConfig={{ label: 'Rejection Reason', required: true }}
-                        onApprove={(handleApprove) => handleApprovalClick(handleApprove, data)}
-                        setResponse={async (response, status, approval_Data) => {
-                            debugger;
+                        onApprove={async (handleApprove) => await handleApprovalClick(handleApprove, data)}
+                        setResponse={async (response, _, approval_Data) => {
                             if (response) {
-                                if (status?.toLowerCase() === 'rejected')
-                                    await handleRejectClick(approval_Data.comment, data.id);
-                                setForceLoad(!forceLoad);
+                                const updated_date = await fetchData(data.id,true);
+                                if (updated_date?.status?.toLowerCase() === 'rejected') {
+                                    handleRejectClick(approval_Data.comment, data.id);
+                                } else setForceLoad(!forceLoad);
                             }
                         }}
                     />

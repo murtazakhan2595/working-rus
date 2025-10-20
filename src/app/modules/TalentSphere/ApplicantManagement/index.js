@@ -1,5 +1,6 @@
 import ApplicantManagement from './ApplicantManagement';
 import AllApplicants from './AllApplicants';
+import ApplicantSourceApplicants from './ApplicantSourceApplicants';
 import ApplicantByRequisition from './ApplicantByRequisition';
 import EmiratizationAllApplicants from './EmiratizationAllApplicants';
 import EmiratizationScreenedApplicants from './EmiratizationScreenedApplicants';
@@ -16,6 +17,7 @@ export {
     EmiratizationScreenedApplicants,
     EmiratizationShortlistedApplicants,
     EmiratizationHiredApplicants,
+    ApplicantSourceApplicants,
     ApplicationActions,
     ViewApplicationDetail,
     UpdateApplicantStatus,

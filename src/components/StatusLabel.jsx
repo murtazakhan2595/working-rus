@@ -263,6 +263,7 @@ export const StatusButtons = ({
   );
   const [openCommentModal, setOpenCommentModal] = useState(false);
   const [FormSheetData, setFormSheetData] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Handle multiple permission keys
   const checkPermissions = () => {
@@ -295,6 +296,7 @@ export const StatusButtons = ({
   if ((current_approver || []).includes(user_id) || user_role.includes(1) || (final_approver || []).includes(user_id)) {
     // 🚀 UPDATED: Default API-based approval flow
     const handleDefaultSubmit = async (status, data = {}) => {
+      setIsSubmitting(true)
       try {
         const response = await handleRequest(request_id, status === "Approved", data);
         if (response) {
@@ -306,11 +308,14 @@ export const StatusButtons = ({
       } catch (error) {
         console.error("Approving Request Error", error);
         setResponse(false, status);
+      } finally {
+        setIsSubmitting(false)
       }
     };
 
     // 🚀 NEW: Enhanced click handlers
-    const handleApproveClick = (event) => {
+    const handleApproveClick = async (event) => {
+      setIsSubmitting(true)
       event.preventDefault();
       event.stopPropagation();
       if (ApprovalConfig) {
@@ -328,14 +333,16 @@ export const StatusButtons = ({
 
       else if (onApprove) {
         // Use custom approve handler
-        onApprove(handleDefaultSubmit);
+        await onApprove(handleDefaultSubmit);
       } else {
         // Use default API flow
-        handleDefaultSubmit("Approved");
+        await handleDefaultSubmit("Approved");
       }
+      setIsSubmitting(false)
     };
 
-    const handleRejectClick = (event) => {
+    const handleRejectClick = async (event) => {
+      setIsSubmitting(true)
       event.preventDefault();
       event.stopPropagation();
       if (RejectionConfig) {
@@ -351,22 +358,23 @@ export const StatusButtons = ({
         });
       } else if (onReject) {
         // Use custom reject handler
-        onReject();
+        await onReject();
       } else {
         // Use default API flow
-        handleDefaultSubmit("Rejected");
+        await handleDefaultSubmit("Rejected");
       }
+      setIsSubmitting(false)
     };
 
     return (
       <div className="flex flex-wrap justify-end gap-2 my-5">
         {showApprove && (
-          <Button variant="success" onClick={handleApproveClick}>
+          <Button variant="success" disabled={isSubmitting} onClick={handleApproveClick}>
             {approveText}
           </Button>
         )}
         {showReject && (
-          <Button variant="destructive" onClick={handleRejectClick}>
+          <Button variant="destructive" disabled={isSubmitting} onClick={handleRejectClick}>
             {rejectText}
           </Button>
         )}

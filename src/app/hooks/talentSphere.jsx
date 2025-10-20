@@ -301,6 +301,9 @@ export const saveUpdateSkill = async (payload, id) => {
   }
 };
 
+// =========================
+// INTERVIEW TYPES HOOKS
+// =========================
 
 export const getInterviewTypeList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -1746,73 +1749,6 @@ export const saveUpdateApplication = async (payload, id) => {
   }
 };
 
-
-
-// =========================
-// INTERVIEW TYPES HOOKS
-// =========================
-
-export const getInterviewTypesList = async (payload = {}) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
-  const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "-id";
-
-  const URL =
-    `/interview-types/?` +
-    `${ordering ? `ordering=${ordering}&` : ""}` +
-    `${pageNo ? `page=${pageNo}&` : ""}` +
-    `${pageSize ? `page_size=${pageSize}&` : ""}` +
-    `search=${encodeURIComponent(JSON.stringify(filterData))}`;
-
-  try {
-    const response = await axios.get(`${baseUrl}${URL}`, { headers: headers() });
-    if (response.status === 200) return response.data;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching interview types list:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    return false;
-  }
-};
-
-export const getInterviewTypeById = async (id) => {
-  try {
-    const response = await axios.get(`${baseUrl}/interview-types/${id}/`, {
-      headers: headers(),
-    });
-    if (response.status === 200) return response.data;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching interview type by ID:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    return false;
-  }
-};
-
-export const deleteInterviewType = async (id) => {
-  try {
-    const response = await axios.delete(`${baseUrl}/interview-types/${id}/`, {
-      headers: headers(),
-    });
-    if (response.status === 204) return true;
-    console.warn("Unexpected status deleting interview type:", response.status);
-    return false;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error deleting interview type:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    renderErrorMessages(error?.response?.data);
-    return false;
-  }
-};
-
 export const getFeedBackFormList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -2542,9 +2478,14 @@ export const saveApplicantOfferResponse = async (uuid, accepted) => {
 // Get demographics form by UUID
 export const getDemographicFormByUUID = async (uuid) => {
   try {
-    const response = await axios.get(`${baseUrl}/demographics/${uuid}/`, {
+    const url = `${baseUrl}/demographics/${uuid}/`;
+    const method = "GET"; // Determine method based on existence of id
+    const response = await axios({
+      method,
+      url,
       headers: headers(),
     });
+
     if (response.status === 200) {
       return response.data;
     }

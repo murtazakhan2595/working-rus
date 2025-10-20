@@ -232,9 +232,6 @@ export function mapRemoteWorkChecklistPayloadData(data, id) {
 export function mapInterviewTypeData(data) {
     const RecordDetails = Object.keys(InterviewType).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            if (key === "is_active") {
-                acc['status'] = data[key] ? 'active' : 'inactive';
-            }
             if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
             else acc[key] = data[key];
         }
@@ -262,8 +259,7 @@ export function mapInterviewTypePayloadData(data, id) {
     // Iterate over the keys in the InterviewType object
     for (const key in InterviewType) {
         // Check if the key exists in the data object
-        if (key === "is_active") payload[key] = Boolean(data['status'] === 'active')
-        else if (
+        if (
             data.hasOwnProperty(key) &&
             data[key] !== null &&
             data[key] !== undefined
@@ -1005,24 +1001,6 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
     // Return the constructed payload
     return formData;
-    // Initialize an empty payload object
-    const payload = {};
-    // Iterate over the keys in the OfferLetterTemplate object
-    for (const key in OfferLetterTemplate) {
-        // Check if the key exists in the data object
-        if (
-            data.hasOwnProperty(key) &&
-            data[key] !== null &&
-            data[key] !== undefined
-        ) {
-            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
-            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
-            else payload[key] = data[key];
-        }
-    }
-
-    // Return the constructed payload
-    return payload;
 }
 
 //-------------OfferTrackings ---------------
