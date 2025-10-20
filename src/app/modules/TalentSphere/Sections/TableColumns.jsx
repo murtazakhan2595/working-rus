@@ -901,6 +901,13 @@ export const DemographicsFormColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter:(cell)=>{
+            const maxlength = 50
+            if (cell && cell.length > maxlength) {
+                return cell.substring(0, maxlength) + '...';
+            }
+            return cell || '--'
+        } 
     },
     {
         dataField: "sections",

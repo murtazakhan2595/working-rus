@@ -23,7 +23,7 @@ import {
 const DEMOGRAPHIC_FORM_STRUCTURE = {
   name: "",
   description: "",
-  is_active: true,
+  is_active: "true",
   sections: [],
 }
 
