@@ -109,7 +109,7 @@ const ViewInterviewFeedback = ({
             <NavigationSheetComponent
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                title={`Interview Details`}
+                title={`Interview Feedback Details`}
                 currentItem_Id={currentId}
                 dataList={DataList}
                 reloadData={reloadData}

@@ -15,17 +15,17 @@ import { GlobalStatusOptions } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
 import moment from "moment";
 
-const ScheduledInterviews = ({ reload, activeView = 'Upcoming Interviews' }) => {
+const ScheduledInterviews = ({ activeView = 'Upcoming Interviews' }) => {
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ panel_member: user_id });
     const [isLoading, setIsLoading] = useState(true);
     const [InterviewsList, setInterviewsList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-    const [ordering, setOrdering] = useState("-id");
+    const [ordering, setOrdering] = useState("scheduled_datetime");
 
     const OuterTabList = useMemo(() => {
-        return ["Upcoming Interviews", "Conducted", "Completed"];
+        return ["All", "Upcoming Interviews"];
     }, []);
 
     const onPageChange = (name, value) => {
@@ -45,7 +45,7 @@ const ScheduledInterviews = ({ reload, activeView = 'Upcoming Interviews' }) => 
             setIsLoading(true);
             const filters = {
                 ...filterData,
-                ...(activeTab === "Upcoming Interviews" ? { status: 'scheduled', scheduled_date_range: [moment().startOf('week').format('YYYY-MM-DD'), moment().endOf('week').format('YYYY-MM-DD')] } : {}),
+                ...(activeTab === "Upcoming Interviews" ? { status: 'scheduled', scheduled_date_range: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')] } : {}),
             };
             const InterviewsList = await getInterviewsList({
                 filterData: filters,
@@ -70,34 +70,15 @@ const ScheduledInterviews = ({ reload, activeView = 'Upcoming Interviews' }) => 
         };
     }, [fetchData]);
 
-    useEffect(() => {
-        let isMounted = true;
-        onPageChange("page", 1);
-        setOrdering("-id");
-        fetchData(isMounted);
-        return () => {
-            isMounted = false;
-        };
-    }, [reload]);
-
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
         setFilterData((prevFilters) => {
             const updatedFilters = { ...prevFilters };
             // Handle other filters normally
             if (filterValue === "" || filterValue === null) {
-                if (filterName === "status") {
-                    if (activeTab === "Requests") {
-                        updatedFilters[filterName] = "pending";
-                    } else if (activeTab === "Records") {
-                        updatedFilters[filterName] =
-                            ["approved", "rejected"];
-                    }
-                } else delete updatedFilters[filterName];
+                delete updatedFilters[filterName];
             } else {
-                if (filterName === "status")
-                    updatedFilters[filterName] = filterValue.toLowerCase();
-                else if (filterName === 'requested_on')
+                if (['scheduled_date_range'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -105,6 +86,13 @@ const ScheduledInterviews = ({ reload, activeView = 'Upcoming Interviews' }) => 
             return updatedFilters;
         });
     };
+
+    const TabTitle = React.useMemo(() => {
+        return {
+            "Upcoming Interviews": { title: 'Upcoming Interviews', description: 'Here you view the list of the upcoming interviews scheduled today', },
+            "All": { title: 'Upcoming Interviews', description: 'Here you view the list of all interviews scheduled', },
+        };
+    }, []);
     return (
         <Card>
             <Tabs
@@ -128,9 +116,9 @@ const ScheduledInterviews = ({ reload, activeView = 'Upcoming Interviews' }) => 
                 </TabsList>
                 <CardHeader className="flex flex-row justify-between items-center gap-4">
                     <div>
-                        <CardTitle className="text-primary">Headcount {activeTab}</CardTitle>
+                        <CardTitle className="text-primary">{TabTitle[activeTab].title}</CardTitle>
                         <CardDescription className="text-neutral-1100">
-                            Here you can {activeTab === 'Requests' ? 'view' : 'approve, or reject'} manpower headcount requests submitted.
+                            {TabTitle[activeTab].description}
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -138,36 +126,17 @@ const ScheduledInterviews = ({ reload, activeView = 'Upcoming Interviews' }) => 
                 <CardContent>
                     <FilterInput
                         filters={[
-
-                            {
-                                type: "select-multiple",
-                                options: "Departments",
-                                name: "department",
-                                placeholder: "Department",
-                            },
-                            {
-                                type: "select-multiple",
-                                options: 'Branches',
-                                name: "branch",
-                                placeholder: "Branch",
-                            },
                             {
                                 type: "search",
-                                name: "requested_by_name",
-                                placeholder: "Requested By",
+                                name: "job_title",
+                                placeholder: "Job Title",
                             },
-                            {
-                                type: "date-range",
-                                name: "requested_on",
-                                placeholder: "Requested Date",
-                            },
-                            ...(activeTab === "Records"
+                            ...(activeTab === "All"
                                 ? [
                                     {
-                                        type: "select",
-                                        options: [...GlobalStatusOptions(false),],
-                                        name: "status",
-                                        placeholder: "Status",
+                                        type: "date-range",
+                                        name: "scheduled_date_range",
+                                        placeholder: "Interview Date",
                                     },
                                 ]
                                 : []),

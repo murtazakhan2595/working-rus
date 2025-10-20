@@ -37,7 +37,7 @@ export const ApplicantStatusList = {
         { status: 'rejected', label: 'Reject Application', variant: 'destructive', permission: 'update-status' },
         { status: 'blacklisted', label: 'Blacklist Application', variant: 'default', permission: 'update-status' },
     ],
-    feedack: [ // status when applicant and interview status is in progress 
-        { status: 'add-feedback', label: 'Add Feedback', variant: 'outline', permission: 'add-feedback' },
-    ]
+    // feedack: [ // status when applicant and interview status is in progress 
+    //     { status: 'add-feedback', label: 'Add Feedback', variant: 'outline', permission: 'add-feedback' },
+    // ]
 }

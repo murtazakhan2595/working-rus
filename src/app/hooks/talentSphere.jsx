@@ -1660,7 +1660,8 @@ export const getInterviewById = async (id) => {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
       const ApplicantData = await getApplicantsData(Response.applicant, true);
-      return { ...ResponseData, applicant: ApplicantData };
+      const FeedBackData = await getInterviewFeedbackList({ filterData: { interview: [Response.id] } });
+      return { ...ResponseData, applicant: ApplicantData, interview_feedback: FeedBackData.results };
     }
   } catch (error) {
     if (error?.response?.status === 401) {

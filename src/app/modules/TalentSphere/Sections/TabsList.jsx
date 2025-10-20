@@ -178,7 +178,7 @@ export const TEAM_TALENT_SPHERE_TAB_CONFIG = [
     {
         key: "interviews",
         label: "Applicant Interviews",
-        viewPerm: "VIEW_TS_EDUCATION",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
         list: (reload) => <ScheduledInterviews reload={reload} />,
     },
 ];
