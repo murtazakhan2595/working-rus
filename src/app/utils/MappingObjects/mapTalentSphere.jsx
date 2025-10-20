@@ -913,7 +913,6 @@ export function mapEmailTemplateData(data) {
     const RecordDetails = Object.keys(EmailTemplate).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
-            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
         return acc;
@@ -946,7 +945,6 @@ export function mapEmailTemplatePayloadData(data, id) {
             data[key] !== undefined
         ) {
             if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
-            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
     }
@@ -1134,7 +1132,7 @@ export async function mapInterviewList(data) {
 export function mapInterviewPayloadData(data, id) {
     // Initialize an empty payload object
     const payload = {};
-    // Iterate over the keys in the EmailTemplate object
+    // Iterate over the keys in the Interview object
     for (const key in Interview) {
         // Check if the key exists in the data object
         if (
