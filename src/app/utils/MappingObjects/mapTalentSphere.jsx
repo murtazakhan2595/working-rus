@@ -1001,24 +1001,6 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
     // Return the constructed payload
     return formData;
-    // Initialize an empty payload object
-    const payload = {};
-    // Iterate over the keys in the OfferLetterTemplate object
-    for (const key in OfferLetterTemplate) {
-        // Check if the key exists in the data object
-        if (
-            data.hasOwnProperty(key) &&
-            data[key] !== null &&
-            data[key] !== undefined
-        ) {
-            if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
-            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
-            else payload[key] = data[key];
-        }
-    }
-
-    // Return the constructed payload
-    return payload;
 }
 
 //-------------OfferTrackings ---------------

@@ -22,9 +22,8 @@ import {
     AddUpdateRemoteWorkChecklistForm,
     EmailTemplates,
     AddUpdateEmailTemplateForm,
-
+    DemoGraphics,
 } from "app/modules/TalentSphere/SettingManagement";
-import Demographics from "app/modules/TalentSphere/DemographicsForm";
 import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
 import { AllApplicants, } from "app/modules/TalentSphere";
 import {
@@ -96,9 +95,9 @@ export const SETTING_TAB_CONFIG = [
     },
     {
         key: "add-demographics",
-        label: "Add Demographics",
+        label: "Demographics Form",
         // no permissions required
-        list: () => <Demographics />,
+        list: () => <DemoGraphics />,
         form: null,
     },
     {
@@ -243,7 +242,7 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: "blacklist",
     },
     {
-        label: "Demographics",
+        label: "DemoGraphics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
     },

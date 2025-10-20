@@ -26,13 +26,14 @@ import {
     ApplicationActions,
     InterviewActions,
     OfferRequestActions,
-    ApplicantProfileActions
+    ApplicantProfileActions,
+    DemographicsFormStatusTogle,
+    DemographicsFormActions,
 } from 'app/modules/TalentSphere';
 import { renderDate, renderRange } from "utils/renderValues";
 import { StatusLabel, TextUI } from "components";
 import { BudgetStatusOptions, RecruitmentApplicationSource, RecruitmentEmailTemplateType } from "data/Data";
 import { MultiStatusLabel } from "components";
-import { DemographicsFormActions } from "app/modules/TalentSphere/DemographicsFormActions";
 import { DesignationName } from "utils/getValuesFromTables";
 
 
@@ -95,7 +96,7 @@ export const ManpowerPlanningColumns = (reloadData) => [
     {
         dataField: "justification",
         text: "Justification",
-        formatter: (cell) => <TextUI text={cell} maxLength={100} />
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
     },
     {
         dataField: "created_by",
@@ -925,15 +926,12 @@ export const DemographicsFormColumns = (reloadData) => [
         text: "Form Name",
         dataSort: true,
     },
-    {
-        dataField: "is_active",
-        text: "Status",
-        formatter: (cell) => <StatusLabel status={cell ? 'Active' : 'Inactive'}>{cell ? 'Active' : 'Inactive'}</StatusLabel>
-    },
+
     {
         dataField: "description",
         text: "Description",
         dataSort: true,
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
     },
     {
         dataField: "sections",
@@ -968,6 +966,15 @@ export const DemographicsFormColumns = (reloadData) => [
         text: "Updated Date",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
         dataSort: true,
+    },
+    {
+        dataField: "is_active",
+        text: "Status",
+        formatter: (cell, row) => {
+            return (
+                <DemographicsFormStatusTogle data={row} is_active={cell} reloadData={reloadData} />
+            );
+        },
     },
     {
         dataField: "",
