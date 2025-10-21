@@ -134,12 +134,14 @@ const SentOfferForm = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = 
                                 name: `validity_date`,
                                 label: "Validity Date",
                                 required: true,
+                                minDate: new Date(),
                             },
                             {
                                 InputField: DateInput,
                                 name: `joining_date`,
                                 label: "Joining Date",
                                 required: true,
+                                minDate: new Date(),
                             },
                             {
                                 InputField: SelectInputComponent,

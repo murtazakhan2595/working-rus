@@ -168,7 +168,7 @@ const ViewApplicationDetail = ({
             const isInterViewDone = moment(latest_interview.scheduled_datetime).isSameOrBefore(moment());
             if (!isInterViewDone) return null;
           }
-          const isOfferGenerated = data?.offer_tracking && (data?.offer_letter?.[data?.offer_letter?.length - 1])?.status !== 'rejected';
+          const isOfferGenerated = (data?.offer_letter?.[data?.offer_letter?.length - 1])?.status !== 'rejected';
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;

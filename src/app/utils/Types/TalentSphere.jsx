@@ -397,7 +397,10 @@ export const OfferLetter = {
     candidate_name: null,
     candidate_contact: null,
     candidate_email: null,
-    candidate_location: null,
+    ai_budget_status: null,
+    ai_confidence_score: null,
+    ai_missing_fields: null,
+    ai_salary_match_status: null,
 }
 
 export const OfferTracking = {

@@ -175,6 +175,7 @@ const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, rel
                                 InputField: DateInput,
                                 name: `expected_joining_date`,
                                 label: "Expected Joining Date",
+                                minDate: new Date(),
                             },
                             {
                                 InputField: TextInput,

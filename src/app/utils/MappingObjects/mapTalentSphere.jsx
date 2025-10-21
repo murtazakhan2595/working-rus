@@ -1059,6 +1059,42 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 if (key === 'status' && data[key] === 'pending_approval')
                     RecordDetails[key] = 'pending';
+                else if (key === 'ai_budget_status') {
+                    const status = data[key] ?? "";
+                    switch (status) {
+                        case "within_budget":
+                            RecordDetails[key] = "Within Budget";
+                            break;
+                        default:
+                            RecordDetails[key] = status;
+                            break;
+                    }
+                }
+                else if (key === 'ai_salary_match_status') {
+                    const status = data[key] ?? "";
+                    switch (status) {
+                        case "out_of_range":
+                            RecordDetails[key] = "Out of Range";
+                            break;
+                        case "matched":
+                            RecordDetails[key] = "Matched";
+                            break;
+                        default:
+                            RecordDetails[key] = status;
+                            break;
+                    }
+
+                } else if (key === 'ai_confidence_score') {
+                    const confidence = parseFloat(data[key] || 0);
+                    if (confidence >= 80)
+                        RecordDetails[key] = <div className='text-emerald-700'>{parseFloat(data[key] || 0)}% - Good to approve</div>;
+                    else if (confidence < 50)
+                        RecordDetails[key] = <div className='text-error-700'>{parseFloat(data[key] || 0)}% - Review required before proceeding</div>;
+                    else if (confidence >= 50 && confidence<80)
+                        RecordDetails[key] = <div className='text-amber-500'>{parseFloat(data[key] || 0)}% - Needs HR attention</div>;
+                } else if (key === 'ai_missing_fields') {
+                    RecordDetails[key] = data[key] && data[key].length > 0 ? data[key] : "All Required Fields Present";
+                }
                 else RecordDetails[key] = data[key];
             }
         }

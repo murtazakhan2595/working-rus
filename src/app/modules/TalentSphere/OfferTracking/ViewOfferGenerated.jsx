@@ -13,6 +13,7 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
 import { usePermissions } from "utils/PermissionUtils";
+import { errorClassName } from "components/FormControl";
 
 const ViewOfferGenerated = ({
     isOpen,
@@ -138,6 +139,28 @@ const ViewOfferGenerated = ({
             ],
         },
         {
+            title: "AI-Based Offer Letter Consistency",
+            field: [
+                {
+                    key: "ai_budget_status",
+                    label: "Budget Validation",
+                },
+                {
+                    key: "ai_confidence_score",
+                    label: "AI Confidence Score",
+                },
+                {
+                    key: "ai_salary_match_status",
+                    label: "Salary vs Job Grade",
+                },
+
+                {
+                    key: "ai_missing_fields",
+                    label: "Missing Data",
+                },
+            ],
+        },
+        {
             title: "Approval Details",
             field: [
                 {
@@ -152,26 +175,35 @@ const ViewOfferGenerated = ({
             customContent: true,
             renderContent: (data) => {
                 if (ViewMode || isTeamView) return null;
+                if(data.status?.toLowerCase()==='pending')
+                if (data.ai_budget_status !== "Within Budget") return <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>;
+                 if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
                 if (data?.status?.toLowerCase() === 'approved') {
                     if (sendOfferPermitted)
                         return <Button className="flex justify-end mt-4" onClick={(event) => handleSentApplicant(event, data)}>Send to Applicant</Button>
-                } else return (
-                    <StatusButtons
-                        permissionKey={'MANAGE_APPLICANT_OFFER_LETTER'}
-                        status={data?.status}
-                        current_approver={data.current_approver}
-                        final_approver={data.final_approvers || []}
-                        request_id={data.request}
-                        RejectionConfig={{ label: 'Rejection Reason', required: true, }}
-                        setResponse={async (response, status, approval_data) => {
-                            if (response) {
-                                if (status?.toLowerCase() === 'rejected') {
-                                    await handleSubmit(data.id, approval_data);
+                } 
+                else return (
+                    <>
+                        {data.ai_salary_match_status === 'Out of Range' &&
+                            <div className='text-amber-500 text-sm'>Offered salary is outside the recommended range for this job grade</div>
+                        }
+                        <StatusButtons
+                            permissionKey={'MANAGE_APPLICANT_OFFER_LETTER'}
+                            status={data?.status}
+                            current_approver={data.current_approver}
+                            final_approver={data.final_approvers || []}
+                            request_id={data.request}
+                            RejectionConfig={{ label: 'Rejection Reason', required: true, }}
+                            setResponse={async (response, status, approval_data) => {
+                                if (response) {
+                                    if (status?.toLowerCase() === 'rejected') {
+                                        await handleSubmit(data.id, approval_data);
+                                    }
+                                    setForceLoad(!forceLoad);
                                 }
-                                setForceLoad(!forceLoad);
-                            }
-                        }}
-                    />
+                            }}
+                        />
+                    </>
                 );
             },
         },
