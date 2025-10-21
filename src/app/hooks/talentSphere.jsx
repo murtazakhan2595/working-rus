@@ -2502,7 +2502,7 @@ export const submitDemographicResponse = async (formData) => {
     const response = await axios.post(
       `${baseUrl}/demographic-responses/`,
       formData,
-      { headers: formDataHeader() } // Use formDataHeader for file uploads
+      // { headers: formDataHeader() } // Use formDataHeader for file uploads
     );
     if (response.status === 200 || response.status === 201) {
       return response.data;
