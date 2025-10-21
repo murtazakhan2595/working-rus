@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import { getInterviewById, saveUpdateInterview } from "app/hooks/talentSphere";
+import { getInterviewById } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
 import {
   NavigationSheetComponent,
   DetailContent,
 } from "components";
 import { InterviewDetails, ApplicantInformation, VacancyDetails } from "app/modules/TalentSphere/Sections";
-import { AddInterviewFeedback, ViewInterviewFeedback, ViewApplicationDetail } from "app/modules/TalentSphere";
+import { AddInterviewFeedback, ViewInterviewFeedback } from "app/modules/TalentSphere";
 import { useSelector } from "react-redux";
 import { HasAccess } from "utils/PermissionUtils";
 import moment from "moment";
-import { ScheduleInterviewSheet } from "app/modules/TalentSphere/ScreenedApplicants";
 
 const ViewInterviewDetails = ({
   currentId,
@@ -18,31 +17,16 @@ const ViewInterviewDetails = ({
   reloadData = () => { },
   isOpen,
   setIsOpen = () => { },
+  isTeamView = false,
 }) => {
   const isAddFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
   const isViewFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
 
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
-  const [OpenScheduleInterview, setOpenScheduleInterview] = useState(false);
   const [OpenFeedbackForm, setOpenFeedbackForm] = useState(false);
   const [OpenViewFeedback, setOpenViewFeedback] = useState(false);
-  const [OpenApplicationDetails, setOpenApplicationDetails] = useState(false);
   const [CurrentData, setCurrentData] = useState(null);
-
-  const handleSubmit = async (values, id) => {
-    try {
-      const response = await saveUpdateInterview(values, id);
-      if (response) {
-        setForceLoad(!forceLoad);
-      }
-    } catch (error) {
-      // Handle errors and rollback form data
-      console.error(error);
-    } finally {
-
-    }
-  }
 
   const handleClick = React.useCallback(
     async (event, status, data) => {
@@ -54,12 +38,6 @@ const ViewInterviewDetails = ({
       }
       else if (status === 'view-feedback') {
         setOpenViewFeedback(true);
-      }
-      else if (status === 'reschedule-interview') {
-        setOpenScheduleInterview(true);
-      }
-      else if (status === 'update-status') {
-        setOpenApplicationDetails(true);
       }
     },
     [setOpenViewFeedback, setOpenFeedbackForm, setCurrentData]
@@ -80,15 +58,15 @@ const ViewInterviewDetails = ({
       {
         customContent: true,
         renderSectionCondition: (data) => {
-          console.log(data);
           if (data.applicant) return true;
           return false;
         },
-        renderContent: ({ applicant }) => <DetailContent
-          fields={ApplicantInformation}
-          currentItem={applicant || {}}
-        />
-
+        renderContent: ({ applicant }) => (
+          <DetailContent
+            fields={ApplicantInformation}
+            currentItem={applicant || {}}
+          />
+        )
       },
       {
         customContent: true,
@@ -111,7 +89,6 @@ const ViewInterviewDetails = ({
           if (!isInterViewDone) return null;
           const panelist_included = (data.panel || []).includes(user_id);
           const feedback_submitted = (data.interview_feedback || []).find(obj => obj.panel_member === user_id);
-          console.log(data, 'APPLICATION DATA', isAddFeedbackPermitted, isInterViewDone, feedback_submitted, panelist_included)
           return (<>
             {(isAddFeedbackPermitted && !feedback_submitted && panelist_included) &&
               <Button
@@ -134,7 +111,7 @@ const ViewInterviewDetails = ({
         },
       },
     ],
-    [handleClick,]
+    [handleClick,isViewFeedbackPermitted,isAddFeedbackPermitted,user_id]
   );
 
   return (
@@ -179,37 +156,7 @@ const ViewInterviewDetails = ({
             setOpenViewFeedback(false);
           }}
           currentId={[CurrentData?.id]}
-        />
-      }
-      {OpenScheduleInterview &&
-        <ScheduleInterviewSheet
-          isOpen={OpenScheduleInterview}
-          reloadData={() => {
-            setOpenScheduleInterview(false);
-            handleSubmit({ status: 'rescheduled' }, CurrentData.id)
-          }}
-          setIsOpen={() => {
-            setOpenScheduleInterview(false);
-          }}
-          id={CurrentData?.applicant}
-          vacancyId={CurrentData?.published_vacancy || CurrentData?.publish_vacancy?.id}
-          mode="add"
-        />
-      }
-      {OpenApplicationDetails &&
-        <ViewApplicationDetail
-          isOpen={OpenApplicationDetails}
-          reloadData={() => {
-            setOpenApplicationDetails(false);
-          }}
-          setIsOpen={() => {
-            setOpenApplicationDetails(false);
-          }}
-          statusUpdated={(flag) => {
-            if (flag)
-              handleSubmit({ status: 'completed' }, CurrentData.id)
-          }}
-          currentId={CurrentData?.applicant}
+          isTeamView={isTeamView}
         />
       }
     </>

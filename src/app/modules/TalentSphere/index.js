@@ -93,7 +93,6 @@ import {
 
 import {
     InterviewTracker,
-    InProgressInterviews,
     InterviewActions,
     ViewInterviewDetails,
     AddInterviewFeedback,
@@ -146,7 +145,6 @@ export {
     AddUpdateSkillForm,
     SkillActions,
     UpdateApplicantStatus,
-    InProgressInterviews,
     ViewInterviewDetails,
     InterviewActions,
     ApplicantManagement,

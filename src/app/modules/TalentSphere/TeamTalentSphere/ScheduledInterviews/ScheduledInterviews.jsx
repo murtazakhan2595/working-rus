@@ -9,7 +9,7 @@ import {
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
 import { getInterviewsList } from "app/hooks/talentSphere";
-import { InProgressInterviewColumns } from "app/modules/TalentSphere/Sections";
+import { InterviewColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GlobalStatusOptions } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
@@ -149,7 +149,7 @@ const ScheduledInterviews = ({ activeView = 'Upcoming Interviews' }) => {
                     ) : (
                         <TableCustom
                             data={InterviewsList?.results || []}
-                            columns={InProgressInterviewColumns(fetchData, activeTab === 'Records', true)}
+                            columns={InterviewColumns(fetchData, null, true)}
                             pagination={true}
                             dataTotalSize={InterviewsList?.count || 0}
                             tableOptions={tableOptions}
