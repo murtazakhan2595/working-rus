@@ -84,33 +84,40 @@ const TalentSphereDashboard = () => {
       values: filterData.date_range,
     },
     {
-      type: "select-one",
-      option: Departments,
+      type: "select-multiple",
+      options: Departments,
       name: "department",
       placeholder: "Department",
-      values: filterData.department,
     },
     {
       type: "search",
       name: "job_title",
       placeholder: "Job Title",
-      values: filterData.job_title,
       width: "w-[220px]",
     },
     {
-      type: "select-two",
-      option: [
+      type: "select",
+      options: [
+        { value: "internal", label: "Internal" },
+        { value: "external", label: "External" },
+        { value: "both", label: "Both" },
+      ],
+      name: "requisition_type",
+      placeholder: "Requisition Type",
+    },
+    {
+      type: "select",
+      options: [
         { value: "pending", label: "Pending" },
         { value: "approved", label: "Approved" },
         { value: "rejected", label: "Rejected" },
       ],
       name: "requisition_status",
       placeholder: "Requisition Status",
-      values: filterData.requisition_status,
     },
     {
-      type: "select-three",
-      option: [
+      type: "select",
+      options: [
         { value: "screened", label: "Screened" },
         { value: "interviewed", label: "Interviewed" },
         { value: "offered", label: "Offered" },
@@ -119,17 +126,15 @@ const TalentSphereDashboard = () => {
       ],
       name: "applicant_status",
       placeholder: "Applicant Status",
-      values: filterData.applicant_status,
     },
     {
-      type: "select-four",
-      option: [
+      type: "select",
+      options: [
         { value: true, label: "Emiratization" },
         { value: false, label: "Non-Emiratization" },
       ],
       name: "is_emiratization",
       placeholder: "Emiratization",
-      values: filterData.is_emiratization,
     },
   ];
 
