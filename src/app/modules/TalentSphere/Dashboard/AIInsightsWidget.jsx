@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SelectInputComponent } from "components/FormControl";
+import { ViewInterviewDetails } from "app/modules/TalentSphere";
 
 const AIInsightsWidget = ({
   budgetWarnings,
@@ -41,6 +42,8 @@ const AIInsightsWidget = ({
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [loadingVacancies, setLoadingVacancies] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [openInterviewDetails, setOpenInterviewDetails] = useState(false);
+  const [selectedInterviewId, setSelectedInterviewId] = useState(null);
 
   // Fetch vacancies when AI suggestions tab is opened
   const handleTabChange = async (value) => {
@@ -79,6 +82,12 @@ const AIInsightsWidget = ({
     } finally {
       setLoadingSuggestions(false);
     }
+  };
+
+  // Handle opening interview details
+  const handleOpenInterviewDetails = (interviewId) => {
+    setSelectedInterviewId(interviewId);
+    setOpenInterviewDetails(true);
   };
 
   // Get budget warnings with actual warnings
@@ -407,11 +416,7 @@ const AIInsightsWidget = ({
                           <Card
                             key={index}
                             className="p-2 bg-red-50 border-red-200 cursor-pointer hover:shadow-md transition-shadow"
-                            onClick={() =>
-                              navigate(
-                                `/talent-sphere/applicant/${item.applicant_id}`
-                              )
-                            }
+                            onClick={() => handleOpenInterviewDetails(item.interview_id)}
                           >
                             {console.log(item, "item")}
                             <div className="flex items-start justify-between">
@@ -447,6 +452,23 @@ const AIInsightsWidget = ({
           </TabsContent>
         </Tabs>
       </CardContent>
+      
+      {/* Interview Details Sheet */}
+      {openInterviewDetails && (
+        <ViewInterviewDetails
+          isOpen={openInterviewDetails}
+          setIsOpen={() => {
+            setOpenInterviewDetails(false);
+            setSelectedInterviewId(null);
+          }}
+          currentId={selectedInterviewId}
+          DataList={[]}
+          reloadData={() => {
+            // Optionally refresh dashboard data when interview details are updated
+            // You can add a callback prop to refresh the dashboard if needed
+          }}
+        />
+      )}
     </Card>
   );
 };

@@ -12,6 +12,7 @@ const KPICards = ({ data, loading }) => {
       description: "All requisitions raised",
       color: "text-[#3B82F6]", // Match funnel: Requisitions Raised (blue)
       route: "/talent-sphere/requisition-planning",
+      state: { tab: "generate-requisition" },
     },
     {
       title: "Pending Requisitions",
@@ -19,6 +20,7 @@ const KPICards = ({ data, loading }) => {
       description: "Awaiting approval",
       color: "text-yellow-600",
       route: "/talent-sphere/requisition-planning",
+      state: { tab: "requisition-requests", filterData: {} },
     },
     {
       title: "Approved Requisitions",
@@ -26,6 +28,7 @@ const KPICards = ({ data, loading }) => {
       description: "Ready to publish",
       color: "text-[#10B981]", // Align with acceptance/positive state
       route: "/talent-sphere/requisition-planning",
+      state: { tab: "requisition-requests", filterData: {}, subTab: "Records" },
     },
     {
       title: "Published Vacancies",
@@ -33,6 +36,7 @@ const KPICards = ({ data, loading }) => {
       description: "Active job postings",
       color: "text-[#F59E0B]", // Match funnel: Vacancies Published (orange)
       route: "/talent-sphere/requisition-planning",
+      state: { tab: "published-vacancies", filterData: {} },
     },
     {
       title: "Total Applicants",
@@ -40,6 +44,7 @@ const KPICards = ({ data, loading }) => {
       description: "Candidates applied",
       color: "text-[#8B5CF6]", // Match funnel: Total Applicants (purple)
       route: "/talent-sphere/applicant-management",
+      state: { tab: "All Applicants", filterData: {} },
     },
     {
       title: "Screened Candidates",
@@ -47,6 +52,7 @@ const KPICards = ({ data, loading }) => {
       description: "Shortlisted for interviews",
       color: "text-[#EF4444]", // Match funnel: Screened Candidates (red)
       route: "/talent-sphere/applicant-management",
+      state: { tab: "Screened", filterData: {} },
     },
     {
       title: "Interviews Scheduled",
@@ -61,6 +67,7 @@ const KPICards = ({ data, loading }) => {
       description: "Offers created",
       color: "text-[#EC4899]", // Match funnel: Offers Generated (pink)
       route: "/talent-sphere/offer-tracking",
+      state: { tab: "Offer Send", subTab: "Pending", filterData: {} },
     },
     {
       title: "Offers Accepted",
@@ -68,6 +75,7 @@ const KPICards = ({ data, loading }) => {
       description: "Candidates accepted",
       color: "text-[#10B981]", // Match funnel: Offers Accepted (green)
       route: "/talent-sphere/offer-tracking",
+      state: { tab: "Offer Send", subTab: "Accepted", filterData: {} },
     },
     {
       title: "Hired Applicants",
@@ -75,7 +83,7 @@ const KPICards = ({ data, loading }) => {
       description: "Successfully onboarded",
       color: "text-[#059669]", // Match funnel: Final Hires (dark green)
       route: "/talent-sphere/applicant-management",
-      state: { tab: "Hired" },
+      state: { tab: "Hired", filterData: {} },
     },
     {
       title: "Rejected Applicants",
@@ -83,6 +91,7 @@ const KPICards = ({ data, loading }) => {
       description: "Not selected",
       color: "text-red-600",
       route: "/talent-sphere/applicant-management",
+      state: { tab: "Rejected", filterData: {} },
     },
     {
       title: "Blacklisted",
@@ -90,6 +99,7 @@ const KPICards = ({ data, loading }) => {
       description: "Permanently blacklisted",
       color: "text-red-800",
       route: "/talent-sphere/applicant-management",
+      state: { tab: "Blacklisted", filterData: {} },
     },
   ];
 
