@@ -67,7 +67,7 @@ const EmployeesSalaryList = ({ departments }) => {
 
             // ... existing code ...
             {
-              type: "select-one",
+               type: "select",
               option: departments,
               name: "department_name",
               placeholder: "Department",

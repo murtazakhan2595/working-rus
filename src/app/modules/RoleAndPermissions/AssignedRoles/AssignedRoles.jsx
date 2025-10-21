@@ -114,8 +114,8 @@ const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
             name: "emp_search",
           },
           {
-            type: "select-one",
-            option: roles.map((role) => ({
+             type: "select",
+            options: roles.map((role) => ({
               label: role.name,
               value: role.id,
             })),

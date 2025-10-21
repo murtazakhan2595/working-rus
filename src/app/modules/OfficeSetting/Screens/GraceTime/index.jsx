@@ -109,10 +109,10 @@ const GraceTime = ({ reload }) => {
                     name: "name",
                   },
                   {
-                    type: "select-one",
+                    type: "select",
                     placeholder: "Branch",
                     name: "branch",
-                    option: Branches,
+                    options: Branches,
                     values: selectedBranch,
                   },
                 ]}

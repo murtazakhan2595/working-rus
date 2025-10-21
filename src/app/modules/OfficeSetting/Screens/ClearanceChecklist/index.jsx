@@ -147,10 +147,10 @@ const ClearanceChecklist = ({ reload }) => {
                   name: "name",
                 },
                 {
-                  type: "select-one",
+                  type: "select",
                   placeholder: "Department",
                   name: "department",
-                  option: Departments,
+                  options: Departments,
                   values: filterData.department || [],
                 },
                 {

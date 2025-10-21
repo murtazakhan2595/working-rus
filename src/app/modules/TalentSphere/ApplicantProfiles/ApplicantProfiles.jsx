@@ -15,16 +15,16 @@ import {
   CardTitle,
   CardDescription,
 } from "components/ui/card";
-import { RecruitmentApplicationSource } from "data/Data";
 
 const ApplicantProfiles = ({ reload, variant = "all" }) => {
   const [ResumeBankList, setResumeBankList] = useState({});
-  const [filterData, setFilterData] = useState({ status: ["in_progress", "shortlisted", "hired", "screened", 'rejected', 'blacklisted'] });
+  const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [isLoading, setIsLoading] = useState(false);
   const [JobTypeList, setJobTypeList] = useState([]);
   const [CareerLevelList, setCareerLevelList] = useState([]);
+  const DefaultStatus = React.useMemo(() => ["in_progress", "shortlisted", "hired", "screened", 'rejected', 'blacklisted', 'hold'], []);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -41,7 +41,7 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const filters = { ...filterData };
+      const filters = { status: DefaultStatus, ...filterData };
       const response = await getApplicantsList({
         filterData: filters,
         options,
@@ -80,11 +80,9 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
-        if (filterName === 'status')
-          updatedFilters[filterName] = ["in_progress", "shortlisted", "hired", "screened", 'rejected', 'blacklisted']
-        else delete updatedFilters[filterName];
+         delete updatedFilters[filterName];
       } else {
-        if (['application_date_range'].includes(filterName)){
+        if (['application_date_range'].includes(filterName)) {
           updatedFilters[filterName] = filterValue?.split(',')
         }
         else updatedFilters[filterName] = filterValue;
@@ -116,14 +114,20 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
                   placeholder: "Candidate Name/Id",
                 },
                 {
+                  type: "search-id",
+                  name: "requisition_id",
+                  placeholder: "Requisition Id",
+                },
+                {
                   type: "select-multiple",
                   name: "status",
                   placeholder: "By Status",
                   options: [
+                    { value: "screened", label: "Screened" },
                     { value: "in_progress", label: "Inprogress" },
+                    { value: "hold", label: "On Hold" },
                     { value: "shortlisted", label: "Shortlisted" },
                     { value: "hired", label: "Hired" },
-                    { value: "screened", label: "Screened" },
                     { value: "rejected", label: "Rejected" },
                     { value: "blacklisted", label: "Blacklisted" },
                   ],

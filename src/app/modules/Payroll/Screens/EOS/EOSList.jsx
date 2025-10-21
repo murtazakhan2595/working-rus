@@ -744,7 +744,7 @@ const EOSList = () => {
                name: "emp_search",
              },
              {
-               type: "select-one",
+                type: "select",
                option: departmentsList.length > 0 
                 ? departmentsList.map(dep => ({ value: dep.id || dep.value, label: dep.name || dep.label }))
                 : departments.map(dep => ({ value: dep.id || dep.value, label: dep.name || dep.label })),

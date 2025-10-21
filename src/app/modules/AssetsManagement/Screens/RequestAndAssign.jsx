@@ -258,8 +258,8 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
       if (activeSubTab === "Records") {
         // For Records sub-tab, show status filter
         baseFilters.push({
-          type: "select-one",
-          option: [
+          type: "select",
+          options: [
             { value: "Accepted", label: "Accepted" },
             { value: "Rejected", label: "Rejected" },
             { value: "Withdrawal", label: "Withdrawal" },
@@ -273,8 +273,8 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
     } else {
       // For assignments tab, show all statuses
       baseFilters.push({
-        type: "select-one",
-        option: [
+        type: "select",
+        options: [
           { value: "Pending", label: "Pending" },
           { value: "Rejected", label: "Rejected" },
           { value: "Accepted", label: "Accepted" },

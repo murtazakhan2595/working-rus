@@ -2529,14 +2529,19 @@ export const getDemographicResponsesByApplicant = async (applicantId) => {
       { headers: headers() }
     );
     if (response.status === 200) {
-      return response.data;
+      if (response && response.results && response.results.length > 0) {
+        const responseData = response.results[0];
+        const formDataResponse = await getDemographicFormById(responseData.form);
+        return { ...responseData, demographic_form: formDataResponse }
+      }
+      return null;
     }
   } catch (error) {
     console.error("Error fetching demographic responses:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
+    return null;
   }
 };
 

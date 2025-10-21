@@ -127,8 +127,8 @@ const generateMonthOptions = () => {
               },
             },
             {
-              type: "select-one",
-              option: [
+               type: "select",
+              options: [
                 { value: "earning", label: "Earning" },
                 { value: "deduction", label: "Deduction" },
               ],

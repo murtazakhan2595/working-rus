@@ -237,8 +237,8 @@ export default function EmployeeSalaryRevisions({
           <FilterInput
             filters={[
               {
-                type: "select-one",
-                option: revisionStatusOptions,
+                 type: "select",
+                options: revisionStatusOptions,
                 name: "revision_status",
                 placeholder: "Revision Status",
               },

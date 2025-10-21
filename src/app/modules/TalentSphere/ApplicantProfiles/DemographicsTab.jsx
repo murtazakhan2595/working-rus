@@ -1,50 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { PageLoader } from "components";
-import {
-  getDemographicResponsesByApplicant,
-  getDemographicFormById,
-} from "app/hooks/talentSphere";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { FileText } from "lucide-react";
 import { renderDate } from "utils/renderValues";
 import AttachmentUI from "components/ui/AttachmentUI";
+import { StatusLabel } from "components";
 
-const DemographicsTab = ({ applicantId }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [demographicData, setDemographicData] = useState(null);
-  const [formStructure, setFormStructure] = useState(null);
-
-  useEffect(() => {
-    const fetchDemographicData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getDemographicResponsesByApplicant(applicantId);
-
-        if (response && response.results && response.results.length > 0) {
-          const responseData = response.results[0];
-          setDemographicData(responseData);
-
-          const formData = await getDemographicFormById(responseData.form);
-          if (formData) {
-            setFormStructure(formData);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching demographic data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (applicantId) {
-      fetchDemographicData();
-    }
-  }, [applicantId]);
+const DemographicsTab = ({ demographaic_details }) => {
+  console.log(demographaic_details, 'demographicData')
 
   const getFieldDetails = (fieldId) => {
-    if (!formStructure || !formStructure.sections) return null;
+    if (!demographaic_details?.demographic_form || !demographaic_details?.demographic_form.sections) return null;
 
-    for (const section of formStructure.sections) {
+    for (const section of demographaic_details?.demographic_form.sections) {
       const field = section.fields?.find((f) => f.id === fieldId);
       if (field) {
         return {
@@ -73,11 +40,11 @@ const DemographicsTab = ({ applicantId }) => {
   };
 
   const groupAnswersBySection = () => {
-    if (!demographicData || !formStructure) return {};
+    if (!demographaic_details || !demographaic_details?.demographic_form) return {};
 
     const grouped = {};
 
-    demographicData.answers.forEach((answer) => {
+    demographaic_details?.answers.forEach((answer) => {
       const fieldDetails = getFieldDetails(answer.field);
       if (fieldDetails) {
         const sectionName = fieldDetails.section || "Other Information";
@@ -97,12 +64,7 @@ const DemographicsTab = ({ applicantId }) => {
 
     return grouped;
   };
-
-  if (isLoading) {
-    return <PageLoader />;
-  }
-
-  if (!demographicData) {
+  if (!demographaic_details) {
     return (
       <Card>
         <CardContent className="py-12">
@@ -114,6 +76,7 @@ const DemographicsTab = ({ applicantId }) => {
             <p className="mt-1 text-sm text-gray-500">
               This applicant hasn't submitted any demographic information yet.
             </p>
+            <StatusLabel status={'pending'} className='m-auto mt-4'>Pending</StatusLabel>
           </div>
         </CardContent>
       </Card>
@@ -130,18 +93,18 @@ const DemographicsTab = ({ applicantId }) => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold text-neutral-1200">
-                {formStructure?.name || "Demographics form"}
+                {demographaic_details?.demographic_form?.name || "Demographics form"}
               </CardTitle>
-              {formStructure?.description && (
+              {demographaic_details?.demographic_form?.description && (
                 <p className="text-sm text-neutral-1000 mt-1">
-                  {formStructure.description}
+                  {demographaic_details?.demographic_form.description}
                 </p>
               )}
             </div>
             <div className="text-right">
               <p className="text-xs text-neutral-800">Submitted on</p>
               <p className="text-sm font-medium text-neutral-1200">
-                {renderDate(demographicData.submitted_at, "N/A", "date-time")}
+                {renderDate(demographaic_details?.submitted_at, "N/A", "date-time")}
               </p>
             </div>
           </div>

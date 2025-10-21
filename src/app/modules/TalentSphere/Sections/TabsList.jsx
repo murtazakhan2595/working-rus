@@ -283,33 +283,8 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: "blacklist",
     },
     {
-        label: "DemoGraphics",
+        label: "Demographics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
     },
-    // {
-    //     label: "Rejected",
-    //     permission: "VIEW_REJECTED_APPLICATION",
-    //     component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
-    // },
-    // {
-    //     label: "Resume Bank",
-    //     permission: "VIEW_RESUME_BANK_APPLICATION",
-    //     component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
-    // },
-    // {
-    //     label: "Screened",
-    //     permission: "VIEW_TS_EDUCATION",
-    //     component: () => <Applicants />,
-    // },
-    // {
-    //     label: "Shortlisted",
-    //     permission: "VIEW_TS_CAREER_LEVEL",
-    //     component: () => <AllApplicants variant="shortlisted" />,
-    // },
-    // {
-    //     label: "Blacklisted",
-    //     permission: "VIEW_REJECTED_APPLICATION",
-    //     component: () => <AllApplicants variant="blacklisted" />,
-    // },
 ];
