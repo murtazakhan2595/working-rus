@@ -41,6 +41,7 @@ export default function ApplicantProfileDetails() {
         const response = await getApplicantsData(id);
         if (isMounted && response) {
           const demographicResponse = await getDemographicResponsesByApplicant(id);
+          console.log(demographicResponse, "Demographic Response");
           setApplicantData({ ...response, demographaic_details: demographicResponse });
         }
       } catch (error) {
