@@ -253,14 +253,17 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
     {
         label: "Applicant Info",
         infoFields: ApplicantInformation,
+
     },
     {
         label: "Screening Info",
         infoFields: ScreeningInfomation,
+        key:'screened_by',
     },
     {
         label: "Interview Details",
         infoFields: AllInterviewDetails,
+        key:"interviews"
     },
     {
         label: "Offer Details",
@@ -286,5 +289,6 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         label: "Demographics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
+        key:"interviews"
     },
 ];

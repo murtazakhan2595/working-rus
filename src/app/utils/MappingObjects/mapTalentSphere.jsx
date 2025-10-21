@@ -669,10 +669,10 @@ export async function mapApplicantsData(data) {
                 RecordDetails.blacklist = value ? mapBlacklistApplicantData(value) : null;
                 break;
             case "interviews":
-                const interviews = value ? await mapInterviewList(value) : null;
-                const sortedData = (interviews || []).sort((a, b) => a.id - b.id);
+                const interviews = value && value.length > 0 ? await mapInterviewList(value) : null;
+                const sortedData = interviews ? (interviews || []).sort((a, b) => a.id - b.id) : null;
                 RecordDetails.interviews = sortedData;
-                RecordDetails.latest_interview = sortedData[sortedData.length - 1];
+                RecordDetails.latest_interview = sortedData?.[sortedData.length - 1];
                 break;
 
             case "recruitment_shortlist":

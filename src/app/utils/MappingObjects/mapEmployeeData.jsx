@@ -133,8 +133,9 @@ export async function mapEmployeeApplicantData(data, designations) {
     branch_id: branch,
     department_position: designation,
     department_name: department,
-    salary_type: payment_frequency,
+    salary_type: payment_frequency === 'bi-weekly' ? 'biweekly' :payment_frequency === 'annually' ? null :payment_frequency,
   };
+  
   return employee;
 }
 
