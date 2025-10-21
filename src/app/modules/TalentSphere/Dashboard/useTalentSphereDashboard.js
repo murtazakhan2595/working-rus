@@ -38,6 +38,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       department: "dt-department",
       job_title: "dt-job_title",
       date_range: "dt-date_range",
+      requisition_type: "dt-requisition_type",
       requisition_status: "dt-requisition_status",
       applicant_status: "dt-applicant_status",
       is_emiratization: "dt-is_emiratization",
