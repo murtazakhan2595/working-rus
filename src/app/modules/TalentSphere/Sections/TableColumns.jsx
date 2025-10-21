@@ -931,13 +931,13 @@ export const DemographicsFormColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter:(cell)=>{
+        formatter: (cell) => {
             const maxlength = 50
             if (cell && cell.length > maxlength) {
                 return cell.substring(0, maxlength) + '...';
             }
             return cell || '--'
-        } 
+        }
     },
     {
         dataField: "sections",
@@ -1415,13 +1415,13 @@ export const ResumeBankColumns = (reloadData) => [
 
 
 /**
- * InProgressInterviewColumns
+ * InterviewColumns
  *
- * Returns an array of column definitions for the InProgressInterviewColumns table.
+ * Returns an array of column definitions for the InterviewColumns table.
  *
  * @returns {array} An array of column definitions.
  */
-export const InProgressInterviewColumns = (reloadData) => [
+export const InterviewColumns = (reloadData, _, isTeamView) => [
     {
         dataField: "applicant",
         text: "Applicant",
@@ -1460,7 +1460,7 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <InterviewActions data={row} reloadData={reloadData} DataList={data_list} />
+            <InterviewActions data={row} reloadData={reloadData} DataList={data_list} isTeamView={isTeamView} />
         ),
         width: '50px'
     },

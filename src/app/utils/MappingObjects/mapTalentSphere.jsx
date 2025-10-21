@@ -510,12 +510,17 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails = tru
     }
     if (['approved', 'rejected'].includes(data['status']?.toLowerCase())) {
         const logs = data['approval_logs']?.[0];
-        if (logs?.action_type?.toUpperCase() === 'APPROVED') {
-            RecordDetails['approved_by'] = logs.changed_by;
-            RecordDetails['approved_on'] = logs.timestamp;
-        } else if (logs?.action_type?.toUpperCase() === 'REJECTED') {
-            RecordDetails['rejected_by'] = logs.changed_by;
-            RecordDetails['rejected_on'] = logs.timestamp;
+        if (logs) {
+            if (logs?.action_type?.toUpperCase() === 'APPROVED') {
+                RecordDetails['approved_by'] = logs.changed_by;
+                RecordDetails['approved_on'] = logs.timestamp;
+            } else if (logs?.action_type?.toUpperCase() === 'REJECTED') {
+                RecordDetails['rejected_by'] = logs.changed_by;
+                RecordDetails['rejected_on'] = logs.timestamp;
+            }
+        } else {
+            RecordDetails['approved_by'] = data.requested_by;
+            RecordDetails['approved_on'] = data.created_at;
         }
     }
     return RecordDetails;
@@ -682,7 +687,7 @@ export async function mapApplicantsData(data) {
                 break;
             case "offer_letters":
                 const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value) : null;
-                const sorted_offer_letters = (offer_letters || []).sort((a, b) => a.id - b.id);
+                const sorted_offer_letters = offer_letters ? (offer_letters || []).sort((a, b) => a.id - b.id) : null;
                 RecordDetails.offer_letters = sorted_offer_letters;
                 break;
 

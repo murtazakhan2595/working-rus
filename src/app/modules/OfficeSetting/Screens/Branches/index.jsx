@@ -109,11 +109,11 @@ const Branches = ({ reload }) => {
                   },
 
                   {
-                    type: "select-one",
+                    type: "select",
                     placeholder: "Status",
                     name: "branch_status",
                     values: selectedStatus,
-                    option: [
+                    options: [
                       { value: "Active", label: "Active" },
                       { value: "Inactive", label: "Inactive" },
                     ],

@@ -88,8 +88,8 @@ const EmployeesPayroll = () => {
                 name: "emp_name",
               },
               {
-                type: "select-one",
-                option: Departments,
+                 type: "select",
+                options: Departments,
                 name: "department_name",
                 placeholder: "Department",
                 values: selectedDepartment,

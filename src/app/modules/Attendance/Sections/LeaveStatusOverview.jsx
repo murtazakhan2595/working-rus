@@ -122,8 +122,8 @@ export function LeaveStatusOverview() {
               ...(isViewStatus || isViewBrnStatus
                 ? [
                     {
-                      type: "select-one",
-                      option: Departments,
+                      type: "select",
+                      options: Departments,
                       name: "departments",
                       placeholder: "Department",
                       values: selectedDepartment,

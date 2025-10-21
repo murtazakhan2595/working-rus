@@ -208,8 +208,8 @@ const TransferAndRotationReports = () => {
                 name: "name",
               },
               {
-                type: "select-one",
-                option: Departments,
+                 type: "select",
+                options: Departments,
                 name: "department",
                 placeholder: "Department",
                 values: filterData.department,

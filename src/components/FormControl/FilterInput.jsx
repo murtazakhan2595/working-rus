@@ -45,14 +45,13 @@ const FilterInput = ({
   const Designations = GetDispatchStateList("designations", "common") || [];
   const Branches = GetDispatchStateList("branches", "common") || [];
   const Employees = GetDispatchStateList("employees", "emp") || [];
-      const Currencies = GetDispatchStateList("currencies", "common")||[];
+  const Currencies = GetDispatchStateList("currencies", "common") || [];
   const classNamesStyle = "";
   const DefaultWidth = "min-w-56";
   const DefaultHeight = "min-h-[38px]";
   const [openRole, setOpenRole] = useState(false);
   const [openFilterFour, setOpenFilterFour] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
-  const [openDepartment, setOpenDepartment] = useState(false);
   const [resetFields, setResetFields] = useState(false);
 
   const handleInputChange = React.useCallback(
@@ -178,9 +177,9 @@ const FilterInput = ({
                         ? countriesList || []
                         : options.toLowerCase() === "employees"
                           ? Employees || []
-                        : options.toLowerCase() === "currencies"
-                          ? Currencies || []
-                          : []
+                          : options.toLowerCase() === "currencies"
+                            ? Currencies || []
+                            : []
                 : [];
           switch (filter.type) {
             case "search":
@@ -219,7 +218,7 @@ const FilterInput = ({
                   width={width ?? DefaultWidth}
                   name={name}
                   options={SearchOptions || []}
-                  placeholder={`Search ${placeholder}`}
+                  placeholder={`Search By ${placeholder}`}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
                   value={value || filterValues[name] || null}
@@ -234,19 +233,26 @@ const FilterInput = ({
                   width={width ?? DefaultWidth}
                   name={name}
                   options={SearchOptions || []}
-                  placeholder={`Search ${placeholder}`}
+                  placeholder={`Search By ${placeholder}`}
                   height={height ?? DefaultHeight}
                   handleInputChange={handleInputChange}
                   value={filterValues[name] || null}
                   resetField={resetFields}
                 />
               );
-            case "select-one":
-              return renderPopoverSelect(
-                filter,
-                index,
-                openDepartment,
-                setOpenDepartment
+            case "search-id": // Used to search records by their unique numeric ID
+              return (
+                <RenderIDInputField
+                  key={index}
+                  className={FilterClassName}
+                  width={width ?? DefaultWidth}
+                  name={name}
+                  placeholder={`Search By ${placeholder}`}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                  value={value || filterValues[name] || null}
+                  resetField={resetFields}
+                />
               );
             case "select-two":
               return renderPopoverSelect(
@@ -273,7 +279,7 @@ const FilterInput = ({
                   className={FilterClassName}
                   width={width ?? "w-[235px]"}
                   name={name}
-                  placeholder={`Search ${placeholder}`}
+                  placeholder={`Search By ${placeholder}`}
                   height={height ?? DefaultHeight}
                   resetField={resetFields}
                   value={filterValues[name] || null}
@@ -286,7 +292,7 @@ const FilterInput = ({
                   key={index}
                   className={FilterClassName}
                   name={name}
-                  placeholder={`Search ${placeholder}`}
+                  placeholder={`Search By ${placeholder}`}
                   height={height ?? DefaultHeight}
                   resetField={resetFields}
                   value={filterValues[name] || null}
@@ -392,6 +398,59 @@ const RenderInputField = React.memo(
           onChange={(field, value) => {
             setInputValue(value);
             handleInputChange(field, value);
+          }}
+        />
+        {!inputValue && (
+          <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-neutral-800" />
+        )}
+      </div>
+    );
+  }
+);
+const RenderIDInputField = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    placeholder,
+    height = "",
+    handleInputChange = () => { },
+    value,
+    resetField,
+  }) => {
+    const [inputValue, setInputValue] = useState(value);
+
+    const prevResetField = React.useRef(resetField);
+    useEffect(() => {
+      if (prevResetField.current !== resetField && resetField !== false) {
+        setInputValue(null);
+      }
+      prevResetField.current = resetField;
+    }, [resetField]);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+        <TextInput
+          type={"text"}
+          placeholder={placeholder}
+          className={`rounded-sm text-neutral-1000`}
+          name={name}
+          value={inputValue || ""}
+          onChange={(field, value) => {
+            if (value) {
+              const trimed_id = value.replace(/\D/g, ""); //Remove all the extra characters other then numeric to get the unique id
+              const unique_id = parseInt(trimed_id || 0);
+              if (unique_id) {
+                handleInputChange(field, unique_id);
+              }
+            } else {
+              handleInputChange(field, "");
+            }
+            setInputValue(value);
           }}
         />
         {!inputValue && (

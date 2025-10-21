@@ -584,8 +584,8 @@ const AttendanceAndShiftReports = () => {
                 name: "employee_name",
               },
               {
-                type: "select-one",
-                option: Departments,
+                 type: "select",
+                options: Departments,
                 name: "department_name",
                 placeholder: "Department",
                 values: filterData.department_name,

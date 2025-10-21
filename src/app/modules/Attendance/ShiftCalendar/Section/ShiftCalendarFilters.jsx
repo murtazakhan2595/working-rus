@@ -67,8 +67,8 @@ const ShiftCalendarFilters = ({
             values: filterData.emp_search || "",
           },
           {
-            type: "select-one",
-            option: Departments,
+            type: "select",
+            options: Departments,
             name: "department_name",
             placeholder: "Department",
             values: filterData.department_name || "",

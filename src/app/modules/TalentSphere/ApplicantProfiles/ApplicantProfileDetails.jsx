@@ -17,7 +17,7 @@ import { Card, CardContent } from "components/ui/card";
 import Error from "app/modules/Error";
 import { APPLICANT_PROFILE_TAB_CONFIG } from "app/modules/TalentSphere/Sections";
 import { useParams } from "react-router-dom";
-import { getApplicantsData } from "app/hooks/talentSphere";
+import { getApplicantsData, getDemographicResponsesByApplicant } from "app/hooks/talentSphere";
 import { Button } from "components/ui/button";
 import EmployeeForm from "app/modules/Employees/Screens/EmployeeForm";
 import DemographicsTab from "./DemographicsTab"; // Import the new component
@@ -40,8 +40,8 @@ export default function ApplicantProfileDetails() {
       try {
         const response = await getApplicantsData(id);
         if (isMounted && response) {
-          console.log(response);
-          setApplicantData(response);
+          const demographicResponse = await getDemographicResponsesByApplicant(id);
+          setApplicantData({ ...response, demographaic_details: demographicResponse });
         }
       } catch (error) {
         console.error(error);
@@ -56,6 +56,7 @@ export default function ApplicantProfileDetails() {
       isMounted = false;
     };
   }, [id]);
+  console.log(ApplicantData, "Application Details");
 
   const { candidate_name, candidate_id, serial_id, status } = useMemo(
     () => ApplicantData,
@@ -107,11 +108,14 @@ export default function ApplicantProfileDetails() {
       <Tabs value={currentTab} onValueChange={setActiveTab}>
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
           <TabsList>
-            {APPLICANT_PROFILE_TAB_CONFIG.map((tab) => (
-              <TabsTrigger key={tab.label} value={tab.label}>
-                {tab.label}
-              </TabsTrigger>
-            ))}
+            {APPLICANT_PROFILE_TAB_CONFIG.map((tab) => {
+              if (tab.dataKey && !ApplicantData[tab.dataKey]) return null;
+              return (
+                <TabsTrigger key={tab.label} value={tab.label}>
+                  {tab.label}
+                </TabsTrigger>
+              )
+            })}
           </TabsList>
         </div>
         {APPLICANT_PROFILE_TAB_CONFIG.map((tab) => (
@@ -120,7 +124,7 @@ export default function ApplicantProfileDetails() {
               <PageLoader />
             ) : tab.customComponent && tab.label === "Demographics" ? (
               // Render custom component for Demographics tab
-              <DemographicsTab applicantId={id} />
+             <DemographicsTab demographaic_details={ApplicantData?.demographaic_details} />
             ) : (
               // Render standard DetailContent for other tabs
               <DetailContent

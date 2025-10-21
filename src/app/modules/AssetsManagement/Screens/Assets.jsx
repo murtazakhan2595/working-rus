@@ -313,8 +313,8 @@ const Assets = ({ userProfile }) => {
       name: "asset_name",
     },
     {
-      type: "select-one",
-      option: filterCategories,
+      type: "select",
+      options: filterCategories,
       name: "asset_category",
       placeholder: "Category",
       values: selectedAssetType,

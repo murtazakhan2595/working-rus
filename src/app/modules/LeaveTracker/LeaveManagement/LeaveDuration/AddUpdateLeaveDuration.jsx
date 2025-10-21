@@ -141,7 +141,6 @@ export default function AddUpdateLeaveDuration({
                     {
                       InputField: SelectMultiInputComponent,
                       name: "nationalities",
-                      required: true,
                       label: "Nationality",
                       options: countriesList,
                       SelectAllOption: true,
@@ -149,7 +148,6 @@ export default function AddUpdateLeaveDuration({
                     {
                       InputField: SelectMultiInputComponent,
                       name: "branches_ids",
-                      required: true,
                       label: "Branches",
                       options: Branches,
                       SelectAllOption: true,
@@ -157,7 +155,6 @@ export default function AddUpdateLeaveDuration({
                     {
                       InputField: SelectMultiInputComponent,
                       name: "departments_ids",
-                      required: true,
                       label: "Departments",
                       options: Departments,
                       SelectAllOption: true,

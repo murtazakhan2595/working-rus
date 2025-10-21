@@ -232,8 +232,8 @@ export default function EmployeeTransfer() {
               values: filterData.employee_name_or_id || "", // Add current value
             },
             {
-              type: "select-one",
-              option: Departments,
+              type: "select",
+              options: Departments,
               name: "old_department",
               placeholder: "Department",
               values: Array.isArray(filterData.old_department)

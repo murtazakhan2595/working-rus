@@ -1,7 +1,7 @@
 import React from "react";
 import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName, Currency } from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
+import { StatusLabel, TextUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
 import { RequisitionGenderOptions } from 'data/Data';
@@ -294,6 +294,8 @@ export const ScreeningInfomation = [{
 export const VacancyDetails = [
   {
     title: `Vacancy Details`,
+    footerTitle: "Request At",
+    footerField: "created_at",
     field: [
       {
         key: "requisition_id",
@@ -329,6 +331,13 @@ export const VacancyDetails = [
       {
         key: "job_description",
         label: "Job Description",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
+      },
+      {
+        key: "approved_on",
+        label: "Approval Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell,) => renderDate(cell, '--', 'date-time'),
       },
     ],
   },
@@ -784,7 +793,7 @@ export const AllOfferDetails = [
       return false;
     },
     renderContent: ({ offer_letters, publish_vacancy }) => (offer_letters || []).map((letter, index) => {
-      return <>
+      return  <>
         <DetailContent
           fields={OfferDetails}
           currentItem={{ ...letter, index, currency: Currency({ value: publish_vacancy?.currency }) } || {}}

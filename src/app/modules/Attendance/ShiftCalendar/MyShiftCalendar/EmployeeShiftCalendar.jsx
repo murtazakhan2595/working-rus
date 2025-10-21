@@ -728,8 +728,8 @@ console.log(isRequestChangeShiftPermitted,directShift,scheduleShifts,'hbvjhdf')
               <FilterInput
                 filters={[
                   {
-                    type: "select-one",
-                    option: [
+                    type: "select",
+                    options: [
                       { label: "Pending", value: "PENDING" },
                       { label: "Approved", value: "APPROVED" },
                       { label: "Rejected", value: "REJECTED" },

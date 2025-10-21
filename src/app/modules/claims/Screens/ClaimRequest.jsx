@@ -320,8 +320,8 @@ const ClaimRequest = ({ userProfile }) => {
               <FilterInput
                 filters={[
                   {
-                    type: "select-one",
-                    option: expenseTypeOptions,
+                    type: "select",
+                    options: expenseTypeOptions,
                     name: "expense_type",
                     placeholder: "Expense Type",
                     values: selectedExpenseType,
