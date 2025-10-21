@@ -100,28 +100,16 @@ const TalentSphereDashboard = () => {
     {
       type: "select-two",
       option: [
-        { value: "internal", label: "Internal" },
-        { value: "external", label: "External" },
-        { value: "both", label: "Both" },
-      ],
-      name: "requisition_type",
-      placeholder: "Requisition Type",
-      values: filterData.requisition_type,
-    },
-    {
-      type: "select-three",
-      option: [
-        { value: "draft", label: "Draft" },
         { value: "pending", label: "Pending" },
         { value: "approved", label: "Approved" },
-        { value: "published", label: "Published" },
+        { value: "rejected", label: "Rejected" },
       ],
       name: "requisition_status",
       placeholder: "Requisition Status",
       values: filterData.requisition_status,
     },
     {
-      type: "select-four",
+      type: "select-three",
       option: [
         { value: "screened", label: "Screened" },
         { value: "interviewed", label: "Interviewed" },
@@ -134,7 +122,7 @@ const TalentSphereDashboard = () => {
       values: filterData.applicant_status,
     },
     {
-      type: "select-five",
+      type: "select-four",
       option: [
         { value: true, label: "Emiratization" },
         { value: false, label: "Non-Emiratization" },

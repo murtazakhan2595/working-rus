@@ -22,15 +22,7 @@ const OpenRequisitions = ({ data, loading }) => {
   const [publishOpen, setPublishOpen] = useState(false);
 
   // Filter for open requisitions (approved or pending)
-  const openRequisitions = React.useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
-
-    return data.filter((req) =>
-      req.status === "approved" ||
-      req.status === "pending" ||
-      req.status === "published" // include mapped published as approved
-    );
-  }, [data]);
+  const openRequisitions = data;
 
   const handleViewDetails = (row) => {
     setSelectedRow(row);
