@@ -110,6 +110,7 @@ export default function ApplicantProfileDetails() {
           <TabsList>
             {APPLICANT_PROFILE_TAB_CONFIG.map((tab) => {
               if (tab.dataKey && !ApplicantData[tab.dataKey]) return null;
+              if (tab.key && !ApplicantData[tab.key]) return null;
               return (
                 <TabsTrigger key={tab.label} value={tab.label}>
                   {tab.label}

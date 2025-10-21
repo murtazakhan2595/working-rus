@@ -2439,9 +2439,7 @@ export const getSkillsGap = async () => {
 
 export const getApplicantOfferDetails = async (uuid) => {
   try {
-    const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`);
     if (response.status === 200) {
       const Response = response.data;
       return Response;

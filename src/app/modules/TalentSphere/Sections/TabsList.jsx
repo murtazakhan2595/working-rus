@@ -261,11 +261,11 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
     {
         label: "Interview Details",
         infoFields: AllInterviewDetails,
-        // dataKey: 'interviews',
     },
     {
         label: "Offer Details",
         infoFields: AllOfferDetails,
+        key:'offer_letters'
     },
     {
         label: "Shortlising Info",
