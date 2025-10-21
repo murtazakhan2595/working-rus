@@ -2460,7 +2460,6 @@ export const saveApplicantOfferResponse = async (uuid, accepted) => {
     const response = await axios({
       method,
       url,
-      headers: headers(),
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -2483,7 +2482,6 @@ export const getDemographicFormByUUID = async (uuid) => {
     const response = await axios({
       method,
       url,
-      headers: headers(),
     });
 
     if (response.status === 200) {
