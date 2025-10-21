@@ -119,9 +119,15 @@ const ApplicantProfiles = ({ reload, variant = "all" }) => {
                   placeholder: "Requisition Id",
                 },
                 {
+                  type: "select",
+                  name: "department",
+                  placeholder: "Department",
+                  options: 'departments',
+                },
+                {
                   type: "select-multiple",
                   name: "status",
-                  placeholder: "By Status",
+                  placeholder: "Status",
                   options: [
                     { value: "screened", label: "Screened" },
                     { value: "in_progress", label: "Inprogress" },
