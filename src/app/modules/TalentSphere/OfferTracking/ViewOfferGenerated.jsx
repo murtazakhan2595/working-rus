@@ -144,6 +144,9 @@ const ViewOfferGenerated = ({
                 {
                     key: "ai_budget_status",
                     label: "Budget Validation",
+                    formatter: (cell) => <StatusLabel status={cell}>
+                        {cell?.toLowerCase()}
+                    </StatusLabel>
                 },
                 {
                     key: "ai_confidence_score",
@@ -175,13 +178,13 @@ const ViewOfferGenerated = ({
             customContent: true,
             renderContent: (data) => {
                 if (ViewMode || isTeamView) return null;
-                if(data.status?.toLowerCase()==='pending')
-                if (data.ai_budget_status !== "Within Budget") return <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>;
-                 if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
+                if (data.status?.toLowerCase() === 'pending')
+                    if (data.ai_budget_status !== "Within Budget") return <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>;
+                if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
                 if (data?.status?.toLowerCase() === 'approved') {
                     if (sendOfferPermitted)
                         return <Button className="flex justify-end mt-4" onClick={(event) => handleSentApplicant(event, data)}>Send to Applicant</Button>
-                } 
+                }
                 else return (
                     <>
                         {data.ai_salary_match_status === 'Out of Range' &&

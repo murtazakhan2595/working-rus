@@ -1495,16 +1495,16 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
         {
             dataField: "status",
             text: "Decision Info",
-            formatter: (cell, row) => cell === 'approved' ? (
-                <div>
-                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
-                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on, '--', 'date-time')}</div>
-                </div>
-            ) : (
+            formatter: (cell, row) => cell === 'rejected' ? (
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
                     <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on, '--', 'date-time')}</div>
                     <div><span className="font-bold">Reason: </span>{row?.rejection_remarks}</div>
+                </div>
+            ) : (
+                <div>
+                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on, '--', 'date-time')}</div>
                 </div>
             ),
         },

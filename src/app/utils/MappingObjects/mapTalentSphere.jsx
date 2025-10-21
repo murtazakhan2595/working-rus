@@ -1059,6 +1059,8 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 if (key === 'status' && data[key] === 'pending_approval')
                     RecordDetails[key] = 'pending';
+                else if (key === 'status' && data[key]?.toLowerCase() === 'approved' && data["is_offer_sent"])
+                    RecordDetails[key] = 'Sent';
                 else if (key === 'ai_budget_status') {
                     const status = data[key] ?? "";
                     switch (status) {
@@ -1090,7 +1092,7 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
                         RecordDetails[key] = <div className='text-emerald-700'>{parseFloat(data[key] || 0)}% - Good to approve</div>;
                     else if (confidence < 50)
                         RecordDetails[key] = <div className='text-error-700'>{parseFloat(data[key] || 0)}% - Review required before proceeding</div>;
-                    else if (confidence >= 50 && confidence<80)
+                    else if (confidence >= 50 && confidence < 80)
                         RecordDetails[key] = <div className='text-amber-500'>{parseFloat(data[key] || 0)}% - Needs HR attention</div>;
                 } else if (key === 'ai_missing_fields') {
                     RecordDetails[key] = data[key] && data[key].length > 0 ? data[key] : "All Required Fields Present";
@@ -1099,7 +1101,7 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             }
         }
     }
-    if (['approved', 'rejected'].includes(data['status']?.toLowerCase())) {
+    if (['approved', 'rejected', 'sent'].includes(data['status']?.toLowerCase())) {
         const logs = data['approval_logs']?.[0];
         if (logs?.action_type?.toUpperCase() === 'APPROVED') {
             RecordDetails['approved_by'] = logs.changed_by;

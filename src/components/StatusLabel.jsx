@@ -68,6 +68,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("draft")) return "warning";
   else if (status.includes("warning")) return "warning";
   else if (status.includes("success")) return "success";
+  else if (status.includes("within budget")) return "success";
   else if (status.includes("declined")) return "error";
   else if (status.includes("error")) return "error";
   else if (status.includes("cancelled")) return "error";
@@ -77,6 +78,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
   else if (status.includes("interview")) return "info-secondary";
+  else if (status.includes("sent")) return "info-secondary";
   else if (status.includes("no")) return "error";
   else if (status.includes("yes")) return "success";
   else if (status.includes("shortlist")) return "plum";
