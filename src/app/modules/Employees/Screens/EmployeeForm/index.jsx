@@ -33,7 +33,7 @@ import {
   SalaryTypeOptions,
 } from "data/Data";
 import OnboardingChecklistSection from "./OnboardingChecklistSection";
-import { getApplicantsData, getJobTypeList } from "app/hooks/talentSphere";
+import { getApplicantsData, getJobTypeList, saveUpdateApplication } from "app/hooks/talentSphere";
 
 import {
   EmailInput,
@@ -83,7 +83,7 @@ const EmployeeForm = ({ id = null, setIsOpen = () => { }, SalarySetupAllowed, fo
 
   const getShiftList = async () => {
     const shiftData = await getShift();
-    const job_types = await getJobTypeList({ filterData: { } });
+    const job_types = await getJobTypeList({ filterData: {} });
     if (shiftData) {
       const shiftList = shiftData.results.map((shift) => {
         return {
@@ -132,7 +132,6 @@ const EmployeeForm = ({ id = null, setIsOpen = () => { }, SalarySetupAllowed, fo
 
         if (default_user) {
           updatedFormData["user_role"] = [default_user];
-
           setFormData(updatedFormData);
         }
       }
@@ -264,7 +263,8 @@ const EmployeeForm = ({ id = null, setIsOpen = () => { }, SalarySetupAllowed, fo
     }
   };
   const handleSubmit = async (data) => {
-    const employeePayload = mapEmployeePayloadData(data, formData);
+    const payload = { ...data, user_role: [...(data.user_role || []), default_user] }
+    const employeePayload = mapEmployeePayloadData(payload);
     try {
       // Save employee work information
       const response = await saveEmployeeWorkInformationData(
@@ -288,6 +288,9 @@ const EmployeeForm = ({ id = null, setIsOpen = () => { }, SalarySetupAllowed, fo
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
         dispatch(fetchEmployeesDetail());
+        if (applicant_id) {
+          await saveUpdateApplication({ is_employee_created: true }, applicant_id);
+        }
         if (id) {
           // Employee update flow
           return {

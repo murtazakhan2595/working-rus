@@ -270,6 +270,7 @@ export const Applicants = {
     ai_feedback_recommendation: null,
     ai_feedback_summary: null,
     resume_bank: null,
+    is_employee_created:null,
 }
 
 export const RejectedApplication = {

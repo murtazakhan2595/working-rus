@@ -49,6 +49,7 @@ import {
     AllOfferDetails,
     BlacklistedInformation,
     RejectedInformation,
+    HiringInfomation,
 } from 'app/modules/TalentSphere/Sections';
 
 // 🔹 Central config for all tabs
@@ -290,5 +291,10 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
         key:"interviews"
+    },
+    {
+        label: "Hiring Info",
+        infoFields: HiringInfomation,
+        key:'hired_by',
     },
 ];

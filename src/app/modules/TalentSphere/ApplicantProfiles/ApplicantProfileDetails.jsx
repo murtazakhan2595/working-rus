@@ -80,7 +80,7 @@ export default function ApplicantProfileDetails() {
         navigationLink={"/talent-sphere/applicants-profile"}
         content={
           <>
-            {ApplicantData.status === "hired" && createPermitted && (
+            {ApplicantData.status === "hired" && createPermitted && !ApplicantData.is_employee_created && (
               <Button onClick={handleCreateEmployee}>Create Employee</Button>
             )}
             <ExportProfile applicant_id={ApplicantData.id} variant={'one-profile'} />
@@ -125,7 +125,7 @@ export default function ApplicantProfileDetails() {
               <PageLoader />
             ) : tab.customComponent && tab.label === "Demographics" ? (
               // Render custom component for Demographics tab
-             <DemographicsTab demographaic_details={ApplicantData?.demographaic_details} />
+              <DemographicsTab demographaic_details={ApplicantData?.demographaic_details} />
             ) : (
               // Render standard DetailContent for other tabs
               <DetailContent

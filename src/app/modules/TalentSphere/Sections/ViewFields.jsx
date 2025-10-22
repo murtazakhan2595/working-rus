@@ -35,6 +35,7 @@ export const RequisitionViewFields = [
       {
         key: "job_description",
         label: "Job Description",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
       },
       {
         key: "required_skillset_name",
@@ -266,7 +267,8 @@ export const ShortlistingInfomation = [{
     {
       key: "remarks",
       label: "Remarks",
-      formatter: (cell) => cell,
+      formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
+
     },
   ],
 },
@@ -285,6 +287,26 @@ export const ScreeningInfomation = [{
     },
     {
       key: "screened_date",
+      label: "Date",
+      formatter: (cell) => renderDate(cell, "--", "date-time"),
+    },
+  ],
+},
+]
+export const HiringInfomation = [{
+  title: "Hiring Info",
+  renderSectionCondition: (data) => {
+    if (data.hired_by) return true;
+    return false;
+  },
+  field: [
+    {
+      key: "hired_by",
+      label: "Hiring By",
+      formatter: (cell) => <EmployeeName value={cell} />
+    },
+    {
+      key: "hired_at",
       label: "Date",
       formatter: (cell) => renderDate(cell, "--", "date-time"),
     },
@@ -366,6 +388,8 @@ export const BlacklistedInformation = [
       {
         key: "remarks",
         label: "Remarks",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
+
       },
     ],
   },
@@ -463,6 +487,11 @@ export const OfferDetails = [
     title: (data) => `${data.index + 1} - Offer Information`,
     field: [
       {
+        key: "status",
+        label: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+      },
+      {
         key: "generated_on",
         label: "Generated Date",
         formatter: (cell) => renderDate(cell, "--", 'date-time'),
@@ -477,10 +506,30 @@ export const OfferDetails = [
         label: "Offered Salary",
         formatter: (cell, row) => `${cell || '0'} ${row.currency || ''}`
       },
+
       {
-        key: "status",
-        label: "Status",
-        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+        key: "approved_by",
+        label: "Approved By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        renderCondition: (cell) => Boolean(cell),
+      },
+      {
+        key: "approved_on",
+        label: "Approved Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "rejected_by",
+        label: "Rejected By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        renderCondition: (cell) => Boolean(cell),
+      },
+      {
+        key: "rejected_on",
+        label: "Rejected Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
       },
       {
         key: "final_letter_pdf",
@@ -496,6 +545,8 @@ export const OfferDetails = [
             <div className="text-neutral-1000 text-sm">No offer PDF</div>
           ),
       },
+
+
     ],
   },
 ];
@@ -522,6 +573,18 @@ export const FinalOfferLetterDetails = [
       {
         key: "sent_on",
         label: "Sent Date",
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "accepted_at",
+        label: "Accepted Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "rejected_at",
+        label: "Rejected Date",
+        renderCondition: (cell) => Boolean(cell),
         formatter: (cell) => renderDate(cell, "--", 'date-time'),
       },
       {
@@ -750,6 +813,7 @@ export const ApplicantDetails = [
       );
     },
   },
+  ...(HiringInfomation),
 ];
 
 
@@ -793,7 +857,7 @@ export const AllOfferDetails = [
       return false;
     },
     renderContent: ({ offer_letters, publish_vacancy }) => (offer_letters || []).map((letter, index) => {
-      return  <>
+      return <>
         <DetailContent
           fields={OfferDetails}
           currentItem={{ ...letter, index, currency: Currency({ value: publish_vacancy?.currency }) } || {}}

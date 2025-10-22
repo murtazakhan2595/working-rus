@@ -681,6 +681,8 @@ export async function mapApplicantsData(data) {
 
             case "offers_tracking":
                 RecordDetails.offers_tracking = value?.[0] ? mapOfferTrackingData(value[0]) : null;
+                RecordDetails['hired_at'] = RecordDetails.offers_tracking?.hired_at;
+                RecordDetails['hired_by'] = RecordDetails.offers_tracking?.hired_by;
                 break;
             case "resume_bank":
                 RecordDetails.resume_bank = value ? mapResumeBankApplicantsData(value) : null;
@@ -1008,13 +1010,56 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
 //-------------OfferTrackings ---------------
 
-export function mapOfferTrackingData(data) {
+export function mapOfferTrackingData(data, fetchAudiLogDetails = false) {
     const RecordDetails = Object.keys(OfferTracking).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            acc[key] = data[key];
+            if (key === 'audit_logs') {
+                // const audit_logs = data[key]?.map((log) => {
+                //     const formatted_log = log
+                //     const { new_status, changed_by } = log;
+                //     if (new_status === 'accepted' && !changed_by) {
+                //         formatted_log.changed_by = `${data.applicant_name} - Applicant`
+                //         return formatted_log;
+                //     }
+                //     else if (new_status === 'rejected' && !changed_by)
+                //         return formatted_log;
+                //     return null
+                // }).filter(Boolean);
+                // Step 1: Sort by changed_on descending
+                const sorted = data[key]?.sort(
+                    (a, b) => new Date(b.changed_on) - new Date(a.changed_on)
+                );
+
+                // Step 2: Keep only the latest record for each new_status
+                const uniqueLatest = Object.values(
+                    sorted.reduce((acc, log) => {
+                        if (!acc[log.new_status]) {
+                            acc[log.new_status] = log;
+                        }
+                        return acc;
+                    }, {})
+                );
+                acc[key] = uniqueLatest;
+            } else acc[key] = data[key];
         }
         return acc;
     }, {});
+    if (data.audit_logs) {
+        const accepted_log = data.audit_logs.find(obj => obj.new_status === 'accepted');
+        const rejected_log = data.audit_logs.find(obj => obj.new_status === 'rejected');
+        const hired_log = data.audit_logs.find(obj => obj.new_status === 'hired');
+        if (accepted_log) {
+            RecordDetails['accepted_at'] = accepted_log?.changed_on;
+        }
+        if (rejected_log) {
+            RecordDetails['rejected_at'] = rejected_log?.changed_on;
+        }
+        if (hired_log) {
+            RecordDetails['hired_at'] = hired_log?.changed_on;
+            RecordDetails['hired_by'] = hired_log?.changed_by;
+        }
+    }
+    console.log(RecordDetails, "RecordDetails")
 
     return RecordDetails;
 }

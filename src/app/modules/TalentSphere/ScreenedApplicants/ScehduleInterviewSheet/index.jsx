@@ -14,7 +14,7 @@ import {
   saveUpdateInterview,
   getInterviewById,
 } from "app/hooks/talentSphere"
-import { getApplicantById } from "app/hooks/talentSphere";
+import { getApplicantsData } from "app/hooks/talentSphere";
 import { getVacancyPanelSuggestion } from "app/hooks/talentSphere";
 import { getEmailTemplateList } from "app/hooks/talentSphere";
 import { getInterviewTypeList } from "app/hooks/talentSphere";
@@ -89,7 +89,7 @@ const ScheduleInterviewSheet = ({
         if (id) return; // skip when editing an existing interview
         let vId = vacancyId;
         if (!vId && applicant) {
-          const applicantData = await getApplicantById(applicant);
+          const applicantData = await getApplicantsData(applicant);
           if (!applicantData) return;
           vId = applicantData?.published_vacancy || applicantData?.publish_vacancy?.id;
         }

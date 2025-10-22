@@ -5,7 +5,7 @@ import {
 } from "components";
 import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
 import { StatusLabel, StatusButtons } from "components";
-import { getOfferTrackingData, UpdateOfferTrackingStatus, saveUpdateApplicant } from "app/hooks/talentSphere";
+import { getOfferTrackingData, UpdateOfferTrackingStatus, saveUpdateApplication } from "app/hooks/talentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
@@ -29,7 +29,7 @@ const ViewFinalOffer = ({
             const response = await UpdateOfferTrackingStatus({ ...data, status: status }, data.id);
             if (response) {
                 if (status === 'hired')
-                    await saveUpdateApplicant({ status: status }, data.applicant);
+                    await saveUpdateApplication({ status: status }, data.applicant);
 
                 setForceLoad(!forceLoad)
             }

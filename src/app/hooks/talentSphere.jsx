@@ -1273,66 +1273,41 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
   }
 };
 
-
-
-export const getApplicantById = async (id) => {
-  try {
-    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}/`, {
-      headers: headers(),
-    });
-    if (response.status === 200) return response.data;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching applicant by ID:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    return false;
-  }
-};
-
-export const saveUpdateApplicant = async (payload, id) => {
+export const saveUpdateApplication = async (payload, id) => {
   try {
     const url = id
       ? `${baseUrl}/recruitment-applicants/${id}/`
       : `${baseUrl}/recruitment-applicants/`;
-    const method = id ? "PATCH" : "POST";
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
-
-    const response = await axios({ method, url, data: payload, headers: headers() });
-    if (response.status === expectedStatus) return response.data;
-
-    renderErrorMessages(response?.data);
-    return false;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("API error in saveUpdateApplicant:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    renderErrorMessages(error?.response?.data);
-    return false;
-  }
-};
-
-export const deleteApplicant = async (id) => {
-  try {
-    const response = await axios.delete(`${baseUrl}/recruitment-applicants/${id}/`, {
+    const finalPayload = mapApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
       headers: headers(),
     });
-    if (response.status === 204) return true;
-    console.warn("Unexpected status deleting applicant:", response.status);
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
     return false;
   } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error deleting applicant:", error);
-    if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
     return false;
   }
 };
+
 // ==================== Rejected Applications ====================
 
 
@@ -1710,42 +1685,6 @@ export const deleteInterview = async (id) => {
     }
     console.error("Error deleting interview:", error);
     if (error?.response?.status === 401) HandleLogout();
-    renderErrorMessages(error?.response?.data);
-    return false;
-  }
-};
-
-export const saveUpdateApplication = async (payload, id) => {
-  try {
-    debugger
-    const url = id
-      ? `${baseUrl}/recruitment-applicants/${id}/`
-      : `${baseUrl}/recruitment-applicants/`;
-
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
-    const expectedStatus = id ? 200 : 201;
-    const finalPayload = mapApplicationPayloadData(payload);
-    const response = await axios({
-      method,
-      url,
-      data: finalPayload,
-      headers: headers(),
-    });
-
-    if (response.status === expectedStatus) {
-      return response.data;
-    }
-    renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
-    return false;
-  } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
     renderErrorMessages(error?.response?.data);
     return false;
   }

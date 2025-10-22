@@ -1542,7 +1542,7 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const OfferTrackingColumns = (reloadData, isRecord = false) => [
+export const OfferTrackingColumns = (reloadData, variant) => [
     {
         dataField: "id",
         text: "Offer ID",
@@ -1580,17 +1580,44 @@ export const OfferTrackingColumns = (reloadData, isRecord = false) => [
         text: "Send Date",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
-    {
-        dataField: "updated_on",
-        text: "Last Updated Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
-    },
-    {
-        dataField: "updated_by",
-        text: "Last Updated By",
-        formatter: (cell) => <EmployeeName value={cell} />
-    },
-
+    ...(variant === 'Accepted' ? [
+        {
+            dataField: "accepted_at",
+            text: "Accepted Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+    ] : []),
+    ...(variant === 'Rejected' ? [
+        {
+            dataField: "rejected_at",
+            text: "Rejected Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+    ] : []),
+    ...(variant === 'Hired' ? [
+        {
+            dataField: "hired_at",
+            text: "Hired Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+        {
+            dataField: "hired_by",
+            text: "Hired By",
+            formatter: (cell) => <EmployeeName value={cell} />
+        },
+    ] : []),
+    ...(variant === 'Not Joined' ? [
+        {
+            dataField: "updated_at",
+            text: "Updated Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+        {
+            dataField: "updated_by",
+            text: "Updated By",
+            formatter: (cell) => <EmployeeName value={cell} />
+        },
+    ] : []),
     {
         dataField: "status",
         text: "Status",
