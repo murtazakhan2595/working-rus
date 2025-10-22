@@ -28,6 +28,7 @@ export default function ApplicantProfileDetails() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [forceReload, setForceReload] = useState(false);
   const [OpenEmployeeorm, setOpenEmployeeorm] = useState(false);
   const [ApplicantData, setApplicantData] = useState({});
   const SalarySetupAllowed = hasAccess("EDIT_EMPLOYEE_SALARY_SETUP");
@@ -56,8 +57,7 @@ export default function ApplicantProfileDetails() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
-  console.log(ApplicantData, "Application Details");
+  }, [id, forceReload]);
 
   const { candidate_name, candidate_id, serial_id, status } = useMemo(
     () => ApplicantData,
@@ -147,6 +147,7 @@ export default function ApplicantProfileDetails() {
         <EmployeeForm
           setIsOpen={() => {
             setOpenEmployeeorm(false);
+            setForceReload(!forceReload);
           }}
           SalarySetupAllowed={SalarySetupAllowed}
           formVariant="sheet"

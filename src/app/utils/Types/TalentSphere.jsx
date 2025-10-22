@@ -52,7 +52,6 @@ export const OfferLetterTemplate = {
     created_on: null,
     updated_on: null,
     letterhead: null,
-    name: null,
     subject: null,
 }
 
@@ -425,7 +424,5 @@ export const OfferTracking = {
     department: null,
     job_title: null,
     updated_at: null,
-    updated_by: null,
     uuid: null,
-    validity_date: null,
 }

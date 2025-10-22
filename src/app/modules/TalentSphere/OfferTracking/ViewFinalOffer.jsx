@@ -3,8 +3,8 @@ import {
     NavigationSheetComponent,
     DetailContent,
 } from "components";
-import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
-import { StatusLabel, StatusButtons } from "components";
+import { FormatID } from "utils/getValuesFromTables";
+import { StatusLabel } from "components";
 import { getOfferTrackingData, UpdateOfferTrackingStatus, saveUpdateApplication } from "app/hooks/talentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
