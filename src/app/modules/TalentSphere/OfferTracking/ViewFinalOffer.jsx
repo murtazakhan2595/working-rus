@@ -137,13 +137,13 @@ const ViewFinalOffer = ({
                     formatter: (cell) => (cell || []).map((log, index) => (
                         <div key={index} className="mb-1">
                             <div className="text-sm text-neutral-1100 capitalize">
-                                {log?.old_status || 'draft'} → {log?.new_status}{" "}
+                                 {/* →*/} {log?.new_status}{" "} 
                                 {log?.changed_by && <span className="text-gray-1100">
-                                    by <EmployeeName value={log?.changed_by} />
+                                    by <EmployeeName value={log?.changed_by} fallBackText ={log?.changed_by}/>
                                 </span>}
                             </div>
                             <div className="text-xs text-gray-900">
-                                {renderDate(log?.changed_on)}
+                                {renderDate(log?.changed_on , '--','date-time')}
                             </div>
                         </div>
                     )),

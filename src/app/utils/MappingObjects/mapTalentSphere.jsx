@@ -688,7 +688,7 @@ export async function mapApplicantsData(data) {
                 RecordDetails.resume_bank = value ? mapResumeBankApplicantsData(value) : null;
                 break;
             case "offer_letters":
-                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value) : null;
+                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value, Boolean(data.offers_tracking?.[0])) : null;
                 const sorted_offer_letters = offer_letters ? (offer_letters || []).sort((a, b) => a.id - b.id) : null;
                 RecordDetails.offer_letters = sorted_offer_letters;
                 break;
@@ -1010,36 +1010,33 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
 //-------------OfferTrackings ---------------
 
-export function mapOfferTrackingData(data, fetchAudiLogDetails = false) {
+export function mapOfferTrackingData(data){
     const RecordDetails = Object.keys(OfferTracking).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === 'audit_logs') {
-                // const audit_logs = data[key]?.map((log) => {
-                //     const formatted_log = log
-                //     const { new_status, changed_by } = log;
-                //     if (new_status === 'accepted' && !changed_by) {
-                //         formatted_log.changed_by = `${data.applicant_name} - Applicant`
-                //         return formatted_log;
-                //     }
-                //     else if (new_status === 'rejected' && !changed_by)
-                //         return formatted_log;
-                //     return null
-                // }).filter(Boolean);
-                // Step 1: Sort by changed_on descending
                 const sorted = data[key]?.sort(
                     (a, b) => new Date(b.changed_on) - new Date(a.changed_on)
                 );
-
                 // Step 2: Keep only the latest record for each new_status
                 const uniqueLatest = Object.values(
                     sorted.reduce((acc, log) => {
+                        if (log.new_status === 'pending') {
+                            log.new_status = 'sent'
+                            if (!log.changed_by)
+                                log.changed_by = data.sent_by;
+                        }
+                        if (log.new_status === 'accepted' || log.new_status === 'rejected') 
+                                log.changed_by = data.applicant_name;
                         if (!acc[log.new_status]) {
                             acc[log.new_status] = log;
                         }
                         return acc;
                     }, {})
                 );
-                acc[key] = uniqueLatest;
+                const sorted_desendant = uniqueLatest?.sort(
+                    (a, b) => new Date(a.changed_on) - new Date(b.changed_on)
+                );
+                acc[key] = sorted_desendant;
             } else acc[key] = data[key];
         }
         return acc;
@@ -1158,11 +1155,14 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
     }
     return RecordDetails;
 }
-export async function mapOfferLetterList(data) {
+export async function mapOfferLetterList(data, is_offer_sent = null) {
     if (!Array.isArray(data) || data.length === 0) return [];
     try {
         const DataList = await Promise.all(
-            data.map(async (dataObj) => {
+            data.map(async (dataObj, index) => {
+                if (index === data.length - 1 && is_offer_sent !== null && is_offer_sent !== undefined) {
+                    dataObj['is_offer_sent'] = is_offer_sent;//Update the status if tracking exist from a applicant
+                }
                 return await mapOfferLetterData(dataObj, false);
             })
         );

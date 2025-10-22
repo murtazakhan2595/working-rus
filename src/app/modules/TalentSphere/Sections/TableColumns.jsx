@@ -1279,6 +1279,9 @@ export const ApplicationColumns = (reloadData, variant) => [
                     <div><span className="font-bold">Joining Date: </span>{renderDate(cell?.joining_date, '--', 'date')}</div>
                     <div><span className="font-bold">Sent By: </span><EmployeeName value={cell?.sent_by} /></div>
                     <div><span className="font-bold">Sent Date: </span>{renderDate(cell?.sent_on, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Accepted Date: </span>{renderDate(cell?.accepted_at, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Hired By: </span><EmployeeName value={cell?.hired_by} /></div>
+                    <div><span className="font-bold">Last Updated: </span>{renderDate(cell?.updated_on, '--', 'date-time')}</div>
                 </div>
                 );
             },

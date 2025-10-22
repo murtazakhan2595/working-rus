@@ -215,11 +215,7 @@ export const APPLICANT_TAB_CONFIG = [
         permission: "VIEW_REJECTED_APPLICATION",
         component: (reload, deepLinkFilterData) => <AllApplicants variant="blacklisted" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
-    {
-        label: "Hired",
-        permission: "VIEW_HIRED_APPLICANTS",
-        component: (reload, deepLinkFilterData) => <AllApplicants variant="hired" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
-    },
+    
 ];
 
 
@@ -235,12 +231,14 @@ export const OFFER_TAB_CONFIG = [
     },
     {
         key: "offer-send",
-        label: "Offer Send",
+        label: "Applicant Offers",
         viewPerm: "VIEW_OFFER_SEND_TO_APPLICANT",
-        // addPerm: "ADD_TS_BENEFITS",
         list: (reload, deepLinkFilterData, deepLinkSubTab) => <OffersSend reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
-        // form: GenerateOffer,
-        // addLabel:'Generate Offer'
+    },
+    {
+        label: "Hired Applicants",
+        permission: "VIEW_HIRED_APPLICANTS",
+        list: (reload, deepLinkFilterData) => <AllApplicants variant="hired" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
 ];
 

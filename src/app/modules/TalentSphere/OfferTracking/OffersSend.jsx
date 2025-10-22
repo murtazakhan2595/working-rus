@@ -22,7 +22,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
     const [ordering, setOrdering] = useState("-id");
 
     const OuterTabList = useMemo(() => {
-        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Hired", "Not Joined"];
+        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Not Joined"];
     }, []);
 
     // Handle deep link filter data and sub-tab when navigating from dashboard

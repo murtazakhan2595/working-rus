@@ -117,7 +117,7 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   }
 
   // If not found and we want to show a meaningful fallback
-  return value||fallBackText;
+  return value || fallBackText;
 }
 
 export function DocCategoryName({ value, fallBackText = "N/A" }) {
@@ -151,10 +151,10 @@ function DesignationName({ value, fallBackText }) {
   return designation ? designation.label : fallBackText ?? "N/A";
 }
 
-function EmployeeName({ value, length }) {
+function EmployeeName({ value, length, fallBackText = "N/A" }) {
   const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(value));
-  const employeeName = employee ? employee.name : "N/A";
+  const employeeName = employee ? employee.name : fallBackText;
   const displayedName = length ? employeeName.slice(0, length) : employeeName;
 
   return <>{displayedName}</>;
