@@ -381,6 +381,7 @@ export const OfferLetter = {
     final_letter_body: null,
     applicant: null,
     template: null,
+    template_name: null,
     generated_by: null,
     approved_by: null,
     rejected_by: null,

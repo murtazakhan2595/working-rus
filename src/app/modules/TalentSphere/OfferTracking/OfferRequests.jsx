@@ -160,8 +160,8 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                             name: "ai_confidence_score",
                             placeholder: "AI Confidence Score Range",
                             options: [
-                                { label: 'Low Confidence - <50%', value: [80, 100] },
-                                { label: 'Medium Confidence (50% - 80%)', value: [80, 100] },
+                                { label: 'Low Confidence - <50%', value: [0, 49.99] },
+                                { label: 'Medium Confidence (50% - 80%)', value: [50, 79.999] },
                                 { label: 'High Confidence - >=80%', value: [80, 100] },
                             ]
                         },

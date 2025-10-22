@@ -532,6 +532,10 @@ export const OfferDetails = [
         formatter: (cell) => renderDate(cell, "--", 'date-time'),
       },
       {
+        key: "template_name",
+        label: "Template Used",
+      },
+      {
         key: "final_letter_pdf",
         label: "Offer Letter",
         formatter: (cell, data) =>
