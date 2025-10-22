@@ -4,11 +4,11 @@ import {
     DetailContent,
     StatusList,
 } from "components";
-import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
+import { FormatID } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, StatusButtons } from "components";
 import { getOfferLetterData, saveUpdateOfferLetter } from "app/hooks/talentSphere";
-import { SentOfferForm } from "app/modules/TalentSphere";
+import { SentOfferForm, AddUpdateManpower } from "app/modules/TalentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
@@ -23,12 +23,15 @@ const ViewOfferGenerated = ({
     DataList = [],
     ViewMode = false,
     isTeamView = false,
+
 }) => {
     const { hasAccess } = usePermissions();
     const sendOfferPermitted = hasAccess("SEND_OFFER_TO_APPLICANTS");
+    const updateBudgetPermitted = hasAccess("EDIT_MANPOWER");
     const [forceLoad, setForceLoad] = useState(false);
     const [FormData, setFormData] = useState({});
     const [OpenSentOfferForm, setOpenSentOfferForm] = useState(false);
+    const [OpenManpowerForm, setOpenManpowerForm] = useState(false);
     const handleSubmit = async (id, { comment }) => {
         try {
             await saveUpdateOfferLetter({ rejection_remarks: comment }, id);
@@ -43,6 +46,11 @@ const ViewOfferGenerated = ({
         event.stopPropagation();
         setFormData({ applicant: data.applicant, offer_letter: data.id })
         setOpenSentOfferForm(true);
+    }
+    const handleUpdateBudget = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setOpenManpowerForm(true);
     }
     // Define the fields to display
     const fields = [
@@ -179,8 +187,14 @@ const ViewOfferGenerated = ({
             renderContent: (data) => {
                 if (ViewMode || isTeamView) return null;
                 if (data.status?.toLowerCase() === 'pending') {
-                    if (data.ai_budget_status !== "Within Budget") return <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>;
-                    if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
+                    if (data.ai_budget_status !== "Within Budget") {
+                        return (
+                            <>
+                                <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>
+                                {updateBudgetPermitted && <Button className="flex justify-end mt-4" onClick={handleUpdateBudget}>Update Budget</Button>}
+                            </>
+                        );
+                    } if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
                 }
                 if (data?.status?.toLowerCase() === 'approved') {
                     if (sendOfferPermitted)
@@ -249,6 +263,19 @@ const ViewOfferGenerated = ({
                     initialData={FormData}
                 />
             }
+            {OpenManpowerForm && (
+                <AddUpdateManpower
+                    isOpen={OpenManpowerForm}
+                    reloadData={() => {
+                        setForceLoad(!forceLoad);
+                        setOpenManpowerForm(false);
+                    }}
+                    setIsOpen={() => {
+                        setOpenManpowerForm(false);
+                    }}
+                    // id={data.id}
+                />
+            )}
         </>
     );
 };
