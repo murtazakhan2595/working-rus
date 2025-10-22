@@ -8,7 +8,7 @@ import AttachmentUI from "components/ui/AttachmentUI";
 
 const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
     const isEditPermitted = HasAccess("EDIT_TS_OFFER_LETTER_TEMPLATES");
-    const isDeletePermitted = HasAccess("DELETE_TS_OFFER_LETTER_TEMPLATES");
+    // const isDeletePermitted = HasAccess("DELETE_TS_OFFER_LETTER_TEMPLATES");
     // const isViewPermitted = HasAccess("VIEW_MANPOWER");
     const [view, setView] = useState(null);
     const [openEditForm, setOpenEditForm] = useState(null);
@@ -40,7 +40,7 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
             <DropdownActionMenu
                 onEdit={isEditPermitted ? handleEdit : null}
                 // onView={handleView}
-                onDelete={isDeletePermitted ? handleDelete : null}
+                // onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="Preview Template"
                 editText="Edit Template"
                 deleteText="Delete Template"

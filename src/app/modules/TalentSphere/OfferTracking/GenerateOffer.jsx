@@ -59,6 +59,7 @@ const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, rel
                 if (isMounted) {
                     setTemplateList(response.results || []);
                     const filtered_applicant = (applicants.results || []).filter(obj => {
+                        if (!obj.offer_letters) return true;
                         if (obj.offer_letters && obj.offer_letters.length === 0)
                             return true;
                         else if (obj.offer_letters[obj.offer_letters.length - 1]?.status === 'rejected')
@@ -175,6 +176,7 @@ const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, rel
                                 InputField: DateInput,
                                 name: `expected_joining_date`,
                                 label: "Expected Joining Date",
+                                minDate: new Date(),
                             },
                             {
                                 InputField: TextInput,

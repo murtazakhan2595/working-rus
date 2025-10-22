@@ -304,7 +304,7 @@ const PerformanceDashboard = () => {
                   name: "employee_name",
                 },
                 {
-                  type: "select-one",
+                   type: "select",
                   options: performanceCycles,
                   name: "cycle_ids",
                   placeholder: "Performance Cycles",

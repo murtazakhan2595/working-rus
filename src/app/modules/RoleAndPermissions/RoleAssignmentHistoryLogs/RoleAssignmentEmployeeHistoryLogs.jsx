@@ -141,10 +141,10 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
             <FilterInput
               filters={[
                 {
-                  type: "select-one",
+                   type: "select",
                   placeholder: "Select Role",
                   name: "role",
-                  option: UserRoles,
+                  options: UserRoles,
                   values: selectedRole,
                 },
               ]}

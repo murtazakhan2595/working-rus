@@ -510,12 +510,17 @@ export async function mapRequisitionRequestData(data, fetchApprovalDetails = tru
     }
     if (['approved', 'rejected'].includes(data['status']?.toLowerCase())) {
         const logs = data['approval_logs']?.[0];
-        if (logs?.action_type?.toUpperCase() === 'APPROVED') {
-            RecordDetails['approved_by'] = logs.changed_by;
-            RecordDetails['approved_on'] = logs.timestamp;
-        } else if (logs?.action_type?.toUpperCase() === 'REJECTED') {
-            RecordDetails['rejected_by'] = logs.changed_by;
-            RecordDetails['rejected_on'] = logs.timestamp;
+        if (logs) {
+            if (logs?.action_type?.toUpperCase() === 'APPROVED') {
+                RecordDetails['approved_by'] = logs.changed_by;
+                RecordDetails['approved_on'] = logs.timestamp;
+            } else if (logs?.action_type?.toUpperCase() === 'REJECTED') {
+                RecordDetails['rejected_by'] = logs.changed_by;
+                RecordDetails['rejected_on'] = logs.timestamp;
+            }
+        } else {
+            RecordDetails['approved_by'] = data.requested_by;
+            RecordDetails['approved_on'] = data.created_at;
         }
     }
     return RecordDetails;
@@ -664,10 +669,10 @@ export async function mapApplicantsData(data) {
                 RecordDetails.blacklist = value ? mapBlacklistApplicantData(value) : null;
                 break;
             case "interviews":
-                const interviews = value ? await mapInterviewList(value) : null;
-                const sortedData = (interviews || []).sort((a, b) => a.id - b.id);
+                const interviews = value && value.length > 0 ? await mapInterviewList(value) : null;
+                const sortedData = interviews ? (interviews || []).sort((a, b) => a.id - b.id) : null;
                 RecordDetails.interviews = sortedData;
-                RecordDetails.latest_interview = sortedData[sortedData.length - 1];
+                RecordDetails.latest_interview = sortedData?.[sortedData.length - 1];
                 break;
 
             case "recruitment_shortlist":
@@ -676,13 +681,15 @@ export async function mapApplicantsData(data) {
 
             case "offers_tracking":
                 RecordDetails.offers_tracking = value?.[0] ? mapOfferTrackingData(value[0]) : null;
+                RecordDetails['hired_at'] = RecordDetails.offers_tracking?.hired_at;
+                RecordDetails['hired_by'] = RecordDetails.offers_tracking?.hired_by;
                 break;
             case "resume_bank":
                 RecordDetails.resume_bank = value ? mapResumeBankApplicantsData(value) : null;
                 break;
             case "offer_letters":
-                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value) : null;
-                const sorted_offer_letters = (offer_letters || []).sort((a, b) => a.id - b.id);
+                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value, Boolean(data.offers_tracking?.[0])) : null;
+                const sorted_offer_letters = offer_letters ? (offer_letters || []).sort((a, b) => a.id - b.id) : null;
                 RecordDetails.offer_letters = sorted_offer_letters;
                 break;
 
@@ -913,7 +920,6 @@ export function mapEmailTemplateData(data) {
     const RecordDetails = Object.keys(EmailTemplate).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "name" || key === 'description') acc[key] = data[key]?.trim()
-            if (key === "status") acc[key] = data[key] ? 'active' : 'inactive';
             else acc[key] = data[key];
         }
         return acc;
@@ -946,7 +952,6 @@ export function mapEmailTemplatePayloadData(data, id) {
             data[key] !== undefined
         ) {
             if (key === "name" || key === 'description') payload[key] = data[key]?.trim();
-            else if (key === "status") payload[key] = Boolean(data[key] === 'active');
             else payload[key] = data[key];
         }
     }
@@ -1005,13 +1010,53 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
 //-------------OfferTrackings ---------------
 
-export function mapOfferTrackingData(data) {
+export function mapOfferTrackingData(data){
     const RecordDetails = Object.keys(OfferTracking).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            acc[key] = data[key];
+            if (key === 'audit_logs') {
+                const sorted = data[key]?.sort(
+                    (a, b) => new Date(b.changed_on) - new Date(a.changed_on)
+                );
+                // Step 2: Keep only the latest record for each new_status
+                const uniqueLatest = Object.values(
+                    sorted.reduce((acc, log) => {
+                        if (log.new_status === 'pending') {
+                            log.new_status = 'sent'
+                            if (!log.changed_by)
+                                log.changed_by = data.sent_by;
+                        }
+                        if (log.new_status === 'accepted' || log.new_status === 'rejected') 
+                                log.changed_by = data.applicant_name;
+                        if (!acc[log.new_status]) {
+                            acc[log.new_status] = log;
+                        }
+                        return acc;
+                    }, {})
+                );
+                const sorted_desendant = uniqueLatest?.sort(
+                    (a, b) => new Date(a.changed_on) - new Date(b.changed_on)
+                );
+                acc[key] = sorted_desendant;
+            } else acc[key] = data[key];
         }
         return acc;
     }, {});
+    if (data.audit_logs) {
+        const accepted_log = data.audit_logs.find(obj => obj.new_status === 'accepted');
+        const rejected_log = data.audit_logs.find(obj => obj.new_status === 'rejected');
+        const hired_log = data.audit_logs.find(obj => obj.new_status === 'hired');
+        if (accepted_log) {
+            RecordDetails['accepted_at'] = accepted_log?.changed_on;
+        }
+        if (rejected_log) {
+            RecordDetails['rejected_at'] = rejected_log?.changed_on;
+        }
+        if (hired_log) {
+            RecordDetails['hired_at'] = hired_log?.changed_on;
+            RecordDetails['hired_by'] = hired_log?.changed_by;
+        }
+    }
+    console.log(RecordDetails, "RecordDetails")
 
     return RecordDetails;
 }
@@ -1056,11 +1101,49 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 if (key === 'status' && data[key] === 'pending_approval')
                     RecordDetails[key] = 'pending';
+                else if (key === 'status' && data[key]?.toLowerCase() === 'approved' && data["is_offer_sent"])
+                    RecordDetails[key] = 'Sent';
+                else if (key === 'ai_budget_status') {
+                    const status = data[key] ?? "";
+                    switch (status) {
+                        case "within_budget":
+                            RecordDetails[key] = "Within Budget";
+                            break;
+                        default:
+                            RecordDetails[key] = status;
+                            break;
+                    }
+                }
+                else if (key === 'ai_salary_match_status') {
+                    const status = data[key] ?? "";
+                    switch (status) {
+                        case "out_of_range":
+                            RecordDetails[key] = "Out of Range";
+                            break;
+                        case "matched":
+                            RecordDetails[key] = "Matched";
+                            break;
+                        default:
+                            RecordDetails[key] = status;
+                            break;
+                    }
+
+                } else if (key === 'ai_confidence_score') {
+                    const confidence = parseFloat(data[key] || 0);
+                    if (confidence >= 80)
+                        RecordDetails[key] = <div className='text-emerald-700'>{parseFloat(data[key] || 0)}% - Good to approve</div>;
+                    else if (confidence < 50)
+                        RecordDetails[key] = <div className='text-red-800'>{parseFloat(data[key] || 0)}% - Review required before proceeding</div>;
+                    else if (confidence >= 50 && confidence < 80)
+                        RecordDetails[key] = <div className='text-amber-500'>{parseFloat(data[key] || 0)}% - Needs HR attention</div>;
+                } else if (key === 'ai_missing_fields') {
+                    RecordDetails[key] = data[key] && data[key].length > 0 ? data[key] : "All Required Fields Present";
+                }
                 else RecordDetails[key] = data[key];
             }
         }
     }
-    if (['approved', 'rejected'].includes(data['status']?.toLowerCase())) {
+    if (['approved', 'rejected', 'sent'].includes(data['status']?.toLowerCase())) {
         const logs = data['approval_logs']?.[0];
         if (logs?.action_type?.toUpperCase() === 'APPROVED') {
             RecordDetails['approved_by'] = logs.changed_by;
@@ -1072,11 +1155,14 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
     }
     return RecordDetails;
 }
-export async function mapOfferLetterList(data) {
+export async function mapOfferLetterList(data, is_offer_sent = null) {
     if (!Array.isArray(data) || data.length === 0) return [];
     try {
         const DataList = await Promise.all(
-            data.map(async (dataObj) => {
+            data.map(async (dataObj, index) => {
+                if (index === data.length - 1 && is_offer_sent !== null && is_offer_sent !== undefined) {
+                    dataObj['is_offer_sent'] = is_offer_sent;//Update the status if tracking exist from a applicant
+                }
                 return await mapOfferLetterData(dataObj, false);
             })
         );
@@ -1134,7 +1220,7 @@ export async function mapInterviewList(data) {
 export function mapInterviewPayloadData(data, id) {
     // Initialize an empty payload object
     const payload = {};
-    // Iterate over the keys in the EmailTemplate object
+    // Iterate over the keys in the Interview object
     for (const key in Interview) {
         // Check if the key exists in the data object
         if (

@@ -52,7 +52,6 @@ export const OfferLetterTemplate = {
     created_on: null,
     updated_on: null,
     letterhead: null,
-    name: null,
     subject: null,
 }
 
@@ -270,6 +269,7 @@ export const Applicants = {
     ai_feedback_recommendation: null,
     ai_feedback_summary: null,
     resume_bank: null,
+    is_employee_created:null,
 }
 
 export const RejectedApplication = {
@@ -312,9 +312,9 @@ export const Interview = {
     created_by: null,
     created_at: null,
     status: 'scheduled',
-    // job_title: null,
-    // candidate_name: null,
-    // candidate_id: null,
+    job_title: null,
+    candidate_name: null,
+    candidate_id: null,
     // contact_number: null,
     // email: null,
     // ai_match_score: null,
@@ -381,6 +381,7 @@ export const OfferLetter = {
     final_letter_body: null,
     applicant: null,
     template: null,
+    template_name: null,
     generated_by: null,
     approved_by: null,
     rejected_by: null,
@@ -397,7 +398,10 @@ export const OfferLetter = {
     candidate_name: null,
     candidate_contact: null,
     candidate_email: null,
-    candidate_location: null,
+    ai_budget_status: null,
+    ai_confidence_score: null,
+    ai_missing_fields: null,
+    ai_salary_match_status: null,
 }
 
 export const OfferTracking = {
@@ -421,7 +425,5 @@ export const OfferTracking = {
     department: null,
     job_title: null,
     updated_at: null,
-    updated_by: null,
     uuid: null,
-    validity_date: null,
 }

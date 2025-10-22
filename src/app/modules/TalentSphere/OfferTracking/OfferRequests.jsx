@@ -14,7 +14,7 @@ import { GlobalStatusOptions } from "data/Data";
 
 const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSubTab }) => {
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({status:["pending_approval","draft"]});
+    const [filterData, setFilterData] = useState({ status: ["pending_approval", "draft"] });
     const [isLoading, setIsLoading] = useState(true);
     const [OfferLetterList, setOfferLetterList] = useState();
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -28,12 +28,12 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
     useEffect(() => {
         if (deepLinkFilterData) {
             const convertedFilters = { ...deepLinkFilterData };
-            
+
             setFilterData(convertedFilters);
             // Reset page to 1 when applying deep link filters
             onPageChange("page", 1);
         }
-        
+
         // Set the active sub-tab if provided
         if (deepLinkSubTab && OuterTabList.includes(deepLinkSubTab)) {
             setActiveTab(deepLinkSubTab);
@@ -85,7 +85,7 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                         updatedFilters[filterName] = "pending";
                     } else if (activeTab === "Records") {
                         updatedFilters[filterName] =
-                            ["approved","rejected"];
+                            ["approved", "rejected"];
                     }
                 } else delete updatedFilters[filterName];
             } else {
@@ -102,12 +102,12 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
         if (tab === "Requests") {
             setFilterData((prev) => ({
                 ...prev,
-                 status: ["pending_approval","draft"],
+                status: ["pending_approval", "draft"],
             }));
         } else if (tab === "Records") {
             setFilterData((prev) => ({
                 ...prev,
-                status: ["approved","rejected"],
+                status: ["approved", "rejected"],
             }));
         }
     };
@@ -154,6 +154,16 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                             type: "search",
                             name: "candidate_name",
                             placeholder: "Job Title",
+                        },
+                        {
+                            type: "select",
+                            name: "ai_confidence_score",
+                            placeholder: "AI Confidence Score Range",
+                            options: [
+                                { label: 'Low Confidence - <50%', value: [0, 49.99] },
+                                { label: 'Medium Confidence (50% - 80%)', value: [50, 79.999] },
+                                { label: 'High Confidence - >=80%', value: [80, 100] },
+                            ]
                         },
                         ...(activeTab === "Records"
                             ? [

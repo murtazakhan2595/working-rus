@@ -51,7 +51,7 @@ const HeadcountSummaryWidget = ({ departments, designations }) => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await getEmployeeCustomList({filterData});
+      const response = await getEmployeeCustomList({ filterData });
 
       setEmployeeData({
         total: response?.count || 0,
@@ -62,7 +62,7 @@ const HeadcountSummaryWidget = ({ departments, designations }) => {
           response?.results?.filter((emp) => emp.employee_status !== "Active")
             .length || 0,
       });
-     if (response?.results) {
+      if (response?.results) {
         // If API doesn't provide departmentCounts directly, calculate from results
         const deptCounts = {};
         response.results.forEach((emp) => {
@@ -175,32 +175,18 @@ const HeadcountSummaryWidget = ({ departments, designations }) => {
             <FilterInput
               filters={[
                 {
-                  type: "select-one",
+                  type: "select",
                   width: "max-w-[145px]",
-                  option:
-                    departments &&
-                    departments.map((dept) => ({
-                      value: dept.id,
-                      label: dept.name,
-                    })),
+                  options: 'departments',
                   name: "department_name",
                   placeholder: "Department",
-                  values: selectedDepartment,
-                  value: selectedDepartment,
                 },
                 {
-                  type: "select-two",
+                  type: "select",
                   width: "max-w-[145px]",
-                  option:
-                    designations &&
-                    designations.map((desig) => ({
-                      value: desig.id,
-                      label: desig.name,
-                    })),
+                  option: 'designations',
                   name: "department_position",
                   placeholder: "Designation",
-                  values: selectedDesignation,
-                  value: selectedDesignation,
                 },
               ]}
               onChange={handleFilterChange}

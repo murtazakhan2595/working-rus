@@ -27,6 +27,7 @@ export default function RequisitionPlanning() {
     const [deepLinkRequisition, setDeepLinkRequisition] = useState(null);
     const [deepLinkAction, setDeepLinkAction] = useState(null);
     const [deepLinkFilterData, setDeepLinkFilterData] = useState(null);
+    const [deepLinkSubTab, setDeepLinkSubTab] = useState(null);
 
     const TabListArray = React.useMemo(() => [
         ...(isViewRequisitionPermitted ? ["Generate Requisition"] : []),
@@ -36,12 +37,20 @@ export default function RequisitionPlanning() {
 
     // Handle location state for deep linking from dashboard
     useEffect(() => {
-        if (location.state?.filterRequisition || location.state?.filterData) {
-            const { filterRequisition, tab, action, filterData } = location.state;
+        console.log("-----------------Requisition Planning Page Mounted-----------------");
+        console.log("Location State:", location.state);
+        console.log("Deep Link Requisition:", deepLinkRequisition);
+        console.log("Deep Link Action:", deepLinkAction);
+        console.log("Deep Link Filter Data:", deepLinkFilterData);
+        console.log("Deep Link Sub Tab:", deepLinkSubTab);
+        
+        if (location.state?.filterRequisition || location.state?.filterData || location.state?.tab) {
+            const { filterRequisition, tab, action, filterData, subTab } = location.state;
             
             if (filterRequisition) setDeepLinkRequisition(filterRequisition);
             if (action) setDeepLinkAction(action);
             if (filterData) setDeepLinkFilterData(filterData);
+            if (subTab) setDeepLinkSubTab(subTab);
             
             // Set the correct tab based on state
             if (tab) {
@@ -101,6 +110,7 @@ export default function RequisitionPlanning() {
                         reload={reloadData['requisition-requests']} 
                         deepLinkRequisition={deepLinkRequisition}
                         deepLinkAction={deepLinkAction}
+                        activeView={deepLinkSubTab}
                     />
                 </TabsContent>
                 <Card>

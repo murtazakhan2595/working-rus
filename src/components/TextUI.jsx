@@ -9,7 +9,8 @@ const TextUI = React.memo(
     className = "text-sm",
     style = {},
     height = "100%",
-    showReadmore=false // show readmore button if the manLength is defined
+    showReadmore=false, // show readmore button if the manLength is defined
+    fallbackText='N/A',
   }) => {
     return text ? (
       <ScrollArea className="[&>div>div[style]]:!block">
@@ -29,7 +30,7 @@ const TextUI = React.memo(
           )}
         </div>
       </ScrollArea>
-    ) : null;
+    ) : fallbackText;
   }
 );
 

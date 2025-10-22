@@ -71,7 +71,7 @@ const EmailTemplates = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-              if (['created_on'].includes(filterName) && filterValue && filterValue.includes(","))
+              if (['created_on_range'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else  updatedFilters[filterName] = filterValue;
             }
@@ -115,7 +115,7 @@ const EmailTemplates = ({ reload }) => {
                             {
                                 type: "date-range",
                                 placeholder: "Creation Date",
-                                name: "created_on",
+                                name: "created_on_range",
                             },
                         ]}
                         className="justify-end"

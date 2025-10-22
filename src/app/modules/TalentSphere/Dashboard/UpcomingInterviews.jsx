@@ -193,6 +193,22 @@ const UpcomingInterviews = ({ data, loading }) => {
                           </div>
                         )}
 
+                      {interview.status && (
+                        <div className="mt-2">
+                          <p className="text-[10px] text-neutral-900 mb-1">
+                            Status:
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge
+                              variant="secondary"
+                              className="text-[10px] mt-2"
+                            >
+                              {interview.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Quick Actions */}
                       <div className="flex gap-2 mt-3">
                         <Button

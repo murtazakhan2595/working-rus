@@ -170,7 +170,7 @@ const AddUpdateOfferLetterTemplateForm = ({
                 name: "letterhead",
                 required: true,
                 label: "Letter Header",
-                acceptType:"png,pdf,jpeg",
+                acceptType:".png,.jpeg",
                 maxSize:5,
               },
             ],

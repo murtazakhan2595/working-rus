@@ -57,17 +57,18 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
     const fetchOptionsData = async (isMounted) => {
       try {
         // Add organizationId to filter if available
-        if(variant==='in_progress'){
-        const interview_type = await getInterviewTypeList();
-        if (isMounted) {
-          setInterviewTypeList(interview_type.results);
-        }}
+        if (variant === 'in_progress') {
+          const interview_type = await getInterviewTypeList();
+          if (isMounted) {
+            setInterviewTypeList(interview_type.results);
+          }
+        }
       } catch (error) {
         console.error("Error fetching roles:", error);
       }
     };
     let isMounted = true;
-   if(variant) fetchOptionsData(isMounted);
+    if (variant) fetchOptionsData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -194,7 +195,10 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
           'rejected_on',
           'screened_on',
           'ai_feedback_confidence',
-          'expected_joining_date'].includes(filterName))
+          'expected_joining_date',
+          'scheduled_date_range',
+          'joining_date',
+        ].includes(filterName))
           updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
       }
@@ -328,10 +332,25 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
                     },
                   ]
                   : []),
+                ...(variant === "hired"
+                  ? [
+                    {
+                      type: "select",
+                      name: "updated_by",
+                      options: 'Employees',
+                      placeholder: "Recruiter",
+                    },
+                    {
+                      type: "date-range",
+                      name: "joining_date",
+                      placeholder: "Joining Date",
+                    },
+                  ]
+                  : []),
                 ...(variant === "in_progress"
                   ? [
                     {
-                      type: "multiple-select",
+                      type: "select-multiple",
                       name: "panel",
                       options: 'Employees',
                       placeholder: "Panel Members",
@@ -344,7 +363,7 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
                     },
                     {
                       type: "date-range",
-                      name: "blacklisted_on",
+                      name: "scheduled_date_range",
                       placeholder: "Interview Date",
                     },
                   ]

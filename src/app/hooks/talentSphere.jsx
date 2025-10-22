@@ -893,6 +893,7 @@ export const getDemographicFormsList = async (payload = {}) => {
 export const getDemographicFormById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/demographic-forms/${id}/`, { headers: headers() });
+    console.log("Demographic Form Response ******:", response);
     if (response.status === 200) {
       return response.data;
     }
@@ -1273,66 +1274,41 @@ export const getApplicantsData = async (id, applicant_details_only = false) => {
   }
 };
 
-
-
-export const getApplicantById = async (id) => {
-  try {
-    const response = await axios.get(`${baseUrl}/recruitment-applicants/${id}/`, {
-      headers: headers(),
-    });
-    if (response.status === 200) return response.data;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching applicant by ID:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    return false;
-  }
-};
-
-export const saveUpdateApplicant = async (payload, id) => {
+export const saveUpdateApplication = async (payload, id) => {
   try {
     const url = id
       ? `${baseUrl}/recruitment-applicants/${id}/`
       : `${baseUrl}/recruitment-applicants/`;
-    const method = id ? "PATCH" : "POST";
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = id ? 200 : 201;
-
-    const response = await axios({ method, url, data: payload, headers: headers() });
-    if (response.status === expectedStatus) return response.data;
-
-    renderErrorMessages(response?.data);
-    return false;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("API error in saveUpdateApplicant:", error);
-    if (error?.response?.status === 401) HandleLogout();
-    renderErrorMessages(error?.response?.data);
-    return false;
-  }
-};
-
-export const deleteApplicant = async (id) => {
-  try {
-    const response = await axios.delete(`${baseUrl}/recruitment-applicants/${id}/`, {
+    const finalPayload = mapApplicationPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
       headers: headers(),
     });
-    if (response.status === 204) return true;
-    console.warn("Unexpected status deleting applicant:", response.status);
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
     return false;
   } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error deleting applicant:", error);
-    if (error?.response?.status === 401) HandleLogout();
     renderErrorMessages(error?.response?.data);
     return false;
   }
 };
+
 // ==================== Rejected Applications ====================
 
 
@@ -1659,7 +1635,9 @@ export const getInterviewById = async (id) => {
     if (response.status === 200) {
       const Response = response.data;
       const ResponseData = mapInterviewData(Response);
-      return { ...ResponseData };
+      const ApplicantData = await getApplicantsData(Response.applicant, true);
+      const FeedBackData = await getInterviewFeedbackList({ filterData: { interview: [Response.id] } });
+      return { ...ResponseData, applicant: ApplicantData, interview_feedback: FeedBackData.results };
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1708,42 +1686,6 @@ export const deleteInterview = async (id) => {
     }
     console.error("Error deleting interview:", error);
     if (error?.response?.status === 401) HandleLogout();
-    renderErrorMessages(error?.response?.data);
-    return false;
-  }
-};
-
-export const saveUpdateApplication = async (payload, id) => {
-  try {
-    debugger
-    const url = id
-      ? `${baseUrl}/recruitment-applicants/${id}/`
-      : `${baseUrl}/recruitment-applicants/`;
-
-    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
-    const expectedStatus = id ? 200 : 201;
-    const finalPayload = mapApplicationPayloadData(payload);
-    const response = await axios({
-      method,
-      url,
-      data: finalPayload,
-      headers: headers(),
-    });
-
-    if (response.status === expectedStatus) {
-      return response.data;
-    }
-    renderErrorMessages(response?.data);
-    console.warn(
-      "API call succeeded but with unexpected status code:",
-      response.status
-    );
-    return false;
-  } catch (error) {
-    console.error("API error in saveUpdateUserRole:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
     renderErrorMessages(error?.response?.data);
     return false;
   }
@@ -2437,9 +2379,7 @@ export const getSkillsGap = async () => {
 
 export const getApplicantOfferDetails = async (uuid) => {
   try {
-    const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(`${baseUrl}/applicant-offer/${uuid}/`);
     if (response.status === 200) {
       const Response = response.data;
       return Response;
@@ -2460,7 +2400,6 @@ export const saveApplicantOfferResponse = async (uuid, accepted) => {
     const response = await axios({
       method,
       url,
-      headers: headers(),
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -2483,7 +2422,6 @@ export const getDemographicFormByUUID = async (uuid) => {
     const response = await axios({
       method,
       url,
-      headers: headers(),
     });
 
     if (response.status === 200) {
@@ -2504,7 +2442,7 @@ export const submitDemographicResponse = async (formData) => {
     const response = await axios.post(
       `${baseUrl}/demographic-responses/`,
       formData,
-      { headers: formDataHeader() } // Use formDataHeader for file uploads
+      // { headers: formDataHeader() } // Use formDataHeader for file uploads
     );
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -2526,15 +2464,22 @@ export const getDemographicResponsesByApplicant = async (applicantId) => {
       `${baseUrl}/demographic-responses/?search=${encodeURIComponent(JSON.stringify({ applicant: applicantId }))}`,
       { headers: headers() }
     );
+    console.log("Demographic Responses Response:", response);
     if (response.status === 200) {
-      return response.data;
+      if (response.data && response.data.results && response.data.results.length > 0) {
+        const responseData = response.data.results[0];
+        const formDataResponse = await getDemographicFormById(responseData.form);
+        console.log("Demographic Form Data Response:", formDataResponse);
+        return { ...responseData, demographic_form: formDataResponse }
+      }
+      return null;
     }
   } catch (error) {
     console.error("Error fetching demographic responses:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
+    return null;
   }
 };
 

@@ -318,13 +318,17 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
         dataField: "created_by",
         text: "Created By",
         formatter: (cell) => <EmployeeName value={cell} />,
-        dataSort: true,
     },
 
     {
         dataField: "updated_on",
         text: "Last Updated On",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
+    },
+    {
+        dataField: "updated_by",
+        text: "Updated By",
+        formatter: (cell) => <EmployeeName value={cell} />,
     },
     {
         dataField: "is_active",
@@ -931,13 +935,13 @@ export const DemographicsFormColumns = (reloadData) => [
         dataField: "description",
         text: "Description",
         dataSort: true,
-        formatter:(cell)=>{
+        formatter: (cell) => {
             const maxlength = 50
             if (cell && cell.length > maxlength) {
                 return cell.substring(0, maxlength) + '...';
             }
             return cell || '--'
-        } 
+        }
     },
     {
         dataField: "sections",
@@ -1120,7 +1124,7 @@ export const ApplicantsColumns = (reloadData) => [
                 <div><span className="font-bold">ID: </span><FormatID value={cell?.id} prefix={"RR-"} /></div>
                 <div><span className="font-bold">Job Title: </span>{cell?.job_title}</div>
                 <div><span className="font-bold">Department: </span><DepartmentName value={cell?.department} /></div>
-                <div><span className="font-bold">Branch: </span><DepartmentName value={cell?.branch} /></div>
+                <div><span className="font-bold">Branch: </span><BranchName value={cell?.branch} /></div>
             </div>
         ),
         minWidth: '250px',
@@ -1279,6 +1283,9 @@ export const ApplicationColumns = (reloadData, variant) => [
                     <div><span className="font-bold">Joining Date: </span>{renderDate(cell?.joining_date, '--', 'date')}</div>
                     <div><span className="font-bold">Sent By: </span><EmployeeName value={cell?.sent_by} /></div>
                     <div><span className="font-bold">Sent Date: </span>{renderDate(cell?.sent_on, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Accepted Date: </span>{renderDate(cell?.accepted_at, '--', 'date-time')}</div>
+                    <div><span className="font-bold">Hired By: </span><EmployeeName value={cell?.hired_by} /></div>
+                    <div><span className="font-bold">Last Updated: </span>{renderDate(cell?.updated_on, '--', 'date-time')}</div>
                 </div>
                 );
             },
@@ -1415,16 +1422,23 @@ export const ResumeBankColumns = (reloadData) => [
 
 
 /**
- * InProgressInterviewColumns
+ * InterviewColumns
  *
- * Returns an array of column definitions for the InProgressInterviewColumns table.
+ * Returns an array of column definitions for the InterviewColumns table.
  *
  * @returns {array} An array of column definitions.
  */
-export const InProgressInterviewColumns = (reloadData) => [
+export const InterviewColumns = (reloadData, _, isTeamView) => [
     {
-        dataField: "candidate_name",
-        text: "Candidate Name",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "job_title",
@@ -1441,12 +1455,8 @@ export const InProgressInterviewColumns = (reloadData) => [
     },
     {
         dataField: "panel_name",
-        text: "Interview Panel",
+        text: "Panelist",
         formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
-    },
-    {
-        dataField: "ai_match_score",
-        text: "AI Match Score",
     },
     {
         dataField: "status",
@@ -1457,7 +1467,7 @@ export const InProgressInterviewColumns = (reloadData) => [
         dataField: "",
         text: "",
         formatter: (_, row, data_list) => (
-            <InterviewActions data={row} reloadData={reloadData} DataList={data_list} />
+            <InterviewActions data={row} reloadData={reloadData} DataList={data_list} isTeamView={isTeamView} />
         ),
         width: '50px'
     },
@@ -1472,12 +1482,16 @@ export const InProgressInterviewColumns = (reloadData) => [
  */
 export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
     {
-        dataField: "candidate_name",
-        text: "Applicant Name",
-    },
-    {
-        dataField: "designation",
-        text: "Job Title",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+                <div><span className="font-bold">Job Title: </span>{row?.designation}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "offered_salary",
@@ -1488,34 +1502,38 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
         text: "Joining Date",
         formatter: (cell) => renderDate(cell, '--', 'date'),
     },
+    {
+        dataField: "ai_confidence_score",
+        text: "AI Confidence Score",
+    },
     ...(isRecord ? [
         {
             dataField: "status",
             text: "Decision Info",
-            formatter: (cell, row) => cell === 'approved' ? (
-                <div>
-                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
-                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on, '--', 'date-time')}</div>
-                </div>
-            ) : (
+            formatter: (cell, row) => cell === 'rejected' ? (
                 <div>
                     <div><span className="font-bold">Rejected By: </span><EmployeeName value={row?.rejected_by} /></div>
                     <div><span className="font-bold">Rejected On: </span>{renderDate(row?.rejected_on, '--', 'date-time')}</div>
                     <div><span className="font-bold">Reason: </span>{row?.rejection_remarks}</div>
                 </div>
+            ) : (
+                <div>
+                    <div><span className="font-bold">Approved By: </span><EmployeeName value={row?.approved_by} /></div>
+                    <div><span className="font-bold">Approved On: </span>{renderDate(row?.approved_on, '--', 'date-time')}</div>
+                </div>
             ),
         },
     ] : [
         {
-            dataField: "generated_by",
-            text: "Generated By",
-            formatter: (cell) => <EmployeeName value={cell} />
-        },
-        {
             dataField: "generated_on",
-            text: "Generated On",
-            formatter: (cell) => renderDate(cell, '--', 'date-time'),
-        }
+            text: "Offer Logs",
+            formatter: (_, row) => (
+                <div>
+                    <div><span className="font-bold">Generated By: </span><EmployeeName value={row?.generated_by} /></div>
+                    <div><span className="font-bold">Generated On: </span>{renderDate(row?.generated_on, '--', 'date-time')}</div>
+                </div>
+            ),
+        },
     ]),
     {
         dataField: "status",
@@ -1539,23 +1557,24 @@ export const OfferLetterRequestColumns = (reloadData, isRecord = false) => [
  *
  * @returns {array} An array of column definitions.
  */
-export const OfferTrackingColumns = (reloadData, isRecord = false) => [
+export const OfferTrackingColumns = (reloadData, variant) => [
     {
         dataField: "id",
         text: "Offer ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"AOL-"} />,
+        formatter: (cell, row) => <FormatID value={cell} prefix={"OFF-"} />,
     },
     {
-        dataField: "applicant_name",
-        text: "Applicant Name",
-    },
-    {
-        dataField: "job_title",
-        text: "Job Title",
-    },
-    {
-        dataField: "department",
-        text: "Department",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.applicant_name}</div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row?.department}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "validity_date",
@@ -1568,26 +1587,54 @@ export const OfferTrackingColumns = (reloadData, isRecord = false) => [
         formatter: (cell) => renderDate(cell, '--', 'date'),
     },
     {
-        dataField: "sent_by",
-        text: "Send By",
-        formatter: (cell) => <EmployeeName value={cell} />
-    },
-    {
         dataField: "sent_on",
-        text: "Send Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        text: "Offer Logs",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Sent By: </span><EmployeeName value={row?.sent_by} /></div>
+                <div><span className="font-bold">Sent On: </span>{renderDate(row?.sent_on, '--', 'date-time')}</div>
+            </div>
+        ),
     },
-    {
-        dataField: "updated_on",
-        text: "Last Updated Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
-    },
-    {
-        dataField: "updated_by",
-        text: "Last Updated By",
-        formatter: (cell) => <EmployeeName value={cell} />
-    },
-
+    ...(variant === 'Accepted' ? [
+        {
+            dataField: "accepted_at",
+            text: "Accepted Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+    ] : []),
+    ...(variant === 'Rejected' ? [
+        {
+            dataField: "rejected_at",
+            text: "Rejected Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+    ] : []),
+    ...(variant === 'Hired' ? [
+        {
+            dataField: "hired_at",
+            text: "Hire Info",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+            formatter: (_, row) => (
+                <div>
+                    <div><span className="font-bold">Hired By: </span><EmployeeName value={row?.hired_by} /></div>
+                    <div><span className="font-bold">Hired On: </span>{renderDate(row?.hired_at, '--', 'date-time')}</div>
+                </div>
+            ),
+        },
+    ] : []),
+    ...(variant === 'Not Joined' ? [
+        {
+            dataField: "updated_at",
+            text: "Updated Date",
+            formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        },
+        {
+            dataField: "updated_by",
+            text: "Updated By",
+            formatter: (cell) => <EmployeeName value={cell} />
+        },
+    ] : []),
     {
         dataField: "status",
         text: "Status",

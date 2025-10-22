@@ -29,7 +29,7 @@ const OfferRequestActions = ({ data, DataList = [], reloadData = () => { }, isOf
             <DropdownActionMenu
                 onView={isViewPermitted ? handleView : null}
                 onEdit={isEditPermitted && (data?.status === 'draft') ? handleEdit : null}
-                onDelete={isEditPermitted && (data?.status === 'rejected') ? handleGenerate : null}
+                onDelete={isEditPermitted && (data?.status === 'rejected' && !isOfferSent) ? handleGenerate : null}
                 // onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="View Offer"
                 editText="Edit Offer"

@@ -32,6 +32,7 @@ import UnauthorizedAccess from "./UnauthorizedAccess";
 // import { FilterInput } from "components/FormControl";
 import CircularActionButtons from "components/CircularActionButtons";
 import ImportRecords from "./ImportRecords";
+import TabListComponent from "./TabListComponent";
 
 export {
   Header,
@@ -41,6 +42,7 @@ export {
   Table,
   BarChart,
   ConfirmationModal,
+  TabListComponent,
   StatusLabel,
   ViewOptions,
   TableCustom,

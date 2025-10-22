@@ -24,8 +24,17 @@ import {
     AddUpdateEmailTemplateForm,
     DemoGraphics,
 } from "app/modules/TalentSphere/SettingManagement";
-import { Applicants } from "app/modules/TalentSphere/ScreenedApplicants";
-import { AllApplicants, } from "app/modules/TalentSphere";
+import {
+    TeamManpowerHeadcount,
+    AddUpdateManpowerHeadcountRequest,
+    ManpowerHeadCountRequest,
+    ScheduledInterviews,
+} from 'app/modules/TalentSphere/TeamTalentSphere';
+import { AllApplicants } from "app/modules/TalentSphere";
+import {
+    RequisitionRequests,
+    AddUpdateRequisitionRequestForm,
+} from "app/modules/TalentSphere/Requisitions";
 import {
     GenerateOffer,
     OfferRequests,
@@ -40,6 +49,7 @@ import {
     AllOfferDetails,
     BlacklistedInformation,
     RejectedInformation,
+    HiringInfomation,
 } from 'app/modules/TalentSphere/Sections';
 
 // 🔹 Central config for all tabs
@@ -141,6 +151,38 @@ export const SETTING_TAB_CONFIG = [
         form: AddUpdateBlacklistReasonForm,
     },
 ];
+export const TEAM_TALENT_SPHERE_TAB_CONFIG = [
+    {
+        key: "headcount-request",
+        label: "Manpower Headcount",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        addPerm: "REQUEST_MANPOWER_HEADCOUNT",
+        list: (reload) => <TeamManpowerHeadcount reload={reload} />,
+        form: AddUpdateManpowerHeadcountRequest,
+    },
+    {
+        key: "headcount-request",
+        label: "Manpower Headcount Request",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        addPerm: "REQUEST_MANPOWER_HEADCOUNT",
+        list: (reload) => <ManpowerHeadCountRequest reload={reload} />,
+        form: AddUpdateManpowerHeadcountRequest,
+    },
+    {
+        key: "requisition-request",
+        label: "Requisition Request",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        addPerm: "CREATE_REQUISITION_REQUEST",
+        list: (reload) => <RequisitionRequests reload={reload} />,
+        form: AddUpdateRequisitionRequestForm,
+    },
+    {
+        key: "interviews",
+        label: "Applicant Interviews",
+        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        list: (reload) => <ScheduledInterviews reload={reload} />,
+    },
+];
 
 export const APPLICANT_TAB_CONFIG = [
     {
@@ -173,11 +215,7 @@ export const APPLICANT_TAB_CONFIG = [
         permission: "VIEW_REJECTED_APPLICATION",
         component: (reload, deepLinkFilterData) => <AllApplicants variant="blacklisted" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
-    {
-        label: "Hired",
-        permission: "VIEW_HIRED_APPLICANTS",
-        component: (reload, deepLinkFilterData) => <AllApplicants variant="hired" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
-    },
+    
 ];
 
 
@@ -193,12 +231,14 @@ export const OFFER_TAB_CONFIG = [
     },
     {
         key: "offer-send",
-        label: "Offer Send",
+        label: "Applicant Offers",
         viewPerm: "VIEW_OFFER_SEND_TO_APPLICANT",
-        // addPerm: "ADD_TS_BENEFITS",
         list: (reload, deepLinkFilterData, deepLinkSubTab) => <OffersSend reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
-        // form: GenerateOffer,
-        // addLabel:'Generate Offer'
+    },
+    {
+        label: "Hired Applicants",
+        permission: "VIEW_HIRED_APPLICANTS",
+        list: (reload, deepLinkFilterData) => <AllApplicants variant="hired" reload={reload} deepLinkFilterData={deepLinkFilterData} />,
     },
 ];
 
@@ -212,19 +252,22 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
     {
         label: "Applicant Info",
         infoFields: ApplicantInformation,
+
     },
     {
         label: "Screening Info",
         infoFields: ScreeningInfomation,
+        key:'screened_by',
     },
     {
         label: "Interview Details",
         infoFields: AllInterviewDetails,
-        // dataKey: 'interviews',
+        key:"interviews"
     },
     {
         label: "Offer Details",
         infoFields: AllOfferDetails,
+        key:'offer_letters'
     },
     {
         label: "Shortlising Info",
@@ -242,33 +285,14 @@ export const APPLICANT_PROFILE_TAB_CONFIG = [
         dataKey: "blacklist",
     },
     {
-        label: "DemoGraphics",
+        label: "Demographics",
         dataKey: null,
         customComponent: true, // Flag to indicate this uses a custom component
+        key:"interviews"
     },
-    // {
-    //     label: "Rejected",
-    //     permission: "VIEW_REJECTED_APPLICATION",
-    //     component: (reload) => <AllApplicants variant="rejected" reload={reload?.rejected} />,
-    // },
-    // {
-    //     label: "Resume Bank",
-    //     permission: "VIEW_RESUME_BANK_APPLICATION",
-    //     component: (reload) => <ResumeBankApplicants reload={reload?.resume} />,
-    // },
-    // {
-    //     label: "Screened",
-    //     permission: "VIEW_TS_EDUCATION",
-    //     component: () => <Applicants />,
-    // },
-    // {
-    //     label: "Shortlisted",
-    //     permission: "VIEW_TS_CAREER_LEVEL",
-    //     component: () => <AllApplicants variant="shortlisted" />,
-    // },
-    // {
-    //     label: "Blacklisted",
-    //     permission: "VIEW_REJECTED_APPLICATION",
-    //     component: () => <AllApplicants variant="blacklisted" />,
-    // },
+    {
+        label: "Hiring Info",
+        infoFields: HiringInfomation,
+        key:'hired_by',
+    },
 ];

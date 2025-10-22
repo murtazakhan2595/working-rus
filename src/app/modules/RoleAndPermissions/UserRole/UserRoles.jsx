@@ -112,10 +112,10 @@ const UserRoles = ({
             name: "name",
           },
           {
-            type: "select-one",
+             type: "select",
             placeholder: "Status",
             name: "status",
-            option: [
+            options: [
               { label: "Active", value: "active" },
               { label: "Inactive", value: "inactive" },
             ],

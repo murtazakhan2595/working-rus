@@ -52,8 +52,8 @@ const AnalyticsFilters = ({
           placeholder: "Department",
         },
         {
-          type: "select-one",
-          option: clearanceTypeOptions,
+          type: "select",
+          options: clearanceTypeOptions,
           name: "clearance_type",
           placeholder: "Clearance Type",
           values: filterData.clearance_type || "",

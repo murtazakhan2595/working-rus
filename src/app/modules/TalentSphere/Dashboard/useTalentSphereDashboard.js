@@ -69,9 +69,13 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       "currency",
       "is_emiratization_role",
       "requested_by",
-      "requisition_type",
       "requisition_status",
     ];
+
+    // Map frontend keys to backend keys
+    const keyMapping = {
+      "requisition_status": "status"
+    };
 
     Object.keys(filters).forEach((key) => {
       let value = filters[key];
@@ -80,7 +84,9 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       if (key === "date_range") return;
       // Only include allowed keys
       if (allowedKeys.includes(key)) {
-        sanitized[key] = value;
+        // Use mapped key if available, otherwise use original key
+        const backendKey = keyMapping[key] || key;
+        sanitized[backendKey] = value;
       }
     });
 
@@ -148,7 +154,9 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       setHiringPredictions(predictions.data?.results || []);
       setAiFlaggedData(flagged.data || null);
       const reqResults = requisitions.data?.results || [];
+      console.log("REQ REJECTED DEBUG", reqResults)
       const mappedReqs = await mapRequisitionRequestList(reqResults);
+      console.log("MAP REQS  ",mappedReqs)
       setRequisitionsData(mappedReqs || []);
       
       // Set Predictive Analytics Data
@@ -189,7 +197,7 @@ export const useTalentSphereDashboard = (filterData = {}) => {
     fetchAllData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterData]);
-
+  console.log("REQ DATA IN GENERAL", requisitionsData);
   return {
     loading,
     summaryData,

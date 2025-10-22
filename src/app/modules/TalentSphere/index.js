@@ -70,6 +70,7 @@ import {
     TeamManpowerHeadcount,
     AddUpdateManpowerHeadcountRequest,
     ManpowerHeadCountRequest,
+    ScheduledInterviews,
 } from './TeamTalentSphere';
 import {
     AddUpdateRequisitionRequestForm, RequisitionRequests, ViewRequisitionRequest, RequisitionActions,
@@ -92,7 +93,6 @@ import {
 
 import {
     InterviewTracker,
-    InProgressInterviews,
     InterviewActions,
     ViewInterviewDetails,
     AddInterviewFeedback,
@@ -121,6 +121,7 @@ import ApplicantByRequisition from './ApplicantManagement/ApplicantByRequisition
 export {
     DemographicsFormStatusTogle,
     DemographicsFormActions,
+    ScheduledInterviews,
     TalentSphereDashboard,
     ScheduleInterviewSheet,
     ApplicantProfileActions,
@@ -144,7 +145,6 @@ export {
     AddUpdateSkillForm,
     SkillActions,
     UpdateApplicantStatus,
-    InProgressInterviews,
     ViewInterviewDetails,
     InterviewActions,
     ApplicantManagement,

@@ -1,27 +1,31 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
     CardContent,
     CardDescription,
     CardTitle,
     CardHeader,
+    Card
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
-import { getHeadcountRequestList } from "app/hooks/talentSphere";
-import { HeadcountRequestColumns } from "app/modules/TalentSphere/Sections";
+import { getInterviewsList } from "app/hooks/talentSphere";
+import { InterviewColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GlobalStatusOptions } from "data/Data";
+import { GetDispatchStateList } from "utils/Lists";
+import moment from "moment";
 
-const ScheduledInterviews = ({ reload, activeView = "Requests" }) => {
-   const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({ status: "pending" });
+const ScheduledInterviews = ({ activeView = 'Upcoming Interviews' }) => {
+    const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
+    const [activeTab, setActiveTab] = useState(activeView);
+    const [filterData, setFilterData] = useState({ panel_member: [user_id] });
     const [isLoading, setIsLoading] = useState(true);
-    const [HeadCountRequestList, setHeadCountRequestList] = useState({});
+    const [InterviewsList, setInterviewsList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-    const [ordering, setOrdering] = useState("-id");
+    const [ordering, setOrdering] = useState("scheduled_datetime");
 
     const OuterTabList = useMemo(() => {
-        return ["Requests", "Records"];
+        return ["All", "Upcoming Interviews"];
     }, []);
 
     const onPageChange = (name, value) => {
@@ -36,19 +40,27 @@ const ScheduledInterviews = ({ reload, activeView = "Requests" }) => {
         },
     };
 
-    const fetchData = async (isMounted) => {
+    const fetchData = useCallback(async (isMounted) => {
         try {
             setIsLoading(true);
-            const HeadCountRequestList = await getHeadcountRequestList({ filterData, options, ordering, });
-            if (HeadCountRequestList && isMounted) {
-                setHeadCountRequestList(HeadCountRequestList);
+            const filters = {
+                ...filterData,
+                ...(activeTab === "Upcoming Interviews" ? { status: 'scheduled', scheduled_date_range: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')] } : {}),
+            };
+            const InterviewsList = await getInterviewsList({
+                filterData: filters,
+                options,
+                ordering,
+            });
+            if (InterviewsList && isMounted) {
+                setInterviewsList(InterviewsList);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [filterData, options, ordering, activeTab]);
 
     useEffect(() => {
         let isMounted = true;
@@ -56,17 +68,7 @@ const ScheduledInterviews = ({ reload, activeView = "Requests" }) => {
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering]);
-
-    useEffect(() => {
-            let isMounted = true;
-            onPageChange("page", 1);
-            setOrdering("-id");
-            fetchData(isMounted);
-            return () => {
-                isMounted = false;
-            };
-        }, [reload]);
+    }, [fetchData]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
@@ -74,18 +76,9 @@ const ScheduledInterviews = ({ reload, activeView = "Requests" }) => {
             const updatedFilters = { ...prevFilters };
             // Handle other filters normally
             if (filterValue === "" || filterValue === null) {
-                if (filterName === "status") {
-                    if (activeTab === "Requests") {
-                        updatedFilters[filterName] = "pending";
-                    } else if (activeTab === "Records") {
-                        updatedFilters[filterName] =
-                            ["approved", "rejected"];
-                    }
-                } else delete updatedFilters[filterName];
+                delete updatedFilters[filterName];
             } else {
-                if (filterName === "status")
-                    updatedFilters[filterName] = filterValue.toLowerCase();
-                else if (filterName === 'requested_on')
+                if (['scheduled_date_range'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -94,103 +87,77 @@ const ScheduledInterviews = ({ reload, activeView = "Requests" }) => {
         });
     };
 
-    const handleTabChange = (tab) => {
-        if (tab === "Requests") {
-            setFilterData((prev) => ({
-                ...prev,
-                status: "pending",
-            }));
-        } else if (tab === "Records") {
-            setFilterData((prev) => ({
-                ...prev,
-                status: ["approved", "rejected"],
-            }));
-        }
-    };
-
+    const TabTitle = React.useMemo(() => {
+        return {
+            "Upcoming Interviews": { title: 'Upcoming Interviews', description: 'Here you view the list of the upcoming interviews scheduled today', },
+            "All": { title: 'Upcoming Interviews', description: 'Here you view the list of all interviews scheduled', },
+        };
+    }, []);
     return (
-        <Tabs
-            defaultValue="Requests"
-            className="w-full"
-            onValueChange={(tab) => {
-                setActiveTab(tab);
-                handleTabChange(tab);
-            }}
-            value={activeTab}
-        >
-            <TabsList>
-                {OuterTabList.map((tab) => (
-                    <TabsTrigger
-                        key={tab}
-                        value={tab}
-                        variant="inner-tab"
-                    >
-                        {tab}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-            <CardHeader className="flex flex-row justify-between items-center gap-4">
-                <div>
-                    <CardTitle className="text-primary">Headcount {activeTab}</CardTitle>
-                    <CardDescription className="text-neutral-1100">
-                        Here you can {activeTab === 'Requests' ? 'view' : 'approve, or reject'} manpower headcount requests submitted.
-                    </CardDescription>
-                </div>
-            </CardHeader>
+        <Card>
+            <Tabs
+                defaultValue="Upcoming Interviews"
+                className="w-full"
+                onValueChange={(tab) => {
+                    setActiveTab(tab);
+                }}
+                value={activeTab}
+            >
+                <TabsList>
+                    {OuterTabList.map((tab) => (
+                        <TabsTrigger
+                            key={tab}
+                            value={tab}
+                            variant="inner-tab"
+                        >
+                            {tab}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+                <CardHeader className="flex flex-row justify-between items-center gap-4">
+                    <div>
+                        <CardTitle className="text-primary">{TabTitle[activeTab].title}</CardTitle>
+                        <CardDescription className="text-neutral-1100">
+                            {TabTitle[activeTab].description}
+                        </CardDescription>
+                    </div>
+                </CardHeader>
 
-            <CardContent>
-                <FilterInput
-                    filters={[
-
-                        {
-                            type: "select-multiple",
-                            options: "Departments",
-                            name: "department",
-                            placeholder: "Department",
-                        },
-                        {
-                            type: "select-multiple",
-                            options: 'Branches',
-                            name: "branch",
-                            placeholder: "Branch",
-                        },
-                        {
-                            type: "search",
-                            name: "requested_by_name",
-                            placeholder: "Requested By",
-                        },
-                        {
-                            type: "date-range",
-                            name: "requested_on",
-                            placeholder: "Requested Date",
-                        },
-                        ...(activeTab === "Records"
-                            ? [
-                                {
-                                    type: "select",
-                                    options: [...GlobalStatusOptions(false),],
-                                    name: "status",
-                                    placeholder: "Status",
-                                },
-                            ]
-                            : []),
-                    ]}
-                    onChange={handleFilterChange}
-                    className="justify-end mb-4"
-                />
-                {isLoading ? (
-                    <PageLoader />
-                ) : (
-                    <TableCustom
-                        data={HeadCountRequestList?.results || []}
-                        columns={HeadcountRequestColumns(fetchData, activeTab === 'Records', true)}
-                        pagination={true}
-                        dataTotalSize={HeadCountRequestList?.count || 0}
-                        tableOptions={tableOptions}
+                <CardContent>
+                    <FilterInput
+                        filters={[
+                            {
+                                type: "search",
+                                name: "job_title",
+                                placeholder: "Job Title",
+                            },
+                            ...(activeTab === "All"
+                                ? [
+                                    {
+                                        type: "date-range",
+                                        name: "scheduled_date_range",
+                                        placeholder: "Interview Date",
+                                    },
+                                ]
+                                : []),
+                        ]}
+                        onChange={handleFilterChange}
+                        className="justify-end mb-4"
                     />
-                )}
-            </CardContent>
-        </Tabs>
+                    {isLoading ? (
+                        <PageLoader />
+                    ) : (
+                        <TableCustom
+                            data={InterviewsList?.results || []}
+                            columns={InterviewColumns(fetchData, null, true)}
+                            pagination={true}
+                            dataTotalSize={InterviewsList?.count || 0}
+                            tableOptions={tableOptions}
+                        />
+                    )}
+                </CardContent>
+            </Tabs>
+        </Card>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CardContent, CardHeader, CardTitle, CardDescription } from "components/ui/card";
+import { CardContent, CardHeader, CardTitle, CardDescription ,Card} from "components/ui/card";
 import { PageLoader, TableCustom } from "components";
 import { getManpowerPlanningList } from "app/hooks/talentSphere";
 import { FilterInput } from "components/FormControl";
@@ -76,7 +76,7 @@ export default function TeamManpowerHeadcount() {
     const YearsDropdown = React.useMemo(() => yearsDropdownList(2020, 2030), []);
 
     return (
-        <>
+        <Card>
             <CardHeader>
                 <CardTitle>Manpower Headcount Overview</CardTitle>
                 <CardDescription>Here you can view overview of manpower headcount for all the departments</CardDescription>
@@ -94,6 +94,6 @@ export default function TeamManpowerHeadcount() {
                     )
                 }
             </CardContent>
-        </>
+        </Card>
     );
 }

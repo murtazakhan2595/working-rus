@@ -127,7 +127,7 @@ const EmployeePayslipDetails = ({ payrollId ,employeeID}) => {
           <FilterInput
             filters={[
               {
-                type: "select-one",
+                 type: "select",
                 option: months,
                 name: "month",
                 placeholder: "Pick a month",

@@ -26,7 +26,7 @@ import {
 const DemographicsPublicForm = () => {
   const { uuid } = useParams();
   const [searchParams] = useSearchParams();
-    const applicantIdFromUrl = searchParams.get("applicant_id");
+    const applicantIdFromUrl = searchParams.get("applicant");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);

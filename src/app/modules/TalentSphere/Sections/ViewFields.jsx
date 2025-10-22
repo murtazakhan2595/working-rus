@@ -1,7 +1,7 @@
 import React from "react";
 import { FormatID, BranchName, DepartmentName, EmployeeName, DesignationName, Currency } from "utils/getValuesFromTables";
 import { renderRange, renderDate } from "utils/renderValues";
-import { StatusLabel, SheetUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
+import { StatusLabel, TextUI, MultiStatusLabel, DetailContent, EmployeeDetailUI } from "components";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { RecruitmentApplicationSource } from "data/Data";
 import { RequisitionGenderOptions } from 'data/Data';
@@ -35,6 +35,7 @@ export const RequisitionViewFields = [
       {
         key: "job_description",
         label: "Job Description",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
       },
       {
         key: "required_skillset_name",
@@ -266,7 +267,8 @@ export const ShortlistingInfomation = [{
     {
       key: "remarks",
       label: "Remarks",
-      formatter: (cell) => cell,
+      formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
+
     },
   ],
 },
@@ -291,9 +293,31 @@ export const ScreeningInfomation = [{
   ],
 },
 ]
+export const HiringInfomation = [{
+  title: "Hiring Info",
+  renderSectionCondition: (data) => {
+    if (data.hired_by) return true;
+    return false;
+  },
+  field: [
+    {
+      key: "hired_by",
+      label: "Hiring By",
+      formatter: (cell) => <EmployeeName value={cell} />
+    },
+    {
+      key: "hired_at",
+      label: "Date",
+      formatter: (cell) => renderDate(cell, "--", "date-time"),
+    },
+  ],
+},
+]
 export const VacancyDetails = [
   {
     title: `Vacancy Details`,
+    footerTitle: "Request At",
+    footerField: "created_at",
     field: [
       {
         key: "requisition_id",
@@ -329,6 +353,13 @@ export const VacancyDetails = [
       {
         key: "job_description",
         label: "Job Description",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
+      },
+      {
+        key: "approved_on",
+        label: "Approval Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell,) => renderDate(cell, '--', 'date-time'),
       },
     ],
   },
@@ -357,6 +388,8 @@ export const BlacklistedInformation = [
       {
         key: "remarks",
         label: "Remarks",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
+
       },
     ],
   },
@@ -415,7 +448,7 @@ export const ResumeBankInformation = [
 ]
 export const InterviewDetails = [
   {
-    title: (data) => `${data.index + 1} - Interview Information`,
+    title: (data) => `${data.index ? `${data.index + 1} - ` : ''}Interview Information`,
     field: [
       {
         key: "interview_type_name",
@@ -454,6 +487,11 @@ export const OfferDetails = [
     title: (data) => `${data.index + 1} - Offer Information`,
     field: [
       {
+        key: "status",
+        label: "Status",
+        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+      },
+      {
         key: "generated_on",
         label: "Generated Date",
         formatter: (cell) => renderDate(cell, "--", 'date-time'),
@@ -468,10 +506,34 @@ export const OfferDetails = [
         label: "Offered Salary",
         formatter: (cell, row) => `${cell || '0'} ${row.currency || ''}`
       },
+
       {
-        key: "status",
-        label: "Status",
-        formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+        key: "approved_by",
+        label: "Approved By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        renderCondition: (cell) => Boolean(cell),
+      },
+      {
+        key: "approved_on",
+        label: "Approved Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "rejected_by",
+        label: "Rejected By",
+        formatter: (cell) => <EmployeeName value={cell} />,
+        renderCondition: (cell) => Boolean(cell),
+      },
+      {
+        key: "rejected_on",
+        label: "Rejected Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "template_name",
+        label: "Template Used",
       },
       {
         key: "final_letter_pdf",
@@ -487,6 +549,8 @@ export const OfferDetails = [
             <div className="text-neutral-1000 text-sm">No offer PDF</div>
           ),
       },
+
+
     ],
   },
 ];
@@ -516,6 +580,18 @@ export const FinalOfferLetterDetails = [
         formatter: (cell) => renderDate(cell, "--", 'date-time'),
       },
       {
+        key: "accepted_at",
+        label: "Accepted Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
+        key: "rejected_at",
+        label: "Rejected Date",
+        renderCondition: (cell) => Boolean(cell),
+        formatter: (cell) => renderDate(cell, "--", 'date-time'),
+      },
+      {
         key: "status",
         label: "Status",
         formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
@@ -541,6 +617,7 @@ export const FeebackDetails = [
       {
         key: "comments",
         label: "Comments / Observations",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
       },
       {
         key: "rating",
@@ -741,6 +818,7 @@ export const ApplicantDetails = [
       );
     },
   },
+  ...(HiringInfomation),
 ];
 
 
@@ -833,5 +911,11 @@ export const ExportApplicantsRecord = (row, Currencies) => {
     'Offered Salary': row?.offer_letters && row?.offer_letters.length > 0 ? `${row?.offer_letters[row?.offer_letters.length - 1]?.offered_salary} ${currency || ''} (${row?.publish_vacancy?.payment_frequency || ""})` : "",
   };
 }
+
+
+export const InterviewDetailsForPenalist = [
+  ...(ApplicantInformation),
+  ...(InterviewDetails),
+]
 
 
