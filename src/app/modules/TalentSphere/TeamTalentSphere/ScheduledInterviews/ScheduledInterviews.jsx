@@ -18,7 +18,7 @@ import moment from "moment";
 const ScheduledInterviews = ({ activeView = 'Upcoming Interviews' }) => {
     const { id: user_id, } = GetDispatchStateList("user_details", "emp") || {};
     const [activeTab, setActiveTab] = useState(activeView);
-    const [filterData, setFilterData] = useState({ panel_member: user_id });
+    const [filterData, setFilterData] = useState({ panel_member: [user_id] });
     const [isLoading, setIsLoading] = useState(true);
     const [InterviewsList, setInterviewsList] = useState({});
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });

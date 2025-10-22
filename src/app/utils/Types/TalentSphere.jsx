@@ -52,7 +52,6 @@ export const OfferLetterTemplate = {
     created_on: null,
     updated_on: null,
     letterhead: null,
-    name: null,
     subject: null,
 }
 
@@ -270,6 +269,7 @@ export const Applicants = {
     ai_feedback_recommendation: null,
     ai_feedback_summary: null,
     resume_bank: null,
+    is_employee_created:null,
 }
 
 export const RejectedApplication = {
@@ -381,6 +381,7 @@ export const OfferLetter = {
     final_letter_body: null,
     applicant: null,
     template: null,
+    template_name: null,
     generated_by: null,
     approved_by: null,
     rejected_by: null,
@@ -424,7 +425,5 @@ export const OfferTracking = {
     department: null,
     job_title: null,
     updated_at: null,
-    updated_by: null,
     uuid: null,
-    validity_date: null,
 }

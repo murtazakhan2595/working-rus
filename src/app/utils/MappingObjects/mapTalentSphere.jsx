@@ -681,12 +681,14 @@ export async function mapApplicantsData(data) {
 
             case "offers_tracking":
                 RecordDetails.offers_tracking = value?.[0] ? mapOfferTrackingData(value[0]) : null;
+                RecordDetails['hired_at'] = RecordDetails.offers_tracking?.hired_at;
+                RecordDetails['hired_by'] = RecordDetails.offers_tracking?.hired_by;
                 break;
             case "resume_bank":
                 RecordDetails.resume_bank = value ? mapResumeBankApplicantsData(value) : null;
                 break;
             case "offer_letters":
-                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value) : null;
+                const offer_letters = value && value.length > 0 ? await mapOfferLetterList(value, Boolean(data.offers_tracking?.[0])) : null;
                 const sorted_offer_letters = offer_letters ? (offer_letters || []).sort((a, b) => a.id - b.id) : null;
                 RecordDetails.offer_letters = sorted_offer_letters;
                 break;
@@ -1008,13 +1010,53 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
 //-------------OfferTrackings ---------------
 
-export function mapOfferTrackingData(data) {
+export function mapOfferTrackingData(data){
     const RecordDetails = Object.keys(OfferTracking).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
-            acc[key] = data[key];
+            if (key === 'audit_logs') {
+                const sorted = data[key]?.sort(
+                    (a, b) => new Date(b.changed_on) - new Date(a.changed_on)
+                );
+                // Step 2: Keep only the latest record for each new_status
+                const uniqueLatest = Object.values(
+                    sorted.reduce((acc, log) => {
+                        if (log.new_status === 'pending') {
+                            log.new_status = 'sent'
+                            if (!log.changed_by)
+                                log.changed_by = data.sent_by;
+                        }
+                        if (log.new_status === 'accepted' || log.new_status === 'rejected') 
+                                log.changed_by = data.applicant_name;
+                        if (!acc[log.new_status]) {
+                            acc[log.new_status] = log;
+                        }
+                        return acc;
+                    }, {})
+                );
+                const sorted_desendant = uniqueLatest?.sort(
+                    (a, b) => new Date(a.changed_on) - new Date(b.changed_on)
+                );
+                acc[key] = sorted_desendant;
+            } else acc[key] = data[key];
         }
         return acc;
     }, {});
+    if (data.audit_logs) {
+        const accepted_log = data.audit_logs.find(obj => obj.new_status === 'accepted');
+        const rejected_log = data.audit_logs.find(obj => obj.new_status === 'rejected');
+        const hired_log = data.audit_logs.find(obj => obj.new_status === 'hired');
+        if (accepted_log) {
+            RecordDetails['accepted_at'] = accepted_log?.changed_on;
+        }
+        if (rejected_log) {
+            RecordDetails['rejected_at'] = rejected_log?.changed_on;
+        }
+        if (hired_log) {
+            RecordDetails['hired_at'] = hired_log?.changed_on;
+            RecordDetails['hired_by'] = hired_log?.changed_by;
+        }
+    }
+    console.log(RecordDetails, "RecordDetails")
 
     return RecordDetails;
 }
@@ -1113,11 +1155,14 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
     }
     return RecordDetails;
 }
-export async function mapOfferLetterList(data) {
+export async function mapOfferLetterList(data, is_offer_sent = null) {
     if (!Array.isArray(data) || data.length === 0) return [];
     try {
         const DataList = await Promise.all(
-            data.map(async (dataObj) => {
+            data.map(async (dataObj, index) => {
+                if (index === data.length - 1 && is_offer_sent !== null && is_offer_sent !== undefined) {
+                    dataObj['is_offer_sent'] = is_offer_sent;//Update the status if tracking exist from a applicant
+                }
                 return await mapOfferLetterData(dataObj, false);
             })
         );

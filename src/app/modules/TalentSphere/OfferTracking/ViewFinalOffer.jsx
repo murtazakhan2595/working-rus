@@ -3,9 +3,9 @@ import {
     NavigationSheetComponent,
     DetailContent,
 } from "components";
-import { FormatID, BranchName, DesignationName } from "utils/getValuesFromTables";
-import { StatusLabel, StatusButtons } from "components";
-import { getOfferTrackingData, UpdateOfferTrackingStatus, saveUpdateApplicant } from "app/hooks/talentSphere";
+import { FormatID } from "utils/getValuesFromTables";
+import { StatusLabel } from "components";
+import { getOfferTrackingData, UpdateOfferTrackingStatus, saveUpdateApplication } from "app/hooks/talentSphere";
 import { EmployeeName } from "utils/getValuesFromTables";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
@@ -29,7 +29,7 @@ const ViewFinalOffer = ({
             const response = await UpdateOfferTrackingStatus({ ...data, status: status }, data.id);
             if (response) {
                 if (status === 'hired')
-                    await saveUpdateApplicant({ status: status }, data.applicant);
+                    await saveUpdateApplication({ status: status }, data.applicant);
 
                 setForceLoad(!forceLoad)
             }
@@ -137,13 +137,13 @@ const ViewFinalOffer = ({
                     formatter: (cell) => (cell || []).map((log, index) => (
                         <div key={index} className="mb-1">
                             <div className="text-sm text-neutral-1100 capitalize">
-                                {log?.old_status || 'draft'} → {log?.new_status}{" "}
+                                 {/* →*/} {log?.new_status}{" "} 
                                 {log?.changed_by && <span className="text-gray-1100">
-                                    by <EmployeeName value={log?.changed_by} />
+                                    by <EmployeeName value={log?.changed_by} fallBackText ={log?.changed_by}/>
                                 </span>}
                             </div>
                             <div className="text-xs text-gray-900">
-                                {renderDate(log?.changed_on)}
+                                {renderDate(log?.changed_on , '--','date-time')}
                             </div>
                         </div>
                     )),

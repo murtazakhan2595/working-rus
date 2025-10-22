@@ -22,19 +22,19 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
     const [ordering, setOrdering] = useState("-id");
 
     const OuterTabList = useMemo(() => {
-        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Hired", "Not Joined"];
+        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Not Joined"];
     }, []);
 
     // Handle deep link filter data and sub-tab when navigating from dashboard
     useEffect(() => {
         if (deepLinkFilterData) {
             const convertedFilters = { ...deepLinkFilterData };
-            
+
             setFilterData(convertedFilters);
             // Reset page to 1 when applying deep link filters
             onPageChange("page", 1);
         }
-        
+
         // Set the active sub-tab if provided and update filterData accordingly
         if (deepLinkSubTab && OuterTabList.includes(deepLinkSubTab)) {
             setActiveTab(deepLinkSubTab);
@@ -208,7 +208,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
                 ) : (
                     <TableCustom
                         data={OfferLetterList?.results || []}
-                        columns={OfferTrackingColumns(fetchData)}
+                        columns={OfferTrackingColumns(fetchData, activeTab)}
                         pagination={true}
                         dataTotalSize={OfferLetterList?.count || 0}
                         tableOptions={tableOptions}

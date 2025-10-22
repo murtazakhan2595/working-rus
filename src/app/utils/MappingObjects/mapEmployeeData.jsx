@@ -111,10 +111,10 @@ export async function mapEmployeeInfoData(data) {
   return employee;
 }
 export async function mapEmployeeApplicantData(data, designations) {
-  const { candidate_name, contact_number, email, offers_tracking, location, publish_vacancy, offer_letter } = data || {};
+  const { candidate_name, contact_number, email, offers_tracking, location, publish_vacancy, offer_letters } = data || {};
   const { branch, department, work_mode, job_description, job_title, job_type, payment_frequency } = publish_vacancy || {};
   const { joining_date, } = offers_tracking || {};
-  const { offered_salary, } = offer_letter?.[offer_letter?.length - 1 || 0] || {};
+  const { offered_salary, } = offer_letters?.[offer_letters?.length - 1 || 0] || {};
   const [first_name, last_name,] = candidate_name?.split(' ');
   const designation = ((designations || []).find(obj => (obj?.label?.trim()?.toLowerCase() === job_title?.trim()?.toLowerCase())) || {})?.value;
   const work_type = ((workplaceTypes || []).find(obj => (obj?.label?.trim()?.toLowerCase() === work_mode?.trim()?.toLowerCase())) || {})?.value;

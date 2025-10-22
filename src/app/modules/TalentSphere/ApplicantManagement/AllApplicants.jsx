@@ -197,6 +197,7 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
           'ai_feedback_confidence',
           'expected_joining_date',
           'scheduled_date_range',
+          'joining_date',
         ].includes(filterName))
           updatedFilters[filterName] = filterValue?.split(',');
         else updatedFilters[filterName] = filterValue;
@@ -328,6 +329,21 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
                       type: "date-range",
                       name: "added_on",
                       placeholder: "Added On",
+                    },
+                  ]
+                  : []),
+                ...(variant === "hired"
+                  ? [
+                    {
+                      type: "select",
+                      name: "updated_by",
+                      options: 'Employees',
+                      placeholder: "Recruiter",
+                    },
+                    {
+                      type: "date-range",
+                      name: "joining_date",
+                      placeholder: "Joining Date",
                     },
                   ]
                   : []),
