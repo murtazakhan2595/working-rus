@@ -17,12 +17,15 @@ import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { FilterInput } from "components/FormControl";
 import { JobRotationColumns } from "../Sections/TableColumns";
+import { getManagerList } from "app/hooks/employee";
+import { getDropdownList } from "utils/Lists";
 
 const RotationRequests = ({ reload, permittedViewFilterData }) => {
   const Designations = GetDispatchStateList("designations", "common") || [];
   const Departments = GetDispatchStateList("departments", "common") || [];
 
   const [isLoading, setIsLoading] = useState(true);
+  const [managersList, setManagersList] = useState([]);
   const [JobRotationList, setJobRotationList] = useState(null);
   const [filterData, setFilterData] = useState({ request_status: "PENDING" });
 
@@ -50,13 +53,24 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
     },
   };
 
+  const fetchManagersList = async () => {
+    try {
+      const managers = await getManagerList();
+      setManagersList(
+        getDropdownList(managers, "last_name", "id", "first_name", "")
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
       const filter = {
         ...filterData,
         ...permittedViewFilterData,
-        status: "pending",
+        // status: "pending",
       };
       const response = await getJobRotationRequests({
         filterData: filter,
@@ -86,6 +100,7 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       setOrdering("-id");
       fetchData(true);
     }
+    fetchManagersList();
   }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {
@@ -100,7 +115,6 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       return updatedFilters;
     });
   };
-
 
   const safeDepartments = (Departments || []).filter(
     (d) => d && typeof d.label === "string"
@@ -120,44 +134,60 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
           },
           {
             type: "select",
+            name: "status",
+            placeholder: "Status",
+            options: [
+              { value: "pending", label: "Pending" },
+              { value: "approved", label: "Approved" },
+              { value: "rejected", label: "Rejected" },
+            ],
+          },
+          {
+            type: "select",
             options: "employees",
             name: "initiated_by",
             placeholder: "Request Initiator",
           },
           ...(!permittedViewFilterData.department
             ? [
-              {
-                type: "select",
-                options: "departments",
-                name: "department",
-                placeholder: "Department",
-              },
-            ]
+                {
+                  type: "select",
+                  options: "departments",
+                  name: "department",
+                  placeholder: "Department",
+                },
+              ]
             : []),
           ...(!permittedViewFilterData.branch
             ? [
-              {
-                type: "select",
-                options: "branches",
-                name: "new_branch",
-                placeholder: "Branch",
-              },
-            ]
+                {
+                  type: "select",
+                  options: "branches",
+                  name: "new_branch",
+                  placeholder: "Branch",
+                },
+              ]
             : []),
           {
             type: "select",
-            options: "managers",
-            name: "new_branch",
-            placeholder: "Manager",
+            options: managersList,
+            name: "new_reporting_manager",
+            placeholder: "New Manager",
+          },
+          {
+            type: "select",
+            options: managersList,
+            name: "old_reporting_manager",
+            placeholder: "Previous Manager",
           },
           {
             type: "date-range",
-            name: "new_branch",
+            name: "created_at",
             placeholder: "Request Date",
           },
           {
             type: "date-range",
-            name: "new_branch",
+            name: "effective_date",
             placeholder: "Effective Date",
           },
         ]}
@@ -177,7 +207,6 @@ const RotationRequests = ({ reload, permittedViewFilterData }) => {
       )}
     </CardContent>
   );
-
 };
 
 export default RotationRequests;
