@@ -1133,7 +1133,7 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
                     if (confidence >= 80)
                         RecordDetails[key] = <div className='text-emerald-700'>{parseFloat(data[key] || 0)}% - Good to approve</div>;
                     else if (confidence < 50)
-                        RecordDetails[key] = <div className='text-error-700'>{parseFloat(data[key] || 0)}% - Review required before proceeding</div>;
+                        RecordDetails[key] = <div className='text-red-800'>{parseFloat(data[key] || 0)}% - Review required before proceeding</div>;
                     else if (confidence >= 50 && confidence < 80)
                         RecordDetails[key] = <div className='text-amber-500'>{parseFloat(data[key] || 0)}% - Needs HR attention</div>;
                 } else if (key === 'ai_missing_fields') {

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { FileText } from "lucide-react";
 import { renderDate } from "utils/renderValues";
 import AttachmentUI from "components/ui/AttachmentUI";
-import { StatusLabel } from "components";
+import { StatusLabel ,TextUI} from "components";
 
 const DemographicsTab = ({ demographaic_details }) => {
   console.log(demographaic_details, 'demographicData')
@@ -96,9 +96,7 @@ const DemographicsTab = ({ demographaic_details }) => {
                 {demographaic_details?.demographic_form?.name || "Demographics form"}
               </CardTitle>
               {demographaic_details?.demographic_form?.description && (
-                <p className="text-sm text-neutral-1000 mt-1">
-                  {demographaic_details?.demographic_form.description}
-                </p>
+                 <TextUI text={demographaic_details?.demographic_form.description} maxLength={100} showReadmore={true} />
               )}
             </div>
             <div className="text-right">

@@ -617,6 +617,7 @@ export const FeebackDetails = [
       {
         key: "comments",
         label: "Comments / Observations",
+        formatter: (cell) => <TextUI text={cell} maxLength={100} showReadmore={true} />
       },
       {
         key: "rating",
