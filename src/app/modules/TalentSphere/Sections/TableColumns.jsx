@@ -1120,7 +1120,7 @@ export const ApplicantsColumns = (reloadData) => [
                 <div><span className="font-bold">ID: </span><FormatID value={cell?.id} prefix={"RR-"} /></div>
                 <div><span className="font-bold">Job Title: </span>{cell?.job_title}</div>
                 <div><span className="font-bold">Department: </span><DepartmentName value={cell?.department} /></div>
-                <div><span className="font-bold">Branch: </span><DepartmentName value={cell?.branch} /></div>
+                <div><span className="font-bold">Branch: </span><BranchName value={cell?.branch} /></div>
             </div>
         ),
         minWidth: '250px',
