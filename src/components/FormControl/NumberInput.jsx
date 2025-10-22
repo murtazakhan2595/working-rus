@@ -8,7 +8,7 @@ const NumberInput = React.memo(
     value,
     error,
     touch,
-    onChange = () => { },
+    onChange = () => {},
     label,
     disabled,
     required,
@@ -19,6 +19,7 @@ const NumberInput = React.memo(
     autoComplete = "new-password",
     className = "w-full", // Custom styling
     description,
+    maxLength = "1000",
   }) => {
     return (
       <FormField
@@ -33,7 +34,7 @@ const NumberInput = React.memo(
       >
         <Input
           type="text"
-          maxLength={"1000"}
+          maxLength={maxLength}
           id={name}
           name={name}
           autoComplete={autoComplete} // Use "off" for no autocomplete or specify a valid autocomplete token like "name", "email", etc.

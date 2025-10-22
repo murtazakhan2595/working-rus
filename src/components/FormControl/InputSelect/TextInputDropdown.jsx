@@ -41,7 +41,6 @@ const TextInputDropdown = React.memo(
         // Toggle selection for a given option
         const handleSelectionToggle = useCallback(
             (optionValue) => {
-                debugger
                 const newValue =
                     optionValue === value || (optionValue === null && value === null)
                         ? ""
