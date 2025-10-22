@@ -186,7 +186,7 @@ function App() {
 
         <Route path="*" element={<Err404 />} />
       </Routes>
-      <ChatbrixWidget />/
+      <ChatbrixWidget />
     </>
   );
 }
