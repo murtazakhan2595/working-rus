@@ -893,6 +893,7 @@ export const getDemographicFormsList = async (payload = {}) => {
 export const getDemographicFormById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/demographic-forms/${id}/`, { headers: headers() });
+    console.log("Demographic Form Response ******:", response);
     if (response.status === 200) {
       return response.data;
     }
@@ -2441,7 +2442,7 @@ export const submitDemographicResponse = async (formData) => {
     const response = await axios.post(
       `${baseUrl}/demographic-responses/`,
       formData,
-      { headers: formDataHeader() } // Use formDataHeader for file uploads
+      // { headers: formDataHeader() } // Use formDataHeader for file uploads
     );
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -2463,10 +2464,12 @@ export const getDemographicResponsesByApplicant = async (applicantId) => {
       `${baseUrl}/demographic-responses/?search=${encodeURIComponent(JSON.stringify({ applicant: applicantId }))}`,
       { headers: headers() }
     );
+    console.log("Demographic Responses Response:", response);
     if (response.status === 200) {
-      if (response && response.results && response.results.length > 0) {
-        const responseData = response.results[0];
+      if (response.data && response.data.results && response.data.results.length > 0) {
+        const responseData = response.data.results[0];
         const formDataResponse = await getDemographicFormById(responseData.form);
+        console.log("Demographic Form Data Response:", formDataResponse);
         return { ...responseData, demographic_form: formDataResponse }
       }
       return null;
