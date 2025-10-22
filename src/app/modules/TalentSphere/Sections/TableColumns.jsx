@@ -318,13 +318,17 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
         dataField: "created_by",
         text: "Created By",
         formatter: (cell) => <EmployeeName value={cell} />,
-        dataSort: true,
     },
 
     {
         dataField: "updated_on",
         text: "Last Updated On",
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
+    },
+    {
+        dataField: "updated_by",
+        text: "Updated By",
+        formatter: (cell) => <EmployeeName value={cell} />,
     },
     {
         dataField: "is_active",
@@ -1557,19 +1561,20 @@ export const OfferTrackingColumns = (reloadData, variant) => [
     {
         dataField: "id",
         text: "Offer ID",
-        formatter: (cell, row) => <FormatID value={cell} prefix={"AOL-"} />,
+        formatter: (cell, row) => <FormatID value={cell} prefix={"OFF-"} />,
     },
     {
-        dataField: "applicant_name",
-        text: "Applicant Name",
-    },
-    {
-        dataField: "job_title",
-        text: "Job Title",
-    },
-    {
-        dataField: "department",
-        text: "Department",
+        dataField: "applicant",
+        text: "Applicant",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
+                <div><span className="font-bold">Name: </span>{row?.applicant_name}</div>
+                <div><span className="font-bold">Job Title: </span>{row?.job_title}</div>
+                <div><span className="font-bold">Department: </span>{row?.department}</div>
+            </div>
+            );
+        },
     },
     {
         dataField: "validity_date",
@@ -1582,14 +1587,14 @@ export const OfferTrackingColumns = (reloadData, variant) => [
         formatter: (cell) => renderDate(cell, '--', 'date'),
     },
     {
-        dataField: "sent_by",
-        text: "Send By",
-        formatter: (cell) => <EmployeeName value={cell} />
-    },
-    {
         dataField: "sent_on",
-        text: "Send Date",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
+        text: "Offer Logs",
+        formatter: (_, row) => (
+            <div>
+                <div><span className="font-bold">Sent By: </span><EmployeeName value={row?.sent_by} /></div>
+                <div><span className="font-bold">Sent On: </span>{renderDate(row?.sent_on, '--', 'date-time')}</div>
+            </div>
+        ),
     },
     ...(variant === 'Accepted' ? [
         {
@@ -1608,13 +1613,14 @@ export const OfferTrackingColumns = (reloadData, variant) => [
     ...(variant === 'Hired' ? [
         {
             dataField: "hired_at",
-            text: "Hired Date",
+            text: "Hire Info",
             formatter: (cell) => renderDate(cell, '--', 'date-time'),
-        },
-        {
-            dataField: "hired_by",
-            text: "Hired By",
-            formatter: (cell) => <EmployeeName value={cell} />
+            formatter: (_, row) => (
+                <div>
+                    <div><span className="font-bold">Hired By: </span><EmployeeName value={row?.hired_by} /></div>
+                    <div><span className="font-bold">Hired On: </span>{renderDate(row?.hired_at, '--', 'date-time')}</div>
+                </div>
+            ),
         },
     ] : []),
     ...(variant === 'Not Joined' ? [
