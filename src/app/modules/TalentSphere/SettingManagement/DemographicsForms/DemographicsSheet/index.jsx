@@ -35,6 +35,7 @@ const FIELD_TYPE_OPTIONS = [
   { label: "Number", value: "number" },
   { label: "Email", value: "email" },
   { label: "Date", value: "date" },
+  { label: "Phone Number", value: "phone" },
   { label: "Radio", value: "radio" },
   { label: "Checkbox", value: "checkbox" },
   { label: "Dropdown", value: "dropdown" },
@@ -294,6 +295,7 @@ const DemographicsSheet = ({
         case "email":
         case "date":
         case "text":
+        case "phone":
         default:
           options = null;
           break;
