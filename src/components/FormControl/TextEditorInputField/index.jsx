@@ -37,16 +37,14 @@ const TextEditorInputField = ({
   value = "",
   upload,
   onChange = () => { },
-  setAttachments = () => { },
   attachments = [],
   name = "editor",
   label = false,
   className = "",
   users = [],
   allowMentions = false,
-  editMode = false,
-  replyToUser = null,
-  commentHeight = "h-[300px]",
+  editMode = true,
+  commentHeight = "h-[500px]",
   placeholder = "Write a comment..."
 }) => {
   const editorRef = useRef(null);
@@ -74,11 +72,21 @@ const TextEditorInputField = ({
   }, []);
 
   /** 🧩 Initialize editor content (once for edit mode) */
+  /** 🧩 Initialize or update editor content when value changes */
   useLayoutEffect(() => {
-    if (editorRef.current && editMode) {
-      editorRef.current.innerHTML = value || "";
+    if (!editorRef.current || !editMode) return;
+
+    const currentHTML = editorRef.current.innerHTML;
+    // Update only if content actually changed
+    if (value && value !== currentHTML) {
+      editorRef.current.innerHTML = value;
     }
-  }, [editMode]);
+    // If value is cleared (null/empty), clear editor too
+    else if (!value && currentHTML !== "") {
+      editorRef.current.innerHTML = "";
+    }
+  }, [value, editMode]);
+
 
   /** 🧩 Handle bold, italic, underline, list, etc. */
   const execCommand = (cmd, val = null) => {
@@ -262,17 +270,20 @@ const TextEditorInputField = ({
         </div>
 
         {/* Editable Area */}
-        <ScrollArea>
-          <div
-            ref={editorRef}
-            className={`w-full ${commentHeight} p-3 bg-white border-x border-b border-gray-300 rounded-b-lg focus:outline-none textEditorText`}
-            contentEditable={!disabled}
-            placeholder={placeholder}
-            onInput={handleInput}
-            onKeyUp={saveCaret}
-            suppressContentEditableWarning
-          ></div>
-        </ScrollArea>
+        <div className="bg-white border-x border-b border-gray-300 rounded-b-lg pb-3">
+          <ScrollArea className="[&>div>div[style]]:!block">
+            <div
+              ref={editorRef}
+              className={`w-full ${commentHeight} p-3 focus:outline-none textEditorText`}
+              contentEditable={!disabled}
+              placeholder={placeholder}
+              onInput={handleInput}
+              onKeyUp={saveCaret}
+              suppressContentEditableWarning
+            ></div>
+          </ScrollArea>
+        </div>
+
 
         {/* Mention Popover */}
         {allowMentions && showMentionPopover && (
