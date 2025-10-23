@@ -1,0 +1,113 @@
+// Global Payroll Module Exports
+export { default as PayrollDashboard } from "./PayrollDashboard";
+export { default as PayrollRunWizard } from "./PayrollRun/PayrollRunWizard";
+export { default as PayrollSetupConfiguration } from "./PayrollSetupConfiguration/PayrollSetupConfiguration";
+export { default as EarningsDeductionsConfig } from "./Configuration/EarningsDeductionsConfig";
+export { default as TaxManagement } from "./TaxManagement/TaxManagement";
+export { default as CountryCurrencyManagement } from "./CountryCurrency/CountryCurrencyManagement";
+export { default as WPSPaymentGeneration } from "./WPSPayment/WPSPaymentGeneration";
+export { default as ClaimsReimbursements } from "./ClaimsReimbursements/ClaimsReimbursements";
+export { default as AIRecommendations } from "./AIEngine/AIRecommendations";
+export { default as PayrollReports } from "./Reports/PayrollReports";
+export { default as PayrollAuditLogs } from "./Audit/PayrollAuditLogs";
+
+// Settings Module Exports
+export { default as PayrollPoliciesSettings } from "./Settings/PayrollPoliciesSettings";
+export { default as CountryCurrencySettings } from "./Settings/CountryCurrencySettings";
+export { default as StatutoryRulesSettings } from "./Settings/StatutoryRulesSettings";
+export { default as EarningsDeductionsSettings } from "./Settings/EarningsDeductionsSettings";
+export { default as CostCentersMappingSettings } from "./Settings/CostCentersMappingSettings";
+export { default as HolidayCalendarSettings } from "./Settings/HolidayCalendarSettings";
+
+// Integration Module Exports
+export { default as EmployeeDataIntegrationLanding } from "./Integration/EmployeeDataIntegrationLanding";
+export { default as EmployeeMasterSyncSettings } from "./Integration/EmployeeMasterSyncSettings";
+export { default as SalaryComponentsFetchSettings } from "./Integration/SalaryComponentsFetchSettings";
+export { default as AttendanceLinksSettings } from "./Integration/AttendanceLinksSettings";
+export { default as EmployeeTypeSettings } from "./Integration/EmployeeTypeSettings";
+export { default as BulkUploadMappingSettings } from "./Integration/BulkUploadMappingSettings";
+
+// Earnings & Deductions Module Exports
+export { default as EarningHeadsSettings } from "./EarningsDeductions/EarningHeadsSettings";
+export { default as DeductionHeadsSettings } from "./EarningsDeductions/DeductionHeadsSettings";
+export { default as CustomRulesSettings } from "./EarningsDeductions/CustomRulesSettings";
+export { default as OvertimeCalculationSettings } from "./EarningsDeductions/OvertimeCalculationSettings";
+export { default as StatutoryContributionsSettings } from "./EarningsDeductions/StatutoryContributionsSettings";
+export { default as OneTimePaymentsSettings } from "./EarningsDeductions/OneTimePaymentsSettings";
+
+// Payroll Run & Processing Module Exports
+export { default as PayrollProcessingWizard } from "./PayrollRun/PayrollProcessingWizard";
+export { default as PeriodSelection } from "./PayrollRun/PeriodSelection";
+export { default as PayrollComputation } from "./PayrollRun/PayrollComputation";
+export { default as EmployeeInclusion } from "./PayrollRun/EmployeeInclusion";
+export { default as PayrollWorkflow } from "./PayrollRun/PayrollWorkflow";
+export { default as ErrorValidation } from "./PayrollRun/ErrorValidation";
+export { default as PayrollPreview } from "./PayrollRun/PayrollPreview";
+
+// Tax, PF & Statutory Compliance Module Exports
+export { default as TaxCalculation } from "./Compliance/TaxCalculation";
+export { default as PFSocialSecurity } from "./Compliance/PFSocialSecurity";
+export { default as GratuityCalculation } from "./Compliance/GratuityCalculation";
+export { default as ContributionBreakdown } from "./Compliance/ContributionBreakdown";
+export { default as TaxTablesUpdate } from "./Compliance/TaxTablesUpdate";
+export { default as GovernmentReporting } from "./Compliance/GovernmentReporting";
+
+// Multi-Currency & Multi-Country Module Exports
+export { default as ExchangeRateConversion } from "./MultiCurrency/ExchangeRateConversion";
+export { default as CurrencyDisplay } from "./MultiCurrency/CurrencyDisplay";
+export { default as CountryRules } from "./MultiCurrency/CountryRules";
+export { default as LedgerMapping } from "./MultiCurrency/LedgerMapping";
+export { default as ConsolidatedDashboard } from "./MultiCurrency/ConsolidatedDashboard";
+
+// WPS & Payment Processing Module Exports
+export { default as UAESIFGeneration } from "./WPSPayment/UAESIFGeneration";
+export { default as UKBankFormats } from "./WPSPayment/UKBankFormats";
+export { default as AfricaBankFormats } from "./WPSPayment/AfricaBankFormats";
+export { default as PaymentBatchApprovals } from "./WPSPayment/PaymentBatchApprovals";
+export { default as PayrollAlerts } from "./WPSPayment/PayrollAlerts";
+export { default as BankAPIIntegration } from "./WPSPayment/BankAPIIntegration";
+
+// Payslip & Employee Self Service Module Exports
+export { default as AutoGeneratedPayslips } from "./PayslipSelfService/AutoGeneratedPayslips";
+export { default as PDFPayslips } from "./PayslipSelfService/PDFPayslips";
+export { default as EmployeePortalAccess } from "./PayslipSelfService/EmployeePortalAccess";
+export { default as PayrollHistory } from "./PayslipSelfService/PayrollHistory";
+export { default as YearEndStatements } from "./PayslipSelfService/YearEndStatements";
+
+// Adjustments & Corrections Module Exports
+export { default as ManualOverride } from "./AdjustmentsCorrections/ManualOverride";
+export { default as RetroactiveCorrections } from "./AdjustmentsCorrections/RetroactiveCorrections";
+export { default as OffCyclePayroll } from "./AdjustmentsCorrections/OffCyclePayroll";
+export { default as LeaveAdjustments } from "./AdjustmentsCorrections/LeaveAdjustments";
+export { default as LoansAdvances } from "./AdjustmentsCorrections/LoansAdvances";
+
+// AI & Automation Features Module Exports
+export { default as AnomalyDetection } from "./AIAutomation/AnomalyDetection";
+export { default as SalaryForecast } from "./AIAutomation/SalaryForecast";
+export { default as ComplianceDetection } from "./AIAutomation/ComplianceDetection";
+export { default as SmartReminders } from "./AIAutomation/SmartReminders";
+export { default as AIChatbot } from "./AIAutomation/AIChatbot";
+
+// Reporting & Analytics Module Exports
+export { default as PayrollSummary } from "./ReportingAnalytics/PayrollSummary";
+export { default as CostCenterAnalysis } from "./ReportingAnalytics/CostCenterAnalysis";
+export { default as StatutoryReports } from "./ReportingAnalytics/StatutoryReports";
+export { default as ForecastReports } from "./ReportingAnalytics/ForecastReports";
+export { default as ExportTools } from "./ReportingAnalytics/ExportTools";
+export { default as BIIntegration } from "./ReportingAnalytics/BIIntegration";
+
+// Security & Access Control Module Exports
+export { default as RoleBasedAccess } from "./SecurityAccess/RoleBasedAccess";
+export { default as AuditTrail } from "./SecurityAccess/AuditTrail";
+export { default as ChangeHistory } from "./SecurityAccess/ChangeHistory";
+export { default as ComplianceChecks } from "./SecurityAccess/ComplianceChecks";
+export { default as DataEncryption } from "./SecurityAccess/DataEncryption";
+
+// Integration Points Module Exports
+export { default as AttendanceShiftManagement } from "./IntegrationPoints/AttendanceShiftManagement";
+export { default as LeaveTimeoffModule } from "./IntegrationPoints/LeaveTimeoffModule";
+export { default as LoanReimbursementModule } from "./IntegrationPoints/LoanReimbursementModule";
+export { default as GeneralLedgerERPSystems } from "./IntegrationPoints/GeneralLedgerERPSystems";
+export { default as BankPaymentAPIs } from "./IntegrationPoints/BankPaymentAPIs";
+export { default as TaxAuthorityWPSSubmission } from "./IntegrationPoints/TaxAuthorityWPSSubmission";
+
