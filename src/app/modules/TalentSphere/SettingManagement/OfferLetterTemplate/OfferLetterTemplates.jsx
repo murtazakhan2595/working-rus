@@ -100,6 +100,12 @@ const OfferLetterTemplates = ({ reload }) => {
                                 options: [{ value: true, label: 'Active' }, { value: false, label: 'Inactive' },]
                             },
                             {
+                                type: "select",
+                                placeholder: "Created By",
+                                name: "created_by",
+                                options:'employees'
+                            },
+                            {
                                 type: "date-range",
                                 placeholder: "Creation Date",
                                 name: "created_on_range",

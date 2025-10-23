@@ -326,8 +326,8 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
         formatter: (cell) => renderDate(cell, '--', 'date-time'),
     },
     {
-        dataField: "updated_by",
-        text: "Updated By",
+        dataField: "created_by",
+        text: "Last Updated By",
         formatter: (cell) => <EmployeeName value={cell} />,
     },
     {

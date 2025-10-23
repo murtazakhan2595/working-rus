@@ -1,7 +1,7 @@
 import React from "react";
 import { Input } from "components/ui/input";
-import { FormField,InvalidInput } from "components/FormControl";
-
+import { FormField, InvalidInput } from "components/FormControl";
+import { ValidationRegEx } from 'app/utils/Types/ValidationPattern';
 const TextInput = React.memo(
   ({
     name,
@@ -16,7 +16,7 @@ const TextInput = React.memo(
     regEx,
     maxLength,
     placeholder,
-    autoComplete="new-password",
+    autoComplete = "new-password",
     className = "w-full", // Custom styling
     description,
   }) => {
@@ -44,7 +44,8 @@ const TextInput = React.memo(
           onChange={(event) => {
             const inputValue = event.target.value;
             if (regEx) {
-              if (!inputValue || regEx.test(inputValue)) {
+              const REGEX = ValidationRegEx[regEx] ?? regEx;
+              if (!inputValue || REGEX.test(inputValue)) {
                 onChange(name, inputValue);
               }
             } else {

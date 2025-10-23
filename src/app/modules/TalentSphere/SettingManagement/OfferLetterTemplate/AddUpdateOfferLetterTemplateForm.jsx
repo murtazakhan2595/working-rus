@@ -4,7 +4,6 @@ import { SheetUI } from "components";
 import { CoverFileUpload } from "components/FormControl";
 import { TextInput, TextEditorInputField, RadioGroupInput } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
 
 const AddUpdateOfferLetterTemplateForm = ({
   id = false,
@@ -135,6 +134,7 @@ const AddUpdateOfferLetterTemplateForm = ({
                 required: true,
                 label: "Name",
                 validateDuplicate: true,
+                regEx:'ALPHANUMERIC_REGEX',
               },
               {
                 InputField: TextInput,

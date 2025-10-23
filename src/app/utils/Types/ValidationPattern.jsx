@@ -29,3 +29,9 @@ export const ALPHANUMERIC_REGEX = /^[a-zA-Z0-9]+$/;
 
 //Blood Group Validation
 export const BLOOD_GROUP_REGEX = /^(A|B|AB|O)[+-]$/;
+
+export const ValidationRegEx = {
+    ALPHANUMERIC_REGEX: ALPHANUMERIC_REGEX,
+    ALPHA_REGEX: ALPHA_REGEX,
+    HEX_COLOR_REGEX: HEX_COLOR_REGEX,
+}
