@@ -295,20 +295,20 @@ export const OfferLetterTemplatesColumns = (reloadData) => [
         text: "Template Name",
         dataSort: true,
     },
-    {
-        dataField: "letterhead",
-        text: "Letter Head",
-        formatter: (cell) => (
-            <>
-                <AttachmentUI
-                    attachment={cell}
-                    viewOnly={true}
-                    variant={'preview-only'}
-                    fallBackText='--'
-                />
-            </>
-        ),
-    },
+    // {
+    //     dataField: "letterhead",
+    //     text: "Letter Head",
+    //     formatter: (cell) => (
+    //         <>
+    //             <AttachmentUI
+    //                 attachment={cell}
+    //                 viewOnly={true}
+    //                 variant={'preview-only'}
+    //                 fallBackText='--'
+    //             />
+    //         </>
+    //     ),
+    // },
     {
         dataField: "updated_on",
         text: "Created On",
