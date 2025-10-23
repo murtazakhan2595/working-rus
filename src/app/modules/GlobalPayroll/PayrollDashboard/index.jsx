@@ -43,7 +43,7 @@ const PayrollDashboard = () => {
     payrollStatus, 
     loading, 
     payrollRuns 
-  } = useSelector((state) => state.globalPayroll);
+  } = useSelector((state) => state.globalPayroll || {});
 
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [selectedPeriod, setSelectedPeriod] = useState("current");
@@ -82,7 +82,7 @@ const PayrollDashboard = () => {
   const statusCards = [
     {
       title: "Draft",
-      count: dashboardData?.draft_count || payrollStatus.draft || 0,
+      count: dashboardData?.draft_count || payrollStatus?.draft || 0,
       amount: dashboardData?.draft_amount || 0,
       currency: "AED",
       icon: FileText,
@@ -91,7 +91,7 @@ const PayrollDashboard = () => {
     },
     {
       title: "In Review",
-      count: dashboardData?.in_review_count || payrollStatus.inReview || 0,
+      count: dashboardData?.in_review_count || payrollStatus?.inReview || 0,
       amount: dashboardData?.in_review_amount || 0,
       currency: "AED",
       icon: AlertCircle,
@@ -100,7 +100,7 @@ const PayrollDashboard = () => {
     },
     {
       title: "Approved",
-      count: dashboardData?.approved_count || payrollStatus.approved || 0,
+      count: dashboardData?.approved_count || payrollStatus?.approved || 0,
       amount: dashboardData?.approved_amount || 0,
       currency: "AED",
       icon: TrendingUp,
@@ -109,7 +109,7 @@ const PayrollDashboard = () => {
     },
     {
       title: "Processed",
-      count: dashboardData?.processed_count || payrollStatus.processed || 0,
+      count: dashboardData?.processed_count || payrollStatus?.processed || 0,
       amount: dashboardData?.processed_amount || 0,
       currency: "AED",
       icon: DollarSign,
@@ -427,7 +427,7 @@ const PayrollDashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-                {payrollRuns.slice(0, 5).map((run, index) => (
+                {(payrollRuns || []).slice(0, 5).map((run, index) => (
                   <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                     <td className="px-4 py-4 whitespace-nowrap text-sm">
                       <div className="flex items-center gap-2">
