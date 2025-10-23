@@ -30,8 +30,17 @@ export const ALPHANUMERIC_REGEX = /^[a-zA-Z0-9]+$/;
 //Blood Group Validation
 export const BLOOD_GROUP_REGEX = /^(A|B|AB|O)[+-]$/;
 
+//Name Validation
+const NAME_REGEX = /^[a-zA-Z0-9. ]+$/;
+
+// ✅ Validation: allows alphabets, numbers, spaces, dots, hyphens, underscores, and commas
+const OPTIONS_REGEX = /^[a-zA-Z0-9.,\-_ ]+$/;
+
+
 export const ValidationRegEx = {
     ALPHANUMERIC_REGEX: ALPHANUMERIC_REGEX,
     ALPHA_REGEX: ALPHA_REGEX,
     HEX_COLOR_REGEX: HEX_COLOR_REGEX,
+    NAME_REGEX:NAME_REGEX,
+    OPTIONS_REGEX:OPTIONS_REGEX,
 }

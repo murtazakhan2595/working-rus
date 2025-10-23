@@ -100,13 +100,13 @@ const SheetUI = forwardRef(
  * @param {string[]} combinationKeys - Array of field names that define a unique combination for validation.
  */
     const validateDuplicateFieldValue = useCallback(
-      async (value, label, formValues = {}, combinationKeys = [], errorMessage) => {
+      async (value, label, formValues = {}, combinationKeys, errorMessage) => {
         const { id } = formValues;
 
         // 🧩 Step 1: Basic validation
         setValidateFieldErrors((prevErrors) => {
           const updated = { ...prevErrors };
-          if (Array.isArray(combinationKeys) && combinationKeys.length > 0) {
+          if (combinationKeys && Array.isArray(combinationKeys) && combinationKeys.length > 0) {
             // 🧹 Remove all related combination field errors
             combinationKeys.forEach((key) => {
               delete updated[key];
@@ -141,7 +141,7 @@ const SheetUI = forwardRef(
           if (parseInt(obj.id) === parseInt(id)) return false; // skip self
 
           // 🧩 Combination key validation
-          if (Array.isArray(combinationKeys) && combinationKeys.length > 0) {
+          if (combinationKeys && Array.isArray(combinationKeys) && combinationKeys.length > 0) {
             return combinationKeys.every((key) => {
               const currentVal = key === label ? normalizedValue : normalize(formValues[key]);
               const targetVal = normalize(obj[key]);
@@ -156,7 +156,7 @@ const SheetUI = forwardRef(
         // 🧩 Step 5: Update validation errors
         if (filtered.length > 0) {
           const duplicateType =
-            combinationKeys.length > 0
+            combinationKeys && combinationKeys.length > 0
               ? errorMessage ?? `Combination of [${[...combinationKeys, label].join(", ")}] already exists.`
               : `Value already exists. Please choose a different one.`;
 
@@ -318,7 +318,7 @@ const SheetUI = forwardRef(
                               renderCondition = true,
                               customComponent,
                               validateDuplicate = false, // flag indicating whether to check for duplicate entries in the DataList  
-                              combinationKeys = [], // array of field names used to identify duplicate record combinations in the DataList
+                              combinationKeys = null, // array of field names used to identify duplicate record combinations in the DataList
                               duplicateErrorMessage = null, // error message to display if identify duplicate record combinations in the DataList
                             } = fieldsConfig;
 
@@ -366,7 +366,7 @@ const SheetUI = forwardRef(
                                     if (onFieldUpdate && typeof onFieldUpdate === "function")
                                       onFieldUpdate(field, value, props.values, props.setFieldValue);
                                     if (validateDuplicate)
-                                      validateDuplicateFieldValue(value, name, props.values, [...(combinationKeys || []), name], duplicateErrorMessage);
+                                      validateDuplicateFieldValue(value, name, props.values, combinationKeys ? [...(combinationKeys || []), name] : null, duplicateErrorMessage);
                                     props?.setFieldValue(field, value);
                                   }}
                                   columns={subColumns}

@@ -52,3 +52,102 @@ export const validateRequisitionRequestFormSchema = (values,) => {
 
     return errors;
 };
+
+/**
+ * ✅ Formik-compatible feedback form validation schema.
+ *
+ * Rules:
+ * 1. Must have at least one valid section.
+ * 2. Section title is required.
+ * 3. Each section must contain at least one field.
+ * 4. Each field must have a non-empty label.
+ * 5. RADIO fields → radio_options cannot be empty.
+ * 6. RATING fields → rating_scale_max must be > 0.
+ *
+ * @param {Object} formValues - The form values from Formik.
+ * @returns {Object} Formik-style errors object.
+ */
+export const validateFeedbackFormSchema = (formValues) => {
+    const errors = {};
+    if (!formValues.name || !formValues?.name?.trim()) {
+        errors.name = "Name is required.";
+    }
+    // 🧩 Step 1: Validate sections
+    if (!formValues?.sections || !Array.isArray(formValues.sections) || formValues.sections.length === 0) {
+        errors.sections = "Form must have at least one valid section.";
+        return errors;
+    }
+
+    const sectionErrors = [];
+
+    formValues.sections.forEach((section, secIndex) => {
+        const sectionError = {};
+        const title = section?.title?.trim();
+
+        // 🟡 Title validation
+        if (!title || !title?.trim()) {
+            sectionError.title = "Section title is required.";
+        }
+
+        // 🟡 Fields validation
+        if (!Array.isArray(section.fields) || section.fields.length === 0) {
+            sectionError.fields = "Section must contain at least one field.";
+        } else {
+            const fieldErrors = [];
+
+            section.fields.forEach((field, fieldIndex) => {
+                const fieldError = {};
+                const label = field?.label?.trim();
+                const type = field?.field_type;
+
+                // Label check
+                if (!label) {
+                    fieldError.label = "Field label is required.";
+                }
+
+                // RADIO check
+                if (type === "RADIO") {
+                    const radioOptions =
+                        typeof field.radio_options === "string"
+                            ? field.radio_options
+                                .split(",")
+                                .map((opt) => opt.trim())
+                                .filter(Boolean)
+                            : null;
+                    debugger
+                    if (!radioOptions || !Array.isArray(radioOptions) || radioOptions?.length === 0) {
+                        fieldError.radio_options = "Radio options cannot be empty for RADIO type.";
+                    }
+                }
+
+                // RATING check
+                if (type === "RATING") {
+                    const rating = Number(field.rating_scale_max);
+                    if (isNaN(rating) || rating <= 0) {
+                        fieldError.rating_scale_max = "Rating scale must be greater than zero.";
+                    }
+                }
+
+                if (Object.keys(fieldError).length > 0) {
+                    fieldErrors[fieldIndex] = fieldError;
+                }
+            });
+
+            if (fieldErrors.length > 0) {
+                sectionError.fields = fieldErrors;
+            }
+        }
+
+        if (Object.keys(sectionError).length > 0) {
+            sectionErrors[secIndex] = sectionError;
+        }
+    });
+
+    if (sectionErrors.length > 0) {
+        errors.sections = sectionErrors;
+    }
+
+    return errors;
+};
+
+

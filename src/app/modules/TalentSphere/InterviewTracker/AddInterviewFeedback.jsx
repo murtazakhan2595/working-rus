@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState, useCallback } from "react";
 import { EmployeeDetailUI, SheetUI } from "components";
 import { useSelector } from "react-redux";
+import { createDropdownOptions } from 'utils/Lists';
 
 
 const AddInterviewFeedback = ({
@@ -77,7 +78,7 @@ const AddInterviewFeedback = ({
                 ...values,
                 panel_member: user_id,
                 interview: id,
-                feedback_form:feedbackForm || 2,
+                feedback_form: feedbackForm || 2,
                 is_submitted: saveStatus !== 'draft',
                 responses: responses
             }, values.feedback_id);
@@ -170,10 +171,7 @@ const AddInterviewFeedback = ({
                                                 label: `${fieldIndex + 1}. ${field.label}`,
                                                 value: field.response_text,
                                                 required: true,
-                                                options: [
-                                                    { label: 'Yes', value: 'Yes' },
-                                                    { label: 'No', value: 'No' },
-                                                ]
+                                                options: createDropdownOptions(field?.radio_options?.split(",") || ['Yes', 'No'])
                                             }]
                                             : []),
                                         ...(field.field_type === 'RATING'

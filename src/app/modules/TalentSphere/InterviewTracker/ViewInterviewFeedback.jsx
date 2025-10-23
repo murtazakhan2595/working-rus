@@ -4,6 +4,7 @@ import {
     NavigationSheetComponent,
     DetailContent,
     EmployeeDetailUI,
+    TextUI,
 } from "components";
 import { GetDispatchStateList } from "utils/Lists";
 
@@ -49,7 +50,7 @@ const ViewInterviewFeedback = ({
                     {
                         key: "comments",
                         label: "Comments / Observations",
-                        formatter: () => comments || "—",
+                        formatter: (cell) => <TextUI text={comments} maxLength={100} showReadmore={true} />
                     },
                     {
                         key: "rating",

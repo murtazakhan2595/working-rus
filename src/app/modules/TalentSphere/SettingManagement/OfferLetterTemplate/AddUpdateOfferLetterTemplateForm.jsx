@@ -134,7 +134,7 @@ const AddUpdateOfferLetterTemplateForm = ({
                 required: true,
                 label: "Name",
                 validateDuplicate: true,
-                regEx:'ALPHANUMERIC_REGEX',
+                regEx:'NAME_REGEX',
               },
               {
                 InputField: TextInput,

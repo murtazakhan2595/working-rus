@@ -70,7 +70,7 @@ const FeedBackForms = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-               if (['created_at'].includes(filterName) && filterValue && filterValue.includes(","))
+               if (['created_on'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -108,7 +108,7 @@ const FeedBackForms = ({ reload }) => {
                             {
                                 type: "date-range",
                                 placeholder: "Creation Date",
-                                name: "created_at",
+                                name: "created_on",
                             },
                         ]}
                         className="justify-end"

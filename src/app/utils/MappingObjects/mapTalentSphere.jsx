@@ -896,24 +896,41 @@ export async function mapFeedBackFormList(data) {
 }
 
 export function mapFeedBackFormPayloadData(data, id) {
-    // Initialize an empty payload object
     const payload = {};
-    // Iterate over the keys in the FeedBackForm object
+
+    // Copy top-level fields from FeedBackForm
     for (const key in FeedBackForm) {
-        // Check if the key exists in the data object
-        if (
-            data.hasOwnProperty(key) &&
-            data[key] !== null &&
-            data[key] !== undefined
-        ) {
+        if (data.hasOwnProperty(key) && data[key] !== null && data[key] !== undefined) {
             if (key === "name") payload[key] = data[key]?.trim();
-            else payload[key] = data[key];
+            else if (key === "sections" && Array.isArray(data[key])) {
+                // Deep map through sections and fields
+                payload[key] = data[key].map((section) => ({
+                    ...section,
+                    title: section.title?.trim() || "",
+                    fields: Array.isArray(section.fields)
+                        ? section.fields.map((field) => ({
+                            ...field,
+                            label: field.label?.trim() || "",
+                            // Trim radio options (comma-separated values)
+                            radio_options: typeof field.radio_options === "string"
+                                ? field.radio_options
+                                    .split(",")
+                                    .map((opt) => opt.trim())
+                                    .filter(Boolean)
+                                    .join(",")
+                                : field.radio_options,
+                        }))
+                        : [],
+                }));
+            } else {
+                payload[key] = data[key];
+            }
         }
     }
 
-    // Return the constructed payload
     return payload;
 }
+
 
 //-------------EmailTemplates ---------------
 
@@ -1105,7 +1122,7 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
                 else if (['requisitation_branch', 'requisitation_currency', 'requisitation_department',].includes(key))
                     RecordDetails[key] = parseInt(data[key]);
                 else if (key === 'status' && data[key]?.toLowerCase() === 'approved' && data["is_offer_sent"])
-                    RecordDetails[key] = 'pending';
+                    RecordDetails[key] = 'sent';
                 else if (key === 'ai_budget_status') {
                     const status = data[key] ?? "";
                     switch (status) {

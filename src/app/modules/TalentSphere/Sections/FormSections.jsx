@@ -51,7 +51,7 @@ export const AddNewSectionField = React.memo(
 );
 
 export const RemoveSection = React.memo(
-    ({ name, onChange = () => { }, value = [], index }) => {
+    ({ name, onChange = () => { }, value = [], index , Icon =CircleX ,confirmText}) => {
         const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
         const handleClick = (event) => {
             event.preventDefault();
@@ -78,11 +78,11 @@ export const RemoveSection = React.memo(
                     onClick={handleClick}
                     className="absolute top-[-20px] right-[-10px]"
                 >
-                    <CircleX size={22} className="text-red-700" />
+                    <Icon size={20} className="text-red-700" />
                 </Button>
                 {openDeleteConfirm && (
                     <AlertDialogue
-                        title={`Confirm Delete?${index}`}
+                        title={confirmText ?? `Confirm Delete ${index+1}?`}
                         description={`This action can't be undone. All information associated with this level will be lost.`}
                         isOpen={openDeleteConfirm}
                         setIsOpen={() => setOpenDeleteConfirm(false)}

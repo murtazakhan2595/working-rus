@@ -4,9 +4,8 @@ import { SheetUI } from "components";
 import { TextInput, TextAreaInput, RadioGroupInput, NumberInput, SelectInputComponent } from "components/FormControl";
 import React, { useEffect, useState, useCallback } from "react";
 import { AddNewSection, AddNewSectionField, RemoveSection } from "app/modules/TalentSphere/Sections";
-import { Button } from "components/ui/button";
-import { errorClassName } from "components/FormControl";
-
+import { validateFeedbackFormSchema } from "app/utils/FormSchema/TalentSphereFormSchema";
+import { Trash2 } from "lucide-react";
 
 
 const AddUpdateFeedBackForm = ({
@@ -113,7 +112,7 @@ const AddUpdateFeedBackForm = ({
         initialValues: FormData,
         enableReinitialize: true,
         handleSubmit: handleSubmit,
-        validateFormSchema: () => { },
+        validateFormSchema: validateFeedbackFormSchema,
         renderUpdatedFormValues: setFormValues,
         DataList: FeedBackFormList,
         submitButtonText: "Submit",
@@ -139,6 +138,7 @@ const AddUpdateFeedBackForm = ({
               {
                 InputField: TextInput,
                 name: "name",
+                regEx: 'NAME_REGEX',
                 required: true,
                 label: "Form Name",
                 validateDuplicate: true,
@@ -151,35 +151,35 @@ const AddUpdateFeedBackForm = ({
           ...(FormValues?.sections
             ? FormValues.sections.map((section, index) => ({
               sheetCardExtension: true,
-              sheetCardTitle: `Form Section ${index + 1}`,
+              sheetCardTitle: `${section.title || ''} Section`,
               InputFields: [
-                {
-                  InputField: RemoveSection,
-                  name: "sections",
-                  colsSpan: 2,
-                  section: section,
-                  index: index,
-                },
                 {
                   InputField: TextInput,
                   name: `sections[${index}].title`,
                   label: "Name",
                   required: true,
+                  regEx: 'NAME_REGEX',
                   value: section.title,
+                },
+                {
+                  InputField: RemoveSection,
+                  name: "sections",
+                  index: index,
+                  confirmText: `Confirm delete ${section.title} section?`,
+
                 },
                 ...(section.fields
                   ? section.fields.map((field, fieldIndex) => ([
                     {
-                      InputField: () => { return <div key={`sections[${index}]`} className='font-bold'>Section Field {fieldIndex + 1}</div> },
-                      colsSpan: 2,
-
+                      InputField: () => { return <div key={`sections[${index}]`} className='font-bold text-plum-900 text-[15px]'>Section Field {fieldIndex + 1}</div> },
                     },
-                    // {
-                    //   InputField: RemoveSection,
-                    //   name: `sections[${index}].fields`,
-                    //   section: field,
-                    //   index: fieldIndex,
-                    // },
+                    {
+                      InputField: RemoveSection,
+                      name: `sections[${index}].fields`,
+                      index: fieldIndex,
+                      Icon: Trash2,
+                      confirmText: `Confirm delete ${field.label} in ${section.title} section?`,
+                    },
                     {
                       InputField: TextInput,
                       name: `sections[${index}].fields[${fieldIndex}].label`,
@@ -187,6 +187,7 @@ const AddUpdateFeedBackForm = ({
                       required: true,
                       value: field.label,
                       colsSpan: 2,
+                      regEx: 'NAME_REGEX',
                     },
                     {
                       InputField: SelectInputComponent,
@@ -196,13 +197,26 @@ const AddUpdateFeedBackForm = ({
                       value: field.field_type,
                       options: [{ label: 'Radio', value: 'RADIO' }, { label: 'Rating', value: 'RATING' }, { label: 'Text', value: 'TEXT' }]
                     },
-                    ...(field.field_type==='RATING'?[{
+                    ...(field.field_type === 'RATING' ? [{
                       InputField: NumberInput,
                       name: `sections[${index}].fields[${fieldIndex}].rating_scale_max`,
                       label: "Max. Rating Scale",
                       required: true,
                       value: field.rating_scale_max,
-                    }]:[]),
+                    }] : []),
+                    ...(field.field_type === 'RADIO' ? [{
+                      InputField: TextInput,
+                      name: `sections[${index}].fields[${fieldIndex}].radio_options`,
+                      label: "Radio Options",
+                      required: true,
+                      regEx: 'OPTIONS_REGEX',
+                      value: field.radio_options,
+                      description: 'Add radio input options separated by commas. Allowed characters include letters, numbers, spaces, dots, hyphens, underscores, and commas.',
+                    }] : []),
+                    {
+                      InputField: () => { return <div key={`sections[${index}]`} className='border-b h-1'></div> },
+                      colsSpan: 2
+                    },
 
                   ])).flat()
                   : []
@@ -212,6 +226,7 @@ const AddUpdateFeedBackForm = ({
                   name: `sections[${index}].fields`,
                   colsSpan: 2,
                   value: section.fields,
+                  defaultSectionField: FeedBackForm.sections[0].fields[0]
                 },
               ],
             }))
@@ -224,6 +239,7 @@ const AddUpdateFeedBackForm = ({
                 InputField: AddNewSection,
                 name: "sections",
                 colsSpan: 2,
+                defaultSection: FeedBackForm.sections[0]
               },
             ],
           },
