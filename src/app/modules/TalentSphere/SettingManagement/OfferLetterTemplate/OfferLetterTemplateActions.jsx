@@ -4,7 +4,7 @@ import { deleteRecord } from "app/hooks/general";
 import { AddUpdateOfferLetterTemplateForm } from "app/modules/TalentSphere";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { HasAccess } from "utils/PermissionUtils";
-import AttachmentUI from "components/ui/AttachmentUI";
+import { DialogBox, TextUI } from "components";
 
 const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { } }) => {
     const isEditPermitted = HasAccess("EDIT_TS_OFFER_LETTER_TEMPLATES");
@@ -39,7 +39,7 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
         <>
             <DropdownActionMenu
                 onEdit={isEditPermitted ? handleEdit : null}
-                // onView={handleView}
+                onView={handleView}
                 // onDelete={isDeletePermitted ? handleDelete : null}
                 viewText="Preview Template"
                 editText="Edit Template"
@@ -72,14 +72,18 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
                     id={data.id}
                 />
             )}
-            {/* {view && (
-                <AttachmentUI
-                    attachment={data?.letterhead}
-                    viewOnly={true}
-                    variant={'preview-only'}
-                    fallBackText='--'
-                />
-            )} */}
+            {view && (
+                <DialogBox
+                    isOpen={view}
+                    setIsOpen={setView}
+                    title={data.name}
+                    description={'Preview of offer Letter'}
+                    className={'w-[90%]'}
+                >
+                    <TextUI text={data.body} isHTMLText={true} />
+
+                </DialogBox>
+            )}
         </>
     );
 };

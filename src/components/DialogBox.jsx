@@ -18,8 +18,8 @@ const DialogBox = ({
   className = "",
 }) => {
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className={cn(`flex flex-col`, className)}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}  className={className}>
+      <DialogContent className={cn(`flex flex-col`)}>
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
