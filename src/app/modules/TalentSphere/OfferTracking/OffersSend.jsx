@@ -159,6 +159,12 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
                         },
                         {
                             type: "select",
+                            options: 'Departments',
+                            name: "department",
+                            placeholder: "Department",
+                        },
+                        {
+                            type: "select",
                             options: 'Employees',
                             name: "sent_by",
                             placeholder: "Recruiter",

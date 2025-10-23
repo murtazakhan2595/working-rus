@@ -15,12 +15,12 @@ import { validateManpowerPlanningFormSchema } from 'app/utils/FormSchema/TalentS
 import { calculateTotal, calculatePercentage } from 'utils/renderValues';
 import { getConsumedBudgetStatus } from 'app/utils/MappingObjects/mapTalentSphere';
 
-const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, }) => {
+const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadData = () => { }, edit_by_branch_dpt = false, initialData = null }) => {
     const Branches = GetDispatchStateList('branches', 'common');
     const Departments = GetDispatchStateList('departments', 'common');
     const [FormValues, setFormValues] = useState(ManpowerPlanning);
     const [isLoading, setIsLoading] = useState(false);
-    const isEditMode = Boolean(id);
+    const isEditMode = Boolean(id || edit_by_branch_dpt);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(ManpowerPlanning);
     const [ManpowerExist, setManpowerExist] = useState(false);
@@ -57,6 +57,32 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
             isMounted = false;
         };
     }, [id]);
+
+    useEffect(() => {
+        const fetchData = async (isMounted, id) => {
+            try {
+                setIsLoading(true);
+                const filterData = { ...(initialData.department ? { department: initialData.department } : {}), ...(initialData.branch ? { branch: initialData.branch } : {}), fiscal_year: [new Date().getFullYear()] }
+                const response = await getManpowerPlanningList({ filterData: filterData });
+                if (isMounted) {
+                    if (response.results && response.results.length > 0) {
+                        setFormData({ ...response.results[0] });
+                        setFormValues({ ...response.results[0] });
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        let isMounted = true;
+        //if edit by branh and department is initially get the unique record for that to edit
+        if (edit_by_branch_dpt && initialData) fetchData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, [edit_by_branch_dpt, initialData]);
 
     const handleClose = () => {
         setIsOpen(false);

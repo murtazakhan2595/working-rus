@@ -182,6 +182,7 @@ const GenerateOffer = ({ id, offer_id, isOpen = true, setIsOpen = () => { }, rel
                                 InputField: TextInput,
                                 name: "designation",
                                 label: "Designation",
+                                required: true,
                             },
                             {
                                 InputField: TextInput,

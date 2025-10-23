@@ -1010,7 +1010,7 @@ export function mapOfferLetterTemplatePayloadData(data, id) {
 
 //-------------OfferTrackings ---------------
 
-export function mapOfferTrackingData(data){
+export function mapOfferTrackingData(data) {
     const RecordDetails = Object.keys(OfferTracking).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === 'audit_logs') {
@@ -1025,8 +1025,8 @@ export function mapOfferTrackingData(data){
                             if (!log.changed_by)
                                 log.changed_by = data.sent_by;
                         }
-                        if (log.new_status === 'accepted' || log.new_status === 'rejected') 
-                                log.changed_by = data.applicant_name;
+                        if (log.new_status === 'accepted' || log.new_status === 'rejected')
+                            log.changed_by = data.applicant_name;
                         if (!acc[log.new_status]) {
                             acc[log.new_status] = log;
                         }
@@ -1101,8 +1101,10 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
                 if (key === 'status' && data[key] === 'pending_approval')
                     RecordDetails[key] = 'pending';
+                else if (['requisitation_branch', 'requisitation_currency', 'requisitation_department',].includes(key))
+                    RecordDetails[key] = 'pending';
                 else if (key === 'status' && data[key]?.toLowerCase() === 'approved' && data["is_offer_sent"])
-                    RecordDetails[key] = 'Sent';
+                    RecordDetails[key] = parseInt(data[key]);
                 else if (key === 'ai_budget_status') {
                     const status = data[key] ?? "";
                     switch (status) {

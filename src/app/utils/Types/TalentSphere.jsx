@@ -46,7 +46,7 @@ export const EmailTemplate = {
 export const OfferLetterTemplate = {
     name: null,
     body: null,
-    is_active: null,
+    is_active: true,
     id: null,
     created_by: null,
     created_on: null,
@@ -402,6 +402,10 @@ export const OfferLetter = {
     ai_confidence_score: null,
     ai_missing_fields: null,
     ai_salary_match_status: null,
+    requisitation_branch:null,
+    requisitation_currency:null,
+    requisitation_department:null,
+    requisitation_frequency:null,
 }
 
 export const OfferTracking = {

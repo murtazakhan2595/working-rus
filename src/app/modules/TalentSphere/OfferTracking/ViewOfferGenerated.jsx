@@ -47,9 +47,10 @@ const ViewOfferGenerated = ({
         setFormData({ applicant: data.applicant, offer_letter: data.id })
         setOpenSentOfferForm(true);
     }
-    const handleUpdateBudget = (event) => {
+    const handleUpdateBudget = (event,data) => {
         event.preventDefault();
         event.stopPropagation();
+        setFormData({ department: data.requisitation_department, branch: data.requisitation_branch })
         setOpenManpowerForm(true);
     }
     // Define the fields to display
@@ -191,7 +192,7 @@ const ViewOfferGenerated = ({
                         return (
                             <>
                                 <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>
-                                {updateBudgetPermitted && <Button className="flex justify-end mt-4" onClick={handleUpdateBudget}>Update Budget</Button>}
+                                {updateBudgetPermitted && <Button className="flex justify-end mt-4" onClick={(event) => handleUpdateBudget(event, data)}>Update Budget</Button>}
                             </>
                         );
                     } if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
@@ -273,7 +274,8 @@ const ViewOfferGenerated = ({
                     setIsOpen={() => {
                         setOpenManpowerForm(false);
                     }}
-                    // id={data.id}
+                    edit_by_branch_dpt={true}
+                    initialData={FormData}
                 />
             )}
         </>
