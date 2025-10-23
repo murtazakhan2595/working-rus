@@ -1,5 +1,5 @@
 import * as React from "react";
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 import { useSelector } from "react-redux";
 import { GetUser } from "utils/getValuesFromTables";
 import { EmployeeOverview } from "components";

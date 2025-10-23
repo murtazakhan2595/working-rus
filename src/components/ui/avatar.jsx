@@ -1,39 +1,31 @@
-import * as React from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
-import { cn } from "../../src/@/lib/utils";
+import {
+  Avatar as AvatarUI,
+  AvatarImage,
+  AvatarFallback,
+} from "src/@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 
-const Avatar = React.forwardRef(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className
-    )}
-    {...props}
-  />
-));
-Avatar.displayName = AvatarPrimitive.Root.displayName;
+const Avatar = ({ src, alt, fallbackText, className, text = null }) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <AvatarUI className={`${className} cursor-pointer `}>
+          <AvatarImage src={src} alt={alt} />
+          <AvatarFallback className="flex items-center justify-center text-sm border rounded-full border-plum-1100 bg-plum-300 text-plum-1100">
+            {fallbackText?.toUpperCase()}
+          </AvatarFallback>
+        </AvatarUI>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{text}</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
 
-const AvatarImage = React.forwardRef(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
-    {...props}
-  />
-));
-AvatarImage.displayName = AvatarPrimitive.Image.displayName;
-
-const AvatarFallback = React.forwardRef(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800",
-      className
-    )}
-    {...props}
-  />
-));
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
-
-export { Avatar, AvatarImage, AvatarFallback };
-
+export default Avatar;

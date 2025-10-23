@@ -16,7 +16,7 @@ import {
 import { Button } from "components/ui/button";
 import { ScrollArea } from "src/@/components/ui/scroll-area";
 import { FormField } from "components/FormControl";
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 import {
   Command,
   CommandInput,
@@ -36,8 +36,8 @@ const TextEditorInputField = ({
   handleSubmitContent,
   value = "",
   upload,
-  onChange = () => {},
-  setAttachments = () => {},
+  onChange = () => { },
+  setAttachments = () => { },
   attachments = [],
   name = "editor",
   label = false,

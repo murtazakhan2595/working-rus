@@ -28,7 +28,7 @@ import {
   isSameDay,
 } from "date-fns";
 import { getEmployeeListWithDetail } from "app/hooks/general";
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 import SheetComponent from "components/ui/SheetComponent";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import AlertDialogue from "components/ui/AlertDialogue";

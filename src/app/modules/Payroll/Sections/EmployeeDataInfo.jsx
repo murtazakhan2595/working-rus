@@ -1,4 +1,4 @@
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 import { EmployeeID } from "utils/getValuesFromTables";
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/renderValues";

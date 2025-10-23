@@ -1,5 +1,5 @@
 import { EmployeeOverview } from 'components';
-import Avatar from 'components/ui/Avatar'
+import Avatar from 'components/ui/avatar'
 import React from 'react'
 import { DesignationName } from 'utils/getValuesFromTables'
 import { getRandomColor } from 'utils/renderValues'

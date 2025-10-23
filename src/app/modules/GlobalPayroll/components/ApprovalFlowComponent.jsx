@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckCircle, Clock, XCircle, ArrowRight, User } from "lucide-react";
 import { Badge } from "components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "src/@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 
 const ApprovalFlowComponent = ({ 

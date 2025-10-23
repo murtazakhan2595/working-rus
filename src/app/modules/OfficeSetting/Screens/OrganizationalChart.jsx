@@ -11,7 +11,7 @@ import {
   getOrganizationTree,
   getEmployeeReportingLine,
 } from "app/hooks/officeSetting";
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 
 const OrganizationalChart = ({ initialData = null }) => {
   const [organizationData, setOrganizationData] = useState(null);

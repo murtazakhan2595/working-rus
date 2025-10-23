@@ -165,14 +165,14 @@ const AddUpdateOfferLetterTemplateForm = ({
                   </ul>
                 </div>
               },
-              {
-                InputField: CoverFileUpload,
-                name: "letterhead",
-                required: true,
-                label: "Letter Header",
-                acceptType:".png,.jpeg",
-                maxSize:5,
-              },
+              // {
+              //   InputField: CoverFileUpload,
+              //   name: "letterhead",
+              //   required: true,
+              //   label: "Letter Header",
+              //   acceptType:".png,.jpeg",
+              //   maxSize:5,
+              // },
             ],
           },
         ],

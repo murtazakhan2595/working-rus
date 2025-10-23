@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 import {
   EmployeeID,
   EmployeeName,
   DepartmentName,
   DesignationName,
 } from "utils/getValuesFromTables";
-import { useSelector } from "react-redux";
 
 const EmployeeInfo = ({user}) => {
   if (!user) return null;

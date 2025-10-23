@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getEmployeeData } from "app/hooks/employee";
-import Avatar from "components/ui/Avatar";
+import Avatar from "components/ui/avatar";
 import { Button } from "components/ui/button";
 import { Card, CardContent } from "components/ui/card";
 import { ArrowLeft, ShieldX } from "lucide-react";
