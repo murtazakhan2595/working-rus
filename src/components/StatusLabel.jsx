@@ -249,14 +249,15 @@ export const StatusButtons = ({
   final_approver = [],
   request_id,
   setResponse = () => { },
+  showApprove = true, // Allow hiding approve button
+  showReject = true, // Allow hiding reject button
 
   // 🚀 NEW: Custom approval flow props
+  blockApproveConfigs = null, // Custom approve blocker - config setting if approve blocked
   onApprove = null, // Custom approve handler - if provided, skips default API call
   onReject = null, // Custom reject handler - if provided, skips default API call
   approveText = "Approve", // Customizable button text
   rejectText = "Reject", // Customizable button text
-  showApprove = true, // Allow hiding approve button
-  showReject = true, // Allow hiding reject button
   ApprovalConfig = null,//If comments are required and on approval from approver
   RejectionConfig = null,//If comments are required and on rejection from approver
 }) => {
@@ -317,7 +318,6 @@ export const StatusButtons = ({
 
     // 🚀 NEW: Enhanced click handlers
     const handleApproveClick = async (event) => {
-      setIsSubmitting(true)
       event.preventDefault();
       event.stopPropagation();
       if (ApprovalConfig) {
@@ -340,11 +340,9 @@ export const StatusButtons = ({
         // Use default API flow
         await handleDefaultSubmit("Approved");
       }
-      setIsSubmitting(false)
     };
 
     const handleRejectClick = async (event) => {
-      setIsSubmitting(true)
       event.preventDefault();
       event.stopPropagation();
       if (RejectionConfig) {
@@ -365,14 +363,13 @@ export const StatusButtons = ({
         // Use default API flow
         await handleDefaultSubmit("Rejected");
       }
-      setIsSubmitting(false)
     };
 
     return (
       <div className="flex flex-wrap justify-end gap-2 my-5">
-        {showApprove && (
-          <Button variant="success" disabled={isSubmitting} onClick={handleApproveClick}>
-            {approveText}
+        {(showApprove || blockApproveConfigs) && (
+          <Button variant="success" disabled={isSubmitting || blockApproveConfigs.disabled} onClick={handleApproveClick}>
+            {blockApproveConfigs.blockMessage ?? approveText}
           </Button>
         )}
         {showReject && (

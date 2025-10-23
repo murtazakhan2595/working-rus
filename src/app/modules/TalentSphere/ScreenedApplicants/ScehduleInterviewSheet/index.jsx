@@ -164,7 +164,8 @@ const ScheduleInterviewSheet = ({
   const handleSubmit = async (values) => {
     setIsSubmittingForm(true)
     try {
-      const savedInterview = await saveUpdateInterview({ ...values, applicant: applicant })
+      const payload = { ...values, applicant: applicant, };
+      const savedInterview = await saveUpdateInterview(payload)
       if (savedInterview) {
         if (id) await saveUpdateInterview({ status: 'rescheduled' }, id)
         reloadData(true)

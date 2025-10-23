@@ -85,8 +85,13 @@ const ViewInterviewDetails = ({
         className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
           if (!data) return null;
-          const isInterViewDone = moment(data.scheduled_datetime).isSameOrBefore(moment());
-          if (!isInterViewDone) return null;
+          const isInterViewDone = moment(data.scheduled_datetime).local().isSameOrBefore(moment());
+          if (!isInterViewDone)
+            return (
+              <div className="text-amber-500 text-sm">
+                Awaiting completion of the interview.
+              </div>
+            );
           const panelist_included = (data.panel || []).includes(user_id);
           const feedback_submitted = (data.interview_feedback || []).find(obj => obj.panel_member === user_id);
           return (<>
@@ -111,7 +116,7 @@ const ViewInterviewDetails = ({
         },
       },
     ],
-    [handleClick,isViewFeedbackPermitted,isAddFeedbackPermitted,user_id]
+    [handleClick, isViewFeedbackPermitted, isAddFeedbackPermitted, user_id]
   );
 
   return (

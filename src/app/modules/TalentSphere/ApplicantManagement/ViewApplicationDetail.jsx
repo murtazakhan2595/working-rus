@@ -165,14 +165,19 @@ const ViewApplicationDetail = ({
           if (status === 'in progress') {
             const latest_interview = data?.latest_interview;
             if (!latest_interview || latest_interview.status !== 'scheduled') return null;
-            const isInterViewDone = moment(latest_interview.scheduled_datetime).isSameOrBefore(moment());
-            if (!isInterViewDone) return null;
+            const isInterViewDone = moment(latest_interview.scheduled_datetime).local().isSameOrBefore(moment());
+            if (!isInterViewDone)
+              return (
+                <div className="text-amber-500 text-sm">
+                  Awaiting completion of the most recently scheduled interview.
+                </div>
+              );
           }
-          const isOfferGenerated = data?.offer_letters&&(data?.offer_letters?.[data?.offer_letters?.length - 1])?.status !== 'rejected';
+          const isOfferGenerated = data?.offer_letters && (data?.offer_letters?.[data?.offer_letters?.length - 1])?.status !== 'rejected';
           const Options = ApplicantStatusList[statusKey];
           return (Options || []).map((option, index) => {
             if (option.status === 'generate-offer' && isOfferGenerated) return <></>;
-            if (option.status === 'view-feedback' && (!data?.interview_feedbacks || !data?.interview_feedbacks?.length)) return <></>;
+            if (option.status === 'view-feedback' && (!data?.interview_feedbacks || !data?.interview_feedbacks?.length)) return <></>
             if (!Permissions[option.permission]) return <></>
             return (
               <Button

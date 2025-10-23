@@ -27,6 +27,7 @@ import {
 import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 import { calculateTotalCount } from "utils/renderValues";
 import { FormatID } from "utils/getValuesFromTables";
+import moment from "moment";
 
 export function mapManpowerPayloadData(data) {
     // Initialize an empty payload object
@@ -1102,7 +1103,7 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
                 if (key === 'status' && data[key] === 'pending_approval')
                     RecordDetails[key] = 'pending';
                 else if (['requisitation_branch', 'requisitation_currency', 'requisitation_department',].includes(key))
-                    RecordDetails[key] =  parseInt(data[key]);
+                    RecordDetails[key] = parseInt(data[key]);
                 else if (key === 'status' && data[key]?.toLowerCase() === 'approved' && data["is_offer_sent"])
                     RecordDetails[key] = 'pending';
                 else if (key === 'ai_budget_status') {
@@ -1110,6 +1111,9 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
                     switch (status) {
                         case "within_budget":
                             RecordDetails[key] = "Within Budget";
+                            break;
+                        case "exceeds_budget":
+                            RecordDetails[key] = "Exceeds Budget";
                             break;
                         default:
                             RecordDetails[key] = status;
@@ -1230,7 +1234,11 @@ export function mapInterviewPayloadData(data, id) {
             data[key] !== null &&
             data[key] !== undefined
         ) {
-            payload[key] = data[key];
+            if (!['candidate_id', 'candidate_name', 'created_at', 'created_by', 'job_title', 'panel_name'].includes(key)) {
+                if (key === 'scheduled_datetime')
+                    payload[key] = moment(data[key]).utc().toISOString();
+                else payload[key] = data[key];
+            }
         }
     }
 
