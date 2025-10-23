@@ -159,9 +159,14 @@ const AddUpdateEmailTemplateForm = ({
                   Use the following placeholders to insert dynamic data:
                   <ul className="[list-style:disc] ml-4">
                     <li>Applicant Name → <code>{'{{ applicant_name }}'}</code></li>
-                    <li>Designation / Job Position → <code>{'{{ designation }}'}</code></li>
-                    <li>Salary → <code>{'{{ salary }}'}</code></li>
-                    <li>Joining Date → <code>{'{{ joining_date }}'}</code></li>
+                    <li>Designation / Job Position → <code>{'{{ job_title }}'}</code></li>
+                    <li>Salary → <code>{'{{ interview_date_time }}'}</code></li>
+                    <li>Recruiter Name → <code>{'{{ recruiter_name }}'}</code></li>
+                    <li>Comapny Name → <code>{'{{ company_name }}'}</code></li>
+                    <li>Applicant Status/Stage → <code>{'{{ status }}'}</code></li>
+                    <li>Application Link → <code>{'{{ application_link }}'}</code></li>
+                    <li>Date → <code>{'{{ date }}'}</code></li>
+                    <li>Time → <code>{'{{ time }}'}</code></li>
                   </ul>
                 </div>
               },
