@@ -16,12 +16,14 @@ import {
   TextAreaInput,
   SwitchInput,
   CoverFileUpload,
+  PhoneNumberInput,
 } from "components/FormControl";
 import { toast } from "react-toastify";
 import {
   getDemographicFormByUUID,
   submitDemographicResponse,
 } from "app/hooks/talentSphere";
+import { countriesCallingCodes } from "data/Data";
 
 const DemographicsPublicForm = () => {
   const { uuid } = useParams();
@@ -58,6 +60,9 @@ const DemographicsPublicForm = () => {
                 initialValues[fieldName] = false;
               } else if (field.field_type === "file") {
                 initialValues[fieldName] = null;
+              } else if (field.field_type === "phone") {
+                initialValues[fieldName] = "";
+                initialValues[`${fieldName}_country_code`] = "";
               } else {
                 initialValues[fieldName] = "";
               }
@@ -217,6 +222,11 @@ const DemographicsPublicForm = () => {
           if (field.field_type === "file") {
             // For file type fields, value is empty but attachment is required
             stringValue = "";
+          } else if (field.field_type === "phone") {
+            // For phone fields, combine country code and phone number
+            const countryCode = formValues[`${fieldName}_country_code`] || "";
+            const phoneNumber = value || "";
+            stringValue = countryCode && phoneNumber ? `${countryCode}${phoneNumber}` : phoneNumber;
           } else if (Array.isArray(value)) {
             stringValue = value.join(",");
           } else if (typeof value === "boolean") {
@@ -329,6 +339,15 @@ const DemographicsPublicForm = () => {
 
         case "email":
           return <EmailInput {...commonProps} />;
+
+        case "phone":
+          return (
+            <PhoneNumberInput
+              {...commonProps}
+              countryOptions={countriesCallingCodes}
+              countryCodeName={`${fieldName}_country_code`}
+            />
+          );
 
         case "date":
           return <DateInput {...commonProps} />;

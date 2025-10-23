@@ -70,6 +70,9 @@ const Config = {
   ON_HOLD_SALARIES: true,
   END_OF_SERVICE: true,
 
+  //-------------PAYROLL_GLOBAL-----------
+  PAYROLL_GLOBAL: true,
+
   //-------------TASK_MANAGEMENT-----------
   TASK_MANAGEMENT: true,
   //Sub Modules
