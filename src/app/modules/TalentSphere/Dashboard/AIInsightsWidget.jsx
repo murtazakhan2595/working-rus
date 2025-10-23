@@ -44,6 +44,8 @@ const AIInsightsWidget = ({
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [openInterviewDetails, setOpenInterviewDetails] = useState(false);
   const [selectedInterviewId, setSelectedInterviewId] = useState(null);
+  const [demographicsLimit, setDemographicsLimit] = useState(5);
+  const [feedbackLimit, setFeedbackLimit] = useState(5);
 
   // Fetch vacancies when AI suggestions tab is opened
   const handleTabChange = async (value) => {
@@ -88,6 +90,16 @@ const AIInsightsWidget = ({
   const handleOpenInterviewDetails = (interviewId) => {
     setSelectedInterviewId(interviewId);
     setOpenInterviewDetails(true);
+  };
+
+  // Handle showing more demographics
+  const handleShowMoreDemographics = () => {
+    setDemographicsLimit(prev => Math.min(prev + 10, flaggedCounts.demographics));
+  };
+
+  // Handle showing more feedback
+  const handleShowMoreFeedback = () => {
+    setFeedbackLimit(prev => Math.min(prev + 10, flaggedCounts.feedback));
   };
 
   // Get budget warnings with actual warnings
@@ -362,7 +374,7 @@ const AIInsightsWidget = ({
                     </div>
                     <div className="space-y-2">
                       {aiFlaggedData.missing_demographics
-                        ?.slice(0, 5)
+                        ?.slice(0, demographicsLimit)
                         .map((item, index) => (
                           <Card
                             key={index}
@@ -374,9 +386,9 @@ const AIInsightsWidget = ({
                             }
                           >
                             <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className="font-semibold text-xs text-neutral-1200">
-                                  {item.name}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-xs text-neutral-1200 truncate" title={item.name}>
+                                  {item.name.length > 50 ? `${item.name.substring(0, 50)}...` : item.name}
                                 </p>
                                 <p className="text-[10px] text-neutral-1000 mt-1">
                                   ID: {item.applicant_id}
@@ -384,17 +396,20 @@ const AIInsightsWidget = ({
                               </div>
                               <Badge
                                 variant="outline"
-                                className="text-[9px] bg-white"
+                                className="text-[9px] bg-white flex-shrink-0 ml-2"
                               >
                                 {item.reason}
                               </Badge>
                             </div>
                           </Card>
                         ))}
-                      {flaggedCounts.demographics > 5 && (
-                        <p className="text-xs text-neutral-900 text-center">
-                          +{flaggedCounts.demographics - 5} more
-                        </p>
+                      {demographicsLimit < flaggedCounts.demographics && (
+                        <button
+                          onClick={handleShowMoreDemographics}
+                          className="text-xs text-neutral-900 text-center hover:text-plum-900 transition-colors cursor-pointer w-full py-1"
+                        >
+                          +{flaggedCounts.demographics - demographicsLimit} more
+                        </button>
                       )}
                     </div>
                   </div>
@@ -411,7 +426,7 @@ const AIInsightsWidget = ({
                     </div>
                     <div className="space-y-2">
                       {aiFlaggedData.incomplete_feedback
-                        ?.slice(0, 5)
+                        ?.slice(0, feedbackLimit)
                         .map((item, index) => (
                           <Card
                             key={index}
@@ -420,29 +435,32 @@ const AIInsightsWidget = ({
                           >
                             {console.log(item, "item")}
                             <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className="font-semibold text-xs text-neutral-1200">
-                                  {item.applicant}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-xs text-neutral-1200 truncate" title={item.applicant}>
+                                  {item.applicant.length > 30 ? `${item.applicant.substring(0, 30)}...` : item.applicant}
                                 </p>
                                 <p className="text-[10px] text-neutral-1000 mt-1">
                                   Interview ID: {item.interview_id}
                                   {item.panelist &&
-                                    ` • Panelist: ${item.panelist}`}
+                                    ` • Panelist: ${item.panelist.length > 15 ? `${item.panelist.substring(0, 15)}...` : item.panelist}`}
                                 </p>
                               </div>
                               <Badge
                                 variant="outline"
-                                className="text-[9px] bg-white"
+                                className="text-[9px] bg-white flex-shrink-0 ml-2"
                               >
                                 {item.reason}
                               </Badge>
                             </div>
                           </Card>
                         ))}
-                      {flaggedCounts.feedback > 5 && (
-                        <p className="text-xs text-neutral-900 text-center">
-                          +{flaggedCounts.feedback - 5} more
-                        </p>
+                      {feedbackLimit < flaggedCounts.feedback && (
+                        <button
+                          onClick={handleShowMoreFeedback}
+                          className="text-xs text-neutral-900 text-center hover:text-plum-900 transition-colors cursor-pointer w-full py-1"
+                        >
+                          +{flaggedCounts.feedback - feedbackLimit} more
+                        </button>
                       )}
                     </div>
                   </div>

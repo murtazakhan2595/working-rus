@@ -38,7 +38,7 @@ const OpenRequisitions = ({ data, loading }) => {
 
   const handleViewApplicants = (row) => {
     navigate(
-      `/talent-sphere/requisition-applicants?recruitment_requisition=${row.id}`
+      `/talent-sphere/applicant-management/requisition-applicants?recruitment_requisition=${row.id}`
     );
   };
 

@@ -86,9 +86,37 @@ export const useTalentSphereDashboard = (filterData = {}) => {
       if (allowedKeys.includes(key)) {
         // Use mapped key if available, otherwise use original key
         const backendKey = keyMapping[key] || key;
-        sanitized[backendKey] = value;
+        // Map requisition_status into the combination used by Generate Requisition
+        if (key === "requisition_status") {
+          const statusLabel = String(value).toLowerCase();
+          if (statusLabel === "published") {
+            sanitized["is_publish"] = true;
+            sanitized["approval_required"] = false;
+          } else if (statusLabel === "draft") {
+            sanitized["is_draft"] = true;
+            sanitized["status"] = "pending";
+            sanitized["approval_required"] = false;
+          } else if (statusLabel === "approved") {
+            sanitized["is_publish"] = false;
+            sanitized["status"] = "approved";
+            sanitized["approval_required"] = false;
+          } else if (statusLabel === "rejected") {
+            sanitized["status"] = "rejected";
+          } else if (statusLabel === "pending") {
+            sanitized["status"] = "pending";
+            sanitized["is_draft"] = false;
+          }
+        } else {
+          sanitized[backendKey] = value;
+        }
       }
     });
+
+    // If status filter not provided, still mirror Generate Requisition behavior to exclude approvals
+    // Only add approval_required: false if we haven't already set it for specific statuses
+    if (sanitized["approval_required"] === undefined && !sanitized["status"]) {
+      sanitized["approval_required"] = false;
+    }
 
     const encoded = encodeURIComponent(JSON.stringify(sanitized));
     return encoded ? `?search=${encoded}` : "";

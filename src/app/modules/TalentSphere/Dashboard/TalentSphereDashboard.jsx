@@ -108,9 +108,11 @@ const TalentSphereDashboard = () => {
     {
       type: "select",
       options: [
-        { value: "pending", label: "Pending" },
-        { value: "approved", label: "Approved" },
-        { value: "rejected", label: "Rejected" },
+        { value: "Pending", label: "Pending" },
+        { value: "Draft", label: "Draft" },
+        { value: "Approved", label: "Approved" },
+        { value: "Published", label: "Published" },
+        { value: "Rejected", label: "Rejected" },
       ],
       name: "requisition_status",
       placeholder: "Requisition Status",
