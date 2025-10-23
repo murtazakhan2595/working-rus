@@ -23,12 +23,12 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
     const isEditMode = Boolean(id || edit_by_branch_dpt);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [formData, setFormData] = useState(ManpowerPlanning);
-    const [ManpowerExist, setManpowerExist] = useState(false);
     const [BudgetStatus, setBudgetStatus] = useState(null);
+    const [ManpowerList, setManpowerList] = useState([]);
 
     const FormSheetData = {
         triggerText: "",
-        title: `${isEditMode ? "Edit" : "Add"} Manpower`,
+        title: `${isEditMode ? "Update" : "Add"} Manpower`,
         description: null,
         footer: null,
     };
@@ -57,6 +57,27 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
             isMounted = false;
         };
     }, [id]);
+
+    useEffect(() => {
+        const fetchData = async (isMounted, id) => {
+            try {
+                const response = await getManpowerPlanningList();
+                if (isMounted) {
+                    if (response.results && response.results.length > 0) {
+                        setManpowerList(response.results);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            }
+        };
+        let isMounted = true;
+        //if edit by branh and department is initially get the unique record for that to edit
+        fetchData(isMounted);
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     useEffect(() => {
         const fetchData = async (isMounted, id) => {
@@ -152,27 +173,6 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
         }
     };
 
-    const ValidateExistingRecord = async (branch, department, fiscalYear) => {
-        try {
-            if (branch && department && fiscalYear) {
-                const filterData = { ...(department ? { department: department } : {}), ...(branch ? { branch: branch } : {}), ...(fiscalYear ? { fiscal_year: [fiscalYear] } : {}) }
-                const existingPlanning = await getManpowerPlanningList({ filterData: filterData });
-                if (existingPlanning.count > 0) {
-                    setManpowerExist(true);
-                    return 0;
-                }
-            }
-            setManpowerExist(false);
-            return 0;
-
-        } catch (error) {
-            // Show error message
-            console.error(error)
-        }
-    };
-
-
-
     return (
         <SheetUI
             isOpen={isOpen}
@@ -183,11 +183,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                 initialValues: formData,
                 enableReinitialize: true,
                 handleSubmit: handleSubmit,
-                validateFormSchema: (values) => {
-                    const errors = validateManpowerPlanningFormSchema(values);
-                    if (ManpowerExist) errors.manpower_planning = 'Manpower Planning for selected fiscal year already exist form same branch and department.'
-                    return errors;
-                },
+                validateFormSchema: validateManpowerPlanningFormSchema,
                 submitButtonText: "Submit",
                 cancelButtonText: "Cancel",
                 columns: 2,
@@ -195,6 +191,7 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                     setFormValues(values);
                     renderConsumedBudgetStatus(values.consumed_budget, values.total_allocated_budget)
                 },
+                DataList: ManpowerList,
                 disableSubmit: isLoading || isSubmittingForm,
                 loadingMessage: isLoading ? "Loading Data..." : isSubmittingForm ? "Submitting Form..." : "",
                 formFields: [
@@ -209,9 +206,9 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Fiscal Year",
                                 options: YearsDropdown,
-                                onFieldUpdate: async (_, value) => {
-                                    await ValidateExistingRecord(FormValues?.branch, FormValues?.department, value);
-                                },
+                                validateDuplicate: true,
+                                combinationKeys: ['branch', 'department'],
+                                duplicateErrorMessage: 'Manpower planning for selected fiscal year already exist form same branch and department.',
                             },
                             {
                                 InputField: SelectInputComponent,
@@ -219,9 +216,11 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Branch",
                                 options: Branches,
-                                onFieldUpdate: async (_, value, __, handleChange) => {
-                                    await getExistingHeadCount(value, FormValues?.department, handleChange);
-                                    await ValidateExistingRecord(value, FormValues?.department, FormValues.fiscal_year);
+                                validateDuplicate: true,
+                                combinationKeys: ['fiscal_year', 'department'],
+                                duplicateErrorMessage: 'Manpower planning for selected branch already exist form same fiscal year and department.',
+                                onFieldUpdate: (_, value, __, handleChange) => {
+                                    getExistingHeadCount(value, FormValues?.department, handleChange);
                                 },
                             },
                             {
@@ -230,9 +229,11 @@ const AddUpdateManpower = ({ id, isOpen = true, setIsOpen = () => { }, reloadDat
                                 required: true,
                                 label: "Department",
                                 options: Departments,
-                                onFieldUpdate: async (_, value, __, handleChange) => {
-                                    await getExistingHeadCount(FormValues?.branch, value, handleChange);
-                                    await ValidateExistingRecord(FormValues?.branch, value, FormValues.fiscal_year);
+                                validateDuplicate: true,
+                                combinationKeys: ['fiscal_year', 'branch'],
+                                duplicateErrorMessage: 'Manpower planning for selected department already exist form same fiscal year and branch.',
+                                onFieldUpdate: (_, value, __, handleChange) => {
+                                    getExistingHeadCount(FormValues?.branch, value, handleChange);
                                 },
                             },
                             {

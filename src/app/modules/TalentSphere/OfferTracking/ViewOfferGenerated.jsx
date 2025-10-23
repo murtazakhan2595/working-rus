@@ -48,6 +48,7 @@ const ViewOfferGenerated = ({
         setOpenSentOfferForm(true);
     }
     const handleUpdateBudget = (event,data) => {
+        debugger
         event.preventDefault();
         event.stopPropagation();
         setFormData({ department: data.requisitation_department, branch: data.requisitation_branch })

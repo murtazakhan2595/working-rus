@@ -1102,9 +1102,9 @@ export async function mapOfferLetterData(data, fetchApprovalDetails = true) {
                 if (key === 'status' && data[key] === 'pending_approval')
                     RecordDetails[key] = 'pending';
                 else if (['requisitation_branch', 'requisitation_currency', 'requisitation_department',].includes(key))
-                    RecordDetails[key] = 'pending';
+                    RecordDetails[key] =  parseInt(data[key]);
                 else if (key === 'status' && data[key]?.toLowerCase() === 'approved' && data["is_offer_sent"])
-                    RecordDetails[key] = parseInt(data[key]);
+                    RecordDetails[key] = 'pending';
                 else if (key === 'ai_budget_status') {
                     const status = data[key] ?? "";
                     switch (status) {

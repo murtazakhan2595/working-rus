@@ -60,7 +60,6 @@ const SheetUI = forwardRef(
     } = formConfig;
 
     const handleClose = (event) => {
-
       event.preventDefault();
       event.stopPropagation();
       setIsCloseConfirmationOpen(true);
@@ -91,35 +90,85 @@ const SheetUI = forwardRef(
       }
     };
 
-    const validateFieldValue = useCallback((value, label, id) => {
-      if (!value) {
+
+    /**
+ * ✅ Validates if a given field value or a combination of field values already exists in the DataList.
+ *
+ * @param {string|number|array} value - The field value to validate.
+ * @param {string} label - The name of the field being validated.
+ * @param {object} formValues - Object containing all field values in the current form.
+ * @param {string[]} combinationKeys - Array of field names that define a unique combination for validation.
+ */
+    const validateDuplicateFieldValue = useCallback(
+      async (value, label, formValues = {}, combinationKeys = [], errorMessage) => {
+        const { id } = formValues;
+
+        // 🧩 Step 1: Basic validation
         setValidateFieldErrors((prevErrors) => {
           const updated = { ...prevErrors };
-          delete updated[label];
+          if (Array.isArray(combinationKeys) && combinationKeys.length > 0) {
+            // 🧹 Remove all related combination field errors
+            combinationKeys.forEach((key) => {
+              delete updated[key];
+            });
+          } else {
+            // 🧹 Remove only the current field error
+            delete updated[label];
+          }
+
           return updated;
         });
-        return 0;
-      }
+        if (value === undefined || value === null || value === "")
+          return; // if value is null validation is not required
 
-      const filtered = DataList.filter(
-        (obj) =>
-          obj[label]?.toLowerCase() === value.trim().toLowerCase() &&
-          parseInt(obj.id) !== parseInt(id)
-      );
+        // 🧩 Step 2: Defensive checks
+        if (!Array.isArray(DataList)) {
+          console.warn("⚠️ DataList is not an array. Skipping duplicate validation.");
+          return;
+        }
 
-      if (filtered.length > 0) {
-        setValidateFieldErrors((prevErrors) => ({
-          ...prevErrors,
-          [label]: `Already exists. Please choose a different value`,
-        }));
-      } else {
-        setValidateFieldErrors((prevErrors) => {
-          const updated = { ...prevErrors };
-          delete updated[label];
-          return updated;
+        // 🧩 Step 3: Normalize a value (handles string, number, or array)
+        const normalize = (val) => {
+          if (Array.isArray(val)) return val.map((v) => v?.toString().trim().toLowerCase()).join(",");
+          if (typeof val === "number") return val.toString();
+          return val?.toString().trim().toLowerCase() || "";
+        };
+
+        const normalizedValue = normalize(value);
+
+        // 🧩 Step 4: Filter out duplicates
+        const filtered = DataList.filter((obj) => {
+          if (parseInt(obj.id) === parseInt(id)) return false; // skip self
+
+          // 🧩 Combination key validation
+          if (Array.isArray(combinationKeys) && combinationKeys.length > 0) {
+            return combinationKeys.every((key) => {
+              const currentVal = key === label ? normalizedValue : normalize(formValues[key]);
+              const targetVal = normalize(obj[key]);
+              return currentVal === targetVal;
+            });
+          }
+
+          // 🧩 Single field validation
+          return normalize(obj[label]) === normalizedValue;
         });
-      }
-    }, [DataList, setValidateFieldErrors]);
+
+        // 🧩 Step 5: Update validation errors
+        if (filtered.length > 0) {
+          const duplicateType =
+            combinationKeys.length > 0
+              ? errorMessage ?? `Combination of [${[...combinationKeys, label].join(", ")}] already exists.`
+              : `Value already exists. Please choose a different one.`;
+
+          setValidateFieldErrors((prevErrors) => ({
+            ...prevErrors,
+            [label]: duplicateType,
+          }));
+        }
+      },
+      [DataList, setValidateFieldErrors]
+    );
+
 
     return (
       <>
@@ -268,7 +317,9 @@ const SheetUI = forwardRef(
                               shouldRender = true,
                               renderCondition = true,
                               customComponent,
-                              validateDuplicate = false,
+                              validateDuplicate = false, // flag indicating whether to check for duplicate entries in the DataList  
+                              combinationKeys = [], // array of field names used to identify duplicate record combinations in the DataList
+                              duplicateErrorMessage = null, // error message to display if identify duplicate record combinations in the DataList
                             } = fieldsConfig;
 
                             // Handle custom component inside InputFields
@@ -315,7 +366,7 @@ const SheetUI = forwardRef(
                                     if (onFieldUpdate && typeof onFieldUpdate === "function")
                                       onFieldUpdate(field, value, props.values, props.setFieldValue);
                                     if (validateDuplicate)
-                                      validateFieldValue(value, name, props.values.id);
+                                      validateDuplicateFieldValue(value, name, props.values, [...(combinationKeys || []), name], duplicateErrorMessage);
                                     props?.setFieldValue(field, value);
                                   }}
                                   columns={subColumns}
