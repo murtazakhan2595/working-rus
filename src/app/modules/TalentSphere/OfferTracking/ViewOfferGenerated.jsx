@@ -189,7 +189,7 @@ const ViewOfferGenerated = ({
             renderContent: (data) => {
                 if (ViewMode || isTeamView) return null;
                 if (data.status?.toLowerCase() === 'pending') {
-                    if (data.ai_budget_status === "Within Budget") {
+                    if (data.ai_budget_status !== "Within Budget") {
                         return (
                             <>
                                 <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>
