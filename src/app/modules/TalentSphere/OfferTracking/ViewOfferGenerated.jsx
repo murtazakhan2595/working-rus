@@ -47,7 +47,7 @@ const ViewOfferGenerated = ({
         setFormData({ applicant: data.applicant, offer_letter: data.id })
         setOpenSentOfferForm(true);
     }
-    const handleUpdateBudget = (event,data) => {
+    const handleUpdateBudget = (event, data) => {
         debugger
         event.preventDefault();
         event.stopPropagation();
@@ -188,31 +188,32 @@ const ViewOfferGenerated = ({
             customContent: true,
             renderContent: (data) => {
                 if (ViewMode || isTeamView) return null;
-                if (data.status?.toLowerCase() === 'pending') {
-                    if (data.ai_budget_status !== "Within Budget") {
-                        return (
-                            <>
-                                <div className={`${errorClassName} ml-3 mt-2`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>
-                                {updateBudgetPermitted && <Button className="flex justify-end mt-4" onClick={(event) => handleUpdateBudget(event, data)}>Update Budget</Button>}
-                            </>
-                        );
-                    } if (data.ai_missing_fields !== 'All Required Fields Present') return <div className={`${errorClassName} ml-3 mt-2`}>The offered letter is missing with some required informations</div>;
-                }
                 if (data?.status?.toLowerCase() === 'approved') {
                     if (sendOfferPermitted)
                         return <Button className="flex justify-end mt-4" onClick={(event) => handleSentApplicant(event, data)}>Send to Applicant</Button>
                 }
-                else return (
-                    <>
+                return (
+                    <div className="flex flex-wrap justify-end mt-2 pl-4 gap-2">
+                        {data.status?.toLowerCase() === 'pending' && data.ai_missing_fields !== 'All Required Fields Present' && (
+                            <div className={`${errorClassName} w-full`}>The offered letter is missing with some required informations</div>
+                        )}
                         {data.ai_salary_match_status === 'Out of Range' &&
-                            <div className='text-amber-500 text-sm'>Offered salary is outside the recommended range for this job grade</div>
+                            <div className='text-amber-500 text-xs w-full'>Offered salary is outside the recommended range for this job grade</div>
                         }
+                        {data.status?.toLowerCase() === 'pending' && data.ai_budget_status !== "Within Budget" && (
+                            <>
+                                <div className={`${errorClassName} w-full`}>The offered salary exceeds the allocated budget for this department. Please update the budget before proceeding</div>
+                                {updateBudgetPermitted && <Button className="flex justify-end mr-2 my-5" onClick={(event) => handleUpdateBudget(event, data)}>Update Budget</Button>}
+                            </>
+                        )}
+
                         <StatusButtons
                             permissionKey={'MANAGE_APPLICANT_OFFER_LETTER'}
                             status={data?.status}
                             current_approver={data.current_approver}
                             final_approver={data.final_approvers || []}
                             request_id={data.request}
+                            blockApproveConfigs={data.status?.toLowerCase() === 'pending' && (data.ai_budget_status !== "Within Budget" || data.ai_missing_fields !== 'All Required Fields Present') ? { blockMessage: 'Approve Blocked', disabled: true } : {}}
                             RejectionConfig={{ label: 'Rejection Reason', required: true, }}
                             setResponse={async (response, status, approval_data) => {
                                 if (response) {
@@ -223,7 +224,7 @@ const ViewOfferGenerated = ({
                                 }
                             }}
                         />
-                    </>
+                    </div>
                 );
             },
         },

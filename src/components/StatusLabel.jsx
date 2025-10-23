@@ -367,9 +367,9 @@ export const StatusButtons = ({
 
     return (
       <div className="flex flex-wrap justify-end gap-2 my-5">
-        {(showApprove || blockApproveConfigs) && (
-          <Button variant="success" disabled={isSubmitting || blockApproveConfigs.disabled} onClick={handleApproveClick}>
-            {blockApproveConfigs.blockMessage ?? approveText}
+        {(showApprove) && (
+          <Button variant="success" disabled={isSubmitting || blockApproveConfigs?.disabled} onClick={handleApproveClick}>
+            {blockApproveConfigs?.blockMessage ?? approveText}
           </Button>
         )}
         {showReject && (
