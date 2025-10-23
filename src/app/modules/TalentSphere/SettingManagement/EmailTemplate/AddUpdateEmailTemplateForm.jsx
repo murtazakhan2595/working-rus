@@ -160,7 +160,7 @@ const AddUpdateEmailTemplateForm = ({
                   <ul className="[list-style:disc] ml-4">
                     <li>Applicant Name → <code>{'{{ applicant_name }}'}</code></li>
                     <li>Designation / Job Position → <code>{'{{ job_title }}'}</code></li>
-                    <li>Salary → <code>{'{{ interview_date_time }}'}</code></li>
+                    <li>Interview Date Time → <code>{'{{ interview_date_time }}'}</code></li>
                     <li>Recruiter Name → <code>{'{{ recruiter_name }}'}</code></li>
                     <li>Comapny Name → <code>{'{{ company_name }}'}</code></li>
                     <li>Applicant Status/Stage → <code>{'{{ status }}'}</code></li>
