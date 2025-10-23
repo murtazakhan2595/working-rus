@@ -126,6 +126,7 @@ import { TransferAndRotationReports } from "app/modules/Reports";
 import { AttendanceAndShiftReports } from "app/modules/Reports";
 import DemographicsForm from "app/modules/TalentSphere/OfferTracking/DemographicsForm";
 import Compliance from "app/modules/Compliance";
+import { GlobalPayrollRoutes } from "constants/globalPayrollRoutes";
 
 export const SidebarRoutes = [
   {
@@ -557,6 +558,9 @@ export const SidebarRoutes = [
     : []),
   ...(Config.PAYROLL
     ? [
+      // Global Payroll Module Routes
+      ...GlobalPayrollRoutes,
+      
       Config.PAY_RUN && {
         path: "/payslip/:id",
         component: <Payslip />,
