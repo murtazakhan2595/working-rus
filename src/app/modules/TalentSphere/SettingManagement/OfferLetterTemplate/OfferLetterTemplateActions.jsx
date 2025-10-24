@@ -25,7 +25,15 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
         if (!data.body) data.body = 'No preview available';
         else {
             let result = data.body;
-            Object.entries({ applicant_name: 'Jon Devid', designation: 'Intern', salary: '100', joining_date: 'June 1, 2000', work_location: 'USA' }).forEach(([key, value]) => {
+            Object.entries({
+                applicant_name: 'Jon Devid',
+                designation: 'Intern',
+                salary: '100',
+                joining_date: 'June 1, 2000',
+                work_location: 'USA',
+                department: 'Sales',
+                company_name: 'Amazon',
+            }).forEach(([key, value]) => {
                 const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
                 result = result.replace(regex, value);
             });
