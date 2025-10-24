@@ -7,7 +7,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 
 
 export const AddNewSection = React.memo(
-    ({ name, onChange = () => { }, value = [], error , defaultSection}) => {
+    ({ name, onChange = () => { }, value = [], error, defaultSection }) => {
         const handleClick = (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -29,7 +29,7 @@ export const AddNewSection = React.memo(
 );
 
 export const AddNewSectionField = React.memo(
-    ({ name, onChange = () => { }, value = [], error,defaultSectionField }) => {
+    ({ name, onChange = () => { }, value = [], error, defaultSectionField }) => {
         const handleClick = (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -51,7 +51,7 @@ export const AddNewSectionField = React.memo(
 );
 
 export const RemoveSection = React.memo(
-    ({ name, onChange = () => { }, value = [], index , Icon =CircleX ,confirmText}) => {
+    ({ name, onChange = () => { }, value = [], index, Icon = CircleX, confirmText }) => {
         const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
         const handleClick = (event) => {
             event.preventDefault();
@@ -60,7 +60,7 @@ export const RemoveSection = React.memo(
         };
         const confirmDelete = async () => {
             try {
-                if (!index) return;
+                if (index === null || index === undefined || index === "") return;
                 const remaining = value.filter((_, objIndex) => objIndex !== index);
                 setOpenDeleteConfirm(false);
                 onChange(name, remaining || []);
@@ -82,7 +82,7 @@ export const RemoveSection = React.memo(
                 </Button>
                 {openDeleteConfirm && (
                     <AlertDialogue
-                        title={confirmText ?? `Confirm Delete ${index+1}?`}
+                        title={confirmText ?? `Confirm Delete ${index + 1}?`}
                         description={`This action can't be undone. All information associated with this level will be lost.`}
                         isOpen={openDeleteConfirm}
                         setIsOpen={() => setOpenDeleteConfirm(false)}

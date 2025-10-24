@@ -87,6 +87,10 @@ export const validateFeedbackFormSchema = (formValues) => {
         // 🟡 Title validation
         if (!title || !title?.trim()) {
             sectionError.title = "Section title is required.";
+        } else {
+            const duplicateTitle = formValues.sections?.some((obj, index) => index !== secIndex && obj?.title?.trim()?.toLowerCase() === title?.trim()?.toLowerCase());
+            if (duplicateTitle)
+                sectionError.title = "Section title can not be repeated.";
         }
 
         // 🟡 Fields validation
@@ -114,7 +118,6 @@ export const validateFeedbackFormSchema = (formValues) => {
                                 .map((opt) => opt.trim())
                                 .filter(Boolean)
                             : null;
-                    debugger
                     if (!radioOptions || !Array.isArray(radioOptions) || radioOptions?.length === 0) {
                         fieldError.radio_options = "Radio options cannot be empty for RADIO type.";
                     }
