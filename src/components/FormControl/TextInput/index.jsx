@@ -2,6 +2,7 @@ import React from "react";
 import { Input } from "components/ui/input";
 import { FormField, InvalidInput } from "components/FormControl";
 import { ValidationRegEx } from 'app/utils/Types/ValidationPattern';
+import { cn } from "src/@/lib/utils";
 const TextInput = React.memo(
   ({
     name,
@@ -19,6 +20,7 @@ const TextInput = React.memo(
     autoComplete = "new-password",
     className = "w-full", // Custom styling
     description,
+    inputClassName = null,
   }) => {
     return (
       <FormField
@@ -40,7 +42,7 @@ const TextInput = React.memo(
           placeholder={placeholder || `Enter ${label || "value"}`}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? InvalidInput : "text-neutral-1000"}
+          className={cn(error && touch ? InvalidInput : "text-neutral-1000", inputClassName)}
           onChange={(event) => {
             const inputValue = event.target.value;
             if (regEx) {

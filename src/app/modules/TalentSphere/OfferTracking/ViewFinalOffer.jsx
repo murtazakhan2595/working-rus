@@ -12,6 +12,7 @@ import { Button } from "components/ui/button";
 import { renderDate } from "utils/renderValues";
 import moment from "moment";
 import { HasAccess } from "utils/PermissionUtils";
+import { Currency } from "utils/getValuesFromTables";
 
 const ViewFinalOffer = ({
     isOpen,
@@ -90,6 +91,7 @@ const ViewFinalOffer = ({
                 {
                     key: "offered_salary",
                     label: "Offered Salary",
+                    formatter: (cell, data) => <div>{cell} <Currency value={data.requisitation_currency} /></div>
                 },
                 {
                     key: "joining_date",
@@ -116,7 +118,7 @@ const ViewFinalOffer = ({
             field: [
                 {
                     key: 'final_letter_pdf',
-                    formatter: (cell, data) =>
+                    formatter: (cell) =>
                         cell ? (
                             <AttachmentUI
                                 attachment={cell}
@@ -137,13 +139,13 @@ const ViewFinalOffer = ({
                     formatter: (cell) => (cell || []).map((log, index) => (
                         <div key={index} className="mb-1">
                             <div className="text-sm text-neutral-1100 capitalize">
-                                 {/* →*/} {log?.new_status}{" "} 
+                                {/* →*/} {log?.new_status}{" "}
                                 {log?.changed_by && <span className="text-gray-1100">
-                                    by <EmployeeName value={log?.changed_by} fallBackText ={log?.changed_by}/>
+                                    by <EmployeeName value={log?.changed_by} fallBackText={log?.changed_by} />
                                 </span>}
                             </div>
                             <div className="text-xs text-gray-900">
-                                {renderDate(log?.changed_on , '--','date-time')}
+                                {renderDate(log?.changed_on, '--', 'date-time')}
                             </div>
                         </div>
                     )),

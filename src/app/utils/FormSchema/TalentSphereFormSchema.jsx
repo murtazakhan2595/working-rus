@@ -110,7 +110,7 @@ export const validateFeedbackFormSchema = (formValues) => {
                 } else {
                     const duplicateLabel = section.fields?.some((obj, index) => index !== fieldIndex && obj?.label?.trim()?.toLowerCase() === label?.trim()?.toLowerCase());
                     if (duplicateLabel)
-                        fieldError.label = "Label can not be repeated in the same section.";
+                        fieldError.label = "Label can not be repeated within the same section.";
                 }
 
                 // RADIO check

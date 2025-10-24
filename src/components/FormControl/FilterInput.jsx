@@ -40,6 +40,7 @@ const FilterInput = ({
   className = "",
   filterValues = {},
   defaultDateRangeTab = "Day", // new optional prop to control initial tab
+  forceRefresh = null,
 }) => {
   const Departments = GetDispatchStateList("departments", "common") || [];
   const Designations = GetDispatchStateList("designations", "common") || [];
@@ -60,6 +61,10 @@ const FilterInput = ({
     },
     [onChange]
   );
+
+  useEffect(() => {
+    setResetFields(!resetFields)
+  }, [forceRefresh]);
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
     const allOptions = filter.option
@@ -328,12 +333,8 @@ const RenderNumericRangeField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      if (prevResetField.current !== resetField && resetField !== false) {
-        setInputValue(null);
-      }
-      prevResetField.current = resetField;
+      setInputValue(null);
     }, [resetField]);
 
     useEffect(() => {
@@ -375,12 +376,8 @@ const RenderInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      if (prevResetField.current !== resetField && resetField !== false) {
-        setInputValue(null);
-      }
-      prevResetField.current = resetField;
+      setInputValue(null);
     }, [resetField]);
 
     useEffect(() => {
@@ -399,6 +396,7 @@ const RenderInputField = React.memo(
             setInputValue(value);
             handleInputChange(field, value);
           }}
+          inputClassName={'pr-8'}
         />
         {!inputValue && (
           <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-neutral-800" />
@@ -420,12 +418,8 @@ const RenderIDInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      if (prevResetField.current !== resetField && resetField !== false) {
-        setInputValue(null);
-      }
-      prevResetField.current = resetField;
+      setInputValue(null);
     }, [resetField]);
 
     useEffect(() => {
@@ -480,12 +474,8 @@ const RenderMultiSelectInputField = React.memo(
       [options]
     );
 
-    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      if (prevResetField.current !== resetField && resetField !== false) {
-        setInputValue(null);
-      }
-      prevResetField.current = resetField;
+      setInputValue(null);
     }, [resetField]);
 
     useEffect(() => {
@@ -535,12 +525,8 @@ const RenderSelectInputField = React.memo(
       [options]
     );
 
-    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      if (prevResetField.current !== resetField && resetField !== false) {
-        setInputValue(null);
-      }
-      prevResetField.current = resetField;
+      setInputValue(null);
     }, [resetField]);
 
     useEffect(() => {
@@ -583,12 +569,8 @@ const RenderDateRangeInputField = React.memo(
   }) => {
     const [inputValue, setInputValue] = useState(value);
 
-    const prevResetField = React.useRef(resetField);
     useEffect(() => {
-      if (prevResetField.current !== resetField && resetField !== false) {
-        setInputValue(null);
-      }
-      prevResetField.current = resetField;
+      setInputValue(null);
     }, [resetField]);
 
     useEffect(() => {

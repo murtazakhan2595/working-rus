@@ -10,19 +10,18 @@ import { PageLoader, TableCustom } from "components";
 import { getOfferTrackingList } from "app/hooks/talentSphere";
 import { OfferTrackingColumns } from "app/modules/TalentSphere/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
-import { GetDispatchStateList } from "utils/Lists";
-import { GlobalStatusOptions } from "data/Data";
 
-const ApplicantOffers = ({ isTeamView = false, activeView = "Pending", deepLinkFilterData, deepLinkSubTab }) => {
+const ApplicantOffers = ({ activeView = "Pending", deepLinkFilterData, deepLinkSubTab }) => {
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
+    const [forceRefreshFilter, setForceRefreshFilter] = useState(true);
     const [OfferLetterList, setOfferLetterList] = useState();
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
     const [ordering, setOrdering] = useState("-id");
 
     const OuterTabList = useMemo(() => {
-        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Not Joined"];
+        return ["Pending", "Accepted", "Rejected", "Withdrawn", "Hired", "Not Joined"];
     }, []);
 
     // Handle deep link filter data and sub-tab when navigating from dashboard
@@ -102,16 +101,11 @@ const ApplicantOffers = ({ isTeamView = false, activeView = "Pending", deepLinkF
 
     const handleTabChange = (tab) => {
         onPageChange("page", 1);
+        setForceRefreshFilter(!forceRefreshFilter)
         if (tab === "Not Joined") {
-            setFilterData((prev) => ({
-                ...prev,
-                status: "not_joined",
-            }));
+            setFilterData({ status: "not_joined", });
         } else {
-            setFilterData((prev) => ({
-                ...prev,
-                status: tab.toLowerCase(),
-            }));
+            setFilterData({ status: tab.toLowerCase(), });
         }
     };
 
@@ -182,6 +176,7 @@ const ApplicantOffers = ({ isTeamView = false, activeView = "Pending", deepLinkF
                         },
                     ]}
                     onChange={handleFilterChange}
+                    forceRefresh={forceRefreshFilter}
                     className="justify-end mb-4"
                 />
                 {isLoading ? (
