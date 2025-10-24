@@ -22,6 +22,15 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
         setDeleteForm(true);
     };
     const handleView = () => {
+        if (!data.body) data.body = 'No preview available';
+        else {
+            let result = data.body;
+            Object.entries({ applicant_name: 'Jon Devid', designation: 'Intern', salary: '100', joining_date: 'June 1, 2000', work_location: 'USA' }).forEach(([key, value]) => {
+                const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                result = result.replace(regex, value);
+            });
+            data.body = result
+        }
         setView(true);
     };
 
@@ -73,16 +82,18 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
                 />
             )}
             {view && (
-                <DialogBox
-                    isOpen={view}
-                    setIsOpen={setView}
-                    title={data.name}
-                    description={'Preview of offer Letter'}
-                    className={'w-[90%]'}
-                >
-                    <TextUI text={data.body} isHTMLText={true} />
+                <div className="w-[100vw]">
+                    <DialogBox
+                        isOpen={view}
+                        setIsOpen={setView}
+                        title={data.name}
+                        description={'Preview of offer Letter'}
+                        className={'min-w-[70vw]'}
+                    >
+                        <TextUI text={data.body} isHTMLText={true} />
 
-                </DialogBox>
+                    </DialogBox>
+                </div>
             )}
         </>
     );
