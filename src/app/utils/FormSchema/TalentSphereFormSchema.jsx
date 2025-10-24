@@ -107,6 +107,10 @@ export const validateFeedbackFormSchema = (formValues) => {
                 // Label check
                 if (!label) {
                     fieldError.label = "Field label is required.";
+                } else {
+                    const duplicateLabel = section.fields?.some((obj, index) => index !== fieldIndex && obj?.label?.trim()?.toLowerCase() === label?.trim()?.toLowerCase());
+                    if (duplicateLabel)
+                        fieldError.label = "Label can not be repeated in the same section.";
                 }
 
                 // RADIO check
