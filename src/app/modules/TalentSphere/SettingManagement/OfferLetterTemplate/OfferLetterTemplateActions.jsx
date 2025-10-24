@@ -34,8 +34,10 @@ const OfferLetterTemplateActions = ({ data, DataList = [], reloadData = () => { 
                 department: 'Sales',
                 company_name: 'Amazon',
             }).forEach(([key, value]) => {
-                const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
                 result = result.replace(regex, value);
+                const regexS = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                result = result.replace(regexS, value);
             });
             data.body = result
         }

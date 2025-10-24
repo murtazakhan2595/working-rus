@@ -162,6 +162,8 @@ const AddUpdateOfferLetterTemplateForm = ({
                     <li>Salary → <code>{'{{ salary }}'}</code></li>
                     <li>Joining Date → <code>{'{{ joining_date }}'}</code></li>
                     <li>Work Location → <code>{'{{ work_location }}'}</code></li>
+                    <li>Department → <code>{'{{ department }}'}</code></li>
+                    <li>Company Name → <code>{'{{ company_name }}'}</code></li>
                   </ul>
                 </div>
               },
