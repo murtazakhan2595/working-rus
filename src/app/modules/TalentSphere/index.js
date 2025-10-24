@@ -106,9 +106,9 @@ import {
     OfferRequestActions,
     ViewOfferGenerated,
     SentOfferForm,
-    OffersSend,
+    ApplicantOffers,
     ViewFinalOffer,
-    ApplicantOffer,
+    ApplicantOfferView,
 } from './OfferTracking';
 import { TalentSphereDashboard } from './Dashboard';
 import { ResumeBankApplicants } from './ResumeBankApplicants';
@@ -127,10 +127,10 @@ export {
     ApplicantProfileActions,
     ApplicantProfiles,
     ExportProfile,
-    ApplicantOffer,
+    ApplicantOfferView,
     OfferRequests,
     ViewFinalOffer,
-    OffersSend,
+    ApplicantOffers,
     SentOfferForm,
     ViewOfferGenerated,
     AllApplicants,

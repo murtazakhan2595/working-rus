@@ -4,9 +4,9 @@ import OfferRequests from './OfferRequests';
 import OfferRequestActions from './OfferRequestActions';
 import ViewOfferGenerated from './ViewOfferGenerated';
 import SentOfferForm from './SentOfferForm';
-import OffersSend from './OffersSend';
+import ApplicantOffers from './ApplicantOffers';
 import ViewFinalOffer from './ViewFinalOffer';
-import ApplicantOffer from './ApplicantOffer';
+import ApplicantOfferView from './ApplicantOfferView';
 
 export {
     GenerateOffer,
@@ -15,7 +15,7 @@ export {
     OfferRequestActions,
     ViewOfferGenerated,
     SentOfferForm,
-    OffersSend,
+    ApplicantOffers,
     ViewFinalOffer,
-    ApplicantOffer,
+    ApplicantOfferView,
 };

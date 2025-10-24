@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { GetDispatchStateList } from "utils/Lists";
 import { GlobalStatusOptions } from "data/Data";
 
-const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilterData, deepLinkSubTab }) => {
+const ApplicantOffers = ({ isTeamView = false, activeView = "Pending", deepLinkFilterData, deepLinkSubTab }) => {
     const [activeTab, setActiveTab] = useState(activeView);
     const [filterData, setFilterData] = useState({ status: 'pending' });
     const [isLoading, setIsLoading] = useState(true);
@@ -101,6 +101,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
     };
 
     const handleTabChange = (tab) => {
+        onPageChange("page", 1);
         if (tab === "Not Joined") {
             setFilterData((prev) => ({
                 ...prev,
@@ -148,6 +149,11 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
                 <FilterInput
                     filters={[
                         {
+                            type: "search-id",
+                            name: "applicant_id",
+                            placeholder: "Applicant Id",
+                        },
+                        {
                             type: "search",
                             name: "applicant_name",
                             placeholder: "Applicant Name",
@@ -172,7 +178,7 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
                         {
                             type: "date-range",
                             name: "sent_on",
-                            placeholder: "Sent On",
+                            placeholder: "Offer Sent Date",
                         },
                     ]}
                     onChange={handleFilterChange}
@@ -194,4 +200,4 @@ const OffersSend = ({ isTeamView = false, activeView = "Pending", deepLinkFilter
     );
 };
 
-export default OffersSend;
+export default ApplicantOffers;

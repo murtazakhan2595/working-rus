@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { TableCustom, PageLoader } from "components";
 import { getFeedBackFormList } from "app/hooks/talentSphere";
 import { CardContent } from "components/ui/card";
@@ -11,7 +11,6 @@ const FeedBackForms = ({ reload }) => {
     const [filterData, setFilterData] = useState({});
     const [ordering, setOrdering] = useState("-id");
     const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-    const [filteredData, setFilteredData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const onPageChange = (name, value) => {
         setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -26,7 +25,7 @@ const FeedBackForms = ({ reload }) => {
         },
     };
 
-    const fetchData = async (isMounted) => {
+    const fetchData = useCallback(async (isMounted) => {
         setIsLoading(true);
         try {
             const response = await getFeedBackFormList({
@@ -34,16 +33,17 @@ const FeedBackForms = ({ reload }) => {
                 options,
                 ordering,
             });
+
             if (isMounted && response) {
                 setFeedBackFormList(response);
-                setFilteredData(response.results || []);
             }
         } catch (error) {
-            console.error(error);
+            console.error("Error fetching feedback form list:", error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [filterData, options, ordering]); // dependencies — re-memoize if these change
+
 
     useEffect(() => {
         let isMounted = true;
@@ -51,7 +51,7 @@ const FeedBackForms = ({ reload }) => {
         return () => {
             isMounted = false;
         };
-    }, [filterData, ordering, options]);
+    }, [fetchData]);
 
     useEffect(() => {
         let isMounted = true;
@@ -61,7 +61,7 @@ const FeedBackForms = ({ reload }) => {
         return () => {
             isMounted = false;
         };
-    }, [reload]);
+    }, [reload, fetchData]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
@@ -70,7 +70,7 @@ const FeedBackForms = ({ reload }) => {
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
-               if (['created_on'].includes(filterName))
+                if (['created_on_range'].includes(filterName))
                     updatedFilters[filterName] = filterValue?.split(',');
                 else updatedFilters[filterName] = filterValue;
             }
@@ -97,7 +97,7 @@ const FeedBackForms = ({ reload }) => {
                                 type: "select",
                                 placeholder: "Status",
                                 name: "status",
-                                options: [{ value: 'active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },]
+                                options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },]
                             },
                             {
                                 type: "select",
@@ -108,7 +108,7 @@ const FeedBackForms = ({ reload }) => {
                             {
                                 type: "date-range",
                                 placeholder: "Creation Date",
-                                name: "created_on",
+                                name: "created_on_range",
                             },
                         ]}
                         className="justify-end"
@@ -122,7 +122,7 @@ const FeedBackForms = ({ reload }) => {
                 ) : (
                     <TableCustom
                         columns={FeedBackFormsColumns(fetchData)}
-                        data={filteredData}
+                        data={FeedBackFormList.results || []}
                         tableOptions={tableOptions}
                         dataTotalSize={FeedBackFormList?.count || 0}
                         pagination={true}

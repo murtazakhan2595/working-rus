@@ -9,7 +9,7 @@ import {
   OfferTracking,
   ApplicantManagement,
   InterviewTracker,
-  ApplicantOffer,
+  ApplicantOfferView,
   TalentSphereDashboard,
   ApplicantProfiles,
   AllApplicants,
@@ -813,7 +813,7 @@ const GeneralRoutes = [
   },
   {
     path: "/applicant-offer/:id",
-    component: <ApplicantOffer />,
+    component: <ApplicantOfferView />,
     name: "Applicant Offer",
   },
   {

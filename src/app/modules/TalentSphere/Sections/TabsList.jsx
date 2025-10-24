@@ -38,7 +38,7 @@ import {
 import {
     GenerateOffer,
     OfferRequests,
-    OffersSend,
+    ApplicantOffers,
 } from 'app/modules/TalentSphere/OfferTracking';
 import {
     ApplicantInformation,
@@ -233,7 +233,7 @@ export const OFFER_TAB_CONFIG = [
         key: "offer-send",
         label: "Applicant Offers",
         viewPerm: "VIEW_OFFER_SEND_TO_APPLICANT",
-        list: (reload, deepLinkFilterData, deepLinkSubTab) => <OffersSend reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
+        list: (reload, deepLinkFilterData, deepLinkSubTab) => <ApplicantOffers reload={reload} deepLinkFilterData={deepLinkFilterData} deepLinkSubTab={deepLinkSubTab} />,
     },
     {
         label: "Hired Applicants",

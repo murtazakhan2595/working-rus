@@ -14,7 +14,7 @@ import AttachmentUI from "components/ui/AttachmentUI";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 
-const ApplicantOffer = () => {
+const ApplicantOfferView = () => {
     const { id } = useParams();
     const [FormData, setFormData] = useState({});
     const [CurrentItem, setCurrentItem] = useState({});
@@ -247,4 +247,4 @@ const ApplicantOffer = () => {
     );
 };
 
-export default ApplicantOffer;
+export default ApplicantOfferView;
