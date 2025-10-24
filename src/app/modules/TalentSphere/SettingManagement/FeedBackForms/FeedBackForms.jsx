@@ -61,7 +61,7 @@ const FeedBackForms = ({ reload }) => {
         return () => {
             isMounted = false;
         };
-    }, [reload, fetchData]);
+    }, [reload]);
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
