@@ -86,14 +86,12 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
 
   // If value is falsy, return fallback
   if (!value) {
-    if (debug)
-      return fallBackText;
+    return fallBackText;
   }
 
   // Handle case where value is already a string (like "CEO")
   if (typeof value === "string" && isNaN(parseInt(value))) {
-    if (debug)
-      return value;
+    return value;
   }
 
   // Try to find department by ID
@@ -101,9 +99,7 @@ function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
 
   // Check if departments array exists and has items
   if (!departments || !Array.isArray(departments) || departments.length === 0) {
-    if (debug)
-      // If departments are not available, return the fallback with ID
-      return `${fallBackText}`;
+    return `${fallBackText}`;
   }
 
   // Try to find by both value and id properties
@@ -170,13 +166,21 @@ export function EmployeeInfo({ value, label, fallBackText = "N/A" }) {
   const employees = useSelector((state) => state.emp.employees);
   const employee = employees.find((option) => option.id === parseInt(value));
   const employeeInfo = employee ? employee[label] ?? null : null;
+  
   if (employeeInfo) {
-    if (label === "department_position")
+    if (label === "department_position") {
       return (
         <DesignationName value={employeeInfo} fallBackText={fallBackText} />
       );
+    }
+    if (label === "department_name") {
+      return (
+        <DepartmentName value={employeeInfo} fallBackText={fallBackText} />
+      );
+    }
   }
-  return null;
+  
+  return <>{fallBackText}</>;
 }
 
 export function EmployeeNameList(employeeIdList) {
