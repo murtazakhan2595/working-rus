@@ -615,7 +615,10 @@ export default function ClearanceChecklistModal({
                 placeholder: "Add any additional comments...",
                 value: groupedItems[groupName][0]?.remarks || "",
                 disabled: groupedItems[groupName].every(
-                  (item) => item.is_locked || isOnHold
+                  (item) => 
+                    item.is_locked || 
+                    isOnHold || 
+                    item.status !== "PENDING" // Disable after accepting/rejecting
                 ),
                 colsSpan: 2,
                 maxRows: 2,
