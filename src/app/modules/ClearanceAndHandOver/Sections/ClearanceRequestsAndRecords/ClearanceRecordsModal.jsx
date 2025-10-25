@@ -163,7 +163,7 @@ const ClearanceRecordsModal = ({
     <NavigationSheetComponent
       isOpen={isOpen}
       setIsOpen={handleClose}
-      title="Clearance Record Details"
+      title="Clearance & Handover Details"
       currentItem_Id={clearanceRecord?.id}
       dataList={clearanceRecords}
       reloadData={reload}
