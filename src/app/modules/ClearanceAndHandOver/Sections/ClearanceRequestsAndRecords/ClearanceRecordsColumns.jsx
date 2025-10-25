@@ -203,7 +203,7 @@ export const ActionLogsColumns = (checklistItems = []) => {
   },
   {
     dataField: "notes",
-    text: "Notes",
+    text: "Remarks",
     sort: false,
     formatter: (cell) => (
       <div className="max-w-xs truncate" title={cell}>
