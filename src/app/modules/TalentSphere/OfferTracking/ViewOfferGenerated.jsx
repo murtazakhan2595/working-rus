@@ -4,7 +4,7 @@ import {
     DetailContent,
     StatusList,
 } from "components";
-import { FormatID } from "utils/getValuesFromTables";
+import { FormatID, Currency } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
 import { StatusLabel, StatusButtons } from "components";
 import { getOfferLetterData, saveUpdateOfferLetter } from "app/hooks/talentSphere";
@@ -109,6 +109,7 @@ const ViewOfferGenerated = ({
                 {
                     key: "offered_salary",
                     label: "Offered Salary",
+                    formatter: (cell, row) => <>{cell || 'N/A'} <Currency value={row.requisitation_currency} /></>,
                 },
                 {
                     key: "expected_joining_date",
