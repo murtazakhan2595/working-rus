@@ -19,8 +19,8 @@ const ViewInterviewDetails = ({
   setIsOpen = () => { },
   isTeamView = false,
 }) => {
-  const isAddFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
-  const isViewFeedbackPermitted = HasAccess("VIEW_APPLICANT_INPROGRESS_INTERVIEWS");
+  const isAddFeedbackPermitted = HasAccess("ADD_INTERVIEW_FEEDBACK");
+  const isViewFeedbackPermitted = HasAccess("VIEW_OWN_INTERVIEW_FEEDBACK");
 
   const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);

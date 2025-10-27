@@ -56,7 +56,7 @@ export default function ExportProfile({ filterData, variant = 'all-profiles', ap
 
     return (
         <>
-            <Button disabled={isExporting} onClick={exportAttendanceToExcel}>{isExporting ? 'Exporting' : 'Export To Excel'}</Button>
+            <Button disabled={isExporting} variant='continue' onClick={exportAttendanceToExcel}>{isExporting ? 'Exporting' : 'Export To Excel'}</Button>
         </>
 
     );

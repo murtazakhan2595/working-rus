@@ -1298,7 +1298,7 @@ export const ApplicationColumns = (reloadData, variant) => [
             minWidth: '300px',
             formatter: (cell) => {
                 return (<div>
-                    <div><span className="font-bold">Interview Type: </span>{cell?.interview_type_name}</div>
+                    <div><span className="font-bold">Interview Type: </span>{cell?.interview_type_name||'N/A'}</div>
                     <div><span className="font-bold">Date & Time: </span>{renderDate(cell?.scheduled_datetime, '--', 'date-time')}</div>
                     <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={cell?.panel_name} variant="info" /></div>
                 </div>
@@ -1451,7 +1451,7 @@ export const InterviewColumns = (reloadData, _, isTeamView) => [
         text: "Interview Info",
         formatter: (_, row) => {
             return (<div>
-                <div><span className="font-bold">Interview Type: </span>{row?.interview_type_name}</div>
+                <div><span className="font-bold">Interview Type: </span>{row?.interview_type_name||'N/A'}</div>
                 <div><span className="font-bold">Date & Time: </span>{renderDate(row?.scheduled_datetime, '--', 'date-time')}</div>
                 <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={row?.panel_name} variant="info" /></div>
             </div>

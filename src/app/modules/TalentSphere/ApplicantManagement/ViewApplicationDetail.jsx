@@ -22,12 +22,12 @@ const ViewApplicationDetail = ({
   autoAction = null,
 }) => {
   const { hasAccess } = usePermissions();
-  const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
+  // const addFeedBackPermitted = hasAccess("ADD_INTERVIEW_FEEDBACK");
   const viewFeedBackPermitted = hasAccess("VIEW_INTERVIEW_FEEDBACK");
   const updateStatusPermitted = hasAccess("MANAGE_APPLICANTS");
   const generateOfferPermitted = hasAccess("GENERATE_OFFER_LETTER");
   const scheduleInterviewPermitted = hasAccess("SCHEDULE_APPLICANT_INTERVIEW");
-  const { id: user_id } = useSelector((state) => state.user.userProfile);
+  // const { id: user_id } = useSelector((state) => state.user.userProfile);
   const [forceLoad, setForceLoad] = useState(false);
   const [FormData, setFormData] = useState({});
   const [OpenFormModal, setOpenFormModal] = useState(false);
@@ -39,13 +39,13 @@ const ViewApplicationDetail = ({
 
   const Permissions = React.useMemo(() => {
     return {
-      'add-feedback': addFeedBackPermitted,
+      // 'add-feedback': addFeedBackPermitted,
       'view-feedback': viewFeedBackPermitted,
       'update-status': updateStatusPermitted,
       'generate-offer': generateOfferPermitted,
       'schedule-interview': scheduleInterviewPermitted,
     };
-  }, [addFeedBackPermitted, viewFeedBackPermitted, scheduleInterviewPermitted, generateOfferPermitted]);
+  }, [viewFeedBackPermitted, scheduleInterviewPermitted, generateOfferPermitted]);
 
   const handleClick = React.useCallback(
     async (event, status, data) => {

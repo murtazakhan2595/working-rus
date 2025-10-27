@@ -171,7 +171,7 @@ export const TEAM_TALENT_SPHERE_TAB_CONFIG = [
     {
         key: "requisition-request",
         label: "Requisition Request",
-        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        viewPerm: "VIEW_REQUISITION_REQUEST_CREATED",
         addPerm: "CREATE_REQUISITION_REQUEST",
         list: (reload) => <RequisitionRequests reload={reload} />,
         form: AddUpdateRequisitionRequestForm,
@@ -179,7 +179,7 @@ export const TEAM_TALENT_SPHERE_TAB_CONFIG = [
     {
         key: "interviews",
         label: "Applicant Interviews",
-        viewPerm: "VIEW_TEAM_MANPOWER_HEADCOUNT",
+        viewPerm: "VIEW_APPLICANT_INTERVIEW_AS_PANELIST",
         list: (reload) => <ScheduledInterviews reload={reload} />,
     },
 ];

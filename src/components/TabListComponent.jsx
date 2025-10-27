@@ -6,10 +6,10 @@ import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import Error from "app/modules/Error";
 
-export default function TabListComponent({ TAB_CONFIG = [] }) {
+export default function TabListComponent({ TAB_CONFIG = [], activeView = null }) {
     const { hasAccess } = usePermissions();
 
-    const [activeTab, setActiveTab] = useState(null);
+    const [activeTab, setActiveTab] = useState(activeView);
     const [reloadData, setReloadData] = useState({});
     const [openForms, setOpenForms] = useState({});
 

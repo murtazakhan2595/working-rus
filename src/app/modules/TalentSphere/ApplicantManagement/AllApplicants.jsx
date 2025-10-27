@@ -8,6 +8,7 @@ import { CardHeader, CardTitle, CardDescription, Card } from "components/ui/card
 import { RecruitmentApplicationSource } from "data/Data";
 import { useSearchParams, useParams } from "react-router-dom";
 import { getInterviewTypeList } from "app/hooks/talentSphere";
+import { ExportProfile } from "app/modules/TalentSphere";
 
 const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -225,9 +226,10 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
         />
       }
       <Card>
-        <CardHeader>
-          <CardTitle>{TabTitle[variant]?.title ?? variant ?? ""} Applicants</CardTitle>
-          <CardDescription>
+        <CardHeader className='flex flex-wrap flex-row justify-between'>
+          <CardTitle className='w-fit'>{TabTitle[variant]?.title ?? variant ?? ""} Applicants</CardTitle>
+          {variant === 'in_progress' &&<div className="w-"> <ExportProfile filterData={{ ...filterData, status: 'in_progress' }} /></div>}
+          <CardDescription className='min-w-full'>
             Here, you can view applications for all candidates{TabTitle[variant]?.description ?? `, that are ${variant}`}
           </CardDescription>
           <div className="flex justify-end">
