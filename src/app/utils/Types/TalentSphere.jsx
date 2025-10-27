@@ -334,6 +334,7 @@ export const InterviewFeedback = {
     recommendation: null,
     id: null,
     responses: null,
+    submitted_at:null,
 }
 
 export const ShortlistedApplicant = {
