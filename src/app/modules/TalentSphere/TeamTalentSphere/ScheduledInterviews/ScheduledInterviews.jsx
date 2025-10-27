@@ -138,6 +138,17 @@ const ScheduledInterviews = ({ activeView = 'Upcoming Interviews' }) => {
                                         name: "scheduled_date_range",
                                         placeholder: "Interview Date",
                                     },
+                                    {
+                                        type: "select",
+                                        name: "status",
+                                        placeholder: "Status",
+                                        options: [
+                                            { label: 'Scheduled', value: 'scheduled' },
+                                            { label: 'Rescheduled', value: 'rescheduled' },
+                                            { label: 'Completed', value: 'completed' },
+                                            { label: 'Cancelled', value: 'cancelled' },
+                                        ]
+                                    },
                                 ]
                                 : []),
                         ]}

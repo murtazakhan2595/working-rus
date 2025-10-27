@@ -451,6 +451,11 @@ export const InterviewDetails = [
     title: (data) => `${data.index ? `${data.index + 1} - ` : ''}Interview Information`,
     field: [
       {
+        key: "id",
+        label: "Interview ID",
+        formatter: (cell,) => <FormatID value={cell} prefix={"INT-"} />,
+      },
+      {
         key: "interview_type_name",
         label: "Interview Type",
       },
@@ -602,6 +607,8 @@ export const FinalOfferLetterDetails = [
 export const FeebackDetails = [
   {
     title: "Feedback Information",
+    footerTitle: "Submitted At",
+    footerField: "submitted_at",
     field: [
       {
         key: "panel_member",

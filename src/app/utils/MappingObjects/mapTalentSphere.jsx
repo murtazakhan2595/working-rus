@@ -649,7 +649,7 @@ export async function mapApplicantsData(data) {
         switch (key) {
             case "id":
                 RecordDetails.applicant_id = value;
-                RecordDetails.serial_id = FormatID({ value, prefix: "APP" });
+                RecordDetails.serial_id = FormatID({ value, prefix: "APP-" });
                 RecordDetails.id = value;
                 break;
             case "candidate_id":
@@ -1222,6 +1222,11 @@ export function mapInterviewData(data) {
     const RecordDetails = Object.keys(Interview).reduce((acc, key) => {
         if (data.hasOwnProperty(key)) {
             if (key === "applicant") acc['applicant_id'] = data[key];
+            if (key === "id") {
+                const value = data[key];
+                acc['id'] = data[key];
+                acc['serial_id'] = FormatID({ value, prefix: "INT-" });
+            }
             acc[key] = data[key];
         }
         return acc;
@@ -1288,22 +1293,8 @@ export async function mapInterviewFeedbackList(data) {
             ...details,
         };
     });
-    // Step 2: Get unique interview IDs sorted ascending
-    const uniqueInterviews = [...new Set(DataList.map(fb => fb.interview))].sort((a, b) => a - b);
 
-    // Step 3: Map interview IDs to names (Interview 01, 02, ...)
-    const interviewNames = uniqueInterviews.reduce((acc, interviewId, index) => {
-        acc[interviewId] = `Interview ${String(index + 1).padStart(2, "0")}`;
-        return acc;
-    }, {});
-
-    // Step 4: Add interview_name field to each feedback
-    const indexedFeedbacks = DataList.map(fb => ({
-        ...fb,
-        interview_name: interviewNames[fb.interview] || null,
-    }));
-
-    return indexedFeedbacks;
+    return DataList;
 }
 
 

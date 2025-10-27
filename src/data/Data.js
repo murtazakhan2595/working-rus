@@ -408,7 +408,7 @@ export const BudgetStatusOptions = [
   },
   {
     value: "Over Budget",
-    label: (<StatusLabel status={'error'}>Over Budget</StatusLabel>),
+    label: (<StatusLabel status={'danger'}>Over Budget</StatusLabel>),
     percentage: "90.001,99999999999.99",
   },
 ];

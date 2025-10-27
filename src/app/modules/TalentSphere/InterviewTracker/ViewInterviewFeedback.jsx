@@ -7,6 +7,8 @@ import {
     TextUI,
 } from "components";
 import { GetDispatchStateList } from "utils/Lists";
+import { renderDate } from "utils/renderValues";
+import { FormatID } from "utils/getValuesFromTables";
 
 const ViewInterviewFeedback = ({
     currentId,
@@ -33,9 +35,15 @@ const ViewInterviewFeedback = ({
 
     const fields = React.useMemo(() =>
         (CurrentData || []).map(
-            ({ panel_member, responses, recommendation, rating, comments, interview_name }) => ({
-                title: `Feedback - ${interview_name || ''}`,
+            ({ panel_member, responses, recommendation, rating, comments, interview, submitted_at }, index) => ({
+                title: `Feedback - ${String(index + 1).padStart(2, "0")}`,
+
                 field: [
+                    {
+                        key: "interview",
+                        label: "Interview ID",
+                        formatter: (cell) => <FormatID value={interview} prefix={"INT-"} />
+                    },
                     {
                         key: "panel_member",
                         formatter: () => (
@@ -78,6 +86,11 @@ const ViewInterviewFeedback = ({
                             ) : (
                                 "No responses"
                             ),
+                    },
+                    {
+                        key: "submitted_at",
+                        label: "Submission Date",
+                        formatter: () => renderDate(submitted_at, '--', 'date-time'),
                     },
                 ],
             })

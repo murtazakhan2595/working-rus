@@ -41,8 +41,7 @@ const statusVariants = cva("", {
       danger: "bg-red-700 text-white", // for blacklisted
       pending: "bg-yellow-100 text-yellow-700", // optional for future "pending" statuses
       'neutral-dark': "bg-gray-200 text-gray-800", // softer neutral tone for inactive ones
-      "dot-plum":
-        "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
+      "dot-plum": "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
       "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
       "dot-warning": "bg-white border-neutral-300 flex items-center gap-2",
       "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
@@ -54,43 +53,27 @@ const statusVariants = cva("", {
   },
 });
 
+export const StatusLabelVariant = {
+  success: ['approved', 'accepted', 'present', 'signed', 'success', 'within_budget', 'yes', 'hired'],
+  warning: ['viewed', 'late', 'draft', 'warning'],
+  "info-secondary": ['screened', 'interview', 'sent', 'published', 'completed', 'acknowledged'],
+  error: ['declined', 'error', 'cancelled', 'expired', 'rejected', 'no',],
+  alarming: ['alarming', 'progress', 'in_progress', 'hold'],
+  danger: ['blacklisted', 'danger'],
+  plum: ['plum', 'shortlisted', 'scheduled'],
+  info: ['new', ''],
+  disable: ['close',],
+  default: ['resume_bank',],
+}
+
 export const getStatusVariant = (Status) => {
   if (!Status) return "default";
-  const status = Status.toLowerCase();
-  if (status.includes("approved")) return "success";
-  else if (status.includes("accepted")) return "success";
-  else if (status.includes("present")) return "success";
-  else if (status.includes("acknowledge")) return "success";
-  else if (status.includes("signed")) return "success";
-  else if (status.includes("viewed")) return "warning";
-  else if (status.includes("screen")) return "info-secondary";
-  else if (status.includes("late")) return "warning";
-  else if (status.includes("draft")) return "warning";
-  else if (status.includes("warning")) return "warning";
-  else if (status.includes("success")) return "success";
-  else if (status.includes("within budget")) return "success";
-  else if (status.includes("declined")) return "error";
-  else if (status.includes("error")) return "error";
-  else if (status.includes("cancelled")) return "error";
-  else if (status.includes("expired")) return "error";
-  else if (status.includes("alarming")) return "alarming";
-  else if (status.includes("blacklist")) return "danger";
-  else if (status.includes("rejected")) return "error";
-  else if (status.includes("pending")) return "default";
-  else if (status.includes("interview")) return "info-secondary";
-  else if (status.includes("sent")) return "info-secondary";
-  else if (status.includes("no")) return "error";
-  else if (status.includes("yes")) return "success";
-  else if (status.includes("shortlist")) return "plum";
-  else if (status.includes("new")) return "info";
-  else if (status.includes("progress")) return "warning";
-  else if (status.includes("scheduled")) return "info-secondary";
-  else if (status.includes("publish")) return "info-secondary";
-  else if (status.includes("close")) return "disable";
-  else if (status.includes("resume")) return "neutral";
-  else if (status.includes("hire")) return "success";
-  else if (status.includes("hold")) return "alarming";
-  else return "default";
+  const status = Status.toLowerCase()?.replaceAll(' ', '_');
+  // Find the first variant key whose array includes the given status
+  const variant = Object.keys(StatusLabelVariant).find((key) =>
+    StatusLabelVariant[key].includes(status)
+  );
+  return variant ?? 'default'
 };
 
 export const StatusIcon = ({ status }) => {
@@ -186,7 +169,7 @@ const MultiStatusLabel = React.forwardRef(
                   {...props}
                   variant={variant}
                   status={status}
-                  className={cn("font-normal", className)}
+                  className={cn("font-normal py-1.5 px-3", className)}
                 >
                   {status ? typeof status === 'string' ? status?.toLowerCase() : status : ""}
                 </StatusLabel>
@@ -500,13 +483,7 @@ export const StatusViewIcon = ({ status, className }) => {
     );
   else return <></>;
 };
-export const Status = (status) => {
-  if (!status) return "";
-  if (status.includes("Approved")) return "Approved";
-  else if (status.includes("Declined")) return "Rejected";
-  else if (status.includes("Pending")) return "Pending";
-  else return "Viewed";
-};
+
 
 export const getDecision = (status) => {
   if (status === "Approved") return "Approved";

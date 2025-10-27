@@ -82,16 +82,24 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
             if (filterValue === "" || filterValue === null) {
                 if (filterName === "status") {
                     if (activeTab === "Requests") {
-                        updatedFilters[filterName] = "pending";
+                        updatedFilters[filterName] = ["pending_approval", "draft"];
                     } else if (activeTab === "Records") {
-                        updatedFilters[filterName] =
-                            ["approved", "rejected"];
+                        updatedFilters[filterName] = ["approved", "rejected"];
                     }
                 } else delete updatedFilters[filterName];
             } else {
-                if (filterName === "status")
-                    updatedFilters[filterName] = filterValue.toLowerCase();
-                else updatedFilters[filterName] = filterValue;
+                if (filterName === "status") {
+                    const status = filterValue.toLowerCase();
+                    if (status === 'sent') {
+                        updatedFilters['is_offer_sent'] = true;
+                        updatedFilters[filterName] = 'approved';
+                    } else {
+                        delete updatedFilters['is_offer_sent'];
+                        updatedFilters[filterName] = status;
+                        if (status === 'approved')
+                            updatedFilters['is_offer_sent'] = false;
+                    };
+                } else updatedFilters[filterName] = filterValue;
             }
 
             return updatedFilters;
@@ -160,16 +168,16 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                             name: "ai_confidence_score",
                             placeholder: "AI Confidence Score Range",
                             options: [
-                                { label: 'Low Confidence - <50%', value: [0, 49.99] },
-                                { label: 'Medium Confidence (50% - 80%)', value: [50, 79.999] },
-                                { label: 'High Confidence - >=80%', value: [80, 100] },
+                                { label: 'Low Confidence <50%', value: [0, 49.99] },
+                                { label: 'Medium Confidence 50% - 80%', value: [50, 79.999] },
+                                { label: 'High Confidence >=80%', value: [80, 100] },
                             ]
                         },
                         ...(activeTab === "Records"
                             ? [
                                 {
                                     type: "select",
-                                    options: [...GlobalStatusOptions(false),],
+                                    options: [...GlobalStatusOptions(false), { label: 'Sent', value: 'sent' }],
                                     name: "status",
                                     placeholder: "Status",
                                 },
@@ -207,6 +215,12 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                                     type: "date-range",
                                     name: "generated_on",
                                     placeholder: "Generated On",
+                                },
+                                {
+                                    type: "select",
+                                    options: [{ label: "Draft", value: 'draft' }, { label: 'Pending', value: 'pending_approval' }],
+                                    name: "status",
+                                    placeholder: "Status",
                                 },
                             ]),
                     ]}

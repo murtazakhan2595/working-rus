@@ -1430,33 +1430,33 @@ export const ResumeBankColumns = (reloadData) => [
  */
 export const InterviewColumns = (reloadData, _, isTeamView) => [
     {
+        dataField: "id",
+        text: "Interview ID",
+        formatter: (cell,) => <FormatID value={cell} prefix={"INT-"} />,
+    },
+    {
         dataField: "applicant",
         text: "Applicant",
         formatter: (_, row) => {
             return (<div>
                 <div><span className="font-bold">ID: </span><FormatID value={row?.applicant} prefix={"APP-"} /></div>
                 <div><span className="font-bold">Name: </span>{row?.candidate_name}</div>
+                <div><span className="font-bold">Applied Job Title: </span>{row?.job_title}</div>
             </div>
             );
         },
     },
     {
-        dataField: "job_title",
-        text: "Applied Job Title",
-    },
-    {
-        dataField: "interview_type_name",
-        text: "Interview Type",
-    },
-    {
         dataField: "scheduled_datetime",
-        text: "Scheduled Date & Time",
-        formatter: (cell) => renderDate(cell, '--', 'date-time'),
-    },
-    {
-        dataField: "panel_name",
-        text: "Panelist",
-        formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />
+        text: "Interview Info",
+        formatter: (_, row) => {
+            return (<div>
+                <div><span className="font-bold">Interview Type: </span>{row?.interview_type_name}</div>
+                <div><span className="font-bold">Date & Time: </span>{renderDate(row?.scheduled_datetime, '--', 'date-time')}</div>
+                <div className='flex gap-1'><span className="font-bold">Panel: </span><MultiStatusLabel statusList={row?.panel_name} variant="info" /></div>
+            </div>
+            );
+        },
     },
     {
         dataField: "status",
