@@ -278,8 +278,8 @@ const useReassignmentManager = (currentUserId, reload, fetchChecklistItems) => {
       const approverId = reassignApprovers[itemId];
       const notes = reassignNotes[itemId];
 
-      // Enhanced validation
-      if (!approverId || approverId.trim() === "") {
+      // Enhanced validation - approverId can be a number or string
+      if (!approverId && approverId !== 0) {
         toast.error("Please select a new assignee");
         return;
       }
