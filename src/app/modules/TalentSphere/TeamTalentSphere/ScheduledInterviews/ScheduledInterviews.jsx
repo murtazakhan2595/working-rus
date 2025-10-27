@@ -146,7 +146,7 @@ const ScheduledInterviews = ({ activeView = 'Upcoming Interviews' }) => {
                                             { label: 'Scheduled', value: 'scheduled' },
                                             { label: 'Rescheduled', value: 'rescheduled' },
                                             { label: 'Completed', value: 'completed' },
-                                            { label: 'Cancelled', value: 'cancelled' },
+                                            // { label: 'Cancelled', value: 'cancelled' },
                                         ]
                                     },
                                 ]
