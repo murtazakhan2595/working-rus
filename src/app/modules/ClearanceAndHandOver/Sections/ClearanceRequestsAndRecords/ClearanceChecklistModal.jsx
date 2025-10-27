@@ -195,7 +195,12 @@ const useChecklistManager = (clearanceRequest, isOpen) => {
 
       const response = await getClearanceRequestItems(payload);
       if (response?.results) {
-        setChecklistItems(response.results);
+        // Store original status for each item to check against later
+        const itemsWithOriginalStatus = response.results.map(item => ({
+          ...item,
+          originalStatus: item.status, // Track the original status from backend
+        }));
+        setChecklistItems(itemsWithOriginalStatus);
       }
     } catch (error) {
       console.error("Error fetching checklist items:", error);
@@ -481,6 +486,18 @@ export default function ClearanceChecklistModal({
         return;
       }
 
+      // Validate that rejected items must have remarks
+      const rejectedItemsWithoutRemarks = editableItems.filter(
+        (item) => item.status === "REJECTED" && (!item.remarks || item.remarks.trim() === "")
+      );
+
+      if (rejectedItemsWithoutRemarks.length > 0) {
+        toast.error(
+          "Remarks are mandatory when rejecting an item. Please provide a reason for rejection."
+        );
+        return;
+      }
+
       // Enhanced update promises with individual error handling
       const updatePromises = editableItems.map((item) =>
         updateClearanceRequestItem(item.id, {
@@ -547,7 +564,8 @@ export default function ClearanceChecklistModal({
         // Enhanced status dropdowns for each item
         ...groupedItems[groupName].map((item) => {
           const canEdit = canUserEditItem(item);
-          const isNotPending = item.status !== "PENDING";
+          // Check ORIGINAL status from backend, not the locally edited status
+          const isNotPending = item.originalStatus !== "PENDING";
           const isDisabled = item.is_locked || !canEdit || isNotPending;
 
           // Enhanced disabled reason logic
@@ -611,11 +629,18 @@ export default function ClearanceChecklistModal({
               {
                 InputField: TextAreaInput,
                 name: `remarks_${groupName}`,
-                label: "Remarks (Optional)",
+                label: groupedItems[groupName].some(item => item.status === "REJECTED") 
+                  ? "Remarks (Required for Rejection)" 
+                  : "Remarks (Optional)",
                 placeholder: "Add any additional comments...",
                 value: groupedItems[groupName][0]?.remarks || "",
+                // Check ORIGINAL status - if item was already processed, disable remarks
                 disabled: groupedItems[groupName].every(
-                  (item) => item.is_locked || isOnHold
+                  (item) => 
+                    item.is_locked || 
+                    isOnHold || 
+                    !canUserEditItem(item) ||
+                    item.originalStatus !== "PENDING" // Check original status from backend
                 ),
                 colsSpan: 2,
                 maxRows: 2,

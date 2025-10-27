@@ -8,6 +8,7 @@ import { EmployeeUsername } from "utils/getValuesFromTables";
 import { getStatusVariant } from "components";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
+import { EmployeeInfo } from "utils/getValuesFromTables";
 export const ClearanceRecordsColumns = (
   reload,
   clearanceRecords = [],
@@ -116,17 +117,44 @@ export const ClearanceRecordsColumns = (
 ];
 
 
-export const ActionLogsColumns = () => [
-  {
-    dataField: "checklist_item",
-    text: "Item",
-    sort: true,
-    formatter: (cell) => `#${cell || "N/A"}`,
-    width: "80px",
-  },
+export const ActionLogsColumns = (checklistItems = []) => {
+  // Helper function to get checklist item name by ID
+  const getChecklistItemName = (itemId) => {
+    console.log("Looking for checklist item:", itemId, "in:", checklistItems);
+    if (!itemId) return "N/A";
+    // The checklist item has 'id' field, not 'checklist_item'
+    const item = checklistItems.find((item) => item.id === itemId);
+    console.log("Found item:", item);
+    return item?.checklist_name || `#${itemId}`;
+  };
+
+  return [
+    {
+      dataField: "checklist_item",
+      text: "Item",
+      sort: true,
+      formatter: (cell) => `#${cell || "N/A"}`,
+      width: "80px",
+    },
+    {
+      dataField: "checklist_item",
+      text: "Clearance Item Title",
+      sort: true,
+      formatter: (cell, row) => {
+        console.log("----------", cell, row);
+        const name = getChecklistItemName(cell);
+        return (
+          <div className="max-w-xs">
+            <div className="font-medium text-neutral-1200 capitalize">
+              {name}
+            </div>
+          </div>
+        );
+      },
+    },
   {
     dataField: "action",
-    text: "Action",
+    text: "Status",
     sort: true,
     formatter: (cell) => (
       <Badge
@@ -138,6 +166,13 @@ export const ActionLogsColumns = () => [
       </Badge>
     ),
     width: "100px",
+  },
+  {
+    dataField: "actor",
+    text: "Assigned Department",
+    formatter: (cell, row) => {
+      return <EmployeeInfo value={cell} label="department_name" />;
+    },
   },
   {
     dataField: "e_signature_status",
@@ -168,7 +203,7 @@ export const ActionLogsColumns = () => [
   },
   {
     dataField: "notes",
-    text: "Notes",
+    text: "Remarks",
     sort: false,
     formatter: (cell) => (
       <div className="max-w-xs truncate" title={cell}>
@@ -176,4 +211,5 @@ export const ActionLogsColumns = () => [
       </div>
     ),
   },
-];
+  ];
+};

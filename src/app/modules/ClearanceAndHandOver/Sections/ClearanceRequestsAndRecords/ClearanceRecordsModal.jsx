@@ -7,7 +7,7 @@ import {
   TableCustom,
 } from "components";
 import { toast } from "react-toastify";
-import { getClearanceActionLogs } from "app/hooks/clearanceAndHandover";
+import { getClearanceActionLogs, getClearanceRequestItems } from "app/hooks/clearanceAndHandover";
 import { renderDate } from "utils/renderValues";
 import { ActionLogsColumns } from "./ClearanceRecordsColumns";
 
@@ -31,19 +31,30 @@ const ClearanceRecordsModal = ({
       // Find the record from the list first
       let record = clearanceRecords.find((r) => r.id === id) || clearanceRecord;
 
+      // Fetch checklist items first to get the item names
+      const itemsPayload = {
+        filterData: { request: id },
+        options: { page: 1, sizePerPage: 100 },
+        ordering: "id",
+      };
+
+      const itemsResponse = await getClearanceRequestItems(itemsPayload);
+      const checklistItems = itemsResponse?.results || [];
+
       // Fetch action logs and attach them to the record
-      const payload = {
+      const logsPayload = {
         filterData: { checklist_request: id },
         options: { page: 1, sizePerPage: 100 },
         ordering: "-timestamp",
       };
 
-      const logsResponse = await getClearanceActionLogs(payload);
+      const logsResponse = await getClearanceActionLogs(logsPayload);
 
-      // Attach action logs to the record for use in fields
+      // Attach both action logs and checklist items to the record for use in fields
       record = {
         ...record,
         actionLogs: logsResponse?.results || [],
+        checklistItems: checklistItems,
       };
 
       if (isMounted) {
@@ -124,7 +135,7 @@ const ClearanceRecordsModal = ({
         return (
           <div className="mt-4">
             <TableCustom
-              columns={ActionLogsColumns()}
+              columns={ActionLogsColumns(data?.checklistItems || [])}
               data={actionLogs}
               tableOptions={{
                 page: 1,
@@ -152,7 +163,7 @@ const ClearanceRecordsModal = ({
     <NavigationSheetComponent
       isOpen={isOpen}
       setIsOpen={handleClose}
-      title="Clearance Record Details"
+      title="Clearance & Handover Details"
       currentItem_Id={clearanceRecord?.id}
       dataList={clearanceRecords}
       reloadData={reload}
