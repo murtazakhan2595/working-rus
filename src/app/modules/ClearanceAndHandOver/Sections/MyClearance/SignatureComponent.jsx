@@ -54,15 +54,14 @@ export const ESignatureComponent = ({
   const handleFileSelection = (file) => {
     console.log("File selected:", file); // Debug log
 
-    // Validate file type
+    // Validate file type - Only images allowed for e-signature
     const allowedTypes = [
       "image/png",
       "image/jpeg",
       "image/jpg",
-      "application/pdf",
     ];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Please select a PNG, JPG, or PDF file");
+      toast.error("Please select an image file (PNG or JPG only)");
       return;
     }
 
@@ -95,7 +94,7 @@ export const ESignatureComponent = ({
     // Create a temporary file input outside the modal
     const tempInput = document.createElement("input");
     tempInput.type = "file";
-    tempInput.accept = ".pdf,.png,.jpg,.jpeg";
+    tempInput.accept = "image/png,image/jpeg,image/jpg,.png,.jpg,.jpeg";
     tempInput.style.position = "absolute";
     tempInput.style.left = "-9999px";
     tempInput.style.opacity = "0";
@@ -252,11 +251,11 @@ export const ESignatureComponent = ({
                     <AiOutlinePaperClip />
                     <div className="text-neutral-1200">
                       <span className="text-plum-1100 font-inter font-semibold">
-                        Upload a file
+                        Upload an image
                       </span>
                       <span className="font-inter"> or drag and drop</span>
                       <div className="text-sm font-inter">
-                        PDF, PNG, JPG up to 5MB
+                        PNG, JPG up to 5MB
                       </div>
                     </div>
                   </div>
@@ -316,7 +315,7 @@ export const ESignatureComponent = ({
               )}
 
               <div className="text-xs text-neutral-1100">
-                Accepted formats: PNG, JPG, PDF (max 5MB)
+                Accepted formats: PNG, JPG (max 5MB)
               </div>
             </div>
           )}
