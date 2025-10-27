@@ -139,7 +139,7 @@ export default function ClearanceAndHandover() {
   const tabsData = [
     {
       value: "clearance-requests",
-      label: "Clearance Requests",
+      label: "Clearance & Handover Requests",
       component: (
         <ClearanceRequests
           options={options}
@@ -156,7 +156,7 @@ export default function ClearanceAndHandover() {
     },
     {
       value: "clearance-records",
-      label: "Clearance Records",
+      label: "Clearance & Handover Records",
       component: (
         <ClearanceRecords
           options={options}

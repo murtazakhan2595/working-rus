@@ -56,7 +56,9 @@ export default function ClearanceRecords({
     <div className="flex flex-col">
       <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
         <div>
-          <CardTitle className="text-primary">Clearance Records</CardTitle>
+          <CardTitle className="text-primary">
+            Clearance & Handover Records
+          </CardTitle>
           <CardDescription className="text-neutral-1100">
             View historical records of all completed clearance processes. This
             tab serves as an audit log for compliance and reference.
