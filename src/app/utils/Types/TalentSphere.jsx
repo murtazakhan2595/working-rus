@@ -315,6 +315,7 @@ export const Interview = {
     job_title: null,
     candidate_name: null,
     candidate_id: null,
+    is_demographic_submitted: null,
     // contact_number: null,
     // email: null,
     // ai_match_score: null,

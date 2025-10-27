@@ -228,7 +228,7 @@ const AllApplicants = ({ variant = "all", deepLinkFilterData }) => {
       <Card>
         <CardHeader className='flex flex-wrap flex-row justify-between'>
           <CardTitle className='w-fit'>{TabTitle[variant]?.title ?? variant ?? ""} Applicants</CardTitle>
-          {variant === 'in_progress' &&<div className="w-"> <ExportProfile filterData={{ ...filterData, status: 'in_progress' }} /></div>}
+          {variant === 'in_progress' &&<div className=""> <ExportProfile filterData={{ ...filterData, status: 'in_progress' }} /></div>}
           <CardDescription className='min-w-full'>
             Here, you can view applications for all candidates{TabTitle[variant]?.description ?? `, that are ${variant}`}
           </CardDescription>

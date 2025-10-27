@@ -477,7 +477,8 @@ export const InterviewDetails = [
       {
         key: "require_demographics",
         label: "Required Demographics",
-        formatter: (cell) => cell ? 'Yes' : 'No',
+        formatter: (_, row) => row?.is_demographic_submitted ? 'Submitted' : 'Pending',
+        renderCondition: (cell) => Boolean(cell),
       },
       {
         key: "status",
