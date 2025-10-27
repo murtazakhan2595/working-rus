@@ -34,6 +34,7 @@ const REASSIGNMENT_CONFIG = {
     LOCKED: "Item is locked and cannot be reassigned",
     ON_HOLD: "Clearance is on hold - editing disabled",
     NO_PERMISSION: "You don't have permission to edit this item",
+    E_SIGNATURE_PENDING: "Waiting for employee's e-signature before approval",
   },
 };
 
@@ -277,8 +278,8 @@ const useReassignmentManager = (currentUserId, reload, fetchChecklistItems) => {
       const approverId = reassignApprovers[itemId];
       const notes = reassignNotes[itemId];
 
-      // Enhanced validation
-      if (!approverId || approverId.trim() === "") {
+      // Enhanced validation - approverId can be a number or string
+      if (!approverId && approverId !== 0) {
         toast.error("Please select a new assignee");
         return;
       }
@@ -498,6 +499,23 @@ export default function ClearanceChecklistModal({
         return;
       }
 
+      // Validate that items requiring e-signature have been acknowledged by employee
+      const itemsNeedingESignature = editableItems.filter(
+        (item) => 
+          (item.status === "APPROVED" || item.status === "NOT_APPLICABLE") &&
+          item.e_signature_status === "PENDING"
+      );
+
+      if (itemsNeedingESignature.length > 0) {
+        const itemNames = itemsNeedingESignature
+          .map((item) => item.checklist_name)
+          .join(", ");
+        toast.error(
+          `Cannot approve the following item(s) that require employee e-signature: ${itemNames}. Please wait for the employee to submit their e-signature first.`
+        );
+        return;
+      }
+
       // Enhanced update promises with individual error handling
       const updatePromises = editableItems.map((item) =>
         updateClearanceRequestItem(item.id, {
@@ -566,6 +584,7 @@ export default function ClearanceChecklistModal({
           const canEdit = canUserEditItem(item);
           // Check ORIGINAL status from backend, not the locally edited status
           const isNotPending = item.originalStatus !== "PENDING";
+          const hasESignaturePending = item.e_signature_status === "PENDING";
           const isDisabled = item.is_locked || !canEdit || isNotPending;
 
           // Enhanced disabled reason logic
@@ -579,16 +598,38 @@ export default function ClearanceChecklistModal({
             ? "Action already taken"
             : undefined;
 
+          // Filter status options if e-signature is pending
+          // Exclude APPROVED and NOT_APPLICABLE options until employee submits e-signature
+          const availableStatusOptions = hasESignaturePending
+            ? clearanceRequestStatusOptions.filter(
+                (option) => 
+                  option.value !== "APPROVED" && 
+                  option.value !== "NOT_APPLICABLE"
+              )
+            : clearanceRequestStatusOptions;
+
+          // Helper text for e-signature requirement
+          const eSignatureHelperText = hasESignaturePending
+            ? REASSIGNMENT_CONFIG.DISABLED_REASONS.E_SIGNATURE_PENDING
+            : undefined;
+
+          // Add e-signature indicator to label if applicable
+          const statusLabel = hasESignaturePending
+            ? `${formatChecklistName(item.checklist_name)} Status ⚠️ (E-Signature Required)`
+            : item.e_signature_status === "ACKNOWLEDGED"
+            ? `${formatChecklistName(item.checklist_name)} Status ✓ (E-Signature Submitted)`
+            : `${formatChecklistName(item.checklist_name)} Status`;
+
           return {
             InputField: SelectInputComponent,
             name: `status_${item.id}`,
-            label: `${formatChecklistName(item.checklist_name)} Status`,
+            label: statusLabel,
             placeholder: canEdit ? "Select Status" : "No permission",
             value: item.status,
-            options: clearanceRequestStatusOptions,
+            options: availableStatusOptions,
             disabled: isDisabled,
             colsSpan: 1,
-            helperText: !canEdit ? disabledReason : undefined,
+            helperText: disabledReason || eSignatureHelperText,
             onFieldUpdate: (field, newValue) => {
               if (canEdit) {
                 updateItemStatus(item.id, newValue);
