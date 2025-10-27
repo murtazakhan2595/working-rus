@@ -86,7 +86,9 @@ export default function ClearanceRequests({
     <div className="flex flex-col">
       <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
         <div>
-          <CardTitle className="text-primary">Clearance Requests</CardTitle>
+          <CardTitle className="text-primary">
+            Clearance & Handover Requests
+          </CardTitle>
           <CardDescription className="text-neutral-1100">
             Manage and track all employee clearance requests including leave,
             transfers, rotations, and other clearance types.
