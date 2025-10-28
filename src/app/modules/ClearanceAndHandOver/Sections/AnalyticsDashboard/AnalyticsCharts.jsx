@@ -1,6 +1,6 @@
 // src/app/modules/ClearanceAndHandOver/Sections/AnalyticsCharts.jsx
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
 import {
   PieChart,
@@ -14,6 +14,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 // Color palettes
 const COLORS = [
@@ -34,6 +35,9 @@ const SLA_COLORS = {
 };
 
 const DepartmentChart = ({ data }) => {
+  const [showAllLegend, setShowAllLegend] = useState(false);
+  const INITIAL_LEGEND_ITEMS = 5;
+
   const chartData =
     data?.map((item, index) => ({
       name: item.department__name,
@@ -54,13 +58,18 @@ const DepartmentChart = ({ data }) => {
     );
   }
 
+  const hasMoreItems = chartData.length > INITIAL_LEGEND_ITEMS;
+  const displayedData = showAllLegend
+    ? chartData
+    : chartData.slice(0, INITIAL_LEGEND_ITEMS);
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Department Distribution</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={250}>
+        <ResponsiveContainer width="100%" height={170}>
           <PieChart>
             <Pie
               data={chartData}
@@ -68,15 +77,50 @@ const DepartmentChart = ({ data }) => {
               cy="50%"
               outerRadius={80}
               dataKey="value"
-              label={({ name, value }) => `${name}: ${value}`}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.fill} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip formatter={(value, name) => [value, name]} />
           </PieChart>
         </ResponsiveContainer>
+
+        {/* Custom Legend */}
+        <div className="mt-4 space-y-2">
+          <div className="grid grid-cols-1 gap-1 text-sm">
+            {displayedData.map((entry, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-sm flex-shrink-0"
+                  style={{ backgroundColor: entry.fill }}
+                />
+                <span className="truncate flex-1" title={entry.name}>
+                  {entry.name}: {entry.value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {hasMoreItems && (
+            <button
+              onClick={() => setShowAllLegend(!showAllLegend)}
+              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium mt-2"
+            >
+              {showAllLegend ? (
+                <>
+                  <ChevronUp size={16} />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={16} />
+                  Show {chartData.length - INITIAL_LEGEND_ITEMS} More
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
