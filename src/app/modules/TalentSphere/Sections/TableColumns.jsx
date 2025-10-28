@@ -1247,10 +1247,10 @@ export const ApplicationColumns = (reloadData, variant) => [
             dataField: "recruitment_shortlist",
             text: "Shortlisting Info",
             minWidth: '300px',
-            formatter: (cell) => {
+            formatter: (cell, row) => {
                 // const source = (RecruitmentApplicationSource.find(obj => obj.value === cell) || {}).label || '--';
                 return (<div>
-                    <div><span className="font-bold">Desired Salary: </span>{cell?.desired_salary}</div>
+                    <div><span className="font-bold">Desired Salary: </span>{cell?.desired_salary} <Currency value={row.publish_vacancy?.currency} fallBackText=" " /></div>
                     <div><span className="font-bold">Expected Joining Date: </span>{renderDate(cell?.expected_joining_date, '--', 'date')}</div>
                     <div><span className="font-bold">Shortlisted By: </span><EmployeeName value={cell?.shortlisted_by} /></div>
                     <div><span className="font-bold">Date: </span>{renderDate(cell?.shortlisted_on, "--", 'date-time')}</div>
@@ -1616,7 +1616,6 @@ export const OfferTrackingColumns = (reloadData, variant) => [
         {
             dataField: "hired_at",
             text: "Hire Info",
-            formatter: (cell) => renderDate(cell, '--', 'date-time'),
             formatter: (_, row) => (
                 <div>
                     <div><span className="font-bold">Hired By: </span><EmployeeName value={row?.hired_by} /></div>

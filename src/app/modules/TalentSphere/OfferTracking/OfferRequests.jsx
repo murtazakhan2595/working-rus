@@ -99,7 +99,9 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                         if (status === 'approved')
                             updatedFilters['is_offer_sent'] = false;
                     };
-                } else updatedFilters[filterName] = filterValue;
+                } else if (['generated_on', 'last_updated_on'].includes(filterName))
+                    updatedFilters[filterName] = filterValue.split(',');
+                else updatedFilters[filterName] = filterValue;
             }
 
             return updatedFilters;
@@ -154,19 +156,25 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                 <FilterInput
                     filters={[
                         {
-                            type: "search",
-                            name: "candidate_name",
-                            placeholder: "Applicant Name",
+                            type: "search-id",
+                            name: "applicant_id",
+                            placeholder: "Applicant Id",
                         },
                         {
                             type: "search",
                             name: "candidate_name",
+                            placeholder: "Applicant Name",
+                        },
+
+                        {
+                            type: "search",
+                            name: "designation",
                             placeholder: "Job Title",
                         },
                         {
                             type: "select",
                             name: "ai_confidence_score",
-                            placeholder: "AI Confidence Score Range",
+                            placeholder: "AI Confidence Score",
                             options: [
                                 { label: 'Low Confidence <50%', value: [0, 49.99] },
                                 { label: 'Medium Confidence 50% - 80%', value: [50, 79.999] },
@@ -181,27 +189,18 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                                     name: "status",
                                     placeholder: "Status",
                                 },
+                              
                                 {
                                     type: "select",
                                     options: 'Employees',
-                                    name: "approved_by",
-                                    placeholder: "Approved By",
+                                    name: "last_updated_by",
+                                    placeholder: "Approved/Rejected By",
                                 },
-                                {
-                                    type: "select",
-                                    options: 'Employees',
-                                    name: "rejected_by",
-                                    placeholder: "Rejected By",
-                                },
+                               
                                 {
                                     type: "date-range",
-                                    name: "approved_on",
-                                    placeholder: "Approved On",
-                                },
-                                {
-                                    type: "date-range",
-                                    name: "rejected_on",
-                                    placeholder: "Rejected On",
+                                    name: "last_updated_on",
+                                    placeholder: "Approved/Rejected On",
                                 },
                             ]
                             : [
