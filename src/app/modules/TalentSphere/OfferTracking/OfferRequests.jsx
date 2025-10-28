@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo,useCallback } from "react";
 import {
     CardContent,
     CardDescription,
@@ -52,10 +52,14 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
         },
     };
 
-    const fetchData = async (isMounted) => {
+    const fetchData = useCallback(async (isMounted) => {
         try {
             setIsLoading(true);
-            const OfferLetterList = await getOfferLetterList({ filterData, options, ordering, });
+            const OfferLetterList = await getOfferLetterList({
+                filterData,
+                options,
+                ordering,
+            });
             if (OfferLetterList && isMounted) {
                 setOfferLetterList(OfferLetterList);
             }
@@ -64,7 +68,7 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [filterData, options, ordering]);
 
     useEffect(() => {
         let isMounted = true;
@@ -72,7 +76,9 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
         return () => {
             isMounted = false;
         };
-    }, [filterData, options, ordering]);
+    }, [fetchData]);
+
+
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange("page", 1);
@@ -189,14 +195,14 @@ const OfferRequests = ({ activeView = "Requests", deepLinkFilterData, deepLinkSu
                                     name: "status",
                                     placeholder: "Status",
                                 },
-                              
+
                                 {
                                     type: "select",
                                     options: 'Employees',
                                     name: "last_updated_by",
                                     placeholder: "Approved/Rejected By",
                                 },
-                               
+
                                 {
                                     type: "date-range",
                                     name: "last_updated_on",
